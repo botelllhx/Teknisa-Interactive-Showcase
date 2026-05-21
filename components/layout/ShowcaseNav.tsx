@@ -54,10 +54,10 @@ export function ShowcaseNav() {
       </div>
 
       <Image
-        src="/logo-teknisa.svg"
+        src="/teknisa-logo.svg"
         alt="Teknisa"
-        width={140}
-        height={36}
+        width={160}
+        height={30}
         className="select-none opacity-90"
       />
     </motion.nav>

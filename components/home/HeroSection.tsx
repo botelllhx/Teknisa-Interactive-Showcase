@@ -20,10 +20,10 @@ export function HeroSection() {
         className="flex items-center"
       >
         <Image
-          src="/logo-teknisa.svg"
+          src="/teknisa-logo.svg"
           alt="Teknisa"
-          width={220}
-          height={56}
+          width={240}
+          height={46}
           priority
           className="select-none"
         />

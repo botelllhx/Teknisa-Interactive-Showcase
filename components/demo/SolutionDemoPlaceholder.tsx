@@ -1,11 +1,21 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Wrench } from "lucide-react";
-import { solutionsById } from "@/data/solutions";
-import { getFlow } from "@/data/flows";
-import { SegmentIcon } from "@/components/ui/SegmentIcon";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { solutionsById, type Solution } from "@/data/solutions";
+import { useFlowController } from "@/hooks/useFlowController";
+import { useShowcase } from "@/lib/store";
 import { SolutionFrame, frameMaxWidth } from "@/components/mockups/frames";
+import { StepIndicator } from "@/components/ui/StepIndicator";
+import { PulsingDot } from "@/components/ui/PulsingDot";
+import { FlowGuide } from "@/components/ui/FlowGuide";
+import {
+  NotificationStack,
+  SimulatedNotification,
+} from "@/components/ui/SimulatedNotification";
+import { LoadingBar } from "@/components/ui/LoadingBar";
+import { ConfirmationFeedback } from "@/components/ui/ConfirmationFeedback";
 import { cn } from "@/lib/cn";
 
 interface SolutionDemoPlaceholderProps {
@@ -14,91 +24,253 @@ interface SolutionDemoPlaceholderProps {
 
 export function SolutionDemoPlaceholder({ solutionId }: SolutionDemoPlaceholderProps) {
   const solution = solutionsById[solutionId];
-  const steps = getFlow(solutionId);
+  const { steps, currentStep, currentStepData, isFirst, isLast, next, prev, goTo, reset } =
+    useFlowController(solutionId);
+  const goBack = useShowcase((s) => s.goBack);
+
+  const [loading, setLoading] = useState(false);
+  const [showCompletion, setShowCompletion] = useState(false);
+
+  useEffect(() => {
+    if (steps.length === 0) return;
+    setLoading(true);
+    const t = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(t);
+  }, [currentStep, steps.length]);
+
+  useEffect(() => {
+    setShowCompletion(false);
+  }, [solutionId]);
 
   if (!solution) return null;
 
+  const handleAdvance = () => {
+    if (isLast) {
+      setShowCompletion(true);
+      return;
+    }
+    next();
+  };
+
+  const notificationCompanion = currentStepData?.companions?.includes(
+    "SimulatedNotification",
+  );
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="grid grid-cols-[1fr_auto_1fr] items-center gap-10 px-16 pb-16"
-    >
-      <aside className="flex flex-col gap-4">
-        <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand text-white shadow-brand">
-            <SegmentIcon name={solution.icon} size={26} />
-          </div>
-          <div>
-            <p className="text-label-sm font-medium uppercase tracking-wider text-brand">
-              {deviceLabel(solution.device)}
-            </p>
-            <h1 className="font-display text-display-lg leading-tight text-neutral-900">
-              {solution.name}
-            </h1>
-          </div>
-        </div>
-
-        <p className="max-w-[40ch] text-body-lg text-neutral-600">
-          {solution.description}
-        </p>
-
-        <div className="mt-2 inline-flex w-fit items-center gap-2.5 rounded-full border border-warning/20 bg-warning/5 px-4 py-2.5">
-          <Wrench size={16} strokeWidth={2.25} className="text-warning" />
-          <span className="font-ui text-label-sm font-medium text-warning">
-            Mockup interativo em construção — {steps.length} etapas planejadas
-          </span>
-        </div>
-      </aside>
-
-      <div className={cn("w-full", frameMaxWidth(solution.device))}>
-        <SolutionFrame device={solution.device}>
-          <ScreenPlaceholder solutionName={solution.name} />
-        </SolutionFrame>
+    <div className="flex h-full flex-col px-16 pb-10">
+      <div className="mb-8 w-full">
+        <StepIndicator steps={steps} currentStep={currentStep} onStepClick={goTo} />
       </div>
 
-      <aside className="flex flex-col gap-3">
-        <p className="text-label-sm font-medium uppercase tracking-wider text-neutral-500">
-          Etapas do fluxo
-        </p>
-        <ol className="flex flex-col gap-2.5">
-          {steps.map((step, i) => (
-            <li
-              key={step.id}
-              className="flex items-start gap-3 rounded-frame-inner border border-brand/10 bg-white px-4 py-3 shadow-card"
-            >
-              <span className="mt-0.5 inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-brand-subtle text-label-sm font-semibold text-brand">
-                {i + 1}
-              </span>
-              <div>
-                <p className="font-display text-body-md font-semibold text-neutral-900">
-                  {step.label}
-                </p>
-                {step.tooltip && (
-                  <p className="text-label-sm text-neutral-600">{step.tooltip}</p>
-                )}
+      <div className="grid flex-1 grid-cols-[280px_minmax(0,1fr)_280px] items-center gap-8">
+        <SolutionInfo solution={solution} />
+
+        <div className="flex flex-col items-center gap-6">
+          <div
+            className={cn(
+              "relative w-full",
+              frameMaxWidth(solution.device),
+            )}
+          >
+            <SolutionFrame device={solution.device}>
+              <div className="relative h-full w-full">
+                <LoadingBar visible={loading} />
+                <ScreenPlaceholder
+                  solutionName={solution.name}
+                  stepLabel={currentStepData?.label ?? ""}
+                />
+                <AnimatePresence>
+                  {currentStepData?.highlightArea && !loading && (
+                    <PulsingDot
+                      key={`${solutionId}-${currentStep}`}
+                      area={currentStepData.highlightArea}
+                    />
+                  )}
+                </AnimatePresence>
               </div>
-            </li>
-          ))}
-        </ol>
-      </aside>
-    </motion.div>
+            </SolutionFrame>
+          </div>
+        </div>
+
+        <CompanionsPanel companions={currentStepData?.companions ?? []} />
+      </div>
+
+      <div className="mt-8 flex items-end justify-between gap-6">
+        <FlowGuide
+          stepLabel={currentStepData ? `Etapa ${currentStep + 1} de ${steps.length}` : undefined}
+          message={currentStepData?.tooltip ?? currentStepData?.label ?? ""}
+          visible={!showCompletion && Boolean(currentStepData)}
+        />
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={prev}
+            disabled={isFirst || showCompletion}
+            aria-label="Etapa anterior"
+            className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-brand/10 bg-white text-brand shadow-card transition-opacity hover:bg-brand-ghost disabled:opacity-40"
+          >
+            <ArrowLeft size={22} strokeWidth={2.25} />
+          </button>
+          <button
+            type="button"
+            onClick={handleAdvance}
+            disabled={showCompletion}
+            aria-label={isLast ? "Concluir" : "Próxima etapa"}
+            className="inline-flex h-14 items-center gap-2 rounded-full bg-brand px-7 font-ui text-body-md font-semibold text-white shadow-brand transition-colors hover:bg-brand-light disabled:opacity-40"
+          >
+            {isLast ? "Concluir" : "Próxima etapa"}
+            <ArrowRight size={20} strokeWidth={2.25} />
+          </button>
+        </div>
+      </div>
+
+      <NotificationStack>
+        {notificationCompanion && !loading && (
+          <SimulatedNotification
+            id={`${solutionId}-${currentStep}`}
+            type={inferNotificationType(currentStepData?.label)}
+            title={currentStepData?.label ?? ""}
+            description={currentStepData?.tooltip}
+          />
+        )}
+      </NotificationStack>
+
+      <AnimatePresence>
+        {showCompletion && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35 }}
+            className="fixed inset-0 z-40 flex items-center justify-center bg-white/85 backdrop-blur-md"
+          >
+            <ConfirmationFeedback
+              title={`${solution.name} pronto`}
+              description={`Fluxo de ${steps.length} etapas concluído. Quer explorar outra solução?`}
+              primaryLabel="Voltar às soluções"
+              secondaryLabel="Refazer"
+              onPrimary={() => {
+                setShowCompletion(false);
+                goBack();
+              }}
+              onSecondary={() => {
+                reset();
+                setShowCompletion(false);
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
-function ScreenPlaceholder({ solutionName }: { solutionName: string }) {
+function SolutionInfo({ solution }: { solution: Solution }) {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-brand-ghost via-white to-brand-subtle/60 p-6 text-center">
-      <span className="h-2 w-12 rounded-full bg-brand/30" />
-      <p className="font-display text-body-md font-semibold text-brand">
-        {solutionName}
+    <aside>
+      <p className="text-label-sm font-medium uppercase tracking-wider text-brand">
+        {deviceLabel(solution.device)}
       </p>
-      <p className="max-w-[24ch] text-caption text-neutral-500">
-        Tela do mockup será implementada no Sprint 6
+      <h1 className="mt-1 font-display text-display-lg leading-tight text-neutral-900">
+        {solution.name}
+      </h1>
+      <p className="mt-3 text-body-md text-neutral-600">{solution.description}</p>
+      {solution.tags && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {solution.tags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full bg-brand-subtle px-3 py-1 text-caption font-medium text-brand"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </aside>
+  );
+}
+
+function CompanionsPanel({ companions }: { companions: string[] }) {
+  if (companions.length === 0) {
+    return (
+      <aside className="rounded-frame border border-dashed border-brand/20 bg-white/50 p-6">
+        <p className="text-caption font-medium uppercase tracking-wider text-neutral-400">
+          Companions
+        </p>
+        <p className="mt-2 text-label-sm text-neutral-500">
+          Esta etapa não traz elementos complementares.
+        </p>
+      </aside>
+    );
+  }
+  return (
+    <aside>
+      <p className="text-caption font-medium uppercase tracking-wider text-neutral-500">
+        Companions ativos
+      </p>
+      <ul className="mt-3 flex flex-col gap-2">
+        {companions.map((c) => (
+          <motion.li
+            key={c}
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="rounded-frame-inner border border-brand/10 bg-white px-4 py-3 shadow-card"
+          >
+            <span className="font-display text-body-md font-semibold text-neutral-900">
+              {c}
+            </span>
+            <p className="text-caption text-neutral-500">Sprint 5</p>
+          </motion.li>
+        ))}
+      </ul>
+    </aside>
+  );
+}
+
+function ScreenPlaceholder({
+  solutionName,
+  stepLabel,
+}: {
+  solutionName: string;
+  stepLabel: string;
+}) {
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-gradient-to-br from-brand-ghost via-white to-brand-subtle/60 p-6 text-center">
+      <span className="h-1.5 w-12 rounded-full bg-brand/30" />
+      <div>
+        <p className="font-display text-body-md font-semibold text-brand">
+          {solutionName}
+        </p>
+        {stepLabel && (
+          <p className="mt-1 text-label-sm text-neutral-600">{stepLabel}</p>
+        )}
+      </div>
+      <p className="mt-1 max-w-[28ch] text-caption text-neutral-400">
+        Tela do mockup será preenchida no Sprint 6
       </p>
     </div>
   );
+}
+
+function inferNotificationType(label?: string): "success" | "warning" | "info" {
+  if (!label) return "info";
+  const lower = label.toLowerCase();
+  if (lower.includes("alerta") || lower.includes("divergência") || lower.includes("recall")) {
+    return "warning";
+  }
+  if (
+    lower.includes("aprovado") ||
+    lower.includes("enviado") ||
+    lower.includes("publicado") ||
+    lower.includes("ativad") ||
+    lower.includes("confirm")
+  ) {
+    return "success";
+  }
+  return "info";
 }
 
 function deviceLabel(device: string): string {

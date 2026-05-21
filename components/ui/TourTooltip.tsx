@@ -1,9 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, MousePointer2 } from "lucide-react";
+import { ArrowRight, MousePointer2, X } from "lucide-react";
 import type { TourStep } from "@/data/solutions";
-import { cn } from "@/lib/cn";
 
 export interface TourTooltipProps {
   step: TourStep;
@@ -17,27 +16,29 @@ export interface TourTooltipProps {
   isLast: boolean;
 }
 
-const TOOLTIP_WIDTH = 340;
-const TOOLTIP_HEIGHT_ESTIMATE = 200;
-const TOOLTIP_GAP = 16;
+const TOOLTIP_WIDTH = 280;
+const TOOLTIP_HEIGHT_ESTIMATE = 140;
+const TOOLTIP_GAP = 14;
 const VIEWPORT_MARGIN = 16;
 
-type ArrowDirection = "top" | "bottom" | "none";
+type ArrowDirection = "top" | "bottom" | "left" | "right" | "none";
 
 interface Position {
   top: number;
   left: number;
   arrowDirection: ArrowDirection;
-  arrowLeft: number;
+  arrowOffset: number;
 }
 
 function computePosition(rect: DOMRect | null): Position {
   if (!rect || typeof window === "undefined") {
+    const w = typeof window !== "undefined" ? window.innerWidth : 1920;
+    const h = typeof window !== "undefined" ? window.innerHeight : 1080;
     return {
-      top: window?.innerHeight ? window.innerHeight / 2 - TOOLTIP_HEIGHT_ESTIMATE / 2 : 200,
-      left: window?.innerWidth ? window.innerWidth / 2 - TOOLTIP_WIDTH / 2 : 200,
+      top: h / 2 - TOOLTIP_HEIGHT_ESTIMATE / 2,
+      left: w / 2 - TOOLTIP_WIDTH / 2,
       arrowDirection: "none",
-      arrowLeft: TOOLTIP_WIDTH / 2,
+      arrowOffset: TOOLTIP_WIDTH / 2,
     };
   }
 
@@ -45,41 +46,58 @@ function computePosition(rect: DOMRect | null): Position {
   const vh = window.innerHeight;
 
   const targetCenterX = rect.left + rect.width / 2;
-  let left = targetCenterX - TOOLTIP_WIDTH / 2;
-  left = Math.max(
-    VIEWPORT_MARGIN,
-    Math.min(left, vw - TOOLTIP_WIDTH - VIEWPORT_MARGIN),
-  );
+  const targetCenterY = rect.top + rect.height / 2;
 
+  const spaceRight = vw - rect.right;
+  const spaceLeft = rect.left;
   const spaceBelow = vh - rect.bottom;
   const spaceAbove = rect.top;
 
-  let top: number;
-  let arrowDirection: ArrowDirection;
-  if (spaceBelow >= TOOLTIP_HEIGHT_ESTIMATE + TOOLTIP_GAP + VIEWPORT_MARGIN) {
+  // Prefer side placement when target is wide enough
+  // Order of preference: right, left, bottom, top
+  let top = 0;
+  let left = 0;
+  let arrowDirection: ArrowDirection = "none";
+  let arrowOffset = TOOLTIP_WIDTH / 2;
+
+  if (spaceRight >= TOOLTIP_WIDTH + TOOLTIP_GAP + VIEWPORT_MARGIN) {
+    left = rect.right + TOOLTIP_GAP;
+    top = targetCenterY - TOOLTIP_HEIGHT_ESTIMATE / 2;
+    arrowDirection = "left";
+    arrowOffset = Math.max(16, Math.min(targetCenterY - top, TOOLTIP_HEIGHT_ESTIMATE - 32));
+  } else if (spaceLeft >= TOOLTIP_WIDTH + TOOLTIP_GAP + VIEWPORT_MARGIN) {
+    left = rect.left - TOOLTIP_WIDTH - TOOLTIP_GAP;
+    top = targetCenterY - TOOLTIP_HEIGHT_ESTIMATE / 2;
+    arrowDirection = "right";
+    arrowOffset = Math.max(16, Math.min(targetCenterY - top, TOOLTIP_HEIGHT_ESTIMATE - 32));
+  } else if (spaceBelow >= TOOLTIP_HEIGHT_ESTIMATE + TOOLTIP_GAP + VIEWPORT_MARGIN) {
     top = rect.bottom + TOOLTIP_GAP;
+    left = targetCenterX - TOOLTIP_WIDTH / 2;
     arrowDirection = "top";
+    arrowOffset = Math.max(16, Math.min(targetCenterX - left, TOOLTIP_WIDTH - 32));
   } else if (spaceAbove >= TOOLTIP_HEIGHT_ESTIMATE + TOOLTIP_GAP + VIEWPORT_MARGIN) {
     top = rect.top - TOOLTIP_HEIGHT_ESTIMATE - TOOLTIP_GAP;
+    left = targetCenterX - TOOLTIP_WIDTH / 2;
     arrowDirection = "bottom";
+    arrowOffset = Math.max(16, Math.min(targetCenterX - left, TOOLTIP_WIDTH - 32));
   } else {
-    // Fallback: anchor on the side with more space, clamped
+    // No good spot; center but don't draw arrow
     top = Math.max(
       VIEWPORT_MARGIN,
-      Math.min(
-        rect.top + rect.height / 2 - TOOLTIP_HEIGHT_ESTIMATE / 2,
-        vh - TOOLTIP_HEIGHT_ESTIMATE - VIEWPORT_MARGIN,
-      ),
+      Math.min(targetCenterY - TOOLTIP_HEIGHT_ESTIMATE / 2, vh - TOOLTIP_HEIGHT_ESTIMATE - VIEWPORT_MARGIN),
+    );
+    left = Math.max(
+      VIEWPORT_MARGIN,
+      Math.min(targetCenterX - TOOLTIP_WIDTH / 2, vw - TOOLTIP_WIDTH - VIEWPORT_MARGIN),
     );
     arrowDirection = "none";
   }
 
-  const arrowLeft = Math.max(
-    16,
-    Math.min(targetCenterX - left, TOOLTIP_WIDTH - 32),
-  );
+  // Clamp to viewport
+  left = Math.max(VIEWPORT_MARGIN, Math.min(left, vw - TOOLTIP_WIDTH - VIEWPORT_MARGIN));
+  top = Math.max(VIEWPORT_MARGIN, Math.min(top, vh - TOOLTIP_HEIGHT_ESTIMATE - VIEWPORT_MARGIN));
 
-  return { top, left, arrowDirection, arrowLeft };
+  return { top, left, arrowDirection, arrowOffset };
 }
 
 export function TourTooltip({
@@ -88,95 +106,79 @@ export function TourTooltip({
   totalSteps,
   targetRect,
   onNext,
-  onPrev,
   onSkip,
-  isFirst,
   isLast,
 }: TourTooltipProps) {
   const pos = computePosition(targetRect);
   const requiresInteraction = step.requiresInteraction === true;
-  const actionLabel =
-    step.actionLabel ??
-    (isLast
-      ? "Concluir"
-      : requiresInteraction
-        ? "Toque no elemento destacado"
-        : "Próximo");
+  const showNextButton = !requiresInteraction || isLast;
+  const actionLabel = step.actionLabel ?? (isLast ? "Concluir" : "Próximo");
 
   return (
     <motion.div
       key={step.id}
       role="dialog"
       aria-live="polite"
-      initial={{
-        opacity: 0,
-        y: pos.arrowDirection === "top" ? -8 : pos.arrowDirection === "bottom" ? 8 : 0,
-        scale: 0.96,
-      }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.96 }}
-      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
       style={{
         position: "fixed",
         top: pos.top,
         left: pos.left,
         width: TOOLTIP_WIDTH,
       }}
-      className="pointer-events-auto z-[10000] rounded-2xl bg-white p-6 shadow-[0_20px_60px_rgba(0,0,0,0.18),0_4px_16px_rgba(0,0,0,0.08)]"
+      className="pointer-events-auto z-[10000] rounded-2xl bg-white p-4 shadow-[0_16px_48px_rgba(0,0,0,0.18),0_2px_12px_rgba(0,0,0,0.08)]"
     >
-      <TooltipArrow direction={pos.arrowDirection} leftOffset={pos.arrowLeft} />
+      <TooltipArrow direction={pos.arrowDirection} offset={pos.arrowOffset} />
 
-      <div className="flex items-center justify-between">
-        <span className="flex items-center gap-2 font-ui text-[13px] font-semibold text-brand">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand" />
-          Passo {stepIndex + 1} de {totalSteps}
-        </span>
+          <span className="font-ui text-[11px] font-semibold uppercase tracking-wider text-brand">
+            {stepIndex + 1} / {totalSteps}
+          </span>
+        </div>
         <button
           type="button"
           onClick={onSkip}
-          className="font-ui text-[13px] font-medium text-neutral-500 transition-colors hover:text-neutral-800"
+          aria-label="Pular tour"
+          className="-mr-1 -mt-1 flex h-6 w-6 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
         >
-          Pular
+          <X size={13} strokeWidth={2.25} />
         </button>
       </div>
 
-      <h3 className="mt-3 font-display text-[18px] font-semibold leading-tight text-neutral-900">
+      <h3 className="mt-2 font-display text-[15px] font-semibold leading-snug text-neutral-900">
         {step.title}
       </h3>
-      <p className="mt-2 font-ui text-[14px] leading-[1.6] text-neutral-600">
+      <p className="mt-1 font-ui text-[12.5px] leading-snug text-neutral-600">
         {step.description}
       </p>
 
-      <div className="mt-5 flex items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={onPrev}
-          disabled={isFirst}
-          aria-label="Etapa anterior"
-          className={cn(
-            "inline-flex h-10 items-center gap-1.5 rounded-full border border-brand/15 bg-white px-4 font-ui text-[13px] font-semibold text-brand transition-colors",
-            isFirst
-              ? "cursor-not-allowed opacity-40"
-              : "hover:bg-brand-ghost",
-          )}
-        >
-          <ArrowLeft size={14} strokeWidth={2.25} />
-          Anterior
-        </button>
-
+      <div className="mt-3 flex items-center justify-between">
         {requiresInteraction && !isLast ? (
-          <span className="inline-flex h-10 items-center gap-2 rounded-full bg-brand-subtle px-4 font-ui text-[13px] font-semibold text-brand">
-            <MousePointer2 size={14} strokeWidth={2.25} />
-            {actionLabel}
-          </span>
+          <motion.span
+            animate={{ x: [0, 2, 0] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+            className="inline-flex items-center gap-1.5 font-ui text-[11px] font-semibold uppercase tracking-wider text-brand"
+          >
+            <MousePointer2 size={13} strokeWidth={2.25} />
+            Toque para continuar
+          </motion.span>
         ) : (
+          <span />
+        )}
+
+        {showNextButton && (
           <button
             type="button"
             onClick={onNext}
-            className="inline-flex h-10 items-center gap-1.5 rounded-full bg-brand px-5 font-ui text-[13px] font-semibold text-white shadow-brand transition-colors hover:bg-brand-light"
+            className="inline-flex h-8 items-center gap-1 rounded-full bg-brand px-3.5 font-ui text-[12px] font-semibold text-white shadow-brand transition-colors hover:bg-brand-light"
           >
             {actionLabel}
-            <ArrowRight size={14} strokeWidth={2.25} />
+            <ArrowRight size={12} strokeWidth={2.5} />
           </button>
         )}
       </div>
@@ -186,32 +188,72 @@ export function TourTooltip({
 
 function TooltipArrow({
   direction,
-  leftOffset,
+  offset,
 }: {
   direction: ArrowDirection;
-  leftOffset: number;
+  offset: number;
 }) {
   if (direction === "none") return null;
-  const isTop = direction === "top";
+  const size = 10;
 
-  return (
-    <span
-      aria-hidden
-      className="absolute"
-      style={{
-        top: isTop ? -7 : undefined,
-        bottom: !isTop ? -7 : undefined,
-        left: leftOffset - 7,
-        width: 14,
-        height: 14,
-        background: "white",
-        transform: "rotate(45deg)",
-        boxShadow: isTop
-          ? "-2px -2px 4px rgba(0,0,0,0.04)"
-          : "2px 2px 4px rgba(0,0,0,0.04)",
-      }}
-    />
-  );
+  const baseStyle: React.CSSProperties = {
+    position: "absolute",
+    width: size,
+    height: size,
+    background: "white",
+    transform: "rotate(45deg)",
+  };
+
+  switch (direction) {
+    case "top":
+      return (
+        <span
+          aria-hidden
+          style={{
+            ...baseStyle,
+            top: -size / 2,
+            left: offset - size / 2,
+            boxShadow: "-1px -1px 2px rgba(0,0,0,0.04)",
+          }}
+        />
+      );
+    case "bottom":
+      return (
+        <span
+          aria-hidden
+          style={{
+            ...baseStyle,
+            bottom: -size / 2,
+            left: offset - size / 2,
+            boxShadow: "1px 1px 2px rgba(0,0,0,0.04)",
+          }}
+        />
+      );
+    case "left":
+      return (
+        <span
+          aria-hidden
+          style={{
+            ...baseStyle,
+            left: -size / 2,
+            top: offset - size / 2,
+            boxShadow: "-1px 1px 2px rgba(0,0,0,0.04)",
+          }}
+        />
+      );
+    case "right":
+      return (
+        <span
+          aria-hidden
+          style={{
+            ...baseStyle,
+            right: -size / 2,
+            top: offset - size / 2,
+            boxShadow: "1px -1px 2px rgba(0,0,0,0.04)",
+          }}
+        />
+      );
+  }
 }
 
 export { TOOLTIP_WIDTH };

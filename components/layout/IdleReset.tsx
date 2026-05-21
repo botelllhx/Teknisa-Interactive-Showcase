@@ -32,14 +32,14 @@ export function IdleReset() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-white/90 backdrop-blur-md"
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="pointer-events-none fixed inset-0 z-[10100] flex items-center justify-center bg-white/92 backdrop-blur-md"
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.94, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ scale: 0.96, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col items-center gap-8 text-center"
           >
             <motion.div

@@ -47,7 +47,7 @@ export function ShowcaseNav() {
         </button>
 
         <Image
-          src="/teknisa-logo.svg"
+          src="/logo-teknisa.svg"
           alt="Teknisa"
           width={120}
           height={23}

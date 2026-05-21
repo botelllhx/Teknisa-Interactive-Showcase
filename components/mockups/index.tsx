@@ -19,6 +19,9 @@ import { PortalFuncionarioMockup } from "./pessoas-rh/PortalFuncionario";
 import { MesaOperacoesMockup } from "./pessoas-rh/MesaOperacoes";
 import { AnalisePreditivaMockup } from "./pessoas-rh/AnalisePreditiva";
 import { AssistenteRegrasMockup } from "./pessoas-rh/AssistenteRegras";
+import { MercadumMockup } from "./supply-compras/Mercadum";
+import { AppComercialMockup } from "./supply-compras/AppComercial";
+import { CRMPremiumMockup } from "./crm/CRMPremium";
 
 interface MockupProps {
   step: number;
@@ -46,6 +49,11 @@ const MOCKUPS: Record<string, ComponentType<MockupProps>> = {
   "mesa-operacoes": MesaOperacoesMockup,
   "analise-preditiva": AnalisePreditivaMockup,
   "assistente-regras": AssistenteRegrasMockup,
+
+  mercadum: MercadumMockup,
+  "app-comercial": AppComercialMockup,
+
+  "crm-premium": CRMPremiumMockup,
 };
 
 export function getMockup(solutionId: string): ComponentType<MockupProps> | null {

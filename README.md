@@ -371,8 +371,8 @@ O projeto é entregue em sprints incrementais; cada sprint termina com tela nave
 | **2** | HOME — grade 4×2 dos 8 grupos, grade de soluções, breadcrumb nav, idle reset | ✅ |
 | **3** | Device frames — Desktop, Mobile, Tablet, POSTerminal, Kiosk | ✅ |
 | **4** | UI de fluxo — PulsingDot, StepIndicator, FlowGuide, SimulatedNotification, LoadingBar, ConfirmationFeedback | ✅ |
-| **5** | Companions — POSCardReader, OrderTicket, KitchenDisplay, MiniDashboard, StockIndicator, EmployeeCard, FiscalBadge | 🔜 |
-| **6** | Mockups por grupo (prioridade comercial: Frente de Loja → TecFood → ERP → RH → Supply → CRM) | 🔜 |
+| **5** | Companions — POSCardReader, OrderTicket, KitchenDisplay, MiniDashboard, StockIndicator, EmployeeCard, FiscalBadge | ✅ |
+| **6** | Mockups por grupo (21 soluções: Frente de Loja, TecFood, ERP, RH, Supply, CRM) | ✅ |
 | **7** | Refinamento — timing, performance, dados, touch targets, idle | 🔜 |
 
 ---

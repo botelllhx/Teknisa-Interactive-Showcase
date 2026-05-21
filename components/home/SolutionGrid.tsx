@@ -24,12 +24,12 @@ export function SolutionGrid({ segmentId }: SolutionGridProps) {
   const items = getSolutionsBySegment(segmentId);
 
   return (
-    <div className="flex h-full flex-col px-16 pb-16">
+    <div className="flex h-full flex-col px-12 pb-10 pt-2">
       <motion.header
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="mb-10 flex items-end justify-between"
+        className="mb-6 flex items-end justify-between"
       >
         <div className="flex items-center gap-6">
           <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-brand text-white shadow-brand">
@@ -54,7 +54,7 @@ export function SolutionGrid({ segmentId }: SolutionGridProps) {
         initial="hidden"
         animate="visible"
         className={cn(
-          "grid gap-6",
+          "grid gap-5",
           items.length <= 2
             ? "grid-cols-2"
             : items.length === 3

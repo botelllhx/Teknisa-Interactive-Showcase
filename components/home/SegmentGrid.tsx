@@ -16,7 +16,7 @@ export function SegmentGrid() {
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="grid grid-cols-4 grid-rows-2 gap-6 px-16 pb-16"
+      className="grid grid-cols-4 grid-rows-2 gap-5 px-12 pb-10"
     >
       {segments.map((segment) => (
         <SegmentCard

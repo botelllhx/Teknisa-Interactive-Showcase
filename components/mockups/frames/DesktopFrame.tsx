@@ -22,8 +22,12 @@ export function DesktopFrame({
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className={cn("relative flex flex-col items-center", className)}
     >
-      <div className="w-full rounded-frame bg-frame-body p-3 shadow-frame">
-        <div className="rounded-frame-inner bg-frame-screen p-1">
+      <div className="relative w-full rounded-2xl bg-gradient-to-b from-frame-body to-[#d8dbe2] p-[14px] shadow-[0_32px_80px_rgba(0,0,0,0.12),0_8px_24px_rgba(0,0,0,0.06)]">
+        <span
+          aria-hidden
+          className="absolute left-1/2 top-1.5 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-neutral-300"
+        />
+        <div className="rounded-xl bg-frame-screen p-[3px]">
           <div className="flex h-7 items-center gap-1.5 rounded-t-md bg-frame-body px-3">
             <span className="h-2.5 w-2.5 rounded-full bg-neutral-300" />
             <span className="h-2.5 w-2.5 rounded-full bg-neutral-300" />
@@ -40,8 +44,8 @@ export function DesktopFrame({
           </div>
         </div>
       </div>
-      <div className="mt-2 h-3 w-32 rounded-b-2xl bg-frame-body shadow-[0_4px_10px_rgba(0,0,0,0.08)]" />
-      <div className="h-2 w-48 rounded-b-3xl bg-frame-bezel/70" />
+      <div className="relative -mt-px h-6 w-32 rounded-b-[14px] bg-gradient-to-b from-[#d8dbe2] to-frame-body" />
+      <div className="h-1.5 w-56 rounded-full bg-frame-bezel/70 shadow-[0_6px_16px_rgba(0,0,0,0.08)]" />
     </motion.div>
   );
 }

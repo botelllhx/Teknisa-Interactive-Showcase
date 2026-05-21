@@ -24,12 +24,21 @@ export function TabletFrame({
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className={cn("relative", className)}
     >
-      <div className="rounded-frame bg-frame-body p-3 shadow-frame">
+      <span aria-hidden className="absolute -right-1 top-16 h-12 w-1 rounded-r-full bg-frame-bezel" />
+      <div className="rounded-3xl bg-gradient-to-b from-frame-body to-[#d8dbe2] p-[14px] shadow-[0_32px_80px_rgba(0,0,0,0.12),0_8px_24px_rgba(0,0,0,0.06)]">
         <div
-          className="relative overflow-hidden rounded-[14px] bg-white"
+          className="relative overflow-hidden rounded-2xl bg-white"
           style={{ aspectRatio: aspect }}
         >
-          <span className="absolute left-1/2 top-2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-neutral-300" />
+          <span
+            aria-hidden
+            className={cn(
+              "absolute h-1.5 w-1.5 rounded-full bg-neutral-300",
+              orientation === "portrait"
+                ? "left-1/2 top-2 -translate-x-1/2"
+                : "left-2 top-1/2 -translate-y-1/2",
+            )}
+          />
           {children}
         </div>
       </div>

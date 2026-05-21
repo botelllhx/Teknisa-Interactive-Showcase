@@ -53,11 +53,11 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
     <div className="relative h-[calc(100vh-56px)] w-full overflow-hidden bg-surface-raised">
       <div
         className={cn(
-          "grid h-full w-full gap-6 px-8 py-6",
+          "grid h-full w-full gap-5 px-6 py-4",
           hasCompanions
             ? isMobileFrame
               ? "grid-rows-[1fr_auto]"
-              : "grid-cols-[1fr_300px]"
+              : "grid-cols-[1fr_280px]"
             : "grid-cols-1",
         )}
       >

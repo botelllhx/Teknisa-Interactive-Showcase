@@ -7,7 +7,7 @@ export const crmPremiumFlow: TourStep[] = [
     placement: "right",
     title: "Indicadores de fidelidade",
     description:
-      "Base ativa, LTV médio, recompra. Métricas que mostram saúde do relacionamento — não apenas vendas no caixa.",
+      "Base ativa, LTV médio, recompra. Métricas que mostram saúde do relacionamento, não apenas vendas no caixa.",
     companions: ["MiniDashboard"],
   },
   {
@@ -34,7 +34,7 @@ export const crmPremiumFlow: TourStep[] = [
     placement: "left",
     title: "Oferta personalizada",
     description:
-      "Desconto, brinde, frete — combinação por segmento. IA estima alcance de 1.842 clientes para a campanha atual.",
+      "Desconto, brinde, frete, combinação por segmento. IA estima alcance de 1.842 clientes para a campanha atual.",
     requiresInteraction: true,
     actionLabel: "Ativar campanha",
     companions: ["MiniDashboard"],
@@ -45,7 +45,7 @@ export const crmPremiumFlow: TourStep[] = [
     placement: "left",
     title: "Campanha ativada e monitorada",
     description:
-      "Funil em tempo real: enviadas, abertas, resgatadas. Resultado mensurável — sem 'achismo' de retorno.",
+      "Funil em tempo real: enviadas, abertas, resgatadas. Resultado mensurável, sem 'achismo' de retorno.",
     companions: ["MiniDashboard", "SimulatedNotification"],
   },
 ];

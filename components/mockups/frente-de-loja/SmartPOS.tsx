@@ -1,8 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
-import Image from "next/image";
+import { useState, useEffect, useMemo } from "react";
 import {
   Home,
   ShoppingBasket,
@@ -13,46 +12,221 @@ import {
   Trash2,
   Check,
   ChevronRight,
+  CreditCard,
+  Smartphone,
+  Banknote,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { useTourLive } from "@/lib/tourState";
 
 interface SmartPOSProps {
   step: number;
 }
 
-const CATEGORIES = [
+interface Category {
+  id: string;
+  label: string;
+  bg: string;
+  text: string;
+  border?: string;
+}
+
+const CATEGORIES: Category[] = [
   { id: "ref", label: "REFRIGERANTES", bg: "#ef4444", text: "white" },
   { id: "sucos", label: "SUCOS", bg: "#ef4444", text: "white" },
   { id: "combos", label: "COMBOS", bg: "#ef4444", text: "white" },
-  { id: "pizzas", label: "PIZZAS", bg: "white", text: "#16a34a", border: "#16a34a" },
+  {
+    id: "pizzas",
+    label: "PIZZAS",
+    bg: "white",
+    text: "#16a34a",
+    border: "#16a34a",
+  },
   { id: "hamb", label: "HAMBURGUERS", bg: "#16a34a", text: "white" },
   { id: "sobre", label: "SOBREMESAS", bg: "#16a34a", text: "white" },
   { id: "kg", label: "PRODUTOS NO KG", bg: "#16a34a", text: "white" },
   { id: "g9", label: "GRUPO 9", bg: "#7d8aa3", text: "white" },
 ];
 
-const OBS_OPTIONS = ["CORTE TRADICIONAL", "CORTE PETISCOS (CUBINHOS)"];
-const ADD_OPTIONS = [
-  { id: "queijo", label: "+ QUEIJO", price: 4.0 },
-  { id: "bacon", label: "+ BACON", price: 5.0 },
+interface ProductOption {
+  id: string;
+  name: string;
+  price: number;
+}
+
+const PRODUCT_FOR_CATEGORY: Record<string, ProductOption> = {
+  pizzas: { id: "pizza-moda", name: "Pizza A Moda P", price: 32.0 },
+  ref: { id: "coca", name: "Coca-Cola Zero LT", price: 7.0 },
+  sucos: { id: "suco-laranja", name: "Suco de Laranja Jarra", price: 12.5 },
+  combos: { id: "combo-xtudo", name: "Combo X-Tudo + Coca-Zero", price: 36.5 },
+  hamb: { id: "hamb-classic", name: "X-Burguer Classic", price: 28.0 },
+  sobre: { id: "petit", name: "Petit Gateau", price: 19.0 },
+  kg: { id: "buffet", name: "Self-service kg", price: 78.9 },
+  g9: { id: "extra", name: "Item Avulso G9", price: 12.0 },
+};
+
+const ADDONS: ProductOption[] = [
+  { id: "queijo", name: "+ Queijo", price: 4.0 },
+  { id: "bacon", name: "+ Bacon", price: 5.0 },
 ];
 
+const OBS_OPTIONS = ["Corte tradicional", "Corte petiscos (cubinhos)"];
+
+interface CartItem {
+  id: string;
+  name: string;
+  unit: number;
+  qty: number;
+  addons: string[];
+  obs: string;
+}
+
+type PaymentMethod = "credito" | "debito" | "pix" | "dinheiro";
+
+const PAYMENT_LABELS: Record<PaymentMethod, string> = {
+  credito: "Crédito",
+  debito: "Débito",
+  pix: "Pix",
+  dinheiro: "Dinheiro",
+};
+
 export function SmartPOSMockup({ step }: SmartPOSProps) {
+  const [selectedCategory, setSelectedCategory] = useState<string>("pizzas");
+  const [obs, setObs] = useState<string>(OBS_OPTIONS[0]);
+  const [addons, setAddons] = useState<Set<string>>(new Set(["queijo"]));
+  const [detailQty, setDetailQty] = useState(1);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [payment, setPayment] = useState<PaymentMethod>("credito");
+
+  const product = PRODUCT_FOR_CATEGORY[selectedCategory] ?? PRODUCT_FOR_CATEGORY.pizzas;
+  const addonsTotal = ADDONS.filter((a) => addons.has(a.id)).reduce(
+    (s, a) => s + a.price,
+    0,
+  );
+  const unitPrice = product.price + addonsTotal;
+  const detailTotal = unitPrice * detailQty;
+
+  const cartTotal = useMemo(
+    () => cart.reduce((s, i) => s + i.unit * i.qty, 0),
+    [cart],
+  );
+  const cartCount = useMemo(
+    () => cart.reduce((s, i) => s + i.qty, 0),
+    [cart],
+  );
+
+  // Sync to tour state so tooltips can reference real choices
+  const patchLive = useTourLive((s) => s.patch);
+  useEffect(() => {
+    patchLive({
+      selectedItemName: product.name,
+      selectedItemPrice: unitPrice,
+      cartCount,
+      cartTotal,
+      cartItems: cart,
+      paymentMethod: payment,
+      paymentLabel: PAYMENT_LABELS[payment],
+      selectedAddons: Array.from(addons),
+    });
+  }, [
+    product.name,
+    unitPrice,
+    cartCount,
+    cartTotal,
+    cart,
+    payment,
+    addons,
+    patchLive,
+  ]);
+
+  const toggleAddon = (id: string) => {
+    setAddons((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const addToCart = () => {
+    const id = `${product.id}-${Date.now()}`;
+    setCart((prev) => [
+      ...prev,
+      {
+        id,
+        name: product.name,
+        unit: unitPrice,
+        qty: detailQty,
+        addons: Array.from(addons),
+        obs,
+      },
+    ]);
+    setDetailQty(1);
+  };
+
+  const updateCartQty = (id: string, delta: number) => {
+    setCart((prev) =>
+      prev
+        .map((i) =>
+          i.id === id ? { ...i, qty: Math.max(0, i.qty + delta) } : i,
+        )
+        .filter((i) => i.qty > 0),
+    );
+  };
+  const removeCartItem = (id: string) => {
+    setCart((prev) => prev.filter((i) => i.id !== id));
+  };
+
   return (
-    <div className="flex h-full w-full flex-col bg-[#f5f6f8] text-neutral-800">
-      {step === 0 && <CategoryGrid />}
-      {step === 1 && <ProductDetailView />}
-      {step === 2 && <CartView />}
-      {step === 3 && <PaymentTapView />}
+    <div className="flex h-full w-full flex-col bg-[#f5f6f8] text-neutral-800 font-ui">
+      {step === 0 && (
+        <CategoryGrid
+          selected={selectedCategory}
+          onSelect={setSelectedCategory}
+        />
+      )}
+      {step === 1 && (
+        <ProductDetailView
+          product={product}
+          obs={obs}
+          addons={addons}
+          qty={detailQty}
+          total={detailTotal}
+          onSetObs={setObs}
+          onToggleAddon={toggleAddon}
+          onSetQty={setDetailQty}
+          onAddToCart={addToCart}
+        />
+      )}
+      {step === 2 && (
+        <CartView
+          items={cart}
+          total={cartTotal}
+          count={cartCount}
+          onUpdate={updateCartQty}
+          onRemove={removeCartItem}
+        />
+      )}
+      {step === 3 && (
+        <PaymentSelectView
+          payment={payment}
+          onChange={setPayment}
+          total={cartTotal}
+        />
+      )}
       {step >= 4 && <SuccessScreen />}
       {step !== 4 && <BottomNav step={step} />}
     </div>
   );
 }
 
-function CategoryGrid() {
-  const [selected, setSelected] = useState<string>("pizzas");
-
+function CategoryGrid({
+  selected,
+  onSelect,
+}: {
+  selected: string;
+  onSelect: (id: string) => void;
+}) {
   return (
     <div className="flex flex-1 flex-col overflow-hidden p-3">
       <div className="grid flex-1 grid-cols-2 gap-2 content-start">
@@ -63,13 +237,18 @@ function CategoryGrid() {
             <motion.button
               key={c.id}
               whileTap={{ scale: 0.97 }}
-              onClick={() => setSelected(c.id)}
+              onClick={() => onSelect(c.id)}
               data-tour={isPizzaTarget ? "smartpos-catalog-item" : undefined}
-              className="flex h-14 items-center justify-center rounded-md font-display text-[12px] font-bold text-center px-2 transition-shadow"
+              className="flex h-16 items-center justify-center rounded-md font-ui text-[12px] font-bold text-center px-2 transition-shadow"
               style={{
-                background: active && c.bg === "white" ? "#f0fdf4" : c.bg,
+                background:
+                  active && c.bg === "white" ? "#f0fdf4" : c.bg,
                 color: c.text,
-                border: c.border ? `2px solid ${c.border}` : active && c.bg !== "white" ? "2px solid white" : "none",
+                border: c.border
+                  ? `2px solid ${c.border}`
+                  : active && c.bg !== "white"
+                    ? "2px solid white"
+                    : "none",
                 boxShadow: active
                   ? "0 4px 12px rgba(0,0,0,0.10), inset 0 0 0 2px rgba(255,255,255,0.2)"
                   : "0 1px 2px rgba(0,0,0,0.04)",
@@ -82,17 +261,17 @@ function CategoryGrid() {
       </div>
 
       <div className="mt-2 grid grid-cols-2 gap-2">
-        <button className="flex h-10 items-center justify-center gap-1.5 rounded-md bg-white text-brand shadow-card hover:bg-brand-ghost">
+        <button className="flex h-11 items-center justify-center gap-1.5 rounded-md bg-white text-brand shadow-card hover:bg-brand-ghost">
           <span className="grid h-3 w-3 grid-cols-2 gap-px">
             <span className="bg-brand" />
             <span className="bg-brand" />
             <span className="bg-brand" />
             <span className="bg-brand" />
           </span>
-          <span className="font-display text-[12px] font-bold">TODOS</span>
+          <span className="font-ui text-[13px] font-bold">TODOS</span>
         </button>
-        <button className="flex h-10 items-center justify-center gap-1.5 rounded-md bg-white text-brand shadow-card hover:bg-brand-ghost">
-          <span className="font-display text-[12px] font-bold">PRÓXIMO</span>
+        <button className="flex h-11 items-center justify-center gap-1.5 rounded-md bg-white text-brand shadow-card hover:bg-brand-ghost">
+          <span className="font-ui text-[13px] font-bold">PRÓXIMO</span>
           <ChevronRight size={14} strokeWidth={2.5} />
         </button>
       </div>
@@ -100,36 +279,27 @@ function CategoryGrid() {
   );
 }
 
-function ProductDetailView() {
-  const [obs, setObs] = useState<string>(OBS_OPTIONS[0]);
-  const [addons, setAddons] = useState<Set<string>>(new Set(["queijo"]));
-  const [retirar, setRetirar] = useState<Set<string>>(new Set());
-  const [qty, setQty] = useState(1);
-
-  const toggleAddon = (id: string) => {
-    setAddons((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-  const toggleRetirar = (l: string) => {
-    setRetirar((prev) => {
-      const next = new Set(prev);
-      if (next.has(l)) next.delete(l);
-      else next.add(l);
-      return next;
-    });
-  };
-
-  const base = 32.0;
-  const addonTotal = ADD_OPTIONS.filter((a) => addons.has(a.id)).reduce(
-    (s, a) => s + a.price,
-    0,
-  );
-  const total = (base + addonTotal) * qty;
-
+function ProductDetailView({
+  product,
+  obs,
+  addons,
+  qty,
+  total,
+  onSetObs,
+  onToggleAddon,
+  onSetQty,
+  onAddToCart,
+}: {
+  product: ProductOption;
+  obs: string;
+  addons: Set<string>;
+  qty: number;
+  total: number;
+  onSetObs: (v: string) => void;
+  onToggleAddon: (id: string) => void;
+  onSetQty: (v: number) => void;
+  onAddToCart: () => void;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -138,14 +308,14 @@ function ProductDetailView() {
       transition={{ duration: 0.2 }}
       className="flex flex-1 flex-col overflow-hidden"
     >
-      <div className="flex h-10 items-center justify-center bg-brand">
-        <p className="font-display text-[13px] font-bold tracking-wider text-white">
-          PIZZA A MODA P
+      <div className="flex h-11 items-center justify-center bg-brand">
+        <p className="font-ui text-[14px] font-bold tracking-wider text-white">
+          {product.name.toUpperCase()}
         </p>
       </div>
 
       <div className="flex-1 overflow-y-auto p-3">
-        <p className="font-display text-[11px] font-bold uppercase tracking-wider text-neutral-700">
+        <p className="font-ui text-[12px] font-bold uppercase tracking-wider text-neutral-700">
           Observações
         </p>
         <div data-tour="smartpos-qty" className="mt-1.5 grid grid-cols-2 gap-2">
@@ -155,9 +325,9 @@ function ProductDetailView() {
               <motion.button
                 key={o}
                 whileTap={{ scale: 0.96 }}
-                onClick={() => setObs(o)}
+                onClick={() => onSetObs(o)}
                 className={cn(
-                  "flex h-12 items-center justify-center rounded-md px-1.5 text-center font-display text-[10px] font-bold leading-tight transition-colors",
+                  "flex h-12 items-center justify-center rounded-md px-1.5 text-center font-ui text-[11px] font-bold leading-tight transition-colors",
                   active
                     ? "bg-brand text-white shadow-brand"
                     : "border-2 border-brand bg-white text-brand hover:bg-brand-ghost",
@@ -169,153 +339,90 @@ function ProductDetailView() {
           })}
         </div>
 
-        <p className="mt-3 font-display text-[11px] font-bold uppercase tracking-wider text-neutral-700">
+        <p className="mt-3 font-ui text-[12px] font-bold uppercase tracking-wider text-neutral-700">
           Adicionais
         </p>
         <div className="mt-1.5 grid grid-cols-2 gap-2">
-          {ADD_OPTIONS.map((a) => {
+          {ADDONS.map((a) => {
             const active = addons.has(a.id);
             return (
               <motion.button
                 key={a.id}
                 whileTap={{ scale: 0.96 }}
-                onClick={() => toggleAddon(a.id)}
+                onClick={() => onToggleAddon(a.id)}
                 className={cn(
-                  "flex h-10 items-center justify-center gap-1.5 rounded-md font-display text-[11px] font-bold transition-colors",
+                  "flex h-11 items-center justify-center gap-1.5 rounded-md font-ui text-[12px] font-bold transition-colors",
                   active
                     ? "bg-brand text-white shadow-brand"
                     : "border-2 border-brand bg-white text-brand hover:bg-brand-ghost",
                 )}
               >
-                {a.label}
-                <span className="text-[9px] opacity-80">
+                {a.name}
+                <span className="text-[10px] opacity-80">
                   +R${a.price.toFixed(2).replace(".", ",")}
                 </span>
               </motion.button>
             );
           })}
         </div>
-
-        <p className="mt-3 font-display text-[11px] font-bold uppercase tracking-wider text-neutral-700">
-          Personalização
-        </p>
-        <div className="mt-1.5 grid grid-cols-2 gap-2">
-          {["RETIRAR 1", "RETIRAR 2", "RETIRAR 3"].map((l) => {
-            const active = retirar.has(l);
-            return (
-              <motion.button
-                key={l}
-                whileTap={{ scale: 0.96 }}
-                onClick={() => toggleRetirar(l)}
-                className={cn(
-                  "flex h-10 items-center justify-center rounded-md font-display text-[11px] font-bold transition-colors",
-                  active
-                    ? "bg-brand text-white shadow-brand"
-                    : "bg-[#9aa3b3] text-white hover:bg-[#7d8aa3]",
-                )}
-              >
-                {l}
-              </motion.button>
-            );
-          })}
-        </div>
-
-        <p className="mt-3 font-display text-[11px] font-bold uppercase tracking-wider text-neutral-700">
-          Observação
-        </p>
-        <input
-          type="text"
-          placeholder="Digite aqui a observação"
-          className="mt-1.5 w-full rounded-md border border-neutral-200 bg-white px-2 py-1.5 text-[11px] text-neutral-700"
-        />
       </div>
 
-      <div className="flex items-center gap-2 border-t border-neutral-100 bg-white p-2">
+      <div className="flex items-center gap-2 border-t border-neutral-100 bg-white p-2.5">
         <div className="flex items-center gap-1">
           <button
             type="button"
-            onClick={() => setQty(Math.max(1, qty - 1))}
-            className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-white"
+            onClick={() => onSetQty(Math.max(1, qty - 1))}
+            className="flex h-9 w-9 items-center justify-center rounded-md bg-brand text-white"
           >
-            <Minus size={12} strokeWidth={2.5} />
+            <Minus size={13} strokeWidth={2.5} />
           </button>
           <motion.span
             key={qty}
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
-            className="w-5 text-center font-display text-[12px] font-bold"
+            className="w-6 text-center font-ui text-[14px] font-bold"
           >
             {qty}
           </motion.span>
           <button
             type="button"
-            onClick={() => setQty(qty + 1)}
-            className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-white"
+            onClick={() => onSetQty(qty + 1)}
+            className="flex h-9 w-9 items-center justify-center rounded-md bg-brand text-white"
           >
-            <Plus size={12} strokeWidth={2.5} />
+            <Plus size={13} strokeWidth={2.5} />
           </button>
         </div>
-        <button
+        <motion.button
           type="button"
-          className="flex flex-1 items-center justify-between rounded-md bg-brand px-3 py-2 text-white shadow-brand"
+          whileTap={{ scale: 0.97 }}
+          onClick={onAddToCart}
+          className="flex flex-1 items-center justify-between rounded-md bg-brand px-3 py-2.5 text-white shadow-brand"
         >
-          <span className="font-display text-[11px] font-bold">
+          <span className="font-ui text-[12px] font-bold">
             Adicionar ao carrinho
           </span>
-          <span className="font-display text-[12px] font-bold tabular-nums">
+          <span className="font-ui text-[14px] font-bold tabular-nums">
             R$ {total.toFixed(2).replace(".", ",")}
           </span>
-        </button>
+        </motion.button>
       </div>
     </motion.div>
   );
 }
 
-interface CartItem {
-  id: string;
-  name: string;
-  unit: number;
-  qty: number;
-  obs?: string;
-  extras?: string[];
-}
-
-const INITIAL_CART: CartItem[] = [
-  {
-    id: "suco",
-    name: "Suco de laranja Jarra UN",
-    unit: 6.5,
-    qty: 1,
-    extras: ["+ Açúcar", "+ Gelo"],
-  },
-  {
-    id: "combo",
-    name: "Combo X-Tudo + Fritas G + Coca-Zero 2L",
-    unit: 36.5,
-    qty: 2,
-    extras: ["+ Bacon", "Mal Passado"],
-    obs: "Carne Vegetariana",
-  },
-];
-
-function CartView() {
-  const [items, setItems] = useState<CartItem[]>(INITIAL_CART);
-
-  const updateQty = (id: string, delta: number) => {
-    setItems((prev) =>
-      prev
-        .map((i) => (i.id === id ? { ...i, qty: Math.max(0, i.qty + delta) } : i))
-        .filter((i) => i.qty > 0),
-    );
-  };
-
-  const removeItem = (id: string) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
-  };
-
-  const totalCount = items.reduce((s, i) => s + i.qty, 0);
-  const totalAmount = items.reduce((s, i) => s + i.unit * i.qty, 0);
-
+function CartView({
+  items,
+  total,
+  count,
+  onUpdate,
+  onRemove,
+}: {
+  items: CartItem[];
+  total: number;
+  count: number;
+  onUpdate: (id: string, delta: number) => void;
+  onRemove: (id: string) => void;
+}) {
   return (
     <motion.div
       data-tour="smartpos-payment-list"
@@ -325,16 +432,16 @@ function CartView() {
       transition={{ duration: 0.2 }}
       className="flex flex-1 flex-col overflow-hidden"
     >
-      <div className="flex h-10 items-center justify-center bg-brand">
-        <p className="font-display text-[13px] font-bold tracking-wider text-white">
+      <div className="flex h-11 items-center justify-center bg-brand">
+        <p className="font-ui text-[14px] font-bold tracking-wider text-white">
           CARRINHO
         </p>
       </div>
 
       <div className="flex-1 space-y-2 overflow-y-auto p-3">
         {items.length === 0 ? (
-          <p className="py-8 text-center text-[11px] italic text-neutral-400">
-            Carrinho vazio
+          <p className="py-10 text-center text-[12px] italic text-neutral-400">
+            Carrinho vazio. Volte ao catálogo para adicionar.
           </p>
         ) : (
           items.map((item, i) => (
@@ -348,57 +455,63 @@ function CartView() {
               className="rounded-xl bg-white p-3 shadow-card"
             >
               <div className="flex items-start justify-between gap-2">
-                <p className="font-display text-[12px] font-bold text-neutral-900">
+                <p className="font-ui text-[13px] font-bold text-neutral-900">
                   {item.name}
                 </p>
                 <button
-                  onClick={() => removeItem(item.id)}
+                  onClick={() => onRemove(item.id)}
                   className="text-neutral-400 hover:text-danger"
                 >
                   <Trash2 size={14} strokeWidth={2} />
                 </button>
               </div>
-              <p className="text-[10px] text-neutral-500">
+              <p className="text-[11px] text-neutral-500">
                 Unidade: R$ {item.unit.toFixed(2).replace(".", ",")}
               </p>
               <div className="mt-2 flex items-center justify-between">
-                <p className="font-display text-[16px] font-bold text-neutral-900 tabular-nums">
+                <p className="font-ui text-[16px] font-bold text-neutral-900 tabular-nums">
                   R$ {(item.qty * item.unit).toFixed(2).replace(".", ",")}
                 </p>
                 <div className="flex items-center gap-1">
                   <button
-                    onClick={() => updateQty(item.id, -1)}
-                    className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-white hover:bg-brand-light"
+                    onClick={() => onUpdate(item.id, -1)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-white hover:bg-brand-light"
                   >
-                    <Minus size={11} strokeWidth={2.5} />
+                    <Minus size={12} strokeWidth={2.5} />
                   </button>
-                  <span className="w-6 text-center font-display text-[12px] font-bold">
+                  <span className="w-7 text-center font-ui text-[13px] font-bold">
                     {item.qty}
                   </span>
                   <button
-                    onClick={() => updateQty(item.id, 1)}
-                    className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-white hover:bg-brand-light"
+                    onClick={() => onUpdate(item.id, 1)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-white hover:bg-brand-light"
                   >
-                    <Plus size={11} strokeWidth={2.5} />
+                    <Plus size={12} strokeWidth={2.5} />
                   </button>
                 </div>
               </div>
               {item.obs && (
-                <p className="mt-2 text-[10px]">
-                  <span className="font-bold text-neutral-900">Observação:</span>{" "}
+                <p className="mt-2 text-[11px]">
+                  <span className="font-bold text-neutral-900">
+                    Observação:
+                  </span>{" "}
                   <span className="text-neutral-600">{item.obs}</span>
                 </p>
               )}
-              {item.extras && (
+              {item.addons.length > 0 && (
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
-                  {item.extras.map((e) => (
-                    <span
-                      key={e}
-                      className="rounded-full border border-brand/15 bg-brand-ghost/50 px-2 py-0.5 text-[9px] font-medium text-brand"
-                    >
-                      {e}
-                    </span>
-                  ))}
+                  {item.addons.map((id) => {
+                    const a = ADDONS.find((x) => x.id === id);
+                    if (!a) return null;
+                    return (
+                      <span
+                        key={id}
+                        className="rounded-full border border-brand/15 bg-brand-ghost/50 px-2 py-0.5 text-[10px] font-medium text-brand"
+                      >
+                        {a.name}
+                      </span>
+                    );
+                  })}
                 </div>
               )}
             </motion.div>
@@ -406,37 +519,28 @@ function CartView() {
         )}
       </div>
 
-      <div
-        data-tour="smartpos-tap"
-        className="border-t border-neutral-200 bg-white p-3"
-      >
+      <div className="border-t border-neutral-200 bg-white p-3">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <ShoppingBasket
-              size={28}
-              strokeWidth={1.75}
-              className="text-brand"
-            />
+            <ShoppingBasket size={30} strokeWidth={1.75} className="text-brand" />
             <motion.span
-              key={totalCount}
+              key={count}
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
-              className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-danger px-1 text-[9px] font-bold text-white"
+              className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white"
             >
-              {totalCount}
+              {count}
             </motion.span>
           </div>
           <div className="flex-1">
-            <p className="text-[10px] font-medium text-brand">
-              Total da compra:
-            </p>
-            <p className="font-display text-[14px] font-bold text-brand tabular-nums">
-              R$ {totalAmount.toFixed(2).replace(".", ",")}
+            <p className="text-[11px] font-medium text-brand">Total da compra</p>
+            <p className="font-ui text-[16px] font-bold text-brand tabular-nums">
+              R$ {total.toFixed(2).replace(".", ",")}
             </p>
           </div>
           <button
             type="button"
-            className="rounded-md bg-brand px-6 py-2.5 font-display text-[12px] font-bold text-white shadow-brand hover:bg-brand-light"
+            className="rounded-md bg-brand px-7 py-3 font-ui text-[13px] font-bold text-white shadow-brand hover:bg-brand-light"
           >
             Pagar
           </button>
@@ -446,7 +550,21 @@ function CartView() {
   );
 }
 
-function PaymentTapView() {
+function PaymentSelectView({
+  payment,
+  onChange,
+  total,
+}: {
+  payment: PaymentMethod;
+  onChange: (m: PaymentMethod) => void;
+  total: number;
+}) {
+  const options: { id: PaymentMethod; label: string; Icon: typeof CreditCard }[] = [
+    { id: "credito", label: "Crédito", Icon: CreditCard },
+    { id: "debito", label: "Débito", Icon: CreditCard },
+    { id: "pix", label: "Pix", Icon: Smartphone },
+    { id: "dinheiro", label: "Dinheiro", Icon: Banknote },
+  ];
   return (
     <motion.div
       data-tour="smartpos-tap"
@@ -454,32 +572,62 @@ function PaymentTapView() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="flex flex-1 flex-col items-center justify-center px-6"
+      className="flex flex-1 flex-col overflow-hidden"
     >
-      <Image
-        src="/logo-teknisa.svg"
-        alt="Teknisa"
-        width={100}
-        height={19}
-        className="select-none"
-      />
-      <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
-        RETAIL POS
-      </p>
+      <div className="flex h-11 items-center justify-center bg-brand">
+        <p className="font-ui text-[14px] font-bold tracking-wider text-white">
+          PAGAMENTO
+        </p>
+      </div>
 
-      <motion.div
-        animate={{ scale: [1, 1.08, 1] }}
-        transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-        className="mt-10 flex h-24 w-24 items-center justify-center rounded-2xl bg-brand text-white shadow-brand"
-      >
-        <DollarSign size={48} strokeWidth={2} />
-      </motion.div>
-      <p className="mt-5 text-center font-display text-[16px] font-bold text-brand">
-        Processando pagamento
-      </p>
-      <p className="mt-1 text-center text-[11px] text-neutral-500">
-        VISA ****4128 · R$ 79,50
-      </p>
+      <div className="border-b border-neutral-100 bg-white px-4 py-3">
+        <p className="text-[11px] text-neutral-500">Total a pagar</p>
+        <p className="font-ui text-[24px] font-bold text-brand tabular-nums">
+          R$ {total.toFixed(2).replace(".", ",")}
+        </p>
+      </div>
+
+      <div className="flex-1 space-y-2 overflow-y-auto p-3">
+        <p className="font-ui text-[12px] font-bold uppercase tracking-wider text-neutral-700">
+          Forma de pagamento
+        </p>
+        {options.map((o) => {
+          const active = o.id === payment;
+          return (
+            <motion.button
+              key={o.id}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => onChange(o.id)}
+              className={cn(
+                "flex w-full items-center gap-3 rounded-md border-2 px-3 py-3 transition-colors",
+                active
+                  ? "border-brand bg-brand-ghost"
+                  : "border-neutral-200 bg-white hover:border-brand/30",
+              )}
+            >
+              <span
+                className={cn(
+                  "flex h-9 w-9 items-center justify-center rounded-md",
+                  active ? "bg-brand text-white" : "bg-neutral-100 text-neutral-500",
+                )}
+              >
+                <o.Icon size={16} strokeWidth={2.25} />
+              </span>
+              <span
+                className={cn(
+                  "flex-1 text-left font-ui text-[13px] font-bold",
+                  active ? "text-brand" : "text-neutral-700",
+                )}
+              >
+                {o.label}
+              </span>
+              {active && (
+                <Check size={16} strokeWidth={2.5} className="text-brand" />
+              )}
+            </motion.button>
+          );
+        })}
+      </div>
     </motion.div>
   );
 }
@@ -498,9 +646,9 @@ function SuccessScreen() {
         initial={{ scale: 0.5 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 240, damping: 14 }}
-        className="flex h-32 w-32 items-center justify-center rounded-full bg-white"
+        className="flex h-36 w-36 items-center justify-center rounded-full bg-white"
       >
-        <Check size={80} strokeWidth={3} className="text-[#16a34a]" />
+        <Check size={88} strokeWidth={3} className="text-[#16a34a]" />
       </motion.div>
     </motion.div>
   );
@@ -529,9 +677,7 @@ function BottomNav({ step }: { step: number }) {
             strokeWidth={item.active ? 2.5 : 2}
             fill={item.active && item.label !== "Início" ? "currentColor" : "none"}
           />
-          <span className="font-display text-[10px] font-semibold">
-            {item.label}
-          </span>
+          <span className="font-ui text-[11px] font-semibold">{item.label}</span>
         </button>
       ))}
     </nav>

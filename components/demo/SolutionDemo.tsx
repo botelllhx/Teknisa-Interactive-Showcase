@@ -2,9 +2,9 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, ChevronRight, Home } from "lucide-react";
-import { solutionsById } from "@/data/solutions";
+import { solutionsById, resolveText } from "@/data/solutions";
 import { useFlowController } from "@/hooks/useFlowController";
 import { useTour } from "@/hooks/useTour";
 import { useMeasure } from "@/hooks/useMeasure";
@@ -21,6 +21,7 @@ import { ConfirmationFeedback } from "@/components/ui/ConfirmationFeedback";
 import { Companion } from "@/components/companions";
 import { getMockup } from "@/components/mockups";
 import type { CompanionType } from "@/data/solutions";
+import { useTourLive } from "@/lib/tourState";
 import { cn } from "@/lib/cn";
 
 interface SolutionDemoProps {
@@ -44,7 +45,6 @@ const COMPANION_LAYOUT: Record<
     right: ["KitchenDisplay"],
   },
   quickpass: {
-    left: ["EmployeeCard"],
     right: ["RestaurantQueueBoard"],
   },
   // Other groups (kept as-is until their V6 pass)
@@ -92,6 +92,13 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
 
   const [completionVisible, setCompletionVisible] = useState(false);
   const [frameRef, frameSize] = useMeasure<HTMLDivElement>();
+  const resetTourLive = useTourLive((s) => s.reset);
+
+  // Reset shared live state when entering a different solution so previous
+  // selections don't leak into the new tour's tooltips.
+  useEffect(() => {
+    resetTourLive();
+  }, [solutionId, resetTourLive]);
 
   const tour = useTour({
     steps,
@@ -100,6 +107,13 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
   });
 
   const currentStepData = steps[tour.index];
+  const live = useTourLive((s) => s.live);
+  const resolvedTitle = currentStepData
+    ? resolveText(currentStepData.title, live)
+    : "";
+  const resolvedDescription = currentStepData
+    ? resolveText(currentStepData.description, live)
+    : "";
   const wantsNotification = currentStepData?.companions?.includes(
     "SimulatedNotification",
   );
@@ -189,7 +203,7 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
             companions={leftCompanions}
             solutionId={solutionId}
             step={tour.index}
-            stepLabel={currentStepData?.title}
+            stepLabel={resolvedTitle}
             align="end"
           />
         )}
@@ -222,7 +236,7 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
             companions={rightCompanions}
             solutionId={solutionId}
             step={tour.index}
-            stepLabel={currentStepData?.title}
+            stepLabel={resolvedTitle}
             align="start"
           />
         )}
@@ -232,9 +246,9 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
         {wantsNotification && (
           <SimulatedNotification
             id={`${solutionId}-${tour.index}`}
-            type={inferType(currentStepData?.title)}
-            title={currentStepData?.title ?? ""}
-            description={currentStepData?.description}
+            type={inferType(resolvedTitle)}
+            title={resolvedTitle}
+            description={resolvedDescription}
           />
         )}
       </NotificationStack>

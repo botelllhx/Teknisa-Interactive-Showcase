@@ -7,7 +7,7 @@ export const portalGestorFlow: TourStep[] = [
     placement: "bottom",
     title: "Dashboard da equipe",
     description:
-      "Presença, hora extra, solicitações abertas — todos os indicadores que o gestor precisa em uma única tela.",
+      "Presença, hora extra, solicitações abertas, todos os indicadores que o gestor precisa em uma única tela.",
     companions: ["EmployeeCard", "MiniDashboard"],
   },
   {
@@ -25,7 +25,7 @@ export const portalGestorFlow: TourStep[] = [
     placement: "right",
     title: "Espelho de ponto consolidado",
     description:
-      "Marcações, horas extras, ausências — tudo por colaborador. Ajuste registrado com histórico para auditoria.",
+      "Marcações, horas extras, ausências, tudo por colaborador. Ajuste registrado com histórico para auditoria.",
     companions: ["EmployeeCard"],
   },
   {
@@ -34,7 +34,7 @@ export const portalGestorFlow: TourStep[] = [
     placement: "right",
     title: "Solicitações pendentes",
     description:
-      "Férias, folgas, trocas de turno — o gestor aprova ou recusa sem sair do portal. Sem WhatsApp paralelo.",
+      "Férias, folgas, trocas de turno, o gestor aprova ou recusa sem sair do portal. Sem WhatsApp paralelo.",
     companions: ["EmployeeCard", "MiniDashboard"],
   },
   {
@@ -55,7 +55,7 @@ export const portalFuncionarioFlow: TourStep[] = [
     placement: "top",
     title: "Acesso por biometria",
     description:
-      "O funcionário acessa direto do celular — sem senha para esquecer, sem ligar para o RH para resetar.",
+      "O funcionário acessa direto do celular, sem senha para esquecer, sem ligar para o RH para resetar.",
     requiresInteraction: true,
     actionLabel: "Entrar",
   },
@@ -73,7 +73,7 @@ export const portalFuncionarioFlow: TourStep[] = [
     placement: "top",
     title: "Solicitação de férias em um toque",
     description:
-      "Datas, saldo, dias úteis — tudo calculado automaticamente. A solicitação vai direto para o gestor.",
+      "Datas, saldo, dias úteis, tudo calculado automaticamente. A solicitação vai direto para o gestor.",
     requiresInteraction: true,
     actionLabel: "Enviar solicitação",
   },
@@ -92,7 +92,7 @@ export const portalFuncionarioFlow: TourStep[] = [
     placement: "top",
     title: "Holerite no app",
     description:
-      "Disponível assim que processado. Detalhamento por verba e download em PDF — sem ir ao RH pegar via papel.",
+      "Disponível assim que processado. Detalhamento por verba e download em PDF, sem ir ao RH pegar via papel.",
     companions: ["SimulatedNotification"],
   },
 ];
@@ -154,7 +154,7 @@ export const analisePreditivaFlow: TourStep[] = [
     placement: "right",
     title: "Indicadores preditivos de RH",
     description:
-      "Turnover atual, predição de 90 dias, risco crítico — IA aplicada nos próprios dados da empresa.",
+      "Turnover atual, predição de 90 dias, risco crítico, IA aplicada nos próprios dados da empresa.",
     companions: ["MiniDashboard"],
   },
   {
@@ -172,7 +172,7 @@ export const analisePreditivaFlow: TourStep[] = [
     placement: "right",
     title: "Detalhe por colaborador",
     description:
-      "Selecione uma pessoa para entender os fatores que contribuem para o risco — atestados, hora extra, salário vs mercado.",
+      "Selecione uma pessoa para entender os fatores que contribuem para o risco, atestados, hora extra, salário vs mercado.",
     requiresInteraction: true,
     actionLabel: "Selecione um perfil",
     companions: ["MiniDashboard"],
@@ -204,7 +204,7 @@ export const assistenteRegrasFlow: TourStep[] = [
     placement: "bottom-end",
     title: "Regras configuradas",
     description:
-      "Toda regra de ponto, escala e benefícios em um único lugar — com toggle de ativação. Toque em Nova regra para criar.",
+      "Toda regra de ponto, escala e benefícios em um único lugar, com toggle de ativação. Toque em Nova regra para criar.",
     requiresInteraction: true,
     actionLabel: "Nova regra",
   },
@@ -222,7 +222,7 @@ export const assistenteRegrasFlow: TourStep[] = [
     placement: "right",
     title: "Condições estruturadas",
     description:
-      "WHEN / AND / THEN / ALSO — a IA traduz sua descrição em blocos editáveis. Revise e ajuste antes de ativar.",
+      "WHEN / AND / THEN / ALSO, a IA traduz sua descrição em blocos editáveis. Revise e ajuste antes de ativar.",
   },
   {
     id: "preview",

@@ -15,7 +15,7 @@ export const cardapioInteligenteFlow: TourStep[] = [
     placement: "right",
     title: "Adicionar prato em um toque",
     description:
-      "Banco de pratos já cadastrados — selecione, ajuste porção e o cardápio é atualizado em tempo real.",
+      "Banco de pratos já cadastrados, selecione, ajuste porção e o cardápio é atualizado em tempo real.",
     requiresInteraction: true,
     actionLabel: "Adicione um prato",
   },
@@ -25,7 +25,7 @@ export const cardapioInteligenteFlow: TourStep[] = [
     placement: "left",
     title: "Análise nutricional automática",
     description:
-      "Calorias, carboidratos, fibras — calculados em tempo real. Cardápio sai do planejamento já dentro das metas nutricionais.",
+      "Calorias, carboidratos, fibras, calculados em tempo real. Cardápio sai do planejamento já dentro das metas nutricionais.",
     companions: ["KitchenDisplay"],
   },
   {
@@ -34,7 +34,7 @@ export const cardapioInteligenteFlow: TourStep[] = [
     placement: "left",
     title: "Workflow de aprovação integrado",
     description:
-      "Nutricionista valida, gestor aprova, unidades recebem. O fluxo todo dentro da plataforma — sem planilhas paralelas.",
+      "Nutricionista valida, gestor aprova, unidades recebem. O fluxo todo dentro da plataforma, sem planilhas paralelas.",
     companions: ["KitchenDisplay"],
   },
   {
@@ -65,7 +65,7 @@ export const myQuestFlow: TourStep[] = [
     placement: "bottom",
     title: "Posição em tempo real",
     description:
-      "Anel central animado mostra a posição. Tempo estimado atualiza a cada chamada — sem ansiedade.",
+      "Anel central animado mostra a posição. Tempo estimado atualiza a cada chamada, sem ansiedade.",
   },
   {
     id: "chamada",
@@ -73,7 +73,7 @@ export const myQuestFlow: TourStep[] = [
     placement: "bottom",
     title: "Push quando for a vez",
     description:
-      "Notificação no celular avisa quando chegar a hora — funcionário não perde tempo na fila física.",
+      "Notificação no celular avisa quando chegar a hora, funcionário não perde tempo na fila física.",
     companions: ["SimulatedNotification"],
   },
   {
@@ -128,7 +128,7 @@ export const myMenuFlow: TourStep[] = [
     placement: "top",
     title: "Reserva confirmada",
     description:
-      "Lembrete automático antes do horário. Refeição garantida — refeitório não corre risco de sobrecarga.",
+      "Lembrete automático antes do horário. Refeição garantida, refeitório não corre risco de sobrecarga.",
     companions: ["OrderTicket", "SimulatedNotification"],
   },
   {
@@ -149,7 +149,7 @@ export const approveFlow: TourStep[] = [
     placement: "right",
     title: "Pendências centralizadas",
     description:
-      "Cardápio, compra, escala extra — todas as solicitações de aprovação em um único lugar, com prioridade automática.",
+      "Cardápio, compra, escala extra, todas as solicitações de aprovação em um único lugar, com prioridade automática.",
     companions: ["MiniDashboard"],
   },
   {
@@ -158,7 +158,7 @@ export const approveFlow: TourStep[] = [
     placement: "right",
     title: "Detalhe com diff de alterações",
     description:
-      "O que mudou, custo estimado, impacto operacional — gestor decide com contexto completo, não no escuro.",
+      "O que mudou, custo estimado, impacto operacional, gestor decide com contexto completo, não no escuro.",
     companions: ["MiniDashboard"],
   },
   {
@@ -176,7 +176,7 @@ export const approveFlow: TourStep[] = [
     placement: "top",
     title: "Aprovação em um toque",
     description:
-      "Decisão entra em vigor imediatamente. Aprovação assíncrona — gestor não precisa estar online em horário comercial.",
+      "Decisão entra em vigor imediatamente. Aprovação assíncrona, gestor não precisa estar online em horário comercial.",
     requiresInteraction: true,
     actionLabel: "Aprovar",
     companions: ["MiniDashboard"],

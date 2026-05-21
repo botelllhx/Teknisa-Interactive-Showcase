@@ -15,7 +15,7 @@ export const mercadumFlow: TourStep[] = [
     placement: "top",
     title: "Comparativo lado a lado",
     description:
-      "Preço, prazo, avaliação. Comprador decide com toda informação à mão — sem trocar e-mails com 8 fornecedores.",
+      "Preço, prazo, avaliação. Comprador decide com toda informação à mão, sem trocar e-mails com 8 fornecedores.",
     companions: ["MiniDashboard"],
   },
   {
@@ -94,7 +94,7 @@ export const appComercialFlow: TourStep[] = [
     placement: "top",
     title: "Pedido enviado ao ERP",
     description:
-      "Integração nativa — pedido entra no faturamento sem digitação manual. Confirmação por e-mail para o cliente.",
+      "Integração nativa, pedido entra no faturamento sem digitação manual. Confirmação por e-mail para o cliente.",
     companions: ["MiniDashboard", "SimulatedNotification"],
   },
 ];

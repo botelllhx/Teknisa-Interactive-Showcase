@@ -38,15 +38,20 @@ export type TourPlacement =
   | "top-start"
   | "bottom-end";
 
+import type { TourLiveState } from "../lib/tourState";
+
+/** Field that may be a static string or a function of the live mockup state. */
+export type DynamicText = string | ((live: TourLiveState) => string);
+
 export interface TourStep {
   id: string;
   // CSS selector for the target element inside the mockup
   // e.g. '[data-tour="pdv-add-item"]'
   targetSelector: string;
   placement: TourPlacement;
-  title: string;
-  description: string;
-  actionLabel?: string;
+  title: DynamicText;
+  description: DynamicText;
+  actionLabel?: DynamicText;
   // If true: advance only when the target element is clicked (PulsingDot shows on element)
   // If false: advance via the tooltip's primary button
   requiresInteraction?: boolean;
@@ -54,6 +59,11 @@ export interface TourStep {
   highlightStyle?: "pulse" | "ring" | "glow";
   // Companions that should appear during this step (still supported)
   companions?: CompanionType[];
+}
+
+/** Resolve a static or dynamic text against the current live state. */
+export function resolveText(value: DynamicText, live: TourLiveState): string {
+  return typeof value === "function" ? value(live) : value;
 }
 
 export interface Solution {
@@ -234,7 +244,7 @@ export const solutions: Solution[] = [
     name: "QuickPass",
     tagline: "Atendimento rápido em eventos",
     description:
-      "Sistema de atendimento rápido para estádios, shows e festivais. Cliente pede, paga e retira com QR — sem fila.",
+      "Sistema de atendimento rápido para estádios, shows e festivais. Cliente pede, paga e retira com QR, sem fila.",
     device: "mobile",
     icon: "Zap",
     tags: ["Eventos", "Mobile", "Pula fila"],

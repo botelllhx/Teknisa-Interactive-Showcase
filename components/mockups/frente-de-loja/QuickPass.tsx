@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import {
   ChevronLeft,
@@ -27,14 +27,18 @@ import {
   Zap,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { useTourLive } from "@/lib/tourState";
 
 interface QuickPassProps {
   step: number;
 }
 
 // QuickPass = fast-service web app for events / stadiums.
-// Flow: 0 catálogo → 1 produto → 2 carrinho com cupom → 3 pagamento (Cartão/Pix) → 4 retirada com QR
-// Runs inside the mobile browser (Safari chrome bottom).
+// 4 views, 4 tour steps:
+//   step 0  catalog       (add items from vendor's menu)
+//   step 1  cart          (review + apply coupon)
+//   step 2  payment       (choose method)
+//   step 3+ confirmation  (QR retirada)
 
 interface Product {
   id: string;
@@ -82,12 +86,7 @@ const PRODUCT_BY_ID: Record<string, Product> = Object.fromEntries(
 );
 
 export function QuickPassMockup({ step }: QuickPassProps) {
-  // Free interactive cart shared across steps
-  const [cart, setCart] = useState<Record<string, number>>({
-    "burger-classic": 1,
-    coca: 1,
-  });
-  const [detailQty, setDetailQty] = useState(1);
+  const [cart, setCart] = useState<Record<string, number>>({});
   const [coupon, setCoupon] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"cartao" | "pix">("cartao");
@@ -102,6 +101,40 @@ export function QuickPassMockup({ step }: QuickPassProps) {
   );
   const discount = couponApplied ? subtotal * 0.1 : 0;
   const total = subtotal - discount;
+  const cartCount = Object.values(cart).reduce((s, q) => s + q, 0);
+
+  // Push live selections into the tour state so tooltips can reference them.
+  const patchLive = useTourLive((s) => s.patch);
+  useEffect(() => {
+    const items = Object.entries(cart).map(([id, qty]) => ({
+      id,
+      qty,
+      name: PRODUCT_BY_ID[id]?.name ?? id,
+      price: PRODUCT_BY_ID[id]?.price ?? 0,
+    }));
+    const lastName = items[items.length - 1]?.name;
+    patchLive({
+      cartItems: items,
+      cartCount,
+      cartTotal: total,
+      cartSubtotal: subtotal,
+      discountValue: discount,
+      couponApplied,
+      couponCode: coupon,
+      paymentMethod,
+      selectedItemName: lastName,
+    });
+  }, [
+    cart,
+    cartCount,
+    total,
+    subtotal,
+    discount,
+    couponApplied,
+    coupon,
+    paymentMethod,
+    patchLive,
+  ]);
 
   const addItem = (id: string, qty = 1) => {
     setCart((prev) => ({ ...prev, [id]: (prev[id] ?? 0) + qty }));
@@ -124,29 +157,14 @@ export function QuickPassMockup({ step }: QuickPassProps) {
   };
 
   return (
-    <div className="flex h-full w-full flex-col bg-white text-neutral-800">
+    <div className="flex h-full w-full flex-col bg-white text-neutral-800 font-ui">
       <StatusBar />
       <main className="flex-1 overflow-hidden">
         <AnimatePresence mode="wait">
           {step === 0 && (
-            <CatalogView
-              key="catalog"
-              cart={cart}
-              onAdd={addItem}
-            />
+            <CatalogView key="catalog" cart={cart} onAdd={addItem} />
           )}
           {step === 1 && (
-            <ProductDetailView
-              key="detail"
-              qty={detailQty}
-              onUpdateQty={(d) => setDetailQty(Math.max(1, detailQty + d))}
-              onAdd={() => {
-                addItem("burger-bacon", detailQty);
-                setDetailQty(1);
-              }}
-            />
-          )}
-          {step === 2 && (
             <CartView
               key="cart"
               cart={cart}
@@ -161,7 +179,7 @@ export function QuickPassMockup({ step }: QuickPassProps) {
               onApplyCoupon={() => setCouponApplied(true)}
             />
           )}
-          {step === 3 && (
+          {step === 2 && (
             <PaymentView
               key="payment"
               method={paymentMethod}
@@ -169,8 +187,17 @@ export function QuickPassMockup({ step }: QuickPassProps) {
               onChangeMethod={setPaymentMethod}
             />
           )}
-          {step >= 4 && (
-            <SuccessView key="success" total={total} method={paymentMethod} />
+          {step >= 3 && (
+            <SuccessView
+              key="success"
+              total={total}
+              method={paymentMethod}
+              cartItems={Object.entries(cart).map(([id, qty]) => ({
+                id,
+                qty,
+                name: PRODUCT_BY_ID[id]?.name ?? id,
+              }))}
+            />
           )}
         </AnimatePresence>
       </main>
@@ -182,12 +209,12 @@ export function QuickPassMockup({ step }: QuickPassProps) {
 function StatusBar() {
   return (
     <div className="flex items-center justify-between px-5 pt-1.5 pb-1">
-      <span className="font-display text-[12px] font-bold text-neutral-900 tabular-nums">
+      <span className="font-ui text-[13px] font-bold text-neutral-900 tabular-nums">
         21:08
       </span>
       <div className="flex items-center gap-1 text-neutral-700">
-        <span className="text-[10px] font-bold tracking-wide">5G</span>
-        <span className="text-[10px] tabular-nums">82%</span>
+        <span className="text-[11px] font-bold tracking-wide">5G</span>
+        <span className="text-[11px] tabular-nums">82%</span>
       </div>
     </div>
   );
@@ -201,37 +228,35 @@ function AppHeader({
   title?: string;
 }) {
   return (
-    <div className="flex items-center justify-between border-b border-neutral-100 bg-white px-3 py-2">
+    <div className="flex items-center justify-between border-b border-neutral-100 bg-white px-3 py-2.5">
       <div className="flex items-center gap-1.5">
         {showBack && (
           <button className="text-brand">
-            <ChevronLeft size={18} strokeWidth={2.5} />
+            <ChevronLeft size={20} strokeWidth={2.5} />
           </button>
         )}
         <Image
           src="/logo-teknisa.svg"
           alt="Teknisa"
-          width={42}
-          height={8}
+          width={50}
+          height={10}
           className="select-none"
         />
       </div>
       {title ? (
-        <span className="font-display text-[12px] font-bold text-brand">
-          {title}
-        </span>
+        <span className="font-ui text-[14px] font-bold text-brand">{title}</span>
       ) : (
         <div className="flex items-center gap-1">
-          <span className="font-display text-[10px] font-bold italic text-red-700">
+          <span className="font-ui text-[12px] font-bold italic text-red-700">
             HELL&apos;S
           </span>
-          <span className="font-display text-[10px] font-bold tracking-wider text-neutral-900">
+          <span className="font-ui text-[12px] font-bold tracking-wider text-neutral-900">
             BURGERS
           </span>
         </div>
       )}
-      <span className="inline-flex items-center gap-1 rounded-full bg-brand-ghost px-2 py-0.5 text-[9px] font-bold text-brand">
-        <Zap size={9} strokeWidth={2.5} />
+      <span className="inline-flex items-center gap-1 rounded-full bg-brand-ghost px-2 py-0.5 text-[10px] font-bold text-brand">
+        <Zap size={10} strokeWidth={2.5} />
         QuickPass
       </span>
     </div>
@@ -242,33 +267,33 @@ function VenueBanner() {
   return (
     <div className="px-3 pt-3">
       <div
-        className="relative overflow-hidden rounded-xl p-3 text-white"
+        className="relative overflow-hidden rounded-xl p-3.5 text-white"
         style={{
           background:
             "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
         }}
       >
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-[9px] font-bold uppercase tracking-[2px] text-white/70">
-              Hoje · Show ao vivo
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-[2px] text-white/75">
+              Hoje · show ao vivo
             </p>
-            <p className="mt-0.5 font-display text-[14px] font-bold leading-tight">
+            <p className="mt-0.5 font-ui text-[16px] font-bold leading-tight">
               Hell&apos;s Burgers
             </p>
-            <p className="mt-0.5 flex items-center gap-1 text-[10px] text-white/85">
-              <MapPin size={10} strokeWidth={2.25} />
-              Allianz Parque · Setor B · Loja 12
+            <p className="mt-1 flex items-center gap-1 text-[11px] text-white/90">
+              <MapPin size={11} strokeWidth={2.25} />
+              Allianz Parque · setor B · loja 12
             </p>
           </div>
-          <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-1 text-[9px] font-bold uppercase tracking-wider backdrop-blur">
-            <Clock size={9} strokeWidth={2.5} />
+          <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur">
+            <Clock size={10} strokeWidth={2.5} />
             Pronto em 4 min
           </span>
         </div>
-        <div className="mt-2 flex items-center gap-2 rounded-lg bg-white/10 px-2 py-1.5 backdrop-blur">
-          <Zap size={11} strokeWidth={2.5} className="text-yellow-300" />
-          <p className="text-[10px] leading-snug">
+        <div className="mt-2.5 flex items-center gap-2 rounded-lg bg-white/10 px-2.5 py-2 backdrop-blur">
+          <Zap size={13} strokeWidth={2.5} className="text-yellow-300" />
+          <p className="text-[11px] leading-snug">
             <span className="font-bold">Pule a fila.</span> Peça aqui, pague no
             celular e retire com QR.
           </p>
@@ -299,25 +324,25 @@ function CatalogView({
       <div className="flex-1 overflow-y-auto pb-2">
         <VenueBanner />
 
-        <div className="mx-3 mt-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-2.5 py-1.5">
-          <Search size={13} strokeWidth={2.25} className="text-neutral-400" />
+        <div className="mx-3 mt-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">
+          <Search size={14} strokeWidth={2.25} className="text-neutral-400" />
           <input
             disabled
             placeholder="Buscar lanches, bebidas..."
-            className="flex-1 bg-transparent text-[11px] text-neutral-500 placeholder:text-neutral-400 focus:outline-none"
+            className="flex-1 bg-transparent text-[12px] text-neutral-500 placeholder:text-neutral-400 focus:outline-none"
           />
         </div>
 
         <div className="mx-3 mt-3 flex items-center justify-between">
-          <h2 className="font-display text-[13px] font-bold text-brand">
+          <h2 className="font-ui text-[14px] font-bold text-brand">
             Cardápio do evento
           </h2>
-          <span className="text-[10px] font-medium text-neutral-500">
+          <span className="text-[11px] font-medium text-neutral-500">
             {PRODUCTS.length} itens
           </span>
         </div>
 
-        <div className="mt-2 grid grid-cols-2 gap-2 px-3" data-tour="qp-catalog">
+        <div className="mt-2 grid grid-cols-2 gap-2.5 px-3" data-tour="qp-catalog">
           {PRODUCTS.map((p) => {
             const inCart = cart[p.id] ?? 0;
             return (
@@ -330,11 +355,11 @@ function CatalogView({
                 style={{ border: "1px solid #e5e7eb" }}
               >
                 <div
-                  className="relative h-20 w-full"
+                  className="relative h-24 w-full"
                   style={{ background: p.gradient }}
                 >
                   {p.tag && (
-                    <span className="absolute left-1.5 top-1.5 rounded-full bg-white/95 px-1.5 py-0.5 text-[8px] font-bold text-brand">
+                    <span className="absolute left-1.5 top-1.5 rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-bold text-brand">
                       {p.tag}
                     </span>
                   )}
@@ -343,25 +368,25 @@ function CatalogView({
                       key={inCart}
                       initial={{ scale: 0.6 }}
                       animate={{ scale: 1 }}
-                      className="absolute right-1.5 top-1.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-white px-1.5 text-[10px] font-bold text-brand shadow"
+                      className="absolute right-1.5 top-1.5 flex h-6 min-w-[24px] items-center justify-center rounded-full bg-white px-1.5 text-[11px] font-bold text-brand shadow"
                     >
                       ×{inCart}
                     </motion.span>
                   )}
                 </div>
-                <div className="p-2">
-                  <p className="font-display text-[11px] font-bold leading-snug text-neutral-900 line-clamp-1">
+                <div className="p-2.5">
+                  <p className="font-ui text-[12px] font-bold leading-snug text-neutral-900 line-clamp-1">
                     {p.name}
                   </p>
-                  <p className="mt-0.5 text-[9px] leading-snug text-neutral-500 line-clamp-2">
+                  <p className="mt-0.5 text-[10px] leading-snug text-neutral-500 line-clamp-2">
                     {p.desc}
                   </p>
-                  <div className="mt-1.5 flex items-center justify-between">
-                    <span className="font-display text-[12px] font-bold text-brand tabular-nums">
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="font-ui text-[13px] font-bold text-brand tabular-nums">
                       R$ {p.price.toFixed(2).replace(".", ",")}
                     </span>
-                    <span className="flex h-6 w-6 items-center justify-center rounded-md bg-brand text-white">
-                      <Plus size={11} strokeWidth={2.5} />
+                    <span className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-white">
+                      <Plus size={13} strokeWidth={2.5} />
                     </span>
                   </div>
                 </div>
@@ -371,7 +396,6 @@ function CatalogView({
         </div>
       </div>
 
-      {/* Sticky cart pill */}
       <AnimatePresence>
         {cartCount > 0 && (
           <motion.div
@@ -382,125 +406,24 @@ function CatalogView({
             className="border-t border-neutral-100 bg-white px-3 py-2"
           >
             <div className="flex items-center gap-2 rounded-xl bg-brand px-3 py-2 text-white shadow-brand">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20">
-                <ShoppingBag size={13} strokeWidth={2.25} />
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+                <ShoppingBag size={15} strokeWidth={2.25} />
               </span>
               <div className="flex-1">
-                <p className="font-display text-[11px] font-bold leading-tight">
+                <p className="font-ui text-[12px] font-bold leading-tight">
                   {cartCount} {cartCount === 1 ? "item" : "itens"} no carrinho
                 </p>
-                <p className="text-[9px] text-white/75">
-                  Toque para revisar e pagar
+                <p className="text-[10px] text-white/80">
+                  Toque em revisar para continuar
                 </p>
               </div>
-              <span className="font-display text-[11px] font-bold tabular-nums">
+              <span className="font-ui text-[12px] font-bold tabular-nums">
                 Ver →
               </span>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
-  );
-}
-
-function ProductDetailView({
-  qty,
-  onUpdateQty,
-  onAdd,
-}: {
-  qty: number;
-  onUpdateQty: (delta: number) => void;
-  onAdd: () => void;
-}) {
-  const product = PRODUCT_BY_ID["burger-bacon"];
-  const total = product.price * qty;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className="flex h-full flex-col"
-    >
-      <AppHeader showBack title="Detalhes" />
-
-      <div
-        className="relative h-32 w-full"
-        style={{ background: product.gradient }}
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(255,255,255,0.18),transparent_60%)]" />
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-4 pt-3">
-        <h2 className="font-display text-[16px] font-bold text-brand">
-          {product.name}
-        </h2>
-        <p className="mt-1 text-[11px] leading-relaxed text-neutral-600">
-          {product.desc}. Servido com batatas rústicas e molho da casa. Pronto em
-          até 5 minutos.
-        </p>
-        <p className="mt-2 font-display text-[16px] font-bold text-brand tabular-nums">
-          R$ {product.price.toFixed(2).replace(".", ",")}
-        </p>
-
-        <div className="mt-4 rounded-lg bg-brand-ghost px-3 py-2">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-brand">
-            Pronto em
-          </p>
-          <p className="font-display text-[12px] font-bold text-neutral-900">
-            ~5 minutos · retirada no balcão
-          </p>
-        </div>
-      </div>
-
-      <div
-        data-tour="qp-detail-add"
-        className="flex items-center gap-2 border-t border-neutral-100 bg-white px-3 py-2.5"
-      >
-        <div className="flex items-center gap-1.5 rounded-md border border-neutral-200 px-1">
-          <button
-            type="button"
-            onClick={() => onUpdateQty(-1)}
-            disabled={qty <= 1}
-            className={cn(
-              "flex h-7 w-7 items-center justify-center text-neutral-500",
-              qty <= 1 && "opacity-30",
-            )}
-          >
-            <Minus size={12} strokeWidth={2.25} />
-          </button>
-          <motion.span
-            key={qty}
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            className="w-5 text-center font-display text-[13px] font-bold text-neutral-900 tabular-nums"
-          >
-            {qty}
-          </motion.span>
-          <button
-            type="button"
-            onClick={() => onUpdateQty(1)}
-            className="flex h-7 w-7 items-center justify-center text-brand"
-          >
-            <Plus size={12} strokeWidth={2.5} />
-          </button>
-        </div>
-        <motion.button
-          type="button"
-          whileTap={{ scale: 0.97 }}
-          onClick={onAdd}
-          className="flex flex-1 items-center justify-between rounded-md bg-brand px-3 py-2 text-white shadow-brand"
-        >
-          <span className="font-display text-[11px] font-bold">
-            Adicionar ao carrinho
-          </span>
-          <span className="font-display text-[12px] font-bold tabular-nums">
-            R$ {total.toFixed(2).replace(".", ",")}
-          </span>
-        </motion.button>
-      </div>
     </motion.div>
   );
 }
@@ -542,14 +465,14 @@ function CartView({
       <AppHeader showBack title="Meu carrinho" />
 
       <div className="flex-1 overflow-y-auto">
-        <div className="border-b border-neutral-100 bg-brand-ghost px-3 py-1.5 text-[10px] text-brand">
-          <span className="font-bold">Hell&apos;s Burgers</span> · Allianz Parque
-          · Setor B
+        <div className="border-b border-neutral-100 bg-brand-ghost px-3 py-2 text-[11px] text-brand">
+          <span className="font-bold">Hell&apos;s Burgers</span> · Allianz
+          Parque · setor B
         </div>
 
         <div className="space-y-2 px-3 py-2">
           {entries.length === 0 && (
-            <p className="py-8 text-center text-[12px] text-neutral-500">
+            <p className="py-8 text-center text-[13px] text-neutral-500">
               Seu carrinho está vazio.
             </p>
           )}
@@ -563,51 +486,53 @@ function CartView({
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96 }}
-                className="flex items-start gap-2 rounded-lg border border-neutral-100 bg-white p-2"
+                className="flex items-start gap-2.5 rounded-lg border border-neutral-100 bg-white p-2.5"
               >
                 <div
-                  className="h-12 w-12 flex-none rounded-md"
+                  className="h-14 w-14 flex-none rounded-md"
                   style={{ background: p.gradient }}
                 />
-                <div className="flex-1">
-                  <p className="font-display text-[11px] font-bold text-neutral-900">
+                <div className="flex-1 min-w-0">
+                  <p className="font-ui text-[12px] font-bold text-neutral-900 leading-tight">
                     {p.name}
                   </p>
-                  <p className="text-[9px] text-neutral-500">{p.desc}</p>
-                  <p className="mt-0.5 font-display text-[12px] font-bold text-brand tabular-nums">
+                  <p className="text-[10px] text-neutral-500 leading-snug">
+                    {p.desc}
+                  </p>
+                  <p className="mt-1 font-ui text-[13px] font-bold text-brand tabular-nums">
                     R$ {(p.price * qty).toFixed(2).replace(".", ",")}
                   </p>
                 </div>
-                <div className="flex flex-col items-end gap-1">
+                <div className="flex flex-col items-end gap-1.5">
                   <button
                     type="button"
                     onClick={() => onRemove(id)}
                     className="text-neutral-400 hover:text-danger"
                   >
-                    <Trash2 size={11} strokeWidth={2} />
+                    <Trash2 size={13} strokeWidth={2} />
                   </button>
                   <div className="flex items-center gap-1 rounded-md border border-neutral-200 px-1">
                     <button
                       type="button"
                       onClick={() => onUpdateQty(id, -1)}
-                      className="flex h-6 w-6 items-center justify-center text-neutral-500"
+                      className="flex h-7 w-7 items-center justify-center text-neutral-500"
                     >
-                      <Minus size={10} strokeWidth={2.25} />
+                      <Minus size={12} strokeWidth={2.25} />
                     </button>
                     <motion.span
                       key={qty}
                       initial={{ scale: 0.8 }}
                       animate={{ scale: 1 }}
-                      className="w-4 text-center font-display text-[11px] font-bold text-neutral-900 tabular-nums"
+                      className="w-5 text-center font-ui text-[12px] font-bold text-neutral-900 tabular-nums"
                     >
                       {qty}
                     </motion.span>
                     <button
                       type="button"
                       onClick={() => onUpdateQty(id, 1)}
-                      className="flex h-6 w-6 items-center justify-center text-brand"
+                      className="flex h-7 w-7 items-center justify-center text-brand"
                     >
-                      <Plus size={10} strokeWidth={2.5} />
+                      <Plus size={12} strokeWidth={2.5} />
                     </button>
                   </div>
                 </div>
@@ -618,10 +543,10 @@ function CartView({
 
         <div
           data-tour="qp-coupon"
-          className="mx-3 mt-2 rounded-lg border border-dashed border-brand/30 bg-brand-ghost p-2"
+          className="mx-3 mt-2 rounded-lg border border-dashed border-brand/30 bg-brand-ghost p-2.5"
         >
-          <div className="flex items-center gap-1.5 text-[10px] font-bold text-brand">
-            <Tag size={11} strokeWidth={2.25} />
+          <div className="flex items-center gap-1.5 text-[11px] font-bold text-brand">
+            <Tag size={12} strokeWidth={2.25} />
             CUPOM DE DESCONTO
           </div>
           <div className="mt-1.5 flex items-center gap-1.5">
@@ -631,7 +556,7 @@ function CartView({
               placeholder="Ex.: FAN10"
               disabled={couponApplied}
               className={cn(
-                "flex-1 rounded-md border border-neutral-200 bg-white px-2 py-1.5 text-[11px] font-bold tracking-wider text-neutral-900 placeholder:text-neutral-400 focus:border-brand focus:outline-none",
+                "flex-1 rounded-md border border-neutral-200 bg-white px-2.5 py-2 font-ui text-[12px] font-bold tracking-wider text-neutral-900 placeholder:text-neutral-400 focus:border-brand focus:outline-none",
                 couponApplied && "border-success/40 bg-success/5 text-success",
               )}
             />
@@ -641,7 +566,7 @@ function CartView({
               onClick={onApplyCoupon}
               disabled={couponApplied || coupon.length === 0}
               className={cn(
-                "rounded-md px-3 py-1.5 font-display text-[10px] font-bold",
+                "rounded-md px-3 py-2 font-ui text-[11px] font-bold",
                 couponApplied
                   ? "bg-success text-white"
                   : coupon.length === 0
@@ -653,34 +578,34 @@ function CartView({
             </motion.button>
           </div>
           {couponApplied && (
-            <p className="mt-1 text-[9px] font-medium text-success">
+            <p className="mt-1 text-[10px] font-medium text-success">
               ✓ 10% de desconto aplicado
             </p>
           )}
         </div>
       </div>
 
-      <div className="border-t border-neutral-100 bg-white px-3 py-2">
+      <div className="border-t border-neutral-100 bg-white px-3 py-2.5">
         <div className="space-y-0.5">
-          <div className="flex items-center justify-between text-[10px] text-neutral-600">
+          <div className="flex items-center justify-between text-[11px] text-neutral-600">
             <span>Subtotal</span>
             <span className="tabular-nums">
               R$ {subtotal.toFixed(2).replace(".", ",")}
             </span>
           </div>
           {discount > 0 && (
-            <div className="flex items-center justify-between text-[10px] text-success">
-              <span>Desconto (FAN10)</span>
+            <div className="flex items-center justify-between text-[11px] text-success">
+              <span>Desconto FAN10</span>
               <span className="tabular-nums">
                 − R$ {discount.toFixed(2).replace(".", ",")}
               </span>
             </div>
           )}
           <div className="flex items-center justify-between pt-1">
-            <span className="font-display text-[12px] font-bold text-neutral-800">
+            <span className="font-ui text-[13px] font-bold text-neutral-800">
               Total
             </span>
-            <span className="font-display text-[16px] font-bold text-brand tabular-nums">
+            <span className="font-ui text-[18px] font-bold text-brand tabular-nums">
               R$ {total.toFixed(2).replace(".", ",")}
             </span>
           </div>
@@ -689,7 +614,7 @@ function CartView({
           type="button"
           data-tour="qp-checkout"
           whileTap={{ scale: 0.98 }}
-          className="mt-2 w-full rounded-md bg-brand py-2.5 text-center font-display text-[12px] font-bold text-white shadow-brand"
+          className="mt-2 w-full rounded-md bg-brand py-3 text-center font-ui text-[13px] font-bold text-white shadow-brand"
         >
           Ir para pagamento
         </motion.button>
@@ -717,12 +642,12 @@ function PaymentView({
     >
       <AppHeader showBack title="Pagamento" />
 
-      <div className="border-b border-neutral-100 bg-brand-ghost px-3 py-2">
+      <div className="border-b border-neutral-100 bg-brand-ghost px-3 py-2.5">
         <div className="flex items-center justify-between">
-          <span className="font-display text-[12px] font-bold text-brand">
+          <span className="font-ui text-[13px] font-bold text-brand">
             Total a pagar
           </span>
-          <span className="font-display text-[18px] font-bold text-brand tabular-nums">
+          <span className="font-ui text-[20px] font-bold text-brand tabular-nums">
             R$ {total.toFixed(2).replace(".", ",")}
           </span>
         </div>
@@ -732,30 +657,30 @@ function PaymentView({
         <button
           onClick={() => onChangeMethod("cartao")}
           className={cn(
-            "flex items-center justify-center gap-1.5 py-3 font-display text-[12px] font-bold transition-colors",
+            "flex items-center justify-center gap-1.5 py-3.5 font-ui text-[13px] font-bold transition-colors",
             method === "cartao"
               ? "border-b-2 border-brand text-brand"
               : "border-b border-neutral-200 text-neutral-500",
           )}
         >
-          <CreditCard size={13} strokeWidth={2.25} />
+          <CreditCard size={14} strokeWidth={2.25} />
           Cartão
         </button>
         <button
           onClick={() => onChangeMethod("pix")}
           className={cn(
-            "flex items-center justify-center gap-1.5 py-3 font-display text-[12px] font-bold transition-colors",
+            "flex items-center justify-center gap-1.5 py-3.5 font-ui text-[13px] font-bold transition-colors",
             method === "pix"
               ? "border-b-2 border-brand text-brand"
               : "border-b border-neutral-200 text-neutral-500",
           )}
         >
-          <Smartphone size={13} strokeWidth={2.25} />
+          <Smartphone size={14} strokeWidth={2.25} />
           Pix
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-3">
+      <div className="flex-1 overflow-y-auto px-4 py-3.5">
         <AnimatePresence mode="wait">
           {method === "cartao" ? (
             <motion.div
@@ -766,28 +691,28 @@ function PaymentView({
               transition={{ duration: 0.18 }}
             >
               <div
-                className="relative overflow-hidden rounded-xl p-3 text-white"
+                className="relative overflow-hidden rounded-xl p-3.5 text-white"
                 style={{
                   background:
                     "linear-gradient(135deg, #020788 0%, #1a1fa8 60%, #3b42c4 100%)",
                 }}
               >
-                <p className="text-[9px] font-bold uppercase tracking-[2px] text-white/70">
+                <p className="text-[10px] font-bold uppercase tracking-[2px] text-white/75">
                   Cartão salvo
                 </p>
-                <p className="mt-2 font-mono text-[14px] tracking-[3px] tabular-nums">
+                <p className="mt-2 font-mono text-[16px] tracking-[3px] tabular-nums">
                   •••• •••• •••• 4218
                 </p>
-                <div className="mt-2 flex items-end justify-between">
+                <div className="mt-3 flex items-end justify-between">
                   <div>
-                    <p className="text-[8px] uppercase text-white/60">
+                    <p className="text-[9px] uppercase text-white/60">
                       Titular
                     </p>
-                    <p className="font-display text-[10px] font-bold">
+                    <p className="font-ui text-[11px] font-bold">
                       MATEUS SOUZA
                     </p>
                   </div>
-                  <span className="rounded bg-white/15 px-1.5 py-0.5 text-[9px] font-bold tracking-wider backdrop-blur">
+                  <span className="rounded bg-white/15 px-2 py-0.5 text-[10px] font-bold tracking-wider backdrop-blur">
                     VISA
                   </span>
                 </div>
@@ -795,13 +720,16 @@ function PaymentView({
 
               <div className="mt-3 space-y-1.5">
                 <Field label="Parcelas" value="1x sem juros" />
-                <Field label="Cobrança" value={`R$ ${total.toFixed(2).replace(".", ",")}`} />
+                <Field
+                  label="Cobrança"
+                  value={`R$ ${total.toFixed(2).replace(".", ",")}`}
+                />
               </div>
 
               <motion.button
                 type="button"
                 whileTap={{ scale: 0.98 }}
-                className="mt-4 w-full rounded-md bg-brand py-2.5 text-center font-display text-[12px] font-bold text-white shadow-brand"
+                className="mt-4 w-full rounded-md bg-brand py-3 text-center font-ui text-[13px] font-bold text-white shadow-brand"
               >
                 Pagar R$ {total.toFixed(2).replace(".", ",")}
               </motion.button>
@@ -815,23 +743,27 @@ function PaymentView({
               transition={{ duration: 0.18 }}
               className="text-center"
             >
-              <div className="mx-auto mt-1 flex h-36 w-36 items-center justify-center rounded-lg border-2 border-neutral-200 bg-white">
-                <QrCode size={120} strokeWidth={0.5} className="text-neutral-900" />
+              <div className="mx-auto mt-1 flex h-40 w-40 items-center justify-center rounded-lg border-2 border-neutral-200 bg-white">
+                <QrCode
+                  size={130}
+                  strokeWidth={0.5}
+                  className="text-neutral-900"
+                />
               </div>
-              <p className="mt-2 text-[11px] text-neutral-600">
+              <p className="mt-2 text-[12px] text-neutral-600">
                 Aponte o app do banco para o QR
               </p>
               <motion.button
                 type="button"
                 whileTap={{ scale: 0.98 }}
-                className="mt-3 w-full rounded-md border border-brand bg-white py-2 text-center font-display text-[11px] font-bold text-brand"
+                className="mt-3 w-full rounded-md border border-brand bg-white py-2.5 text-center font-ui text-[12px] font-bold text-brand"
               >
                 Copiar código Pix
               </motion.button>
               <motion.button
                 type="button"
                 whileTap={{ scale: 0.98 }}
-                className="mt-1.5 w-full rounded-md bg-brand py-2.5 text-center font-display text-[12px] font-bold text-white shadow-brand"
+                className="mt-1.5 w-full rounded-md bg-brand py-3 text-center font-ui text-[13px] font-bold text-white shadow-brand"
               >
                 Já paguei
               </motion.button>
@@ -845,9 +777,9 @@ function PaymentView({
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between rounded-md bg-neutral-50 px-2.5 py-2">
-      <span className="text-[10px] text-neutral-500">{label}</span>
-      <span className="font-display text-[11px] font-bold text-neutral-900 tabular-nums">
+    <div className="flex items-center justify-between rounded-md bg-neutral-50 px-3 py-2">
+      <span className="text-[11px] text-neutral-500">{label}</span>
+      <span className="font-ui text-[12px] font-bold text-neutral-900 tabular-nums">
         {value}
       </span>
     </div>
@@ -857,9 +789,11 @@ function Field({ label, value }: { label: string; value: string }) {
 function SuccessView({
   total,
   method,
+  cartItems,
 }: {
   total: number;
   method: "cartao" | "pix";
+  cartItems: { id: string; qty: number; name: string }[];
 }) {
   return (
     <motion.div
@@ -876,51 +810,62 @@ function SuccessView({
           initial={{ scale: 0.85, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 220, damping: 16 }}
-          className="rounded-2xl bg-success/10 p-3 text-center"
+          className="rounded-2xl bg-success/10 p-3.5 text-center"
         >
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-success text-white">
-            <CheckCircle2 size={26} strokeWidth={2.5} />
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-success text-white">
+            <CheckCircle2 size={30} strokeWidth={2.5} />
           </div>
-          <p className="mt-2 font-display text-[14px] font-bold text-success">
+          <p className="mt-2 font-ui text-[15px] font-bold text-success">
             Pagamento aprovado
           </p>
-          <p className="mt-0.5 text-[10px] text-neutral-600">
+          <p className="mt-0.5 text-[11px] text-neutral-600">
             {method === "cartao"
-              ? "Cartão final 4218 · 1x"
+              ? "Cartão final 4218 · 1x sem juros"
               : "Pix · confirmado em 2s"}
           </p>
         </motion.div>
 
         <div
           data-tour="qp-retirada-qr"
-          className="mt-3 rounded-2xl border-2 border-brand/20 bg-white p-3 shadow-card"
+          className="mt-3.5 rounded-2xl border-2 border-brand/20 bg-white p-3.5 shadow-card"
         >
           <div className="flex items-start gap-3">
-            <div className="flex h-24 w-24 flex-none items-center justify-center rounded-md bg-white p-1.5 ring-1 ring-neutral-200">
-              <QrCode size={84} strokeWidth={0.5} className="text-neutral-900" />
+            <div className="flex h-28 w-28 flex-none items-center justify-center rounded-md bg-white p-2 ring-1 ring-neutral-200">
+              <QrCode size={92} strokeWidth={0.5} className="text-neutral-900" />
             </div>
             <div className="flex-1">
-              <p className="text-[9px] font-bold uppercase tracking-[2px] text-brand">
+              <p className="text-[10px] font-bold uppercase tracking-[2px] text-brand">
                 Retirada no balcão
               </p>
-              <p className="mt-0.5 font-display text-[14px] font-bold text-neutral-900">
-                Pedido #{"320108"}
+              <p className="mt-0.5 font-ui text-[15px] font-bold text-neutral-900">
+                Pedido #320108
               </p>
-              <p className="mt-1 text-[10px] leading-snug text-neutral-600">
-                Apresente este QR no balcão da Hell&apos;s Burgers · Setor B.
+              <p className="mt-1 text-[11px] leading-snug text-neutral-600">
+                Apresente este QR no balcão da Hell&apos;s Burgers · setor B.
               </p>
-              <p className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-warning">
-                <Clock size={9} strokeWidth={2.5} />
+              <p className="mt-2 inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-warning">
+                <Clock size={10} strokeWidth={2.5} />
                 Pronto em ~4 min
               </p>
             </div>
           </div>
+          {cartItems.length > 0 && (
+            <ul className="mt-3 space-y-0.5 border-t border-neutral-100 pt-2 text-[11px] text-neutral-700">
+              {cartItems.map((it) => (
+                <li key={it.id} className="flex items-center justify-between">
+                  <span>
+                    <span className="font-bold">{it.qty}×</span> {it.name}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
-        <div className="mt-3 space-y-1 rounded-lg bg-neutral-50 px-3 py-2.5 text-[10px] text-neutral-600">
+        <div className="mt-3 space-y-1 rounded-lg bg-neutral-50 px-3 py-2.5 text-[11px] text-neutral-600">
           <div className="flex items-center justify-between">
             <span>Total pago</span>
-            <span className="font-display font-bold text-neutral-900 tabular-nums">
+            <span className="font-ui font-bold text-neutral-900 tabular-nums">
               R$ {total.toFixed(2).replace(".", ",")}
             </span>
           </div>
@@ -935,7 +880,7 @@ function SuccessView({
         <motion.button
           type="button"
           whileTap={{ scale: 0.98 }}
-          className="mt-3 w-full rounded-md bg-brand py-2.5 text-center font-display text-[12px] font-bold text-white shadow-brand"
+          className="mt-3 w-full rounded-md bg-brand py-3 text-center font-ui text-[13px] font-bold text-white shadow-brand"
         >
           Comprar novamente
         </motion.button>

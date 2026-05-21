@@ -1,5 +1,22 @@
 import type { TourStep } from "../solutions";
+import { brl } from "../../lib/tourState";
 
+// ----- Helpers -----------------------------------------------------------
+
+const fmtMoney = (v?: number) =>
+  typeof v === "number" ? brl(v) : "R$ 0,00";
+
+const fmtItemList = (items?: unknown): string => {
+  if (!Array.isArray(items) || items.length === 0) return "nada ainda";
+  const list = items as { qty: number; name: string }[];
+  if (list.length === 1) return `${list[0].qty}× ${list[0].name}`;
+  if (list.length === 2)
+    return `${list[0].qty}× ${list[0].name} e ${list[1].qty}× ${list[1].name}`;
+  return `${list.length} itens (${list.reduce((s, i) => s + i.qty, 0)} unidades)`;
+};
+
+// ===== TAA ==============================================================
+// (TAA keeps its existing copy because the user is happy with that flow.)
 export const taaFlow: TourStep[] = [
   {
     id: "welcome",
@@ -50,26 +67,30 @@ export const taaFlow: TourStep[] = [
   },
 ];
 
-// --- Frente de Loja: tours interativos com recomendações inteligentes ---
-
+// ===== PDV Novo =========================================================
 export const pdvNovoFlow: TourStep[] = [
   {
-    id: "tela-principal",
+    id: "selecionar-pizza",
     targetSelector: '[data-tour="pdv-first-product"]',
     placement: "right",
-    title: "Adicione um produto",
+    title: "Adicione um produto ao pedido",
     description:
-      "Toque na Costela no bafo para iniciar o pedido. Tente clicar em outras categorias também — está tudo livre.",
+      "Toque na Marguerita para incluir no pedido. Você pode tocar em outras categorias e produtos depois, está tudo livre.",
     requiresInteraction: true,
     companions: ["OrderTicket"],
   },
   {
-    id: "adicionar-bebida",
+    id: "comanda-ao-vivo",
     targetSelector: '[data-tour="pdv-cart"]',
     placement: "left",
-    title: "Carrinho atualiza ao vivo",
-    description:
-      "Cada item entra na comanda e no cupom térmico ao mesmo tempo. Você pode ajustar quantidade ou remover qualquer item.",
+    title: (live) =>
+      live.cartCount && (live.cartCount as number) > 0
+        ? `Comanda com ${live.cartCount} item${(live.cartCount as number) > 1 ? "s" : ""}`
+        : "Comanda atualiza ao vivo",
+    description: (live) =>
+      live.cartCount && (live.cartCount as number) > 0
+        ? `Você tem ${fmtItemList(live.cartItems)} no pedido. Subtotal ${fmtMoney(live.cartSubtotal as number)}. Adicione mais itens se quiser.`
+        : "Cada item entra na comanda ao lado e no cupom térmico ao mesmo tempo.",
     actionLabel: "Continuar",
     companions: ["OrderTicket"],
   },
@@ -78,8 +99,8 @@ export const pdvNovoFlow: TourStep[] = [
     targetSelector: '[data-tour="pdv-discount"]',
     placement: "right",
     title: "Aplique o desconto fidelidade",
-    description:
-      "Desconto de 10% para clientes do programa de fidelidade — visível na linha do total.",
+    description: (live) =>
+      `Desconto de 10% para clientes do programa. Sobre ${fmtMoney(live.cartSubtotal as number)} fica ${fmtMoney(((live.cartSubtotal as number) ?? 0) * 0.9)}.`,
     actionLabel: "Aplicar desconto",
     companions: ["OrderTicket"],
   },
@@ -87,8 +108,9 @@ export const pdvNovoFlow: TourStep[] = [
     id: "pagamento",
     targetSelector: '[data-tour="pdv-payment"]',
     placement: "top",
-    title: "Finalize no cartão",
-    description: "Toque na opção VISA Crédito — a maquininha entra em ação.",
+    title: "Escolha a forma de pagamento",
+    description:
+      "Toque em qualquer opção (Crédito, Débito, PIX ou Dinheiro). Para seguir o roteiro, escolha PIX.",
     requiresInteraction: true,
     companions: ["POSCardReader", "OrderTicket"],
   },
@@ -96,84 +118,114 @@ export const pdvNovoFlow: TourStep[] = [
     id: "cupom",
     targetSelector: '[data-tour="pdv-receipt"]',
     placement: "top",
-    title: "Venda concluída",
-    description:
-      "Cupom fiscal emitido. Maquininha aprova. Operação sincronizada com Rotina Fiscal automaticamente.",
+    title: (live) =>
+      `Venda de ${fmtMoney(live.cartTotal as number)} concluída`,
+    description: (live) =>
+      `Cupom fiscal emitido. Maquininha aprova ${live.paymentLabel ?? "o pagamento"}. Operação sincronizada com Rotina Fiscal automaticamente.`,
     actionLabel: "Concluir",
     companions: ["POSCardReader", "OrderTicket"],
   },
 ];
 
+// ===== SmartPOS =========================================================
 export const smartPosFlow: TourStep[] = [
   {
-    id: "catalogo",
+    id: "categoria",
     targetSelector: '[data-tour="smartpos-catalog-item"]',
     placement: "right",
     title: "Selecione uma categoria",
     description:
-      "Toque em Pizzas para abrir o catálogo. Você pode explorar qualquer outra categoria também.",
+      "Toque em Pizzas para abrir o produto. Você pode explorar qualquer outra categoria antes de avançar.",
     requiresInteraction: true,
     companions: ["OperatorDailyPanel"],
   },
   {
-    id: "quantidade",
+    id: "personalizar",
     targetSelector: '[data-tour="smartpos-qty"]',
     placement: "top",
-    title: "Personalize o pedido",
-    description:
-      "Adicione queijo, bacon, ajuste o corte e a quantidade. Tudo livre para o atendente — o total recalcula na hora.",
+    title: (live) =>
+      live.selectedItemName
+        ? `Personalize a ${live.selectedItemName}`
+        : "Personalize o item",
+    description: (live) => {
+      const addons = (live.selectedAddons as string[]) ?? [];
+      if (addons.length === 0) {
+        return "Escolha observações, adicionais (queijo, bacon) e ajuste a quantidade. O total recalcula na hora.";
+      }
+      return `Adicionais escolhidos: ${addons.join(", ")}. Ajuste se quiser e toque em Adicionar.`;
+    },
     actionLabel: "Continuar",
     companions: ["OperatorDailyPanel"],
   },
   {
-    id: "pagamento",
+    id: "carrinho",
     targetSelector: '[data-tour="smartpos-payment-list"]',
     placement: "left",
-    title: "Cliente escolhe pagar com cartão",
-    description: "Toque em Crédito. O leitor do próprio SmartPOS é ativado.",
-    requiresInteraction: true,
-    companions: ["OperatorDailyPanel", "CustomerReceiptPhone"],
+    title: (live) => {
+      const count = (live.cartCount as number) ?? 0;
+      if (count === 0) return "Carrinho ainda vazio";
+      return `Carrinho com ${count} item${count > 1 ? "s" : ""}`;
+    },
+    description: (live) => {
+      const count = (live.cartCount as number) ?? 0;
+      if (count === 0)
+        return "Volte ao catálogo e adicione produtos para ver o resumo aqui.";
+      return `Total: ${fmtMoney(live.cartTotal as number)}. Você pode ajustar quantidades ou remover itens. Quando estiver pronto, toque em Pagar.`;
+    },
+    actionLabel: "Ir para pagamento",
+    companions: ["OperatorDailyPanel"],
   },
   {
-    id: "cartao",
+    id: "pagamento",
     targetSelector: '[data-tour="smartpos-tap"]',
     placement: "left",
-    title: "Cliente aproxima o cartão",
-    description:
-      "O SmartPOS é a maquininha. Aprovação em 2 segundos via NFC ou inserção.",
-    actionLabel: "Aprovar",
+    title: "Forma de pagamento",
+    description: (live) =>
+      live.paymentLabel
+        ? `${live.paymentLabel} selecionado para ${fmtMoney(live.cartTotal as number)}. Pode trocar para outra opção ou seguir.`
+        : "Escolha Crédito, Débito, Pix ou Dinheiro. O leitor do próprio SmartPOS é ativado em seguida.",
+    actionLabel: "Aprovar pagamento",
     companions: ["OperatorDailyPanel", "CustomerReceiptPhone"],
   },
   {
     id: "aprovado",
     targetSelector: '[data-tour="smartpos-approved"]',
     placement: "left",
-    title: "Comprovante na hora",
-    description:
-      "Cliente recebe o comprovante por SMS. O painel do operador soma a venda imediatamente.",
+    title: "Pagamento aprovado",
+    description: (live) =>
+      `${fmtMoney(live.cartTotal as number)} via ${live.paymentLabel ?? "cartão"}. Cliente recebe o comprovante por SMS. O painel do operador soma a venda imediatamente.`,
     actionLabel: "Concluir",
     companions: ["OperatorDailyPanel", "CustomerReceiptPhone"],
   },
 ];
 
+// ===== Cardápio Digital =================================================
 export const cardapioDigitalFlow: TourStep[] = [
   {
-    id: "categorias",
+    id: "abre-cardapio",
     targetSelector: '[data-tour="cd-categories"]',
     placement: "bottom",
     title: "Cliente abre no celular",
     description:
-      "O cardápio digital roda direto no navegador — sem instalar nada. Toque para entrar no cardápio.",
+      "O Cardápio Digital roda direto no navegador, sem instalar nada. Toque para abrir o cardápio completo.",
     requiresInteraction: true,
     companions: ["OrderTicket"],
   },
   {
-    id: "detalhe",
+    id: "personaliza",
     targetSelector: '[data-tour="cd-detail"]',
     placement: "right",
-    title: "Personalize o prato",
-    description:
-      "Foto, descrição e acréscimos. Toque + nos acréscimos e ajuste a quantidade — o total recalcula na hora.",
+    title: (live) =>
+      live.selectedItemName
+        ? `Personalize a ${live.selectedItemName}`
+        : "Personalize o prato",
+    description: (live) => {
+      const adds = (live.selectedAddons as string[]) ?? [];
+      if (adds.length === 0) {
+        return "Foto, descrição e acréscimos. Toque + nos acréscimos e ajuste a quantidade. O total recalcula na hora.";
+      }
+      return `Acréscimos: ${adds.join(", ")}. Quantidade: ${live.dishQty ?? 1}. Toque em Adicionar quando estiver pronto.`;
+    },
     actionLabel: "Continuar",
     companions: ["OrderTicket"],
   },
@@ -181,21 +233,28 @@ export const cardapioDigitalFlow: TourStep[] = [
     id: "carrinho",
     targetSelector: '[data-tour="cd-cart"]',
     placement: "right",
-    title: "Cliente revisa o pedido",
-    description:
-      "Itens, quantidades e total dinâmico. Pode adicionar mais, remover, ou enviar para a cozinha.",
-    actionLabel: "Continuar",
+    title: (live) => {
+      const count = (live.cartCount as number) ?? 0;
+      if (count === 0) return "Carrinho do cliente";
+      return `Pedido com ${count} item${count > 1 ? "s" : ""}`;
+    },
+    description: (live) => {
+      const count = (live.cartCount as number) ?? 0;
+      if (count === 0) return "Adicione itens antes de enviar para a cozinha.";
+      return `${fmtItemList(live.cartItems)}. Total: ${fmtMoney(live.cartTotal as number)}. Cliente pode remover, ajustar quantidade ou pedir mais.`;
+    },
+    actionLabel: "Enviar para cozinha",
     companions: ["OrderTicket"],
   },
   {
-    id: "confirmar",
+    id: "enviado",
     targetSelector: '[data-tour="cd-confirm"]',
     placement: "bottom",
-    title: "Pedido enviado para a cozinha",
+    title: "Pedido foi para a cozinha",
     description:
-      "Pronto — e lá na cozinha o pedido cai direto no KDS, sem garçom no caminho.",
+      "E lá na cozinha o pedido cai direto no KDS, sem garçom no caminho. Veja no painel ao lado.",
     actionLabel: "Ver na cozinha",
-    companions: ["KitchenDisplay", "SimulatedNotification"],
+    companions: ["KitchenDisplay"],
   },
   {
     id: "em-preparo",
@@ -209,54 +268,62 @@ export const cardapioDigitalFlow: TourStep[] = [
   },
 ];
 
+// ===== QuickPass (eventos) ==============================================
 export const quickPassFlow: TourStep[] = [
-  {
-    id: "evento",
-    targetSelector: '[data-tour="qp-catalog"]',
-    placement: "right",
-    title: "Atendimento rápido em eventos",
-    description:
-      "QuickPass é o sistema de atendimento rápido da Teknisa — ideal para estádios, shows e festivais. O cliente abre no celular dele e já vê o cardápio da loja mais próxima.",
-    actionLabel: "Continuar",
-    companions: ["RestaurantQueueBoard"],
-  },
   {
     id: "add-fritas",
     targetSelector: '[data-tour="qp-add-fritas"]',
     placement: "left",
-    title: "Adicione itens com 1 toque",
-    description:
-      "Toque no + de Fritas Rústicas para adicionar ao carrinho. Adicione mais quantos quiser — tudo livre.",
+    title: "Adicione um item ao carrinho",
+    description: (live) => {
+      const count = (live.cartCount as number) ?? 0;
+      if (count === 0) {
+        return "Toque no + de Fritas Rústicas para adicionar. Você pode adicionar quantos itens quiser do cardápio.";
+      }
+      return `Você já tem ${count} item${count > 1 ? "s" : ""} no carrinho (${fmtMoney(live.cartTotal as number)}). Adicione mais Fritas Rústicas para seguir o roteiro.`;
+    },
     requiresInteraction: true,
     companions: ["RestaurantQueueBoard"],
   },
   {
-    id: "cupom",
+    id: "revisa-cupom",
     targetSelector: '[data-tour="qp-coupon"]',
     placement: "top",
-    title: "Aplique um cupom",
-    description:
-      "Digite FAN10 e toque em Aplicar para ganhar 10% no pedido. Cupons promocionais ativados em tempo real.",
-    actionLabel: "Continuar",
+    title: (live) =>
+      live.couponApplied
+        ? "Cupom FAN10 aplicado"
+        : "Aplique um cupom de desconto",
+    description: (live) => {
+      if (live.couponApplied) {
+        return `10% off já aplicado. Subtotal ${fmtMoney(live.cartSubtotal as number)}, desconto ${fmtMoney(live.discountValue as number)}, total ${fmtMoney(live.cartTotal as number)}.`;
+      }
+      return `Carrinho atual: ${fmtMoney(live.cartTotal as number)}. Digite FAN10 e toque em Aplicar para ganhar 10%.`;
+    },
+    actionLabel: "Ir para pagamento",
     companions: ["RestaurantQueueBoard"],
   },
   {
     id: "pagamento",
     targetSelector: '[data-tour="qp-payment-tabs"]',
     placement: "bottom",
-    title: "Pague no próprio celular",
-    description:
-      "Cartão salvo ou Pix — alterne entre as abas e escolha. Sem precisar entrar na fila do caixa.",
-    actionLabel: "Continuar",
+    title: (live) =>
+      live.paymentMethod === "pix" ? "Pagando com Pix" : "Pagando no cartão",
+    description: (live) => {
+      const method = live.paymentMethod === "pix" ? "Pix" : "cartão salvo";
+      return `Total ${fmtMoney(live.cartTotal as number)} via ${method}. Você pode trocar entre Cartão e Pix nas abas acima.`;
+    },
+    actionLabel: "Concluir pagamento",
     companions: ["RestaurantQueueBoard"],
   },
   {
     id: "retirada",
     targetSelector: '[data-tour="qp-retirada-qr"]',
     placement: "left",
-    title: "QR de retirada · pula a fila",
-    description:
-      "Compra concluída. O cliente apresenta este QR no balcão e retira o pedido. Velocidade, fluidez e integração total com o ecossistema de vendas.",
+    title: "QR de retirada pronto",
+    description: (live) => {
+      const method = live.paymentMethod === "pix" ? "Pix" : "cartão";
+      return `Pagamento de ${fmtMoney(live.cartTotal as number)} via ${method} aprovado. O cliente apresenta este QR no balcão e retira sem fila.`;
+    },
     actionLabel: "Concluir",
     companions: ["RestaurantQueueBoard"],
   },

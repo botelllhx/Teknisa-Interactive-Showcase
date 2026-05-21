@@ -7,7 +7,7 @@ export const rotinaFiscalFlow: TourStep[] = [
     placement: "right",
     title: "Painel de obrigações fiscais",
     description:
-      "SPED Fiscal, EFD-Reinf, DCTFWeb — todas as obrigações do mês com status e vencimento. Zero dispersão.",
+      "SPED Fiscal, EFD-Reinf, DCTFWeb, todas as obrigações do mês com status e vencimento. Zero dispersão.",
     companions: ["FiscalBadge"],
   },
   {
@@ -25,7 +25,7 @@ export const rotinaFiscalFlow: TourStep[] = [
     placement: "right",
     title: "Validação automática de notas",
     description:
-      "1.842 notas validadas, 12 com inconsistência — sinalizadas para correção pontual. Sem revisar uma a uma manualmente.",
+      "1.842 notas validadas, 12 com inconsistência, sinalizadas para correção pontual. Sem revisar uma a uma manualmente.",
     companions: ["FiscalBadge"],
   },
   {
@@ -43,7 +43,7 @@ export const rotinaFiscalFlow: TourStep[] = [
     placement: "top",
     title: "SPED gerado e transmitido",
     description:
-      "Um toque envia a declaração ao SEFAZ. Confirmação chega no painel — auditoria fica com tudo registrado.",
+      "Um toque envia a declaração ao SEFAZ. Confirmação chega no painel, auditoria fica com tudo registrado.",
     requiresInteraction: true,
     actionLabel: "Transmitir",
     companions: ["FiscalBadge", "SimulatedNotification"],
@@ -74,7 +74,7 @@ export const rotinaRastreabilidadeFlow: TourStep[] = [
     placement: "left",
     title: "Cadeia de origem completa",
     description:
-      "Do produtor à sua filial — origem, distribuidor, CD, unidade. Compliance e segurança alimentar sem caixa-preta.",
+      "Do produtor à sua filial, origem, distribuidor, CD, unidade. Compliance e segurança alimentar sem caixa-preta.",
     companions: ["StockIndicator"],
   },
   {
@@ -104,7 +104,7 @@ export const appRotinasEstoqueFlow: TourStep[] = [
     placement: "bottom",
     title: "Tarefas de estoque do dia",
     description:
-      "Contagem por setor, validade, conferência — distribuídas conforme escala. Mobile pensado para uso no chão de loja.",
+      "Contagem por setor, validade, conferência, distribuídas conforme escala. Mobile pensado para uso no chão de loja.",
     companions: ["StockIndicator"],
   },
   {
@@ -124,7 +124,7 @@ export const appRotinasEstoqueFlow: TourStep[] = [
     placement: "top",
     title: "Divergência detectada na hora",
     description:
-      "Sistema esperava 22 kg, contagem deu 18,4. Divergência aparece imediatamente — sem esperar fechar inventário.",
+      "Sistema esperava 22 kg, contagem deu 18,4. Divergência aparece imediatamente, sem esperar fechar inventário.",
     companions: ["StockIndicator", "SimulatedNotification"],
   },
   {
@@ -133,7 +133,7 @@ export const appRotinasEstoqueFlow: TourStep[] = [
     placement: "top",
     title: "Justificativa rastreável",
     description:
-      "Perda, erro de etiquetagem, transferência não registrada — opções pré-definidas + campo livre vinculado a documento.",
+      "Perda, erro de etiquetagem, transferência não registrada, opções pré-definidas + campo livre vinculado a documento.",
     companions: ["StockIndicator"],
   },
   {
@@ -142,7 +142,7 @@ export const appRotinasEstoqueFlow: TourStep[] = [
     placement: "top",
     title: "Sincronizado com o ERP",
     description:
-      "Contagem entra no ERP em tempo real. Estoque atualizado, divergência registrada — tudo pronto para conciliação.",
+      "Contagem entra no ERP em tempo real. Estoque atualizado, divergência registrada, tudo pronto para conciliação.",
     companions: ["StockIndicator"],
   },
 ];

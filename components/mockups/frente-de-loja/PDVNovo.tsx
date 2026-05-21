@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useTourLive } from "@/lib/tourState";
 import {
   Search,
   ArrowLeft,
@@ -109,6 +110,13 @@ interface CartItem {
   code: string;
 }
 
+const PAYMENT_LABEL: Record<string, string> = {
+  credito: "Crédito",
+  debito: "Débito",
+  pix: "Pix",
+  dinheiro: "Dinheiro",
+};
+
 export function PDVNovoMockup({ step }: PDVNovoProps) {
   // Free interactivity: cart state lives here, the tour just NUDGES the user
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -162,6 +170,42 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
   const discount = discountApplied ? subtotal * 0.1 : 0;
   const total = subtotal - discount;
   const totalQty = cart.reduce((s, i) => s + i.qty, 0);
+
+  // Push live selections to tour state so tooltips reflect real choices
+  const patchLive = useTourLive((s) => s.patch);
+  useEffect(() => {
+    const lastItem = cart[cart.length - 1];
+    patchLive({
+      selectedItemName: lastItem?.name ?? PRODUCTS[0].name,
+      selectedItemPrice: lastItem?.price ?? PRODUCTS[0].price,
+      cartItems: cart,
+      cartCount: totalQty,
+      cartSubtotal: subtotal,
+      discountValue: discount,
+      couponApplied: discountApplied,
+      cartTotal: total,
+      paymentMethod: selectedPayment as
+        | "cartao"
+        | "pix"
+        | "dinheiro"
+        | "credito"
+        | "debito"
+        | undefined,
+      paymentLabel: selectedPayment ? PAYMENT_LABEL[selectedPayment] : undefined,
+      activeCategoryLabel:
+        CATEGORIES.find((c) => c.id === activeCategory)?.label ?? "Pizzas",
+    });
+  }, [
+    cart,
+    totalQty,
+    subtotal,
+    discount,
+    discountApplied,
+    total,
+    selectedPayment,
+    activeCategory,
+    patchLive,
+  ]);
 
   const completed = step >= 4;
 

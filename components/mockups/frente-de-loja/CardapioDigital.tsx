@@ -1,8 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
+import { useTourLive } from "@/lib/tourState";
 import {
   Home,
   BookOpen,
@@ -123,6 +124,33 @@ export function CardapioDigitalMockup({ step }: CardapioDigitalProps) {
       ),
     [cart],
   );
+
+  const patchLive = useTourLive((s) => s.patch);
+  useEffect(() => {
+    const itemList = Object.entries(cart).map(([id, qty]) => ({
+      id,
+      qty,
+      name: ITEMS[id]?.name ?? id,
+      price: ITEMS[id]?.price ?? 0,
+    }));
+    const cartCount = itemList.reduce((s, i) => s + i.qty, 0);
+    const last = itemList[itemList.length - 1];
+    const selectedAddonsList = Object.entries(addonQty)
+      .filter(([, q]) => q > 0)
+      .map(([id, q]) => {
+        const a = ADDONS.find((x) => x.id === id);
+        return a ? `${q}× ${a.label}` : id;
+      });
+    patchLive({
+      cartItems: itemList,
+      cartCount,
+      cartTotal: subtotal,
+      cartSubtotal: subtotal,
+      selectedItemName: last?.name ?? ITEMS.marguerita.name,
+      selectedAddons: selectedAddonsList,
+      dishQty,
+    });
+  }, [cart, subtotal, addonQty, dishQty, patchLive]);
 
   const updateAddon = (id: string, delta: number) => {
     setAddonQty((prev) => ({

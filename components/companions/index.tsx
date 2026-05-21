@@ -26,13 +26,16 @@ interface CompanionProps {
 
 export function Companion({ type, stepLabel }: CompanionProps) {
   const lower = stepLabel?.toLowerCase() ?? "";
-  const approved = lower.includes("aprovad") || lower.includes("cupom");
+  const approved =
+    lower.includes("aprovad") ||
+    lower.includes("cupom") ||
+    lower.includes("enviad");
 
   switch (type) {
     case "POSCardReader":
       return <POSCardReader status={approved ? "approved" : "waiting"} />;
     case "OrderTicket":
-      return <OrderTicket />;
+      return <OrderTicket approved={approved} />;
     case "KitchenDisplay":
       return <KitchenDisplay />;
     case "MiniDashboard":

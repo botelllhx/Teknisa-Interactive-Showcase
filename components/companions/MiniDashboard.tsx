@@ -1,111 +1,173 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, ArrowDownRight, Activity } from "lucide-react";
-import { cn } from "@/lib/cn";
+import { ArrowUp, ArrowDown, Activity } from "lucide-react";
 
-interface Kpi {
+interface Metric {
   label: string;
   value: string;
-  delta: number;
+  trend: number;
+  sparkline: number[];
 }
 
 interface MiniDashboardProps {
   title?: string;
-  kpis?: Kpi[];
-  series?: number[];
+  metrics?: Metric[];
   className?: string;
 }
 
-const DEFAULT_KPIS: Kpi[] = [
-  { label: "Pedidos", value: "1.284", delta: 12.4 },
-  { label: "Ticket médio", value: "R$ 38,90", delta: 4.1 },
-  { label: "Cancelados", value: "24", delta: -8.3 },
+const DEFAULT_METRICS: Metric[] = [
+  {
+    label: "Pedidos hoje",
+    value: "1.284",
+    trend: 12.4,
+    sparkline: [38, 42, 36, 51, 47, 58, 54, 63, 60, 72, 68, 80],
+  },
+  {
+    label: "Ticket médio",
+    value: "R$ 38,90",
+    trend: 4.1,
+    sparkline: [45, 48, 44, 50, 47, 52, 51, 56, 54, 58, 56, 60],
+  },
+  {
+    label: "Cancelamentos",
+    value: "24",
+    trend: -8.3,
+    sparkline: [62, 58, 60, 52, 54, 48, 50, 44, 42, 38, 36, 32],
+  },
 ];
-
-const DEFAULT_SERIES = [38, 42, 36, 51, 47, 58, 54, 63, 60, 72, 68, 80];
 
 export function MiniDashboard({
   title = "Visão geral · hoje",
-  kpis = DEFAULT_KPIS,
-  series = DEFAULT_SERIES,
-  className,
+  metrics = DEFAULT_METRICS,
 }: MiniDashboardProps) {
-  const max = Math.max(...series);
-
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.94 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.96 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className={cn(
-        "w-72 rounded-frame border border-brand/10 bg-white p-4 shadow-frame",
-        className,
-      )}
+      style={{
+        background: "white",
+        borderRadius: 16,
+        padding: 20,
+        boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+        width: 264,
+        fontFamily: "var(--font-ui)",
+      }}
     >
-      <div className="flex items-center justify-between">
-        <p className="font-display text-caption font-bold uppercase tracking-wider text-brand">
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 16,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 12,
+            fontWeight: 700,
+            letterSpacing: 0.5,
+            textTransform: "uppercase",
+            color: "#020788",
+          }}
+        >
           {title}
-        </p>
-        <span className="flex h-5 items-center gap-1 rounded-full bg-success/10 px-2 text-caption font-semibold text-success">
+        </span>
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+            background: "rgba(22,163,74,0.10)",
+            color: "#16a34a",
+            fontSize: 10,
+            fontWeight: 700,
+            padding: "3px 8px",
+            borderRadius: 999,
+          }}
+        >
           <Activity size={10} strokeWidth={2.5} />
           ao vivo
         </span>
       </div>
 
-      <div className="mt-3 flex h-14 items-end gap-1">
-        {series.map((value, i) => (
-          <motion.span
-            key={i}
-            initial={{ scaleY: 0 }}
-            animate={{ scaleY: 1 }}
-            transition={{ delay: 0.15 + i * 0.03, duration: 0.35, ease: "easeOut" }}
-            style={{ height: `${(value / max) * 100}%`, transformOrigin: "bottom" }}
-            className={cn(
-              "flex-1 rounded-t-sm",
-              i === series.length - 1 ? "bg-brand" : "bg-brand/30",
-            )}
-          />
-        ))}
-      </div>
-
-      <ul className="mt-4 space-y-2.5">
-        {kpis.map((kpi, i) => {
-          const positive = kpi.delta >= 0;
-          return (
-            <motion.li
-              key={kpi.label}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.25 + i * 0.06, duration: 0.3 }}
-              className="flex items-center justify-between"
+      {metrics.map((m, i) => {
+        const max = Math.max(...m.sparkline);
+        const lastIdx = m.sparkline.length - 1;
+        const positive = m.trend >= 0;
+        return (
+          <div key={m.label} style={{ marginBottom: i === metrics.length - 1 ? 0 : 14 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 4,
+              }}
             >
-              <div>
-                <p className="text-caption text-neutral-500">{kpi.label}</p>
-                <p className="font-display text-body-md font-bold text-neutral-900">
-                  {kpi.value}
-                </p>
-              </div>
+              <span style={{ fontSize: 12, color: "#495057" }}>{m.label}</span>
               <span
-                className={cn(
-                  "inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-caption font-semibold",
-                  positive
-                    ? "bg-success/10 text-success"
-                    : "bg-danger/10 text-danger",
-                )}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 3,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: positive ? "#16a34a" : "#dc2626",
+                }}
               >
                 {positive ? (
-                  <ArrowUpRight size={12} strokeWidth={2.5} />
+                  <ArrowUp size={11} strokeWidth={2.5} />
                 ) : (
-                  <ArrowDownRight size={12} strokeWidth={2.5} />
+                  <ArrowDown size={11} strokeWidth={2.5} />
                 )}
-                {Math.abs(kpi.delta).toFixed(1)}%
+                {Math.abs(m.trend).toFixed(1)}%
               </span>
-            </motion.li>
-          );
-        })}
-      </ul>
+            </div>
+            <div
+              style={{
+                fontSize: 22,
+                fontWeight: 700,
+                color: "#020788",
+                fontFamily: "var(--font-display)",
+                fontVariantNumeric: "tabular-nums",
+                lineHeight: 1.1,
+              }}
+            >
+              {m.value}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                gap: 2,
+                alignItems: "flex-end",
+                height: 28,
+                marginTop: 6,
+              }}
+            >
+              {m.sparkline.map((v, j) => (
+                <motion.div
+                  key={j}
+                  initial={{ height: 0 }}
+                  animate={{ height: `${(v / max) * 100}%` }}
+                  transition={{
+                    delay: 0.2 + i * 0.08 + j * 0.015,
+                    duration: 0.4,
+                    ease: "easeOut",
+                  }}
+                  style={{
+                    flex: 1,
+                    background: j === lastIdx ? "#020788" : "#e8e9f8",
+                    borderRadius: 2,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        );
+      })}
     </motion.div>
   );
 }

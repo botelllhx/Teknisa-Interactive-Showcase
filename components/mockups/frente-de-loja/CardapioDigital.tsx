@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Image from "next/image";
 import {
   Home,
@@ -19,7 +19,6 @@ import {
   ChefHat,
   Clock,
   Bell,
-  Utensils,
   Lock,
   ChevronLeft as Back,
   ChevronRight as Fwd,
@@ -27,6 +26,12 @@ import {
   BookOpen as Library,
   Copy,
   Type as Aa,
+  Search,
+  Star,
+  Pizza,
+  IceCream,
+  Sparkles,
+  type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
@@ -34,18 +39,90 @@ interface CardapioDigitalProps {
   step: number;
 }
 
+interface MenuItem {
+  id: string;
+  name: string;
+  desc: string;
+  price: number;
+  oldPrice?: number;
+  tag?: string;
+  imageStyle: React.CSSProperties;
+  Icon: LucideIcon;
+}
+
+// Refined, cohesive imagery — soft single-direction gradients with a tinted glow,
+// no rainbow transitions, brand-conscious palette.
+const IMG_MARGUERITA: React.CSSProperties = {
+  background:
+    "radial-gradient(circle at 30% 30%, #fde68a 0%, #fbbf24 35%, #d97706 70%, #92400e 100%)",
+};
+const IMG_FRANGO: React.CSSProperties = {
+  background:
+    "radial-gradient(circle at 30% 30%, #fef3c7 0%, #fcd34d 30%, #f59e0b 65%, #b45309 100%)",
+};
+const IMG_SOBREMESA: React.CSSProperties = {
+  background:
+    "radial-gradient(circle at 30% 30%, #fce7f3 0%, #fbcfe8 35%, #f9a8d4 70%, #be185d 100%)",
+};
+
 const ADDONS = [
-  { id: "bacon", label: "Bacon", price: 3.5 },
-  { id: "queijo", label: "Queijo", price: 3.0 },
-  { id: "calabresa", label: "Calabresa Extra", price: 5.5 },
+  { id: "bacon", label: "Bacon crocante", price: 3.5 },
+  { id: "queijo", label: "Queijo extra", price: 3.0 },
+  { id: "calabresa", label: "Calabresa premium", price: 5.5 },
 ];
 
+const ITEMS: Record<string, MenuItem> = {
+  marguerita: {
+    id: "marguerita",
+    name: "Pizza Marguerita P",
+    desc: "Molho de tomate, muçarela e manjericão",
+    price: 19.9,
+    tag: "Chef's pick",
+    imageStyle: IMG_MARGUERITA,
+    Icon: Pizza,
+  },
+  frango: {
+    id: "frango",
+    name: "Combo Frango Simples",
+    desc: "Frango grelhado, arroz, feijão e salada",
+    price: 20.0,
+    oldPrice: 30.0,
+    tag: "Promo",
+    imageStyle: IMG_FRANGO,
+    Icon: ChefHat,
+  },
+  sobremesa: {
+    id: "sobremesa",
+    name: "Sonho de Morango",
+    desc: "Massa fofa, morangos frescos e creme",
+    price: 12.0,
+    oldPrice: 18.0,
+    tag: "Promo",
+    imageStyle: IMG_SOBREMESA,
+    Icon: IceCream,
+  },
+};
+
 export function CardapioDigitalMockup({ step }: CardapioDigitalProps) {
-  // Free interactivity: addon selection + qty steppers
+  // Shared free interactivity across steps
+  const [cart, setCart] = useState<Record<string, number>>({
+    marguerita: 1,
+    frango: 1,
+    sobremesa: 1,
+  });
   const [addonQty, setAddonQty] = useState<Record<string, number>>({
     bacon: 1,
   });
   const [dishQty, setDishQty] = useState(1);
+
+  const subtotal = useMemo(
+    () =>
+      Object.entries(cart).reduce(
+        (s, [id, qty]) => s + (ITEMS[id]?.price ?? 0) * qty,
+        0,
+      ),
+    [cart],
+  );
 
   const updateAddon = (id: string, delta: number) => {
     setAddonQty((prev) => ({
@@ -54,13 +131,33 @@ export function CardapioDigitalMockup({ step }: CardapioDigitalProps) {
     }));
   };
 
+  const addToCart = (id: string, qty = 1) => {
+    setCart((prev) => ({ ...prev, [id]: (prev[id] ?? 0) + qty }));
+  };
+  const updateCartQty = (id: string, delta: number) => {
+    setCart((prev) => {
+      const next = { ...prev };
+      const nextQty = (next[id] ?? 0) + delta;
+      if (nextQty <= 0) delete next[id];
+      else next[id] = nextQty;
+      return next;
+    });
+  };
+  const removeFromCart = (id: string) => {
+    setCart((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  };
+
   return (
     <div className="flex h-full w-full flex-col bg-white text-neutral-800">
       <StatusBar />
       <TopBar />
       <main className="flex-1 overflow-hidden">
         <AnimatePresence mode="wait">
-          {step === 0 && <HomeView key="home" />}
+          {step === 0 && <HomeView key="home" cart={cart} onAdd={addToCart} />}
           {step === 1 && (
             <DetailView
               key="detail"
@@ -70,8 +167,16 @@ export function CardapioDigitalMockup({ step }: CardapioDigitalProps) {
               onUpdateDish={(d) => setDishQty(Math.max(1, dishQty + d))}
             />
           )}
-          {step === 2 && <CartView key="cart" />}
-          {step === 3 && <ConfirmView key="confirm" />}
+          {step === 2 && (
+            <CartView
+              key="cart"
+              cart={cart}
+              subtotal={subtotal}
+              onUpdateQty={updateCartQty}
+              onRemove={removeFromCart}
+            />
+          )}
+          {step === 3 && <ConfirmView key="confirm" subtotal={subtotal} />}
           {step >= 4 && <KitchenStatusView key="kitchen" />}
         </AnimatePresence>
       </main>
@@ -85,7 +190,7 @@ function StatusBar() {
   return (
     <div className="flex items-center justify-between px-5 pt-1 pb-0.5">
       <span className="font-display text-[12px] font-bold text-neutral-900 tabular-nums">
-        09:41
+        12:34
       </span>
       <div className="flex items-center gap-1 text-neutral-700">
         <span className="text-[10px] font-bold tracking-wide">5G</span>
@@ -120,7 +225,13 @@ function TopBar() {
   );
 }
 
-function HomeView() {
+function HomeView({
+  cart,
+  onAdd,
+}: {
+  cart: Record<string, number>;
+  onAdd: (id: string, qty?: number) => void;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -129,21 +240,30 @@ function HomeView() {
       transition={{ duration: 0.2 }}
       className="flex h-full flex-col overflow-y-auto"
     >
-      {/* Restaurant banner */}
+      {/* Restaurant cover — refined deep navy with subtle warmth */}
       <div className="relative h-28 w-full overflow-hidden">
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(135deg, #4a3a2a 0%, #6b5237 40%, #8a6b48 100%)",
+              "linear-gradient(135deg, #1a1410 0%, #2d2620 45%, #1f1815 100%)",
           }}
         />
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(circle at 70% 30%, rgba(217,119,6,0.25), transparent 55%)",
+          }}
+        />
+        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/40 to-transparent" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
-            <p className="font-display text-[18px] font-bold uppercase tracking-[3px] text-white drop-shadow">
+            <p className="font-display text-[20px] font-bold uppercase tracking-[6px] text-white">
               Mundo
             </p>
-            <p className="font-display text-[10px] font-bold tracking-widest text-white/80">
+            <p className="font-display text-[10px] font-bold tracking-[8px] text-white/70">
               ANIMAL
             </p>
           </div>
@@ -154,93 +274,135 @@ function HomeView() {
       <div className="px-4 pt-3">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-display text-[18px] font-bold text-brand">
+            <h1 className="font-display text-[16px] font-bold text-brand">
               Mundo Animal
             </h1>
-            <p className="text-[11px] font-medium text-brand underline">
-              Ver mais detalhes
+            <p className="mt-0.5 flex items-center gap-1 text-[10px] text-neutral-500">
+              <Star
+                size={10}
+                strokeWidth={2.25}
+                className="fill-warning text-warning"
+              />
+              <span className="font-bold text-neutral-700">4,8</span>
+              <span>· 320+ avaliações</span>
             </p>
           </div>
-          <span className="rounded-md bg-neutral-100 px-2.5 py-1 font-display text-[11px] font-semibold text-neutral-700">
+          <span className="rounded-md bg-brand-ghost px-2 py-1 font-display text-[10px] font-bold text-brand">
             Mesa 10
           </span>
         </div>
-        <span className="mt-2 inline-block rounded-md bg-success/15 px-2 py-0.5 text-[10px] font-bold text-success">
-          Aberto · 14:00 às 17:00
-        </span>
+        <div className="mt-1.5 flex items-center gap-1.5">
+          <span className="inline-block rounded-md bg-success/15 px-2 py-0.5 text-[9px] font-bold text-success">
+            Aberto · 14:00 às 17:00
+          </span>
+          <span className="inline-block rounded-md bg-neutral-100 px-2 py-0.5 text-[9px] font-bold text-neutral-600">
+            Tempo médio · 18 min
+          </span>
+        </div>
       </div>
 
-      {/* Cardápio big card */}
+      {/* Search */}
+      <div className="mx-4 mt-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-2.5 py-1.5">
+        <Search size={13} strokeWidth={2.25} className="text-neutral-400" />
+        <input
+          disabled
+          placeholder="Buscar pratos, bebidas..."
+          className="flex-1 bg-transparent text-[11px] text-neutral-500 placeholder:text-neutral-400 focus:outline-none"
+        />
+      </div>
+
+      {/* Categories shortcut */}
       <div className="mx-4 mt-3" data-tour="cd-categories">
         <motion.button
           whileTap={{ scale: 0.98 }}
-          className="flex w-full items-center gap-3 rounded-xl border-2 border-brand/15 bg-[#eef0f7] p-4"
+          className="flex w-full items-center gap-3 rounded-xl border border-brand/15 bg-brand-ghost p-3 text-left transition-shadow hover:shadow-card"
         >
-          <div className="flex h-12 w-12 flex-none items-center justify-center rounded-lg bg-white">
-            <BookOpen size={24} strokeWidth={1.75} className="text-brand/40" />
+          <div className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-white text-brand">
+            <BookOpen size={18} strokeWidth={2} />
           </div>
-          <div className="text-left">
-            <p className="text-[10px] font-medium text-neutral-600">
-              Veja todas as opções no
+          <div className="flex-1">
+            <p className="text-[9px] font-bold uppercase tracking-wider text-brand/70">
+              Veja todas as opções
             </p>
-            <p className="font-display text-[16px] font-bold text-brand">
-              CARDÁPIO
+            <p className="font-display text-[14px] font-bold text-brand">
+              Cardápio completo
             </p>
           </div>
+          <ChevronRight size={14} strokeWidth={2.5} className="text-brand" />
         </motion.button>
       </div>
 
       {/* Promoções */}
-      <div className="mt-4 flex-1 px-4">
+      <div className="mt-3 flex-1 px-4 pb-3">
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-[14px] font-bold text-brand">
-            Promoções
+          <h2 className="flex items-center gap-1.5 font-display text-[13px] font-bold text-brand">
+            <Sparkles size={12} strokeWidth={2.25} className="text-warning" />
+            Promoções de hoje
           </h2>
-          <button className="flex items-center gap-0.5 text-[11px] font-medium text-brand">
-            Ver todos
-            <ChevronRight size={12} strokeWidth={2.25} />
+          <button className="flex items-center gap-0.5 text-[10px] font-medium text-brand">
+            Ver todas
+            <ChevronRight size={11} strokeWidth={2.25} />
           </button>
         </div>
 
-        <div className="mt-2 space-y-2.5">
-          {[
-            {
-              name: "Combo Frango Simples",
-              old: 30,
-              now: 20,
-              gradient: "from-yellow-300 via-orange-400 to-red-500",
-            },
-            {
-              name: "Sonho de Morango com Creme",
-              old: 18,
-              now: 12,
-              gradient: "from-pink-200 via-pink-300 to-red-300",
-            },
-          ].map((p) => (
-            <div
-              key={p.name}
-              className="flex items-center gap-3 border-b border-neutral-100 py-2"
-            >
-              <div
-                className={cn(
-                  "h-14 w-14 flex-none rounded-lg bg-gradient-to-br",
-                  p.gradient,
-                )}
-              />
-              <div className="flex-1">
-                <p className="font-display text-[13px] font-bold text-neutral-900">
-                  {p.name}
-                </p>
-                <p className="text-[11px] text-neutral-500">
-                  De{" "}
-                  <span className="line-through">R$ {p.old},00</span> por{" "}
-                  <span className="font-bold text-success">
-                    R$ {p.now.toFixed(2).replace(".", ",")}
-                  </span>
-                </p>
-              </div>
-            </div>
-          ))}
+        <div className="mt-2 space-y-2">
+          {[ITEMS.frango, ITEMS.sobremesa].map((p) => {
+            const inCart = cart[p.id] ?? 0;
+            return (
+              <motion.div
+                key={p.id}
+                whileTap={{ scale: 0.99 }}
+                className="flex items-center gap-3 rounded-lg border border-neutral-100 bg-white p-2"
+              >
+                <div
+                  className="relative h-14 w-14 flex-none overflow-hidden rounded-lg"
+                  style={p.imageStyle}
+                >
+                  <p.Icon
+                    size={28}
+                    strokeWidth={1.5}
+                    className="absolute inset-0 m-auto text-white/40"
+                  />
+                </div>
+                <div className="flex-1">
+                  <p className="font-display text-[12px] font-bold text-neutral-900 leading-tight">
+                    {p.name}
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-neutral-500 leading-tight">
+                    {p.desc}
+                  </p>
+                  <p className="mt-1 text-[10px] text-neutral-500">
+                    {p.oldPrice && (
+                      <span className="line-through">
+                        R$ {p.oldPrice.toFixed(2).replace(".", ",")}
+                      </span>
+                    )}{" "}
+                    <span className="font-display font-bold text-success">
+                      R$ {p.price.toFixed(2).replace(".", ",")}
+                    </span>
+                  </p>
+                </div>
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.92 }}
+                  onClick={() => onAdd(p.id)}
+                  className="relative flex h-9 w-9 items-center justify-center rounded-md bg-brand text-white shadow-brand"
+                >
+                  <Plus size={13} strokeWidth={2.5} />
+                  {inCart > 0 && (
+                    <motion.span
+                      key={inCart}
+                      initial={{ scale: 0.6 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-success px-1 text-[8px] font-bold text-white"
+                    >
+                      {inCart}
+                    </motion.span>
+                  )}
+                </motion.button>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </motion.div>
@@ -258,12 +420,13 @@ function DetailView({
   onUpdateAddon: (id: string, delta: number) => void;
   onUpdateDish: (delta: number) => void;
 }) {
+  const item = ITEMS.marguerita;
   const selectedCount = Object.values(addonQty).reduce((s, q) => s + q, 0);
   const addonsTotal = ADDONS.reduce(
     (s, a) => s + a.price * (addonQty[a.id] ?? 0),
     0,
   );
-  const total = (19.9 + addonsTotal) * dishQty;
+  const total = (item.price + addonsTotal) * dishQty;
 
   return (
     <motion.div
@@ -278,78 +441,88 @@ function DetailView({
         <button className="text-brand hover:bg-brand-ghost rounded">
           <ChevronLeft size={20} strokeWidth={2.5} />
         </button>
-        <div>
-          <h1 className="font-display text-[20px] font-bold text-brand">
-            Pizza Marguerita P
+        <div className="flex-1">
+          <h1 className="font-display text-[18px] font-bold text-brand leading-tight">
+            {item.name}
           </h1>
           <p className="font-display text-[12px] font-bold text-brand">
-            R$ 19,90
+            R$ {item.price.toFixed(2).replace(".", ",")}
           </p>
         </div>
       </div>
 
-      <div className="mx-4 mt-3 flex h-32 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-amber-200 via-red-300 to-red-500">
-        <Utensils size={56} strokeWidth={1} className="text-white/40" />
+      <div
+        className="mx-4 mt-3 flex h-28 items-center justify-center overflow-hidden rounded-2xl"
+        style={item.imageStyle}
+      >
+        <Pizza size={56} strokeWidth={1} className="text-white/50" />
       </div>
 
-      <p className="mt-3 px-4 text-[12px] leading-relaxed text-neutral-600">
-        Uma combinação clássica e irresistível: molho de tomate, muçarela
-        derretida, rodelas de tomate fresco, toque de manjericão e um fio de
-        azeite para finalizar.
+      <p className="mt-3 px-4 text-[11px] leading-relaxed text-neutral-600">
+        Molho de tomate, muçarela derretida, rodelas de tomate fresco, toque de
+        manjericão e um fio de azeite para finalizar.
       </p>
 
-      <div className="mt-3 bg-[#eef0f7] px-4 py-2">
-        <p className="font-display text-[13px] font-bold text-brand">
-          Escolha o acréscimo
+      <div className="mt-2 flex items-center justify-between bg-brand-ghost px-4 py-1.5">
+        <p className="font-display text-[12px] font-bold text-brand">
+          Acréscimos
         </p>
-        <p className="text-[10px] text-neutral-500">{selectedCount} / 3</p>
+        <span className="text-[9px] font-medium text-neutral-500">
+          {selectedCount} selecionado(s)
+        </span>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-2">
-        <div className="space-y-2">
+      <div className="flex-1 overflow-y-auto px-4 py-1.5">
+        <div className="space-y-1">
           {ADDONS.map((add) => {
             const qty = addonQty[add.id] ?? 0;
+            const active = qty > 0;
             return (
               <div
                 key={add.id}
-                className="flex items-center justify-between border-b border-neutral-100 py-2"
+                className={cn(
+                  "flex items-center justify-between rounded-lg border px-2 py-1.5 transition-colors",
+                  active
+                    ? "border-brand/30 bg-brand-ghost"
+                    : "border-neutral-100 bg-white",
+                )}
               >
                 <div>
                   <p className="font-display text-[12px] font-bold text-neutral-900">
                     {add.label}
                   </p>
-                  <p className="font-display text-[12px] font-bold text-neutral-900">
-                    R$ {add.price.toFixed(2).replace(".", ",")}
+                  <p className="text-[10px] text-neutral-500">
+                    + R$ {add.price.toFixed(2).replace(".", ",")}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <button
                     type="button"
                     onClick={() => onUpdateAddon(add.id, -1)}
                     disabled={qty === 0}
                     className={cn(
-                      "flex h-8 w-8 items-center justify-center rounded-md",
+                      "flex h-7 w-7 items-center justify-center rounded-md",
                       qty === 0
                         ? "bg-neutral-100 text-neutral-300"
                         : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200",
                     )}
                   >
-                    <Minus size={12} strokeWidth={2.25} />
+                    <Minus size={11} strokeWidth={2.25} />
                   </button>
                   <motion.span
                     key={qty}
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
-                    className="w-5 text-center font-display text-[14px] font-bold text-neutral-700"
+                    className="w-4 text-center font-display text-[12px] font-bold text-neutral-700 tabular-nums"
                   >
                     {qty}
                   </motion.span>
                   <button
                     type="button"
                     onClick={() => onUpdateAddon(add.id, 1)}
-                    className="flex h-8 w-8 items-center justify-center rounded-md bg-[#dee3f2] text-brand hover:bg-brand-subtle"
+                    className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-white hover:bg-brand-light"
                   >
-                    <Plus size={12} strokeWidth={2.5} />
+                    <Plus size={11} strokeWidth={2.5} />
                   </button>
                 </div>
               </div>
@@ -358,47 +531,59 @@ function DetailView({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 border-t border-neutral-100 px-3 py-2.5">
-        <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-2 border-t border-neutral-100 px-3 py-2">
+        <div className="flex items-center gap-1.5 rounded-md border border-neutral-200 px-1">
           <button
             type="button"
             onClick={() => onUpdateDish(-1)}
             disabled={dishQty <= 1}
             className={cn(
-              "text-neutral-400",
-              dishQty <= 1 && "cursor-not-allowed opacity-50",
+              "flex h-7 w-7 items-center justify-center text-neutral-500",
+              dishQty <= 1 && "opacity-30",
             )}
           >
-            <Trash2 size={14} strokeWidth={2} />
+            <Minus size={11} strokeWidth={2.25} />
           </button>
-          <span className="w-4 text-center font-display text-[12px] font-bold text-neutral-900">
+          <span className="w-5 text-center font-display text-[12px] font-bold text-neutral-900 tabular-nums">
             {dishQty}
           </span>
           <button
             type="button"
             onClick={() => onUpdateDish(1)}
-            className="flex h-7 w-7 items-center justify-center rounded-md bg-[#dee3f2] text-brand hover:bg-brand-subtle"
+            className="flex h-7 w-7 items-center justify-center text-brand"
           >
-            <Plus size={12} strokeWidth={2.5} />
+            <Plus size={11} strokeWidth={2.5} />
           </button>
         </div>
-        <button
+        <motion.button
           type="button"
+          whileTap={{ scale: 0.97 }}
           className="flex flex-1 items-center justify-between rounded-md bg-brand px-3 py-2 text-white shadow-brand"
         >
           <span className="font-display text-[11px] font-bold">
-            Adicionar aos pedidos
+            Adicionar ao pedido
           </span>
           <span className="font-display text-[12px] font-bold tabular-nums">
             R$ {total.toFixed(2).replace(".", ",")}
           </span>
-        </button>
+        </motion.button>
       </div>
     </motion.div>
   );
 }
 
-function CartView() {
+function CartView({
+  cart,
+  subtotal,
+  onUpdateQty,
+  onRemove,
+}: {
+  cart: Record<string, number>;
+  subtotal: number;
+  onUpdateQty: (id: string, delta: number) => void;
+  onRemove: (id: string) => void;
+}) {
+  const entries = Object.entries(cart);
   return (
     <motion.div
       data-tour="cd-cart"
@@ -408,109 +593,125 @@ function CartView() {
       transition={{ duration: 0.2 }}
       className="flex h-full flex-col overflow-y-auto"
     >
-      <h1 className="px-4 pt-2 font-display text-[20px] font-bold text-brand">
-        Pedidos
-      </h1>
-
-      <div className="mx-4 mt-2 h-20 overflow-hidden rounded-xl bg-gradient-to-r from-amber-700 via-orange-700 to-red-700" />
-
-      <div className="mt-3 flex items-center justify-between px-4">
-        <h2 className="font-display text-[14px] font-bold text-brand">
-          Mundo Animal
-        </h2>
-        <span className="rounded-md bg-neutral-100 px-2 py-0.5 text-[10px] font-bold text-neutral-700">
+      <div className="flex items-center justify-between px-4 pt-2">
+        <h1 className="font-display text-[18px] font-bold text-brand">
+          Seu pedido
+        </h1>
+        <span className="rounded-md bg-brand-ghost px-2 py-1 text-[10px] font-bold text-brand">
           Mesa 10
         </span>
       </div>
 
-      <div className="mt-2 flex-1 space-y-2 px-4 py-2">
-        {[
-          {
-            name: "Pizza Marguerita P",
-            price: 19.9,
-            qty: 1,
-            color: "from-amber-300 via-red-400 to-red-500",
-          },
-          {
-            name: "Coca Cola Zero LT 350ml",
-            price: 7.0,
-            qty: 1,
-            color: "from-red-500 via-red-600 to-red-800",
-          },
-          {
-            name: "Combo Frango Simples",
-            price: 20.0,
-            qty: 1,
-            color: "from-yellow-300 via-orange-400 to-red-500",
-          },
-        ].map((item) => (
-          <div key={item.name} className="border-b border-neutral-100 pb-2">
-            <div className="flex items-start gap-3">
+      <p className="px-4 text-[10px] text-neutral-500">
+        Mundo Animal · {entries.length} item(s)
+      </p>
+
+      <div className="mt-2 flex-1 space-y-1.5 px-4 py-1">
+        {entries.length === 0 && (
+          <p className="py-8 text-center text-[12px] text-neutral-500">
+            Seu pedido está vazio.
+          </p>
+        )}
+        {entries.map(([id, qty]) => {
+          const p = ITEMS[id];
+          if (!p) return null;
+          return (
+            <motion.div
+              key={id}
+              layout
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="flex items-start gap-2 rounded-lg border border-neutral-100 bg-white p-2"
+            >
               <div
-                className={cn(
-                  "h-12 w-12 flex-none rounded-lg bg-gradient-to-br",
-                  item.color,
-                )}
-              />
+                className="relative h-12 w-12 flex-none overflow-hidden rounded-md"
+                style={p.imageStyle}
+              >
+                <p.Icon
+                  size={22}
+                  strokeWidth={1.5}
+                  className="absolute inset-0 m-auto text-white/40"
+                />
+              </div>
               <div className="flex-1">
-                <p className="font-display text-[12px] font-bold text-neutral-900">
-                  {item.name}
+                <p className="font-display text-[11px] font-bold text-neutral-900">
+                  {p.name}
                 </p>
-                <div className="mt-1 flex items-center gap-2">
-                  <button className="flex items-center gap-1 rounded-md bg-[#eef0f7] px-2 py-0.5 text-[10px] font-medium text-neutral-700 hover:bg-brand-subtle">
-                    <Edit3 size={9} strokeWidth={2.25} />
-                    Editar
-                  </button>
-                </div>
+                <button className="mt-0.5 flex items-center gap-1 rounded-md bg-brand-ghost px-1.5 py-0.5 text-[9px] font-medium text-brand">
+                  <Edit3 size={9} strokeWidth={2.25} />
+                  Editar
+                </button>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <span className="font-display text-[13px] font-bold text-brand">
-                  R$ {item.price.toFixed(2).replace(".", ",")}
+                <span className="font-display text-[12px] font-bold text-brand tabular-nums">
+                  R$ {(p.price * qty).toFixed(2).replace(".", ",")}
                 </span>
-                <div className="flex items-center gap-1">
-                  <button className="text-neutral-400 hover:text-danger">
-                    <Trash2 size={11} strokeWidth={2} />
+                <div className="flex items-center gap-1 rounded-md border border-neutral-200 px-1">
+                  <button
+                    type="button"
+                    onClick={() => (qty === 1 ? onRemove(id) : onUpdateQty(id, -1))}
+                    className={cn(
+                      "flex h-5 w-5 items-center justify-center",
+                      qty === 1 ? "text-neutral-400" : "text-neutral-500",
+                    )}
+                  >
+                    {qty === 1 ? (
+                      <Trash2 size={10} strokeWidth={2} />
+                    ) : (
+                      <Minus size={10} strokeWidth={2.25} />
+                    )}
                   </button>
-                  <span className="w-4 text-center font-display text-[11px] font-bold">
-                    {item.qty}
-                  </span>
-                  <button className="flex h-5 w-5 items-center justify-center rounded bg-[#dee3f2] text-brand hover:bg-brand-subtle">
-                    <Plus size={9} strokeWidth={2.5} />
+                  <motion.span
+                    key={qty}
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    className="w-4 text-center font-display text-[11px] font-bold tabular-nums"
+                  >
+                    {qty}
+                  </motion.span>
+                  <button
+                    type="button"
+                    onClick={() => onUpdateQty(id, 1)}
+                    className="flex h-5 w-5 items-center justify-center text-brand"
+                  >
+                    <Plus size={10} strokeWidth={2.5} />
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
-        ))}
+            </motion.div>
+          );
+        })}
       </div>
 
       <div className="border-t border-neutral-100 bg-white px-4 py-3">
         <div className="flex items-center justify-between">
-          <span className="font-display text-[14px] font-bold text-brand">
-            Total a pagar:
+          <span className="font-display text-[13px] font-bold text-neutral-800">
+            Total
           </span>
           <span className="font-display text-[16px] font-bold text-brand tabular-nums">
-            R$ 100,00
+            R$ {subtotal.toFixed(2).replace(".", ",")}
           </span>
         </div>
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.98 }}
+          className="mt-2 w-full rounded-md bg-brand py-2.5 text-center font-display text-[12px] font-bold text-white shadow-brand"
+        >
+          Enviar para a cozinha
+        </motion.button>
         <button
           type="button"
-          className="mt-2 w-full rounded-md bg-brand py-2.5 text-center font-display text-[12px] font-bold text-white shadow-brand hover:bg-brand-light"
+          className="mt-1.5 w-full rounded-md border border-brand bg-white py-2 text-center font-display text-[11px] font-bold text-brand"
         >
-          Chamar Garçom
-        </button>
-        <button
-          type="button"
-          className="mt-1.5 w-full rounded-md border-2 border-brand bg-white py-2 text-center font-display text-[11px] font-bold text-brand hover:bg-brand-ghost"
-        >
-          Fazer outro pedido
+          Adicionar mais itens
         </button>
       </div>
     </motion.div>
   );
 }
 
-function ConfirmView() {
+function ConfirmView({ subtotal }: { subtotal: number }) {
   return (
     <motion.div
       data-tour="cd-confirm"
@@ -524,30 +725,30 @@ function ConfirmView() {
         initial={{ scale: 0.5 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 240, damping: 14 }}
-        className="relative flex h-24 w-24 items-center justify-center rounded-full bg-success/15 text-success"
+        className="relative flex h-20 w-20 items-center justify-center rounded-full bg-success/15 text-success"
       >
         <motion.span
           animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0, 0.4] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
           className="absolute inset-0 rounded-full bg-success/20"
         />
-        <CheckCircle2 size={54} strokeWidth={2.25} />
+        <CheckCircle2 size={44} strokeWidth={2.25} />
       </motion.div>
-      <h2 className="mt-5 font-display text-[22px] font-bold text-brand">
+      <h2 className="mt-4 font-display text-[18px] font-bold text-brand">
         Pedido enviado!
       </h2>
-      <p className="mt-1 text-center text-[12px] text-neutral-500">
-        A cozinha já recebeu seu pedido
+      <p className="mt-1 text-center text-[11px] text-neutral-500">
+        A cozinha recebeu seu pedido no <span className="font-bold">KDS</span>.
       </p>
-      <div className="mt-6 rounded-2xl border-2 border-dashed border-success/30 bg-success/5 px-6 py-3 text-center">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-success">
+      <div className="mt-4 rounded-2xl border-2 border-dashed border-success/30 bg-success/5 px-6 py-3 text-center">
+        <p className="text-[9px] font-bold uppercase tracking-wider text-success">
           Número do pedido
         </p>
-        <p className="font-display text-[26px] font-bold leading-none text-success tabular-nums">
+        <p className="font-display text-[24px] font-bold leading-none text-success tabular-nums">
           #C1247
         </p>
-        <p className="mt-2 text-[11px] text-neutral-600">
-          Mesa 10 · Mundo Animal · R$ 100,00
+        <p className="mt-1.5 text-[10px] text-neutral-600">
+          Mesa 10 · R$ {subtotal.toFixed(2).replace(".", ",")}
         </p>
       </div>
     </motion.div>
@@ -557,27 +758,27 @@ function ConfirmView() {
 function KitchenStatusView() {
   return (
     <div data-tour="cd-kitchen" className="flex h-full flex-col px-4 pt-2">
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-2 flex items-center justify-between">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-wider text-brand">
+          <p className="text-[9px] font-bold uppercase tracking-wider text-brand">
             Pedido #C1247 · Mesa 10
           </p>
-          <h2 className="font-display text-[15px] font-bold text-brand">
+          <h2 className="font-display text-[14px] font-bold text-brand">
             Acompanhe seu pedido
           </h2>
         </div>
-        <span className="rounded-full bg-warning/15 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-warning">
+        <span className="rounded-full bg-warning/15 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-warning">
           Em preparo
         </span>
       </div>
 
-      <div className="rounded-2xl border-2 border-brand/10 bg-[#eef0f7] p-4">
+      <div className="rounded-2xl border border-brand/10 bg-brand-ghost p-3">
         <div className="relative">
           <span
             aria-hidden
-            className="absolute left-[19px] top-2 bottom-2 w-px border-l-2 border-dashed border-brand/20"
+            className="absolute left-[17px] top-2 bottom-2 w-px border-l-2 border-dashed border-brand/20"
           />
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {[
               {
                 Icon: CheckCircle2,
@@ -600,13 +801,13 @@ function KitchenStatusView() {
               <div key={i} className="relative flex items-start gap-3">
                 <span
                   className={cn(
-                    "relative z-10 flex h-10 w-10 flex-none items-center justify-center rounded-full",
+                    "relative z-10 flex h-9 w-9 flex-none items-center justify-center rounded-full",
                     item.done && "bg-success text-white",
                     item.active && "bg-brand text-white shadow-brand",
                     !item.done && !item.active && "bg-white text-neutral-400",
                   )}
                 >
-                  <item.Icon size={18} strokeWidth={2} />
+                  <item.Icon size={16} strokeWidth={2} />
                   {item.active && (
                     <motion.span
                       animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0, 0.4] }}
@@ -616,10 +817,10 @@ function KitchenStatusView() {
                   )}
                 </span>
                 <div className="flex-1">
-                  <p className="font-display text-[12px] font-bold text-neutral-900">
+                  <p className="font-display text-[11px] font-bold text-neutral-900">
                     {item.label}
                   </p>
-                  <p className="text-[10px] text-neutral-500">{item.time}</p>
+                  <p className="text-[9px] text-neutral-500">{item.time}</p>
                 </div>
               </div>
             ))}
@@ -627,14 +828,14 @@ function KitchenStatusView() {
         </div>
       </div>
 
-      <div className="mt-3 flex items-center justify-between rounded-xl bg-brand-ghost px-4 py-3">
+      <div className="mt-2 flex items-center justify-between rounded-xl bg-brand-ghost px-3 py-2">
         <div className="flex items-center gap-2">
-          <Clock size={14} strokeWidth={2.25} className="text-brand" />
+          <Clock size={13} strokeWidth={2.25} className="text-brand" />
           <span className="font-display text-[11px] font-bold text-brand">
             Tempo estimado
           </span>
         </div>
-        <span className="font-display text-[16px] font-bold text-brand tabular-nums">
+        <span className="font-display text-[14px] font-bold text-brand tabular-nums">
           14 min
         </span>
       </div>

@@ -46,7 +46,7 @@ const config: Config = {
       },
       fontFamily: {
         display: ["var(--font-display)", "Sora", "sans-serif"],
-        ui: ["var(--font-ui)", "Rubik", "sans-serif"],
+        ui: ["var(--font-ui)", "Roboto", "sans-serif"],
       },
       fontSize: {
         "display-2xl": ["4.5rem", { lineHeight: "1.05", fontWeight: "700" }],

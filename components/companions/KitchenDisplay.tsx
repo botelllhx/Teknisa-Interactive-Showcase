@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame, Clock, Check, ChefHat } from "lucide-react";
+import { Flame, Clock, Check, ChefHat, ChevronRight } from "lucide-react";
 import { CompanionShell } from "./CompanionShell";
 
 interface KitchenOrder {
@@ -19,6 +19,13 @@ interface KitchenDisplayProps {
 
 const DEFAULT_ORDERS: KitchenOrder[] = [
   {
+    id: "C-220",
+    table: "Balcão",
+    items: ["2x X-Burguer Artesanal", "2x Fritas grande"],
+    elapsed: "04:12",
+    status: "preparando",
+  },
+  {
     id: "C-218",
     table: "Mesa 07",
     items: ["1x Risoto cogumelos", "1x Vinho tinto taça"],
@@ -32,36 +39,38 @@ const DEFAULT_ORDERS: KitchenOrder[] = [
     elapsed: "00:08",
     status: "novo",
   },
-  {
-    id: "C-220",
-    table: "Balcão",
-    items: ["2x X-Burguer", "2x Fritas grande"],
-    elapsed: "04:12",
-    status: "preparando",
-  },
 ];
 
 const STATUS_TONES: Record<
   KitchenOrder["status"],
-  { bg: string; ring: string; chip: string; chipText: string }
+  {
+    border: string;
+    bg: string;
+    chip: string;
+    label: string;
+    accent: string;
+  }
 > = {
   novo: {
-    bg: "rgba(2,7,136,0.05)",
-    ring: "rgba(2,7,136,0.25)",
+    border: "#020788",
+    bg: "rgba(2,7,136,0.06)",
     chip: "#020788",
-    chipText: "Novo",
+    label: "Novo",
+    accent: "#020788",
   },
   preparando: {
-    bg: "rgba(217,119,6,0.06)",
-    ring: "rgba(217,119,6,0.30)",
+    border: "#d97706",
+    bg: "rgba(217,119,6,0.07)",
     chip: "#d97706",
-    chipText: "Preparando",
+    label: "Em preparo",
+    accent: "#d97706",
   },
   pronto: {
-    bg: "rgba(22,163,74,0.06)",
-    ring: "rgba(22,163,74,0.30)",
+    border: "#16a34a",
+    bg: "rgba(22,163,74,0.08)",
     chip: "#16a34a",
-    chipText: "Pronto",
+    label: "Pronto",
+    accent: "#16a34a",
   },
 };
 
@@ -78,10 +87,11 @@ export function KitchenDisplay({
   return (
     <CompanionShell
       label="KDS · Cozinha"
-      sublabel="Monitor da copa"
+      sublabel="Lá na copa"
       live
       pulse={!!highlightId}
     >
+      {/* Light-grey monitor casing (matches device rule) */}
       <motion.div
         layout
         initial={{ opacity: 0, y: 8 }}
@@ -92,39 +102,73 @@ export function KitchenDisplay({
           background:
             "linear-gradient(180deg, #ebedf1 0%, #dde0e5 60%, #d4d7de 100%)",
           borderRadius: 22,
-          padding: 12,
+          padding: 10,
           boxShadow:
             "0 0 0 1px rgba(0,0,0,0.06), 0 18px 44px rgba(0,0,0,0.14), 0 4px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.7)",
         }}
       >
-        {/* LCD screen */}
+        {/* Webcam / sensor strip */}
+        <div className="mb-1.5 flex items-center justify-center gap-2">
+          <span
+            aria-hidden
+            className="h-1 w-1 rounded-full bg-neutral-400/60"
+          />
+          <span className="text-[7px] font-bold uppercase tracking-[3px] text-neutral-400">
+            Teknisa KDS
+          </span>
+          <span
+            aria-hidden
+            className="h-1 w-1 rounded-full bg-neutral-400/60"
+          />
+        </div>
+
+        {/* LCD screen — LIGHT theme */}
         <div
           style={{
             background:
-              "linear-gradient(180deg, #1a1f2e 0%, #0f1421 100%)",
+              "linear-gradient(180deg, #ffffff 0%, #f8f9fb 100%)",
             borderRadius: 14,
-            padding: 12,
+            padding: 10,
             border: "1px solid #c8ccd5",
             boxShadow:
-              "inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.6)",
+              "inset 0 2px 4px rgba(0,0,0,0.06), 0 1px 0 rgba(255,255,255,0.6)",
           }}
         >
           {/* Top bar */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between border-b border-neutral-100 pb-2">
             <div className="flex items-center gap-1.5">
-              <ChefHat size={11} strokeWidth={2.25} className="text-white/70" />
-              <span className="font-display text-[10px] font-bold uppercase tracking-[2px] text-white/90">
-                Cozinha
+              <span className="flex h-5 w-5 items-center justify-center rounded-md bg-brand text-white">
+                <ChefHat size={11} strokeWidth={2.25} />
               </span>
+              <div>
+                <p className="font-display text-[10px] font-bold uppercase tracking-[2px] text-brand leading-none">
+                  Cozinha
+                </p>
+                <p className="text-[8px] text-neutral-500 leading-none">
+                  Linha quente · turno 2
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <StatusDot tone="#020788" count={stats.novo} />
-              <StatusDot tone="#d97706" count={stats.preparando} />
-              <StatusDot tone="#16a34a" count={stats.pronto} />
+            <div className="flex items-center gap-1">
+              <StatusPill
+                tone={STATUS_TONES.novo.accent}
+                count={stats.novo}
+                label="Novos"
+              />
+              <StatusPill
+                tone={STATUS_TONES.preparando.accent}
+                count={stats.preparando}
+                label="Em preparo"
+              />
+              <StatusPill
+                tone={STATUS_TONES.pronto.accent}
+                count={stats.pronto}
+                label="Prontos"
+              />
             </div>
           </div>
 
-          {/* Orders */}
+          {/* Orders grid */}
           <div className="mt-2 space-y-1.5">
             <AnimatePresence mode="popLayout">
               {orders.map((order, i) => {
@@ -148,45 +192,49 @@ export function KitchenDisplay({
                     }}
                     style={{
                       background: tone.bg,
-                      border: `1px solid ${tone.ring}`,
-                      borderRadius: 10,
-                      padding: "8px 10px",
-                      backdropFilter: "blur(4px)",
+                      borderLeft: `3px solid ${tone.border}`,
+                      borderRadius: 8,
+                      padding: "6px 8px",
                     }}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-baseline gap-1.5">
-                        <span className="font-display text-[12px] font-bold text-white">
+                        <span className="font-display text-[12px] font-bold text-neutral-900">
                           {order.table}
                         </span>
-                        <span className="text-[9px] font-mono text-white/60 tabular-nums">
+                        <span className="font-mono text-[9px] text-neutral-500 tabular-nums">
                           #{order.id}
                         </span>
                       </div>
                       <span
                         style={{ background: tone.chip }}
-                        className="rounded-full px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-white"
+                        className="rounded-full px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-white"
                       >
-                        {tone.chipText}
+                        {tone.label}
                       </span>
                     </div>
-                    <ul className="mt-1.5 space-y-0.5">
+                    <ul className="mt-1 space-y-0.5">
                       {order.items.map((item, j) => (
                         <li
                           key={`${order.id}-${j}`}
-                          className="text-[10px] text-white/80"
+                          className="flex items-start gap-1 text-[10px] text-neutral-700"
                         >
-                          · {item}
+                          <ChevronRight
+                            size={9}
+                            strokeWidth={2.5}
+                            className="mt-[3px] flex-none text-neutral-400"
+                          />
+                          <span className="leading-snug">{item}</span>
                         </li>
                       ))}
                     </ul>
-                    <div className="mt-1.5 flex items-center justify-between border-t border-white/10 pt-1.5 text-[9px] text-white/70">
-                      <span className="flex items-center gap-1">
+                    <div className="mt-1 flex items-center justify-between border-t border-neutral-200/60 pt-1 text-[9px] text-neutral-500">
+                      <span className="flex items-center gap-1 font-mono tabular-nums">
                         {order.status === "pronto" ? (
                           <Check
                             size={10}
                             strokeWidth={2.5}
-                            color="#22c55e"
+                            color={tone.accent}
                           />
                         ) : (
                           <Clock size={10} strokeWidth={2.25} />
@@ -194,9 +242,20 @@ export function KitchenDisplay({
                         {order.elapsed}
                       </span>
                       {order.status === "novo" && (
-                        <span className="flex items-center gap-1 text-warning">
-                          <Flame size={10} strokeWidth={2.5} />
+                        <span
+                          className="flex items-center gap-1 font-bold uppercase tracking-wider"
+                          style={{ color: tone.accent }}
+                        >
+                          <Flame size={9} strokeWidth={2.5} />
                           chegou agora
+                        </span>
+                      )}
+                      {order.status === "pronto" && (
+                        <span
+                          className="font-bold uppercase tracking-wider"
+                          style={{ color: tone.accent }}
+                        >
+                          pronto para servir
                         </span>
                       )}
                     </div>
@@ -207,20 +266,20 @@ export function KitchenDisplay({
           </div>
         </div>
 
-        {/* Mount bezel detail */}
-        <div className="mt-2 flex items-center justify-center gap-2">
+        {/* Bezel detail */}
+        <div className="mt-1.5 flex items-center justify-center gap-2">
           <span
             aria-hidden
-            className="h-1 w-12 rounded-full"
-            style={{ background: "rgba(0,0,0,0.08)" }}
+            className="h-0.5 w-10 rounded-full"
+            style={{ background: "rgba(0,0,0,0.06)" }}
           />
-          <span className="text-[8px] font-bold uppercase tracking-widest text-neutral-400">
-            Cozinha · Linha quente
+          <span className="text-[7px] font-bold uppercase tracking-[2px] text-neutral-400">
+            Pass · linha quente
           </span>
           <span
             aria-hidden
-            className="h-1 w-12 rounded-full"
-            style={{ background: "rgba(0,0,0,0.08)" }}
+            className="h-0.5 w-10 rounded-full"
+            style={{ background: "rgba(0,0,0,0.06)" }}
           />
         </div>
       </motion.div>
@@ -228,14 +287,32 @@ export function KitchenDisplay({
   );
 }
 
-function StatusDot({ tone, count }: { tone: string; count: number }) {
+function StatusPill({
+  tone,
+  count,
+  label,
+}: {
+  tone: string;
+  count: number;
+  label: string;
+}) {
   return (
-    <span className="flex items-center gap-1">
+    <span
+      className="flex items-center gap-1 rounded-full px-1.5 py-0.5"
+      style={{
+        background: `${tone}10`,
+        border: `1px solid ${tone}30`,
+      }}
+      title={label}
+    >
       <span
-        className="h-1.5 w-1.5 rounded-full"
-        style={{ background: tone, boxShadow: `0 0 6px ${tone}80` }}
+        className="h-1 w-1 rounded-full"
+        style={{ background: tone }}
       />
-      <span className="text-[9px] font-bold text-white/80 tabular-nums">
+      <span
+        className="font-display text-[9px] font-bold tabular-nums"
+        style={{ color: tone }}
+      >
         {count}
       </span>
     </span>

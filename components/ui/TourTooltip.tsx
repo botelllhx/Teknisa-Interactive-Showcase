@@ -53,44 +53,80 @@ function computePosition(rect: DOMRect | null): Position {
   const spaceBelow = vh - rect.bottom;
   const spaceAbove = rect.top;
 
-  // Prefer side placement when target is wide enough
-  // Order of preference: right, left, bottom, top
+  // Is the element near the horizontal center of the screen? If so, the sides
+  // are typically reserved for other UI columns (cart, function keys, etc.)
+  // and we should prefer top/bottom to avoid covering them.
+  const centerRatio = targetCenterX / vw;
+  const isInCenterZone = centerRatio > 0.30 && centerRatio < 0.70;
+
   let top = 0;
   let left = 0;
   let arrowDirection: ArrowDirection = "none";
   let arrowOffset = TOOLTIP_WIDTH / 2;
 
-  if (spaceRight >= TOOLTIP_WIDTH + TOOLTIP_GAP + VIEWPORT_MARGIN) {
+  const tryRight = () => spaceRight >= TOOLTIP_WIDTH + TOOLTIP_GAP + VIEWPORT_MARGIN;
+  const tryLeft = () => spaceLeft >= TOOLTIP_WIDTH + TOOLTIP_GAP + VIEWPORT_MARGIN;
+  const tryBelow = () => spaceBelow >= TOOLTIP_HEIGHT_ESTIMATE + TOOLTIP_GAP + VIEWPORT_MARGIN;
+  const tryAbove = () => spaceAbove >= TOOLTIP_HEIGHT_ESTIMATE + TOOLTIP_GAP + VIEWPORT_MARGIN;
+
+  const placeRight = () => {
     left = rect.right + TOOLTIP_GAP;
     top = targetCenterY - TOOLTIP_HEIGHT_ESTIMATE / 2;
     arrowDirection = "left";
     arrowOffset = Math.max(16, Math.min(targetCenterY - top, TOOLTIP_HEIGHT_ESTIMATE - 32));
-  } else if (spaceLeft >= TOOLTIP_WIDTH + TOOLTIP_GAP + VIEWPORT_MARGIN) {
+  };
+  const placeLeft = () => {
     left = rect.left - TOOLTIP_WIDTH - TOOLTIP_GAP;
     top = targetCenterY - TOOLTIP_HEIGHT_ESTIMATE / 2;
     arrowDirection = "right";
     arrowOffset = Math.max(16, Math.min(targetCenterY - top, TOOLTIP_HEIGHT_ESTIMATE - 32));
-  } else if (spaceBelow >= TOOLTIP_HEIGHT_ESTIMATE + TOOLTIP_GAP + VIEWPORT_MARGIN) {
+  };
+  const placeBelow = () => {
     top = rect.bottom + TOOLTIP_GAP;
     left = targetCenterX - TOOLTIP_WIDTH / 2;
     arrowDirection = "top";
     arrowOffset = Math.max(16, Math.min(targetCenterX - left, TOOLTIP_WIDTH - 32));
-  } else if (spaceAbove >= TOOLTIP_HEIGHT_ESTIMATE + TOOLTIP_GAP + VIEWPORT_MARGIN) {
+  };
+  const placeAbove = () => {
     top = rect.top - TOOLTIP_HEIGHT_ESTIMATE - TOOLTIP_GAP;
     left = targetCenterX - TOOLTIP_WIDTH / 2;
     arrowDirection = "bottom";
     arrowOffset = Math.max(16, Math.min(targetCenterX - left, TOOLTIP_WIDTH - 32));
+  };
+
+  let placed = false;
+
+  if (isInCenterZone) {
+    // For elements in the middle of the screen, prefer vertical placement so
+    // we don't cover the side columns that usually hold other interactive UI.
+    if (tryBelow()) { placeBelow(); placed = true; }
+    else if (tryAbove()) { placeAbove(); placed = true; }
+    else if (tryRight()) { placeRight(); placed = true; }
+    else if (tryLeft()) { placeLeft(); placed = true; }
   } else {
-    // No good spot; center but don't draw arrow
-    top = Math.max(
-      VIEWPORT_MARGIN,
-      Math.min(targetCenterY - TOOLTIP_HEIGHT_ESTIMATE / 2, vh - TOOLTIP_HEIGHT_ESTIMATE - VIEWPORT_MARGIN),
-    );
-    left = Math.max(
-      VIEWPORT_MARGIN,
-      Math.min(targetCenterX - TOOLTIP_WIDTH / 2, vw - TOOLTIP_WIDTH - VIEWPORT_MARGIN),
-    );
-    arrowDirection = "none";
+    // For elements near the edges, prefer horizontal placement (away from edge).
+    if (centerRatio <= 0.30) {
+      // Element is on the LEFT side → tooltip goes RIGHT
+      if (tryRight()) { placeRight(); placed = true; }
+      else if (tryBelow()) { placeBelow(); placed = true; }
+      else if (tryAbove()) { placeAbove(); placed = true; }
+      else if (tryLeft()) { placeLeft(); placed = true; }
+    } else {
+      // Element is on the RIGHT side → tooltip goes LEFT
+      if (tryLeft()) { placeLeft(); placed = true; }
+      else if (tryBelow()) { placeBelow(); placed = true; }
+      else if (tryAbove()) { placeAbove(); placed = true; }
+      else if (tryRight()) { placeRight(); placed = true; }
+    }
+  }
+
+  if (!placed) {
+    // Fallback: anchor below if any room, else just center
+    if (spaceBelow > spaceAbove) {
+      placeBelow();
+    } else {
+      placeAbove();
+    }
   }
 
   // Clamp to viewport

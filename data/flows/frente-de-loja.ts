@@ -50,7 +50,7 @@ export const taaFlow: TourStep[] = [
   },
 ];
 
-// --- The remaining Frente de Loja flows keep their existing structure ---
+// --- Frente de Loja: tours interativos com recomendações inteligentes ---
 
 export const pdvNovoFlow: TourStep[] = [
   {
@@ -58,7 +58,8 @@ export const pdvNovoFlow: TourStep[] = [
     targetSelector: '[data-tour="pdv-first-product"]',
     placement: "right",
     title: "Adicione um produto",
-    description: "Toque na Costela no bafo para incluir no pedido.",
+    description:
+      "Toque na Costela no bafo para iniciar o pedido. Tente clicar em outras categorias também — está tudo livre.",
     requiresInteraction: true,
     companions: ["OrderTicket"],
   },
@@ -68,7 +69,7 @@ export const pdvNovoFlow: TourStep[] = [
     placement: "left",
     title: "Carrinho atualiza ao vivo",
     description:
-      "Cada item entra na comanda ao lado e no cupom térmico ao mesmo tempo.",
+      "Cada item entra na comanda e no cupom térmico ao mesmo tempo. Você pode ajustar quantidade ou remover qualquer item.",
     actionLabel: "Continuar",
     companions: ["OrderTicket"],
   },
@@ -78,7 +79,7 @@ export const pdvNovoFlow: TourStep[] = [
     placement: "right",
     title: "Aplique o desconto fidelidade",
     description:
-      "Desconto automático de 10% para clientes do programa de fidelidade — visível na linha do total.",
+      "Desconto de 10% para clientes do programa de fidelidade — visível na linha do total.",
     actionLabel: "Aplicar desconto",
     companions: ["OrderTicket"],
   },
@@ -97,7 +98,7 @@ export const pdvNovoFlow: TourStep[] = [
     placement: "top",
     title: "Venda concluída",
     description:
-      "Cupom fiscal emitido. Maquininha aprova. Operação fiscal sincronizada com Rotina Fiscal automaticamente.",
+      "Cupom fiscal emitido. Maquininha aprova. Operação sincronizada com Rotina Fiscal automaticamente.",
     actionLabel: "Concluir",
     companions: ["POSCardReader", "OrderTicket"],
   },
@@ -108,9 +109,9 @@ export const smartPosFlow: TourStep[] = [
     id: "catalogo",
     targetSelector: '[data-tour="smartpos-catalog-item"]',
     placement: "right",
-    title: "Selecione o produto",
+    title: "Selecione uma categoria",
     description:
-      "Toque no Misto quente para adicionar à venda. O catálogo está sempre na mão do operador.",
+      "Toque em Pizzas para abrir o catálogo. Você pode explorar qualquer outra categoria também.",
     requiresInteraction: true,
     companions: ["OperatorDailyPanel"],
   },
@@ -118,15 +119,16 @@ export const smartPosFlow: TourStep[] = [
     id: "quantidade",
     targetSelector: '[data-tour="smartpos-qty"]',
     placement: "top",
-    title: "Ajuste a quantidade",
-    description: "Stepper grande, contagem instantânea. Confirme com o + brand.",
+    title: "Personalize o pedido",
+    description:
+      "Adicione queijo, bacon, ajuste o corte e a quantidade. Tudo livre para o atendente — o total recalcula na hora.",
     actionLabel: "Continuar",
     companions: ["OperatorDailyPanel"],
   },
   {
     id: "pagamento",
     targetSelector: '[data-tour="smartpos-payment-list"]',
-    placement: "right",
+    placement: "left",
     title: "Cliente escolhe pagar com cartão",
     description: "Toque em Crédito. O leitor do próprio SmartPOS é ativado.",
     requiresInteraction: true,
@@ -135,7 +137,7 @@ export const smartPosFlow: TourStep[] = [
   {
     id: "cartao",
     targetSelector: '[data-tour="smartpos-tap"]',
-    placement: "right",
+    placement: "left",
     title: "Cliente aproxima o cartão",
     description:
       "O SmartPOS é a maquininha. Aprovação em 2 segundos via NFC ou inserção.",
@@ -148,7 +150,7 @@ export const smartPosFlow: TourStep[] = [
     placement: "left",
     title: "Comprovante na hora",
     description:
-      "Cliente recebe o comprovante por SMS no celular. O painel do operador soma a venda imediatamente.",
+      "Cliente recebe o comprovante por SMS. O painel do operador soma a venda imediatamente.",
     actionLabel: "Concluir",
     companions: ["OperatorDailyPanel", "CustomerReceiptPhone"],
   },
@@ -158,9 +160,10 @@ export const cardapioDigitalFlow: TourStep[] = [
   {
     id: "categorias",
     targetSelector: '[data-tour="cd-categories"]',
-    placement: "right",
-    title: "Cliente navega no tablet",
-    description: "Toque em Pratos para abrir as opções.",
+    placement: "bottom",
+    title: "Cliente abre no celular",
+    description:
+      "O cardápio digital roda direto no navegador — sem instalar nada. Toque para entrar no cardápio.",
     requiresInteraction: true,
     companions: ["OrderTicket"],
   },
@@ -170,7 +173,7 @@ export const cardapioDigitalFlow: TourStep[] = [
     placement: "right",
     title: "Personalize o prato",
     description:
-      "Foto, descrição, valores nutricionais e adicionais. O cliente decide tudo sem chamar atendente.",
+      "Foto, descrição e acréscimos. Toque + nos acréscimos e ajuste a quantidade — o total recalcula na hora.",
     actionLabel: "Continuar",
     companions: ["OrderTicket"],
   },
@@ -180,19 +183,19 @@ export const cardapioDigitalFlow: TourStep[] = [
     placement: "right",
     title: "Cliente revisa o pedido",
     description:
-      "Itens, adicionais e total dinâmico. O cupom à esquerda mostra exatamente o que o cliente está vendo.",
+      "Itens, quantidades e total dinâmico. Pode adicionar mais, remover, ou enviar para a cozinha.",
     actionLabel: "Continuar",
     companions: ["OrderTicket"],
   },
   {
     id: "confirmar",
     targetSelector: '[data-tour="cd-confirm"]',
-    placement: "left",
-    title: "Pedido entra na cozinha",
+    placement: "bottom",
+    title: "Pedido enviado para a cozinha",
     description:
-      "Toque em Confirmar pedido — o KDS da cozinha à direita recebe na hora.",
-    requiresInteraction: true,
-    companions: ["OrderTicket", "KitchenDisplay", "SimulatedNotification"],
+      "Pronto — e lá na cozinha o pedido cai direto no KDS, sem garçom no caminho.",
+    actionLabel: "Ver na cozinha",
+    companions: ["KitchenDisplay", "SimulatedNotification"],
   },
   {
     id: "em-preparo",
@@ -200,60 +203,61 @@ export const cardapioDigitalFlow: TourStep[] = [
     placement: "left",
     title: "Status em tempo real",
     description:
-      "Cliente acompanha cada etapa no tablet. Cozinha trabalha sem interrupção. Garçom só atua se necessário.",
+      "O cliente acompanha cada etapa no celular. A cozinha trabalha sem interrupção. O garçom só atua se necessário.",
     actionLabel: "Concluir",
-    companions: ["OrderTicket", "KitchenDisplay"],
+    companions: ["KitchenDisplay"],
   },
 ];
 
 export const quickPassFlow: TourStep[] = [
   {
-    id: "login",
-    targetSelector: '[data-tour="qp-login"]',
+    id: "evento",
+    targetSelector: '[data-tour="qp-catalog"]',
     placement: "right",
-    title: "Entre com biometria",
-    description: "Toque em Usar biometria para autenticar.",
-    requiresInteraction: true,
-    companions: ["EmployeeCard", "RestaurantQueueBoard"],
-  },
-  {
-    id: "saldo",
-    targetSelector: '[data-tour="qp-balance"]',
-    placement: "right",
-    title: "Saldo e benefícios sincronizados",
+    title: "Atendimento rápido em eventos",
     description:
-      "Saldo, refeições restantes e próxima recarga aparecem no crachá digital à esquerda.",
+      "QuickPass é o sistema de atendimento rápido da Teknisa — ideal para estádios, shows e festivais. O cliente abre no celular dele e já vê o cardápio da loja mais próxima.",
     actionLabel: "Continuar",
-    companions: ["EmployeeCard", "RestaurantQueueBoard"],
+    companions: ["RestaurantQueueBoard"],
   },
   {
-    id: "selecao",
-    targetSelector: '[data-tour="qp-restaurant"]',
+    id: "add-fritas",
+    targetSelector: '[data-tour="qp-add-fritas"]',
     placement: "left",
-    title: "Escolha o refeitório",
+    title: "Adicione itens com 1 toque",
     description:
-      "Confira a fila em tempo real no painel à direita. Toque em Restaurante Central.",
+      "Toque no + de Fritas Rústicas para adicionar ao carrinho. Adicione mais quantos quiser — tudo livre.",
     requiresInteraction: true,
-    companions: ["EmployeeCard", "RestaurantQueueBoard"],
+    companions: ["RestaurantQueueBoard"],
   },
   {
-    id: "liberacao",
-    targetSelector: '[data-tour="qp-access"]',
-    placement: "left",
-    title: "Catraca liberada",
+    id: "cupom",
+    targetSelector: '[data-tour="qp-coupon"]',
+    placement: "top",
+    title: "Aplique um cupom",
     description:
-      "Acesso em menos de 1 segundo. A refeição é registrada automaticamente.",
+      "Digite FAN10 e toque em Aplicar para ganhar 10% no pedido. Cupons promocionais ativados em tempo real.",
     actionLabel: "Continuar",
-    companions: ["EmployeeCard", "RestaurantQueueBoard"],
+    companions: ["RestaurantQueueBoard"],
   },
   {
-    id: "atualizado",
-    targetSelector: '[data-tour="qp-updated"]',
-    placement: "left",
-    title: "Saldo descontado na hora",
+    id: "pagamento",
+    targetSelector: '[data-tour="qp-payment-tabs"]',
+    placement: "bottom",
+    title: "Pague no próprio celular",
     description:
-      "O crachá digital atualiza o saldo. RH vê o consumo agregado no Portal Gestor.",
+      "Cartão salvo ou Pix — alterne entre as abas e escolha. Sem precisar entrar na fila do caixa.",
+    actionLabel: "Continuar",
+    companions: ["RestaurantQueueBoard"],
+  },
+  {
+    id: "retirada",
+    targetSelector: '[data-tour="qp-retirada-qr"]',
+    placement: "left",
+    title: "QR de retirada · pula a fila",
+    description:
+      "Compra concluída. O cliente apresenta este QR no balcão e retira o pedido. Velocidade, fluidez e integração total com o ecossistema de vendas.",
     actionLabel: "Concluir",
-    companions: ["EmployeeCard", "RestaurantQueueBoard"],
+    companions: ["RestaurantQueueBoard"],
   },
 ];

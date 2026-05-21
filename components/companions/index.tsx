@@ -172,16 +172,47 @@ export function Companion({ type, solutionId, step, stepLabel }: CompanionProps)
   }
 
   // ============================================
-  // QuickPass — employee meal access
+  // QuickPass — fast-service in events (stadiums, shows, festivals)
   // ============================================
   if (solutionId === "quickpass") {
-    if (type === "EmployeeCard") {
-      const balance = step >= 4 ? 72.9 : 84.5; // balance updates after access
-      return <EmployeeCard balance={balance} showBalance={step >= 1} />;
-    }
     if (type === "RestaurantQueueBoard") {
-      const selectedAt2Plus = step >= 2 ? "central" : undefined;
-      return <RestaurantQueueBoard selectedId={selectedAt2Plus} />;
+      // Event vendor board — what's available at the venue right now
+      const eventVendors = [
+        {
+          id: "hells",
+          name: "Hell's Burgers · Setor B",
+          distance: "Aqui mesmo",
+          queue: 0,
+          eta: "4 min",
+          capacity: 45,
+          status: "livre" as const,
+        },
+        {
+          id: "pizza",
+          name: "Pizza Stop · Setor A",
+          distance: "120 m",
+          queue: 14,
+          eta: "22 min",
+          capacity: 88,
+          status: "cheio" as const,
+        },
+        {
+          id: "doce",
+          name: "Doce&Cia · Praça norte",
+          distance: "240 m",
+          queue: 5,
+          eta: "9 min",
+          capacity: 55,
+          status: "moderado" as const,
+        },
+      ];
+      // Highlight Hell's Burgers from the start since that's the store being used
+      return (
+        <RestaurantQueueBoard
+          restaurants={eventVendors}
+          selectedId="hells"
+        />
+      );
     }
   }
 

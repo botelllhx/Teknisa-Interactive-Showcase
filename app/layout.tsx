@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Sora, Rubik } from "next/font/google";
+import { Sora, Roboto } from "next/font/google";
 import "./globals.css";
 
 const sora = Sora({
@@ -9,9 +9,9 @@ const sora = Sora({
   display: "swap",
 });
 
-const rubik = Rubik({
+const roboto = Roboto({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500", "700"],
   variable: "--font-ui",
   display: "swap",
 });
@@ -35,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${sora.variable} ${rubik.variable}`}>
+    <html lang="pt-BR" className={`${sora.variable} ${roboto.variable}`}>
       <body className="font-ui antialiased">{children}</body>
     </html>
   );

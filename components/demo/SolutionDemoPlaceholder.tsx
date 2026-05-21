@@ -17,6 +17,7 @@ import {
 import { LoadingBar } from "@/components/ui/LoadingBar";
 import { ConfirmationFeedback } from "@/components/ui/ConfirmationFeedback";
 import { Companion } from "@/components/companions";
+import { getMockup } from "@/components/mockups";
 import type { CompanionType } from "@/data/solutions";
 import { cn } from "@/lib/cn";
 
@@ -77,8 +78,10 @@ export function SolutionDemoPlaceholder({ solutionId }: SolutionDemoPlaceholderP
             <SolutionFrame device={solution.device}>
               <div className="relative h-full w-full">
                 <LoadingBar visible={loading} />
-                <ScreenPlaceholder
+                <MockupOrFallback
+                  solutionId={solutionId}
                   solutionName={solution.name}
+                  currentStep={currentStep}
                   stepLabel={currentStepData?.label ?? ""}
                 />
                 <AnimatePresence>
@@ -239,13 +242,23 @@ function CompanionsPanel({
   );
 }
 
-function ScreenPlaceholder({
+function MockupOrFallback({
+  solutionId,
   solutionName,
+  currentStep,
   stepLabel,
 }: {
+  solutionId: string;
   solutionName: string;
+  currentStep: number;
   stepLabel: string;
 }) {
+  const Mockup = getMockup(solutionId);
+
+  if (Mockup) {
+    return <Mockup step={currentStep} />;
+  }
+
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-gradient-to-br from-brand-ghost via-white to-brand-subtle/60 p-6 text-center">
       <span className="h-1.5 w-12 rounded-full bg-brand/30" />
@@ -258,7 +271,7 @@ function ScreenPlaceholder({
         )}
       </div>
       <p className="mt-1 max-w-[28ch] text-caption text-neutral-400">
-        Tela do mockup será preenchida no Sprint 6
+        Mockup desta solução será adicionado em breve
       </p>
     </div>
   );

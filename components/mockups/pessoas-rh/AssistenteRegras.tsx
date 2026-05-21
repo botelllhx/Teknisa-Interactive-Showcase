@@ -138,8 +138,8 @@ function WizardView() {
               transition={{ duration: 2, repeat: Infinity }}
               className="inline-block"
             >
-              "Quando funcionário fizer hora extra aos sábados, pagar 80% a mais
-              e notificar gestor automaticamente"
+              &ldquo;Quando funcionário fizer hora extra aos sábados, pagar 80%
+              a mais e notificar gestor automaticamente&rdquo;
             </motion.span>
           </p>
         </div>

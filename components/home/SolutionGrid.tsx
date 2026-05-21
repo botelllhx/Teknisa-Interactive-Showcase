@@ -59,7 +59,9 @@ export function SolutionGrid({ segmentId }: SolutionGridProps) {
             ? "grid-cols-2"
             : items.length === 3
               ? "grid-cols-3"
-              : "grid-cols-4",
+              : items.length === 4
+                ? "grid-cols-4"
+                : "grid-cols-5",
         )}
       >
         {items.map((solution) => (

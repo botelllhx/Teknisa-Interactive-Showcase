@@ -1,59 +1,112 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { type ComponentType } from "react";
-import { PDVNovoMockup } from "./frente-de-loja/PDVNovo";
-import { TAAMockup } from "./frente-de-loja/TAA";
-import { SmartPOSMockup } from "./frente-de-loja/SmartPOS";
-import { CardapioDigitalMockup } from "./frente-de-loja/CardapioDigital";
-import { QuickPassMockup } from "./frente-de-loja/QuickPass";
-import { CardapioInteligenteMockup } from "./tecfood/CardapioInteligente";
-import { MyQuestMockup } from "./tecfood/MyQuest";
-import { MyMenuMockup } from "./tecfood/MyMenu";
-import { ApproveMockup } from "./tecfood/Approve";
-import { WasteControlMockup } from "./tecfood/WasteControl";
-import { RotinaFiscalMockup } from "./erp-backoffice/RotinaFiscal";
-import { RotinaRastreabilidadeMockup } from "./erp-backoffice/RotinaRastreabilidade";
-import { AppRotinasEstoqueMockup } from "./erp-backoffice/AppRotinasEstoque";
-import { PortalGestorMockup } from "./pessoas-rh/PortalGestor";
-import { PortalFuncionarioMockup } from "./pessoas-rh/PortalFuncionario";
-import { MesaOperacoesMockup } from "./pessoas-rh/MesaOperacoes";
-import { AnalisePreditivaMockup } from "./pessoas-rh/AnalisePreditiva";
-import { AssistenteRegrasMockup } from "./pessoas-rh/AssistenteRegras";
-import { MercadumMockup } from "./supply-compras/Mercadum";
-import { AppComercialMockup } from "./supply-compras/AppComercial";
-import { CRMPremiumMockup } from "./crm/CRMPremium";
 
 interface MockupProps {
   step: number;
 }
 
+function MockupSkeleton() {
+  return (
+    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-ghost via-white to-brand-subtle/60">
+      <div className="flex flex-col items-center gap-2">
+        <span className="h-1.5 w-12 animate-pulse rounded-full bg-brand/30" />
+        <span className="h-1 w-20 animate-pulse rounded-full bg-brand/20" />
+      </div>
+    </div>
+  );
+}
+
+function lazy(loader: () => Promise<{ default: ComponentType<MockupProps> }>) {
+  return dynamic(loader, { loading: () => <MockupSkeleton />, ssr: false });
+}
+
 const MOCKUPS: Record<string, ComponentType<MockupProps>> = {
-  "pdv-novo": PDVNovoMockup,
-  taa: TAAMockup,
-  "smart-pos": SmartPOSMockup,
-  "cardapio-digital": CardapioDigitalMockup,
-  quickpass: QuickPassMockup,
+  "pdv-novo": lazy(() =>
+    import("./frente-de-loja/PDVNovo").then((m) => ({ default: m.PDVNovoMockup })),
+  ),
+  taa: lazy(() => import("./frente-de-loja/TAA").then((m) => ({ default: m.TAAMockup }))),
+  "smart-pos": lazy(() =>
+    import("./frente-de-loja/SmartPOS").then((m) => ({ default: m.SmartPOSMockup })),
+  ),
+  "cardapio-digital": lazy(() =>
+    import("./frente-de-loja/CardapioDigital").then((m) => ({
+      default: m.CardapioDigitalMockup,
+    })),
+  ),
+  quickpass: lazy(() =>
+    import("./frente-de-loja/QuickPass").then((m) => ({ default: m.QuickPassMockup })),
+  ),
 
-  "cardapio-inteligente": CardapioInteligenteMockup,
-  myquest: MyQuestMockup,
-  mymenu: MyMenuMockup,
-  approve: ApproveMockup,
-  "waste-control": WasteControlMockup,
+  "cardapio-inteligente": lazy(() =>
+    import("./tecfood/CardapioInteligente").then((m) => ({
+      default: m.CardapioInteligenteMockup,
+    })),
+  ),
+  myquest: lazy(() =>
+    import("./tecfood/MyQuest").then((m) => ({ default: m.MyQuestMockup })),
+  ),
+  mymenu: lazy(() =>
+    import("./tecfood/MyMenu").then((m) => ({ default: m.MyMenuMockup })),
+  ),
+  approve: lazy(() =>
+    import("./tecfood/Approve").then((m) => ({ default: m.ApproveMockup })),
+  ),
+  "waste-control": lazy(() =>
+    import("./tecfood/WasteControl").then((m) => ({ default: m.WasteControlMockup })),
+  ),
 
-  "rotina-fiscal": RotinaFiscalMockup,
-  "rotina-rastreabilidade": RotinaRastreabilidadeMockup,
-  "app-rotinas-estoque": AppRotinasEstoqueMockup,
+  "rotina-fiscal": lazy(() =>
+    import("./erp-backoffice/RotinaFiscal").then((m) => ({ default: m.RotinaFiscalMockup })),
+  ),
+  "rotina-rastreabilidade": lazy(() =>
+    import("./erp-backoffice/RotinaRastreabilidade").then((m) => ({
+      default: m.RotinaRastreabilidadeMockup,
+    })),
+  ),
+  "app-rotinas-estoque": lazy(() =>
+    import("./erp-backoffice/AppRotinasEstoque").then((m) => ({
+      default: m.AppRotinasEstoqueMockup,
+    })),
+  ),
 
-  "portal-gestor": PortalGestorMockup,
-  "portal-funcionario": PortalFuncionarioMockup,
-  "mesa-operacoes": MesaOperacoesMockup,
-  "analise-preditiva": AnalisePreditivaMockup,
-  "assistente-regras": AssistenteRegrasMockup,
+  "portal-gestor": lazy(() =>
+    import("./pessoas-rh/PortalGestor").then((m) => ({ default: m.PortalGestorMockup })),
+  ),
+  "portal-funcionario": lazy(() =>
+    import("./pessoas-rh/PortalFuncionario").then((m) => ({
+      default: m.PortalFuncionarioMockup,
+    })),
+  ),
+  "mesa-operacoes": lazy(() =>
+    import("./pessoas-rh/MesaOperacoes").then((m) => ({
+      default: m.MesaOperacoesMockup,
+    })),
+  ),
+  "analise-preditiva": lazy(() =>
+    import("./pessoas-rh/AnalisePreditiva").then((m) => ({
+      default: m.AnalisePreditivaMockup,
+    })),
+  ),
+  "assistente-regras": lazy(() =>
+    import("./pessoas-rh/AssistenteRegras").then((m) => ({
+      default: m.AssistenteRegrasMockup,
+    })),
+  ),
 
-  mercadum: MercadumMockup,
-  "app-comercial": AppComercialMockup,
+  mercadum: lazy(() =>
+    import("./supply-compras/Mercadum").then((m) => ({ default: m.MercadumMockup })),
+  ),
+  "app-comercial": lazy(() =>
+    import("./supply-compras/AppComercial").then((m) => ({
+      default: m.AppComercialMockup,
+    })),
+  ),
 
-  "crm-premium": CRMPremiumMockup,
+  "crm-premium": lazy(() =>
+    import("./crm/CRMPremium").then((m) => ({ default: m.CRMPremiumMockup })),
+  ),
 };
 
 export function getMockup(solutionId: string): ComponentType<MockupProps> | null {

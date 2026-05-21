@@ -23,7 +23,11 @@ export function useIdleTimer({
   const graceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) {
+      setIsIdle(false);
+      setShouldReset(false);
+      return;
+    }
 
     const clearTimers = () => {
       if (idleTimer.current) clearTimeout(idleTimer.current);
@@ -42,11 +46,13 @@ export function useIdleTimer({
     };
 
     const handleActivity = () => {
-      if (isIdle) {
-        setIsIdle(false);
-        setShouldReset(false);
-        onReset?.();
-      }
+      setIsIdle((prev) => {
+        if (prev) {
+          onReset?.();
+        }
+        return false;
+      });
+      setShouldReset(false);
       startTimers();
     };
 
@@ -70,7 +76,7 @@ export function useIdleTimer({
         window.removeEventListener(event, handleActivity);
       });
     };
-  }, [enabled, timeout, graceTimeout, onIdle, onReset, isIdle]);
+  }, [enabled, timeout, graceTimeout, onIdle, onReset]);
 
   return { isIdle, shouldReset };
 }

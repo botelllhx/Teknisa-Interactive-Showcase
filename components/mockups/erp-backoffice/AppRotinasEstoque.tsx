@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import {
   PackageSearch,
-  ClipboardCheck,
   AlertTriangle,
   RefreshCw,
   CheckCircle2,
@@ -228,7 +227,7 @@ function JustificationView() {
       <div className="mt-2 rounded-md border border-dashed border-brand/30 bg-surface-raised p-2">
         <p className="text-[8px] text-neutral-500">Observação</p>
         <p className="mt-0.5 text-[9px] text-neutral-700">
-          "Perda durante porcionamento, registrada em RP-2847"
+          &ldquo;Perda durante porcionamento, registrada em RP-2847&rdquo;
         </p>
       </div>
     </motion.div>

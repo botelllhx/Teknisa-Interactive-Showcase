@@ -171,7 +171,7 @@ function DetailView({ showComment }: { showComment: boolean }) {
             Comentário
           </p>
           <p className="mt-1 text-[9px] text-neutral-700">
-            "Aprovado, dentro do limite previsto."
+            &ldquo;Aprovado, dentro do limite previsto.&rdquo;
           </p>
         </motion.div>
       ) : (

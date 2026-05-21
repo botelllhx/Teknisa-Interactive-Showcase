@@ -7,7 +7,6 @@ import {
   Plane,
   CheckCircle2,
   Clock,
-  FileText,
   Download,
 } from "lucide-react";
 import { cn } from "@/lib/cn";

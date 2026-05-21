@@ -27,6 +27,51 @@ interface SolutionDemoProps {
   solutionId: string;
 }
 
+// Per-solution preference of which companions live on which side of the frame.
+const COMPANION_LAYOUT: Record<
+  string,
+  { left?: CompanionType[]; right?: CompanionType[] }
+> = {
+  taa: { left: ["OrderTicket"], right: ["POSCardReader"] },
+  "pdv-novo": { left: ["OrderTicket"], right: ["POSCardReader"] },
+  "smart-pos": { right: ["POSCardReader"] },
+  "cardapio-digital": { right: ["KitchenDisplay"] },
+  quickpass: { right: ["StockIndicator"] },
+  approve: { right: ["MiniDashboard"] },
+  "cardapio-inteligente": { right: ["KitchenDisplay"] },
+  "waste-control": { right: ["StockIndicator"] },
+  "rotina-fiscal": { right: ["FiscalBadge"] },
+  "rotina-rastreabilidade": { right: ["StockIndicator"] },
+  "app-rotinas-estoque": { right: ["StockIndicator"] },
+  "portal-gestor": { left: ["EmployeeCard"], right: ["MiniDashboard"] },
+  "portal-funcionario": { right: ["EmployeeCard"] },
+  "mesa-operacoes": { right: ["MiniDashboard"] },
+  "analise-preditiva": { right: ["MiniDashboard"] },
+  "assistente-regras": {},
+  mercadum: { right: ["MiniDashboard"] },
+  "app-comercial": { right: ["MiniDashboard"] },
+  "crm-premium": { right: ["MiniDashboard"] },
+  myquest: {},
+  mymenu: { right: ["OrderTicket"] },
+};
+
+function distributeCompanions(
+  solutionId: string,
+  active: CompanionType[],
+): { left: CompanionType[]; right: CompanionType[] } {
+  const layout = COMPANION_LAYOUT[solutionId] ?? {};
+  const left: CompanionType[] = [];
+  const right: CompanionType[] = [];
+
+  for (const c of active) {
+    if (layout.left?.includes(c)) left.push(c);
+    else if (layout.right?.includes(c)) right.push(c);
+    else right.push(c); // unknown → right
+  }
+
+  return { left, right };
+}
+
 export function SolutionDemo({ solutionId }: SolutionDemoProps) {
   const solution = solutionsById[solutionId];
   const segment = solution ? segmentsById[solution.segment] : null;
@@ -44,11 +89,17 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
   });
 
   const currentStepData = steps[tour.index];
-  const wantsNotification = currentStepData?.companions?.includes("SimulatedNotification");
-  const visualCompanions: CompanionType[] = (currentStepData?.companions ?? []).filter(
-    (c) => c !== "SimulatedNotification",
+  const wantsNotification = currentStepData?.companions?.includes(
+    "SimulatedNotification",
   );
-  const hasCompanions = visualCompanions.length > 0;
+  const activeCompanions: CompanionType[] = (
+    currentStepData?.companions ?? []
+  ).filter((c) => c !== "SimulatedNotification");
+
+  const { left: leftCompanions, right: rightCompanions } = distributeCompanions(
+    solutionId,
+    activeCompanions,
+  );
 
   if (!solution) return null;
 
@@ -85,12 +136,20 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
           />
           {segment && (
             <div className="ml-3 flex items-center gap-2 text-label-sm font-medium text-neutral-500">
-              <ChevronRight size={14} strokeWidth={2.25} className="text-neutral-300" />
+              <ChevronRight
+                size={14}
+                strokeWidth={2.25}
+                className="text-neutral-300"
+              />
               <span className="flex items-center gap-1.5">
                 <SegmentIcon name={segment.icon} size={14} />
                 {segment.label}
               </span>
-              <ChevronRight size={14} strokeWidth={2.25} className="text-neutral-300" />
+              <ChevronRight
+                size={14}
+                strokeWidth={2.25}
+                className="text-neutral-300"
+              />
               <span className="font-semibold text-brand">{solution.name}</span>
             </div>
           )}
@@ -106,13 +165,24 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
         </div>
       </header>
 
-      {/* Main: fills 100% of remaining height */}
+      {/* Main: 3 columns when companions exist, 1 column when not */}
       <main
         className={cn(
-          "grid min-h-0 flex-1 gap-4 p-4",
-          hasCompanions ? "grid-cols-[1fr_280px]" : "grid-cols-1",
+          "grid min-h-0 flex-1 items-stretch gap-6 p-6",
+          activeCompanions.length === 0 && "grid-cols-1",
+          activeCompanions.length > 0 && "grid-cols-[340px_1fr_340px]",
         )}
       >
+        {activeCompanions.length > 0 && (
+          <CompanionColumn
+            companions={leftCompanions}
+            solutionId={solutionId}
+            step={tour.index}
+            stepLabel={currentStepData?.title}
+            align="end"
+          />
+        )}
+
         <div
           ref={frameRef}
           className="relative flex h-full min-h-0 items-center justify-center"
@@ -136,29 +206,14 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
           )}
         </div>
 
-        {hasCompanions && (
-          <aside className="flex h-full min-h-0 flex-col items-stretch justify-center gap-4 overflow-y-auto px-1">
-            <AnimatePresence mode="popLayout">
-              {visualCompanions.map((c) => (
-                <motion.div
-                  key={c}
-                  layout
-                  initial={{ opacity: 0, scale: 0.97 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex justify-center"
-                >
-                  <Companion
-                    type={c}
-                    solutionId={solutionId}
-                    step={tour.index}
-                    stepLabel={currentStepData?.title}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </aside>
+        {activeCompanions.length > 0 && (
+          <CompanionColumn
+            companions={rightCompanions}
+            solutionId={solutionId}
+            step={tour.index}
+            stepLabel={currentStepData?.title}
+            align="start"
+          />
         )}
       </main>
 
@@ -192,8 +247,8 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.35 }}
-            className="fixed inset-0 z-[9998] flex items-center justify-center bg-white/85 backdrop-blur-md"
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[9998] flex items-center justify-center bg-white/90 backdrop-blur-md"
           >
             <ConfirmationFeedback
               title="Exploração concluída"
@@ -216,10 +271,59 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
   );
 }
 
+function CompanionColumn({
+  companions,
+  solutionId,
+  step,
+  stepLabel,
+  align,
+}: {
+  companions: CompanionType[];
+  solutionId: string;
+  step: number;
+  stepLabel?: string;
+  align: "start" | "end";
+}) {
+  return (
+    <aside
+      className={cn(
+        "flex h-full min-h-0 flex-col gap-4 overflow-y-auto py-2",
+        align === "start" ? "items-start" : "items-end",
+        "justify-center",
+      )}
+    >
+      <AnimatePresence mode="popLayout">
+        {companions.map((c) => (
+          <motion.div
+            key={c}
+            layout
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className={cn("w-full", align === "start" ? "flex justify-start" : "flex justify-end")}
+          >
+            <Companion
+              type={c}
+              solutionId={solutionId}
+              step={step}
+              stepLabel={stepLabel}
+            />
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </aside>
+  );
+}
+
 function inferType(label?: string): "success" | "warning" | "info" {
   if (!label) return "info";
   const lower = label.toLowerCase();
-  if (lower.includes("alerta") || lower.includes("desvio") || lower.includes("recall")) {
+  if (
+    lower.includes("alerta") ||
+    lower.includes("desvio") ||
+    lower.includes("recall")
+  ) {
     return "warning";
   }
   if (

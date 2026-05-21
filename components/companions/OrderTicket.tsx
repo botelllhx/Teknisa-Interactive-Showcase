@@ -45,13 +45,13 @@ export function OrderTicket({
       style={{
         background: "#fffef9",
         borderRadius: 14,
-        padding: "22px 20px",
+        padding: "26px 24px",
         boxShadow:
-          "0 6px 32px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.04)",
+          "0 12px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(0,0,0,0.04)",
         border: "1px solid #f0ede4",
         fontFamily: '"Courier New", ui-monospace, monospace',
         width: "100%",
-        maxWidth: 280,
+        maxWidth: 320,
       }}
     >
       <div style={{ textAlign: "center", marginBottom: 12 }}>

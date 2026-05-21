@@ -32,15 +32,15 @@ export function POSCardReader({
       exit={{ opacity: 0, x: 16, scale: 0.97 }}
       transition={{ type: "spring", stiffness: 240, damping: 22 }}
       className={cn("w-full", className)}
-      style={{ maxWidth: 280 }}
+      style={{ maxWidth: 320 }}
     >
       <div
         style={{
           background: "linear-gradient(180deg, #2a2d36 0%, #1a1d26 100%)",
-          borderRadius: 18,
-          padding: 14,
+          borderRadius: 22,
+          padding: 18,
           boxShadow:
-            "0 12px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06)",
+            "0 16px 40px rgba(0,0,0,0.30), 0 4px 12px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.06)",
         }}
       >
         {/* Top bar with status LED + wifi */}

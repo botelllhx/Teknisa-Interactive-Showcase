@@ -2,51 +2,55 @@ import type { TourStep } from "../solutions";
 
 export const taaFlow: TourStep[] = [
   {
-    id: "boas-vindas",
-    targetSelector: '[data-tour="taa-welcome-action"]',
-    placement: "top",
-    title: "Comece o pedido",
-    description:
-      "Toque em uma das opções para iniciar. Comer aqui ou levar: o totem adapta o fluxo conforme a escolha do cliente.",
-    actionLabel: "Toque para começar",
-    requiresInteraction: true,
-  },
-  {
-    id: "categoria",
-    targetSelector: '[data-tour="taa-categories"]',
-    placement: "bottom",
-    title: "Categorias bem organizadas",
-    description:
-      "Pratos, lanches, saladas, bebidas, sobremesas. Atalhos visuais com ícone reduzem o tempo de decisão na fila.",
-  },
-  {
-    id: "monta-pedido",
-    targetSelector: '[data-tour="taa-build-list"]',
+    id: "welcome",
+    targetSelector: '[data-tour="taa-eat-here"]',
     placement: "right",
-    title: "Monte o pedido em poucos toques",
-    description:
-      "Itens com foto, preço e botão de adicionar. Personalizações aparecem em um passo só — sem fricção.",
+    title: "Comece o pedido",
+    description: "Toque em Comer aqui para escolher onde consumir.",
+    requiresInteraction: true,
     companions: ["OrderTicket"],
   },
   {
-    id: "resumo",
-    targetSelector: '[data-tour="taa-summary"]',
-    placement: "top",
-    title: "Resumo claro antes de pagar",
-    description:
-      "O cliente revisa, ajusta e confirma. A senha e o tempo estimado aparecem imediatamente após o pagamento.",
+    id: "category",
+    targetSelector: '[data-tour="taa-cat-lanches"]',
+    placement: "right",
+    title: "Escolha uma categoria",
+    description: "Toque em Lanches para ver as opções.",
+    requiresInteraction: true,
     companions: ["OrderTicket"],
   },
   {
-    id: "pagamento",
-    targetSelector: '[data-tour="taa-payment-done"]',
-    placement: "top",
-    title: "Senha emitida e operação registrada",
+    id: "add-combo",
+    targetSelector: '[data-tour="taa-combo-burger"]',
+    placement: "right",
+    title: "Selecione um combo",
     description:
-      "Em segundos o cliente sai com a senha. O pedido entra automaticamente na cozinha — sem retrabalho de balcão.",
-    companions: ["SimulatedNotification"],
+      "Toque para adicionar o combo X-Burguer. O cupom à direita preenche em tempo real.",
+    requiresInteraction: true,
+    companions: ["OrderTicket"],
+  },
+  {
+    id: "pay-pix",
+    targetSelector: '[data-tour="taa-pix-button"]',
+    placement: "left",
+    title: "Pague com PIX",
+    description: "Toque em PIX. A maquininha entra em modo de cobrança.",
+    requiresInteraction: true,
+    companions: ["OrderTicket", "POSCardReader"],
+  },
+  {
+    id: "approved",
+    targetSelector: '[data-tour="taa-senha-card"]',
+    placement: "left",
+    title: "Pedido confirmado",
+    description:
+      "Senha emitida e enviada para a cozinha. O cupom registra o pagamento aprovado.",
+    actionLabel: "Concluir",
+    companions: ["OrderTicket", "POSCardReader"],
   },
 ];
+
+// --- The remaining Frente de Loja flows keep their existing structure ---
 
 export const pdvNovoFlow: TourStep[] = [
   {

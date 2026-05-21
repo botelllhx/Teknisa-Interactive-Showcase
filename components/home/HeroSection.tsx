@@ -29,7 +29,7 @@ export function HeroSection() {
         className="flex flex-col gap-5"
       >
         <Image
-          src="/teknisa-logo.svg"
+          src="/logo-teknisa.svg"
           alt="Teknisa"
           width={300}
           height={57}

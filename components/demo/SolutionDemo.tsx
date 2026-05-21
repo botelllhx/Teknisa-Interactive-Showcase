@@ -17,7 +17,6 @@ import {
   NotificationStack,
   SimulatedNotification,
 } from "@/components/ui/SimulatedNotification";
-import { LoadingBar } from "@/components/ui/LoadingBar";
 import { ConfirmationFeedback } from "@/components/ui/ConfirmationFeedback";
 import { Companion } from "@/components/companions";
 import { getMockup } from "@/components/mockups";
@@ -36,7 +35,6 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
   const goHome = useShowcase((s) => s.goHome);
 
   const [completionVisible, setCompletionVisible] = useState(false);
-  const [loadingKey, setLoadingKey] = useState(0);
   const [frameRef, frameSize] = useMeasure<HTMLDivElement>();
 
   const tour = useTour({
@@ -78,7 +76,7 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
             <Home size={18} strokeWidth={2} />
           </button>
           <Image
-            src="/teknisa-logo.svg"
+            src="/logo-teknisa.svg"
             alt="Teknisa"
             width={108}
             height={20}
@@ -126,7 +124,6 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
               containerHeight={frameSize.height}
             >
               <div className="relative h-full w-full">
-                <LoadingBar key={loadingKey} visible duration={500} />
                 {Mockup ? (
                   <Mockup step={tour.index} />
                 ) : (
@@ -140,18 +137,24 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
         </div>
 
         {hasCompanions && (
-          <aside className="flex h-full min-h-0 flex-col items-stretch gap-3 overflow-y-auto">
+          <aside className="flex h-full min-h-0 flex-col items-stretch justify-center gap-4 overflow-y-auto px-1">
             <AnimatePresence mode="popLayout">
               {visualCompanions.map((c) => (
                 <motion.div
-                  key={`${c}-${tour.index}`}
+                  key={c}
                   layout
-                  initial={{ opacity: 0, scale: 0.96 }}
+                  initial={{ opacity: 0, scale: 0.97 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex justify-center"
                 >
-                  <Companion type={c} stepLabel={currentStepData?.title} />
+                  <Companion
+                    type={c}
+                    solutionId={solutionId}
+                    step={tour.index}
+                    stepLabel={currentStepData?.title}
+                  />
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -178,14 +181,8 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
         geometry={tour.geometry}
         isFirst={tour.isFirst}
         isLast={tour.isLast}
-        onNext={() => {
-          setLoadingKey((k) => k + 1);
-          tour.next();
-        }}
-        onPrev={() => {
-          setLoadingKey((k) => k + 1);
-          tour.prev();
-        }}
+        onNext={tour.next}
+        onPrev={tour.prev}
         onSkip={tour.skip}
       />
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import {
   Utensils,
   Salad,
@@ -12,11 +13,10 @@ import {
   Plus,
   CheckCircle2,
   Clock,
-  Sparkles,
-  Hand,
   QrCode,
   Banknote,
   CreditCard,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
@@ -26,227 +26,222 @@ interface TAAProps {
 
 const CATEGORIES = [
   { id: "pratos", label: "Pratos", Icon: Utensils, count: 12 },
-  { id: "lanches", label: "Lanches", Icon: Sandwich, count: 8 },
+  { id: "lanches", label: "Lanches", Icon: Sandwich, count: 8, target: true },
   { id: "saladas", label: "Saladas", Icon: Salad, count: 6 },
   { id: "sopas", label: "Sopas", Icon: Soup, count: 4 },
   { id: "bebidas", label: "Bebidas", Icon: Coffee, count: 14 },
   { id: "doces", label: "Sobremesas", Icon: IceCream, count: 5 },
 ];
 
-const MENU_ITEMS = [
+const COMBO_ITEMS = [
   {
-    name: "Bowl de salmão grelhado",
-    desc: "Quinoa, abacate, ovo, missô",
-    price: 38.9,
-    kcal: 480,
-    badge: "Mais pedido",
+    id: "xburguer",
+    name: "X-Burguer Artesanal Combo",
+    desc: "Hambúrguer artesanal 180g, batata frita grande, suco de laranja 400ml",
+    price: 61.7,
+    badge: "Combo do dia",
+    target: true,
   },
   {
-    name: "Wrap de frango caesar",
-    desc: "Frango grelhado, parmesão, croutons",
-    price: 24.5,
-    kcal: 420,
+    id: "chicken",
+    name: "Chicken Crispy Combo",
+    desc: "Sanduíche de frango empanado, batata rústica, refrigerante",
+    price: 54.9,
   },
   {
-    name: "Salada quinoa & abacate",
-    desc: "Quinoa tricolor, abacate, sementes",
-    price: 26.0,
-    kcal: 380,
+    id: "veggie",
+    name: "Veggie Bowl Combo",
+    desc: "Wrap vegetariano, salada quinoa, suco verde 400ml",
+    price: 48.5,
   },
 ];
 
 export function TAAMockup({ step }: TAAProps) {
   return (
     <div className="flex h-full w-full flex-col bg-gradient-to-b from-white via-white to-brand-ghost/40">
+      <BrandStripe />
       <SubHeader />
       <div className="flex flex-1 flex-col overflow-hidden px-5 pb-5 pt-3">
-        {step === 0 && <WelcomeView />}
-        {step === 1 && <CategoryView />}
-        {step === 2 && <BuildOrderView />}
-        {step === 3 && <SummaryView />}
-        {step >= 4 && <PaymentDoneView />}
+        <AnimatePresence mode="wait">
+          {step === 0 && <WelcomeView key="welcome" />}
+          {step === 1 && <CategoryView key="category" />}
+          {step === 2 && <ItemListView key="items" />}
+          {step === 3 && <SummaryPaymentView key="payment" />}
+          {step >= 4 && <PaymentDoneView key="done" />}
+        </AnimatePresence>
       </div>
+    </div>
+  );
+}
+
+function BrandStripe() {
+  return (
+    <div className="flex items-center justify-center bg-brand px-4 py-2.5">
+      <Image
+        src="/logo-teknisa-white.svg"
+        alt="Teknisa"
+        width={96}
+        height={18}
+        priority
+        className="select-none opacity-95"
+      />
     </div>
   );
 }
 
 function SubHeader() {
   return (
-    <div className="flex items-center justify-between border-b border-brand/5 bg-white/80 px-5 py-2.5 backdrop-blur">
+    <div className="flex items-center justify-between border-b border-brand/5 bg-white/80 px-5 py-2 backdrop-blur">
       <div>
         <p className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">
-          Restaurante Central
+          Sapore — Berrini
         </p>
-        <p className="font-display text-[13px] font-bold text-neutral-900">
-          Quinta-feira · 21 Mai
+        <p className="font-display text-[12px] font-bold text-neutral-900">
+          Quinta-feira · 21 Mai · 12:14
         </p>
       </div>
-      <div className="flex items-center gap-1.5 rounded-full bg-brand/5 px-3 py-1 text-brand">
-        <Sparkles size={11} strokeWidth={2.5} />
-        <span className="text-[10px] font-bold uppercase tracking-wider">
-          Self-Service
-        </span>
-      </div>
+      <span className="rounded-full bg-success/10 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-success">
+        Aberto
+      </span>
     </div>
   );
 }
 
 function WelcomeView() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-between py-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex flex-1 flex-col"
+    >
       <div className="flex flex-1 flex-col items-center justify-center">
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="relative flex h-28 w-28 items-center justify-center rounded-full bg-brand text-white shadow-brand"
-        >
-          <motion.span
-            animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-0 rounded-full ring-2 ring-brand/40"
-          />
-          <ShoppingBag size={48} strokeWidth={1.5} />
-        </motion.div>
-
-        <motion.h1
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="mt-6 text-center font-display text-[28px] font-bold leading-tight text-neutral-900"
-        >
-          Bem-vindo
-        </motion.h1>
-        <motion.p
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="mt-2 text-center text-[14px] text-neutral-500"
-        >
-          Como você prefere consumir hoje?
-        </motion.p>
-      </div>
-
-      <div className="w-full" data-tour="taa-welcome-action">
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { label: "Comer aqui", sub: "No salão", Icon: Utensils, primary: true },
-            { label: "Levar", sub: "Para viagem", Icon: ShoppingBag, primary: false },
-          ].map((opt, i) => (
-            <motion.button
-              key={opt.label}
-              initial={{ y: 12, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4 + i * 0.08, duration: 0.4 }}
-              className={cn(
-                "flex flex-col items-center gap-2 rounded-2xl px-3 py-5 transition-shadow",
-                opt.primary
-                  ? "bg-brand text-white shadow-brand"
-                  : "border-2 border-brand/15 bg-white text-neutral-800",
-              )}
-            >
-              <opt.Icon size={28} strokeWidth={1.75} />
-              <div className="text-center">
-                <p className="font-display text-[15px] font-bold leading-none">
-                  {opt.label}
-                </p>
-                <p
-                  className={cn(
-                    "mt-1 text-[10px]",
-                    opt.primary ? "opacity-80" : "text-neutral-500",
-                  )}
-                >
-                  {opt.sub}
-                </p>
-              </div>
-            </motion.button>
-          ))}
+        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-brand text-white shadow-brand">
+          <ShoppingBag size={42} strokeWidth={1.5} />
         </div>
-        <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[11px] font-medium text-neutral-400">
-          <Hand size={11} strokeWidth={2.25} />
-          Toque para começar
+        <h1 className="mt-5 text-center font-display text-[26px] font-bold leading-tight text-neutral-900">
+          Bem-vindo
+        </h1>
+        <p className="mt-1 text-center text-[13px] text-neutral-500">
+          Como você prefere consumir?
         </p>
       </div>
-    </div>
+
+      <div className="grid grid-cols-2 gap-3 pb-2">
+        <motion.button
+          data-tour="taa-eat-here"
+          type="button"
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          className="flex flex-col items-center gap-2 rounded-2xl bg-brand px-3 py-5 text-white shadow-brand transition-transform"
+        >
+          <Utensils size={32} strokeWidth={1.75} />
+          <div className="text-center">
+            <p className="font-display text-[16px] font-bold leading-none">
+              Comer aqui
+            </p>
+            <p className="mt-1 text-[10px] opacity-85">No salão</p>
+          </div>
+        </motion.button>
+        <button
+          type="button"
+          className="flex flex-col items-center gap-2 rounded-2xl border-2 border-brand/15 bg-white px-3 py-5 text-neutral-800"
+        >
+          <ShoppingBag size={32} strokeWidth={1.75} />
+          <div className="text-center">
+            <p className="font-display text-[16px] font-bold leading-none">
+              Levar
+            </p>
+            <p className="mt-1 text-[10px] text-neutral-500">Para viagem</p>
+          </div>
+        </button>
+      </div>
+    </motion.div>
   );
 }
 
 function CategoryView() {
   return (
-    <div className="flex flex-1 flex-col">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex flex-1 flex-col"
+    >
       <div className="mb-3">
         <p className="text-[10px] font-bold uppercase tracking-wider text-brand">
-          Etapa 1 de 4 · Categoria
+          Comer aqui
         </p>
         <h2 className="font-display text-[20px] font-bold text-neutral-900">
           O que você vai querer?
         </h2>
       </div>
 
-      <div className="grid flex-1 grid-cols-2 gap-2.5" data-tour="taa-categories">
-        {CATEGORIES.map((c, i) => (
+      <div className="grid flex-1 grid-cols-2 gap-2.5">
+        {CATEGORIES.map((c) => (
           <motion.button
             key={c.id}
-            initial={{ y: 8, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.05 * i, duration: 0.35 }}
+            data-tour={c.target ? "taa-cat-lanches" : undefined}
+            type="button"
+            whileTap={c.target ? { scale: 0.96 } : undefined}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
             className={cn(
               "relative flex flex-col items-start justify-between overflow-hidden rounded-2xl p-3.5 text-left transition-shadow",
-              i === 0
+              c.target
                 ? "bg-brand text-white shadow-brand"
                 : "border border-brand/10 bg-white text-neutral-800",
             )}
           >
             <c.Icon size={28} strokeWidth={1.5} />
             <div>
-              <p className="font-display text-[14px] font-bold">{c.label}</p>
+              <p className="font-display text-[15px] font-bold">{c.label}</p>
               <p
                 className={cn(
                   "text-[10px]",
-                  i === 0 ? "opacity-80" : "text-neutral-500",
+                  c.target ? "opacity-80" : "text-neutral-500",
                 )}
               >
                 {c.count} opções
               </p>
             </div>
-            {i === 0 && (
-              <span className="absolute right-2 top-2 rounded-full bg-white/20 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider">
-                Selecionado
-              </span>
-            )}
           </motion.button>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-function BuildOrderView() {
+function ItemListView() {
   return (
-    <div className="flex flex-1 flex-col">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex flex-1 flex-col"
+    >
       <div className="mb-3">
         <p className="text-[10px] font-bold uppercase tracking-wider text-brand">
-          Etapa 2 de 4 · Monte seu pedido
+          Lanches
         </p>
         <h2 className="font-display text-[20px] font-bold text-neutral-900">
-          Pratos disponíveis
+          Selecione seu combo
         </h2>
       </div>
 
-      <div className="space-y-2.5" data-tour="taa-build-list">
-        {MENU_ITEMS.map((item, i) => (
-          <motion.div
-            key={item.name}
-            initial={{ x: 6, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.06 * i, duration: 0.35 }}
+      <div className="space-y-2.5">
+        {COMBO_ITEMS.map((item) => (
+          <div
+            key={item.id}
             className={cn(
               "relative flex gap-3 rounded-2xl border bg-white p-3 shadow-card",
-              i === 0 ? "border-brand/30" : "border-brand/10",
+              item.target ? "border-brand/40 ring-2 ring-brand/15" : "border-brand/10",
             )}
           >
-            <div className="flex h-16 w-16 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-brand-subtle via-brand-ghost to-white text-brand">
-              <Salad size={28} strokeWidth={1.5} />
+            <div className="flex h-16 w-16 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-warning/30 via-warning/10 to-white text-warning">
+              <Sandwich size={30} strokeWidth={1.5} />
             </div>
             <div className="flex flex-1 flex-col justify-between">
               <div>
@@ -260,152 +255,129 @@ function BuildOrderView() {
                     </span>
                   )}
                 </div>
-                <p className="mt-0.5 line-clamp-1 text-[10px] text-neutral-500">
+                <p className="mt-0.5 line-clamp-2 text-[10px] text-neutral-500">
                   {item.desc}
                 </p>
               </div>
-              <div className="flex items-end justify-between">
-                <div>
-                  <p className="font-display text-[14px] font-bold text-brand">
-                    R$ {item.price.toFixed(2).replace(".", ",")}
-                  </p>
-                  <p className="text-[9px] text-neutral-400">{item.kcal} kcal</p>
-                </div>
-                <button
+              <div className="mt-1 flex items-end justify-between">
+                <p className="font-display text-[15px] font-bold text-brand">
+                  R$ {item.price.toFixed(2).replace(".", ",")}
+                </p>
+                <motion.button
+                  data-tour={item.target ? "taa-combo-burger" : undefined}
                   type="button"
+                  whileTap={item.target ? { scale: 0.92 } : undefined}
+                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
                   className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-full shadow-brand transition-transform",
-                    i === 0 ? "bg-brand text-white" : "border-2 border-brand/30 bg-white text-brand",
+                    "flex h-9 w-9 items-center justify-center rounded-full transition-transform",
+                    item.target
+                      ? "bg-brand text-white shadow-brand"
+                      : "border-2 border-brand/30 bg-white text-brand",
                   )}
+                  aria-label={`Adicionar ${item.name}`}
                 >
-                  <Plus size={16} strokeWidth={2.5} />
-                </button>
+                  <Plus size={18} strokeWidth={2.5} />
+                </motion.button>
               </div>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-function SummaryView() {
-  const items = [
-    { qty: 1, name: "Bowl de salmão grelhado", price: 38.9 },
-    { qty: 1, name: "Suco de laranja 400ml", price: 9.9 },
-  ];
-  const subtotal = items.reduce((s, i) => s + i.qty * i.price, 0);
-  const taxa = subtotal * 0.1;
-  const total = subtotal + taxa;
-
+function SummaryPaymentView() {
+  const subtotal = 61.7;
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="mb-3">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex flex-1 flex-col"
+    >
+      <div className="mb-2">
         <p className="text-[10px] font-bold uppercase tracking-wider text-brand">
-          Etapa 3 de 4 · Resumo
+          Pagamento
         </p>
         <h2 className="font-display text-[20px] font-bold text-neutral-900">
-          Confira seu pedido
+          Como você quer pagar?
         </h2>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        data-tour="taa-summary"
-        className="flex flex-1 flex-col rounded-2xl border border-brand/10 bg-white p-4 shadow-card"
-      >
-        <div className="flex-1 space-y-2.5">
-          {items.map((item) => (
-            <div
-              key={item.name}
-              className="flex items-start justify-between border-b border-dashed border-neutral-100 pb-2.5 last:border-0"
-            >
-              <div className="flex items-start gap-2">
-                <span className="flex h-6 w-6 flex-none items-center justify-center rounded-md bg-brand-subtle text-[11px] font-bold text-brand">
-                  {item.qty}
-                </span>
-                <div>
-                  <p className="font-display text-[12px] font-semibold text-neutral-900">
-                    {item.name}
-                  </p>
-                  <p className="text-[10px] text-neutral-400">
-                    R$ {item.price.toFixed(2).replace(".", ",")} cada
-                  </p>
-                </div>
-              </div>
-              <span className="font-display text-[12px] font-bold text-neutral-900 tabular-nums">
-                R$ {(item.qty * item.price).toFixed(2).replace(".", ",")}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-3 space-y-1.5 border-t border-dashed border-neutral-200 pt-3 text-[11px]">
-          <div className="flex justify-between text-neutral-500">
-            <span>Subtotal</span>
-            <span className="tabular-nums">
-              R$ {subtotal.toFixed(2).replace(".", ",")}
-            </span>
-          </div>
-          <div className="flex justify-between text-neutral-500">
-            <span>Taxa de serviço (10%)</span>
-            <span className="tabular-nums">
-              R$ {taxa.toFixed(2).replace(".", ",")}
-            </span>
-          </div>
-        </div>
-
-        <div className="mt-2 flex items-baseline justify-between border-t-2 border-brand/20 pt-3">
-          <span className="font-display text-[12px] font-bold uppercase tracking-wider text-neutral-500">
-            Total
+      <div className="rounded-2xl border border-brand/10 bg-white p-3 shadow-card">
+        <div className="flex items-baseline justify-between">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
+            Total a pagar
           </span>
           <span className="font-display text-[24px] font-bold text-brand tabular-nums">
-            R$ {total.toFixed(2).replace(".", ",")}
+            R$ {subtotal.toFixed(2).replace(".", ",")}
           </span>
         </div>
+        <p className="mt-1 text-[10px] text-neutral-500">
+          1 combo X-Burguer · Pedido #A1247
+        </p>
+      </div>
 
-        <div className="mt-3 grid grid-cols-3 gap-1.5">
-          {[
-            { Icon: QrCode, label: "PIX" },
-            { Icon: CreditCard, label: "Cartão" },
-            { Icon: Banknote, label: "Dinheiro" },
-          ].map(({ Icon, label }) => (
-            <div
-              key={label}
-              className="flex flex-col items-center gap-1 rounded-lg border border-brand/10 bg-surface-raised p-2"
-            >
-              <Icon size={14} strokeWidth={2} className="text-brand" />
-              <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-600">
-                {label}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        <button
+      <div className="mt-3 flex-1 space-y-2">
+        <motion.button
+          data-tour="taa-pix-button"
           type="button"
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-brand py-3 font-display text-[13px] font-bold uppercase tracking-wider text-white shadow-brand"
+          whileTap={{ scale: 0.97 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          className="flex w-full items-center gap-3 rounded-2xl bg-brand p-4 text-white shadow-brand"
         >
-          Confirmar e pagar
-        </button>
-      </motion.div>
-    </div>
+          <span className="flex h-12 w-12 flex-none items-center justify-center rounded-xl bg-white/15">
+            <QrCode size={22} strokeWidth={2} />
+          </span>
+          <div className="flex-1 text-left">
+            <p className="font-display text-[15px] font-bold">PIX</p>
+            <p className="text-[11px] opacity-85">
+              Aprovação imediata · Sem taxa
+            </p>
+          </div>
+          <ChevronRight size={18} strokeWidth={2.25} />
+        </motion.button>
+
+        {[
+          { Icon: CreditCard, label: "Crédito", sub: "Visa, Master, Elo · até 3x" },
+          { Icon: CreditCard, label: "Débito", sub: "Aprovação na hora" },
+          { Icon: Banknote, label: "Dinheiro", sub: "Com troco" },
+        ].map((m) => (
+          <button
+            key={m.label}
+            type="button"
+            className="flex w-full items-center gap-3 rounded-2xl border border-brand/10 bg-white p-3 text-neutral-700"
+          >
+            <span className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-brand-subtle text-brand">
+              <m.Icon size={18} strokeWidth={2} />
+            </span>
+            <div className="flex-1 text-left">
+              <p className="font-display text-[13px] font-bold">{m.label}</p>
+              <p className="text-[10px] text-neutral-500">{m.sub}</p>
+            </div>
+            <ChevronRight size={14} strokeWidth={2.25} className="text-neutral-300" />
+          </button>
+        ))}
+      </div>
+    </motion.div>
   );
 }
 
 function PaymentDoneView() {
   return (
     <motion.div
-      data-tour="taa-payment-done"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
       className="flex flex-1 flex-col items-center justify-center"
     >
       <motion.div
-        initial={{ scale: 0.4 }}
+        initial={{ scale: 0.7 }}
         animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 220, damping: 14 }}
+        transition={{ type: "spring", stiffness: 240, damping: 14 }}
         className="relative flex h-24 w-24 items-center justify-center rounded-full bg-success text-white shadow-brand"
       >
         <motion.span
@@ -416,29 +388,16 @@ function PaymentDoneView() {
         <CheckCircle2 size={56} strokeWidth={2} />
       </motion.div>
 
-      <motion.h2
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.25, duration: 0.4 }}
-        className="mt-6 text-center font-display text-[22px] font-bold text-neutral-900"
-      >
+      <h2 className="mt-5 text-center font-display text-[22px] font-bold text-neutral-900">
         Pedido confirmado
-      </motion.h2>
-
-      <motion.p
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.35, duration: 0.4 }}
-        className="mt-1 text-center text-[12px] text-neutral-500"
-      >
+      </h2>
+      <p className="mt-1 text-center text-[12px] text-neutral-500">
         Acompanhe sua senha no painel da retirada
-      </motion.p>
+      </p>
 
-      <motion.div
-        initial={{ y: 12, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.45, duration: 0.5 }}
-        className="mt-6 rounded-2xl border-2 border-dashed border-brand/30 bg-gradient-to-b from-white to-brand-ghost px-8 py-5 text-center"
+      <div
+        data-tour="taa-senha-card"
+        className="mt-5 rounded-2xl border-2 border-dashed border-brand/30 bg-gradient-to-b from-white to-brand-ghost px-8 py-5 text-center"
       >
         <p className="text-[10px] font-bold uppercase tracking-wider text-brand">
           Sua senha
@@ -448,18 +407,14 @@ function PaymentDoneView() {
         </p>
         <p className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-neutral-500">
           <Clock size={12} strokeWidth={2.25} />
-          Tempo estimado · <span className="font-bold text-neutral-700">8 min</span>
+          Tempo estimado ·{" "}
+          <span className="font-bold text-neutral-700">8 min</span>
         </p>
-      </motion.div>
+      </div>
 
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6, duration: 0.4 }}
-        className="mt-4 text-center font-display text-[13px] font-medium text-neutral-600"
-      >
+      <p className="mt-4 text-center font-display text-[13px] font-medium text-neutral-600">
         Bom apetite, cliente Teknisa!
-      </motion.p>
+      </p>
     </motion.div>
   );
 }

@@ -11,6 +11,9 @@ import { MyQuestMockup } from "./tecfood/MyQuest";
 import { MyMenuMockup } from "./tecfood/MyMenu";
 import { ApproveMockup } from "./tecfood/Approve";
 import { WasteControlMockup } from "./tecfood/WasteControl";
+import { RotinaFiscalMockup } from "./erp-backoffice/RotinaFiscal";
+import { RotinaRastreabilidadeMockup } from "./erp-backoffice/RotinaRastreabilidade";
+import { AppRotinasEstoqueMockup } from "./erp-backoffice/AppRotinasEstoque";
 
 interface MockupProps {
   step: number;
@@ -28,6 +31,10 @@ const MOCKUPS: Record<string, ComponentType<MockupProps>> = {
   mymenu: MyMenuMockup,
   approve: ApproveMockup,
   "waste-control": WasteControlMockup,
+
+  "rotina-fiscal": RotinaFiscalMockup,
+  "rotina-rastreabilidade": RotinaRastreabilidadeMockup,
+  "app-rotinas-estoque": AppRotinasEstoqueMockup,
 };
 
 export function getMockup(solutionId: string): ComponentType<MockupProps> | null {

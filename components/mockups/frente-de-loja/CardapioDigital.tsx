@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 import Image from "next/image";
 import {
   Home,
@@ -10,8 +11,8 @@ import {
   MoreVertical,
   ChevronLeft,
   ChevronRight,
-  Minus,
   Plus,
+  Minus,
   Trash2,
   Edit3,
   CheckCircle2,
@@ -19,6 +20,13 @@ import {
   Clock,
   Bell,
   Utensils,
+  Lock,
+  ChevronLeft as Back,
+  ChevronRight as Fwd,
+  Share,
+  BookOpen as Library,
+  Copy,
+  Type as Aa,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
@@ -26,7 +34,26 @@ interface CardapioDigitalProps {
   step: number;
 }
 
+const ADDONS = [
+  { id: "bacon", label: "Bacon", price: 3.5 },
+  { id: "queijo", label: "Queijo", price: 3.0 },
+  { id: "calabresa", label: "Calabresa Extra", price: 5.5 },
+];
+
 export function CardapioDigitalMockup({ step }: CardapioDigitalProps) {
+  // Free interactivity: addon selection + qty steppers
+  const [addonQty, setAddonQty] = useState<Record<string, number>>({
+    bacon: 1,
+  });
+  const [dishQty, setDishQty] = useState(1);
+
+  const updateAddon = (id: string, delta: number) => {
+    setAddonQty((prev) => ({
+      ...prev,
+      [id]: Math.max(0, (prev[id] ?? 0) + delta),
+    }));
+  };
+
   return (
     <div className="flex h-full w-full flex-col bg-white text-neutral-800">
       <StatusBar />
@@ -34,13 +61,22 @@ export function CardapioDigitalMockup({ step }: CardapioDigitalProps) {
       <main className="flex-1 overflow-hidden">
         <AnimatePresence mode="wait">
           {step === 0 && <HomeView key="home" />}
-          {step === 1 && <DetailView key="detail" />}
+          {step === 1 && (
+            <DetailView
+              key="detail"
+              addonQty={addonQty}
+              dishQty={dishQty}
+              onUpdateAddon={updateAddon}
+              onUpdateDish={(d) => setDishQty(Math.max(1, dishQty + d))}
+            />
+          )}
           {step === 2 && <CartView key="cart" />}
           {step === 3 && <ConfirmView key="confirm" />}
           {step >= 4 && <KitchenStatusView key="kitchen" />}
         </AnimatePresence>
       </main>
       <BottomNav step={step} />
+      <SafariBottomBar />
     </div>
   );
 }
@@ -77,7 +113,7 @@ function TopBar() {
           ANIMAL
         </span>
       </div>
-      <button className="text-neutral-400">
+      <button className="text-neutral-400 hover:text-brand">
         <MoreVertical size={14} strokeWidth={2.25} />
       </button>
     </div>
@@ -197,10 +233,7 @@ function HomeView() {
                 </p>
                 <p className="text-[11px] text-neutral-500">
                   De{" "}
-                  <span className="line-through">
-                    R$ {p.old},00
-                  </span>{" "}
-                  por{" "}
+                  <span className="line-through">R$ {p.old},00</span> por{" "}
                   <span className="font-bold text-success">
                     R$ {p.now.toFixed(2).replace(".", ",")}
                   </span>
@@ -214,7 +247,24 @@ function HomeView() {
   );
 }
 
-function DetailView() {
+function DetailView({
+  addonQty,
+  dishQty,
+  onUpdateAddon,
+  onUpdateDish,
+}: {
+  addonQty: Record<string, number>;
+  dishQty: number;
+  onUpdateAddon: (id: string, delta: number) => void;
+  onUpdateDish: (delta: number) => void;
+}) {
+  const selectedCount = Object.values(addonQty).reduce((s, q) => s + q, 0);
+  const addonsTotal = ADDONS.reduce(
+    (s, a) => s + a.price * (addonQty[a.id] ?? 0),
+    0,
+  );
+  const total = (19.9 + addonsTotal) * dishQty;
+
   return (
     <motion.div
       data-tour="cd-detail"
@@ -224,9 +274,8 @@ function DetailView() {
       transition={{ duration: 0.2 }}
       className="flex h-full flex-col"
     >
-      {/* Back + title */}
       <div className="flex items-start gap-2 px-4 pt-2">
-        <button className="text-brand">
+        <button className="text-brand hover:bg-brand-ghost rounded">
           <ChevronLeft size={20} strokeWidth={2.5} />
         </button>
         <div>
@@ -239,71 +288,97 @@ function DetailView() {
         </div>
       </div>
 
-      {/* Photo */}
       <div className="mx-4 mt-3 flex h-32 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-amber-200 via-red-300 to-red-500">
         <Utensils size={56} strokeWidth={1} className="text-white/40" />
       </div>
 
-      {/* Description */}
       <p className="mt-3 px-4 text-[12px] leading-relaxed text-neutral-600">
         Uma combinação clássica e irresistível: molho de tomate, muçarela
         derretida, rodelas de tomate fresco, toque de manjericão e um fio de
         azeite para finalizar.
       </p>
 
-      {/* Acréscimo section */}
       <div className="mt-3 bg-[#eef0f7] px-4 py-2">
         <p className="font-display text-[13px] font-bold text-brand">
           Escolha o acréscimo
         </p>
-        <p className="text-[10px] text-neutral-500">0 / 3</p>
+        <p className="text-[10px] text-neutral-500">{selectedCount} / 3</p>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-2">
         <div className="space-y-2">
-          {[
-            { label: "Bacon", price: 3.5, selected: true },
-            { label: "Queijo", price: 3.0 },
-            { label: "Calabresa Extra", price: 5.5 },
-          ].map((add) => (
-            <div
-              key={add.label}
-              className="flex items-center justify-between border-b border-neutral-100 py-2"
-            >
-              <div>
-                <p className="font-display text-[12px] font-bold text-neutral-900">
-                  {add.label}
-                </p>
-                <p className="font-display text-[12px] font-bold text-neutral-900">
-                  R$ {add.price.toFixed(2).replace(".", ",")}
-                </p>
+          {ADDONS.map((add) => {
+            const qty = addonQty[add.id] ?? 0;
+            return (
+              <div
+                key={add.id}
+                className="flex items-center justify-between border-b border-neutral-100 py-2"
+              >
+                <div>
+                  <p className="font-display text-[12px] font-bold text-neutral-900">
+                    {add.label}
+                  </p>
+                  <p className="font-display text-[12px] font-bold text-neutral-900">
+                    R$ {add.price.toFixed(2).replace(".", ",")}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onUpdateAddon(add.id, -1)}
+                    disabled={qty === 0}
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-md",
+                      qty === 0
+                        ? "bg-neutral-100 text-neutral-300"
+                        : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200",
+                    )}
+                  >
+                    <Minus size={12} strokeWidth={2.25} />
+                  </button>
+                  <motion.span
+                    key={qty}
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    className="w-5 text-center font-display text-[14px] font-bold text-neutral-700"
+                  >
+                    {qty}
+                  </motion.span>
+                  <button
+                    type="button"
+                    onClick={() => onUpdateAddon(add.id, 1)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-[#dee3f2] text-brand hover:bg-brand-subtle"
+                  >
+                    <Plus size={12} strokeWidth={2.5} />
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button className="flex h-8 w-8 items-center justify-center rounded-md bg-neutral-100 text-neutral-500">
-                  <Minus size={12} strokeWidth={2.25} />
-                </button>
-                <span className="w-4 text-center font-display text-[14px] font-bold text-neutral-700">
-                  {add.selected ? 1 : 0}
-                </span>
-                <button className="flex h-8 w-8 items-center justify-center rounded-md bg-[#dee3f2] text-brand">
-                  <Plus size={12} strokeWidth={2.5} />
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
-      {/* Bottom CTA */}
       <div className="flex items-center gap-2 border-t border-neutral-100 px-3 py-2.5">
         <div className="flex items-center gap-1.5">
-          <button className="text-neutral-400">
+          <button
+            type="button"
+            onClick={() => onUpdateDish(-1)}
+            disabled={dishQty <= 1}
+            className={cn(
+              "text-neutral-400",
+              dishQty <= 1 && "cursor-not-allowed opacity-50",
+            )}
+          >
             <Trash2 size={14} strokeWidth={2} />
           </button>
           <span className="w-4 text-center font-display text-[12px] font-bold text-neutral-900">
-            1
+            {dishQty}
           </span>
-          <button className="flex h-7 w-7 items-center justify-center rounded-md bg-[#dee3f2] text-brand">
+          <button
+            type="button"
+            onClick={() => onUpdateDish(1)}
+            className="flex h-7 w-7 items-center justify-center rounded-md bg-[#dee3f2] text-brand hover:bg-brand-subtle"
+          >
             <Plus size={12} strokeWidth={2.5} />
           </button>
         </div>
@@ -315,7 +390,7 @@ function DetailView() {
             Adicionar aos pedidos
           </span>
           <span className="font-display text-[12px] font-bold tabular-nums">
-            R$ 50,00
+            R$ {total.toFixed(2).replace(".", ",")}
           </span>
         </button>
       </div>
@@ -337,7 +412,6 @@ function CartView() {
         Pedidos
       </h1>
 
-      {/* Restaurant banner small */}
       <div className="mx-4 mt-2 h-20 overflow-hidden rounded-xl bg-gradient-to-r from-amber-700 via-orange-700 to-red-700" />
 
       <div className="mt-3 flex items-center justify-between px-4">
@@ -383,7 +457,7 @@ function CartView() {
                   {item.name}
                 </p>
                 <div className="mt-1 flex items-center gap-2">
-                  <button className="flex items-center gap-1 rounded-md bg-[#eef0f7] px-2 py-0.5 text-[10px] font-medium text-neutral-700">
+                  <button className="flex items-center gap-1 rounded-md bg-[#eef0f7] px-2 py-0.5 text-[10px] font-medium text-neutral-700 hover:bg-brand-subtle">
                     <Edit3 size={9} strokeWidth={2.25} />
                     Editar
                   </button>
@@ -394,13 +468,13 @@ function CartView() {
                   R$ {item.price.toFixed(2).replace(".", ",")}
                 </span>
                 <div className="flex items-center gap-1">
-                  <button className="text-neutral-400">
+                  <button className="text-neutral-400 hover:text-danger">
                     <Trash2 size={11} strokeWidth={2} />
                   </button>
                   <span className="w-4 text-center font-display text-[11px] font-bold">
                     {item.qty}
                   </span>
-                  <button className="flex h-5 w-5 items-center justify-center rounded bg-[#dee3f2] text-brand">
+                  <button className="flex h-5 w-5 items-center justify-center rounded bg-[#dee3f2] text-brand hover:bg-brand-subtle">
                     <Plus size={9} strokeWidth={2.5} />
                   </button>
                 </div>
@@ -410,7 +484,6 @@ function CartView() {
         ))}
       </div>
 
-      {/* Total + CTAs */}
       <div className="border-t border-neutral-100 bg-white px-4 py-3">
         <div className="flex items-center justify-between">
           <span className="font-display text-[14px] font-bold text-brand">
@@ -422,13 +495,13 @@ function CartView() {
         </div>
         <button
           type="button"
-          className="mt-2 w-full rounded-md bg-brand py-2.5 text-center font-display text-[12px] font-bold text-white shadow-brand"
+          className="mt-2 w-full rounded-md bg-brand py-2.5 text-center font-display text-[12px] font-bold text-white shadow-brand hover:bg-brand-light"
         >
           Chamar Garçom
         </button>
         <button
           type="button"
-          className="mt-1.5 w-full rounded-md border-2 border-brand bg-white py-2 text-center font-display text-[11px] font-bold text-brand"
+          className="mt-1.5 w-full rounded-md border-2 border-brand bg-white py-2 text-center font-display text-[11px] font-bold text-brand hover:bg-brand-ghost"
         >
           Fazer outro pedido
         </button>
@@ -594,5 +667,48 @@ function BottomNav({ step }: { step: number }) {
         </button>
       ))}
     </nav>
+  );
+}
+
+function SafariBottomBar() {
+  return (
+    <div className="border-t border-neutral-200 bg-[#f5f5f7]">
+      <div className="mx-3 my-1.5 flex items-center gap-2 rounded-lg bg-white px-2.5 py-1.5 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]">
+        <span className="text-neutral-500">
+          <Aa size={13} strokeWidth={2.25} />
+        </span>
+        <span className="text-neutral-400">
+          <Lock size={10} strokeWidth={2.25} />
+        </span>
+        <span className="flex-1 text-center text-[11px] text-neutral-700">
+          mundoanimal.cardapio.teknisa.com
+        </span>
+        <span className="text-neutral-400">
+          <Copy size={11} strokeWidth={2.25} />
+        </span>
+      </div>
+      <div className="flex items-center justify-around px-4 pb-2 text-[#007aff]">
+        <button>
+          <Back size={18} strokeWidth={2} />
+        </button>
+        <button className="opacity-40">
+          <Fwd size={18} strokeWidth={2} />
+        </button>
+        <button>
+          <Share size={16} strokeWidth={2} />
+        </button>
+        <button>
+          <Library size={16} strokeWidth={2} />
+        </button>
+        <button>
+          <span className="grid h-4 w-4 grid-cols-2 gap-px">
+            <span className="rounded-sm border border-[#007aff]" />
+            <span className="rounded-sm border border-[#007aff]" />
+            <span className="rounded-sm border border-[#007aff]" />
+            <span className="rounded-sm border border-[#007aff]" />
+          </span>
+        </button>
+      </div>
+    </div>
   );
 }

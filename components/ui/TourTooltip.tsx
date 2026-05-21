@@ -18,8 +18,8 @@ export interface TourTooltipProps {
 
 const TOOLTIP_WIDTH = 280;
 const TOOLTIP_HEIGHT_ESTIMATE = 140;
-const TOOLTIP_GAP = 14;
-const VIEWPORT_MARGIN = 16;
+const TOOLTIP_GAP = 28; // larger gap so it doesn't crowd the target's interactive area
+const VIEWPORT_MARGIN = 20;
 
 type ArrowDirection = "top" | "bottom" | "left" | "right" | "none";
 

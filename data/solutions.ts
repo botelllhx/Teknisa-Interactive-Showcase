@@ -196,7 +196,7 @@ export const solutions: Solution[] = [
     tagline: "Caixa de loja repaginado",
     description:
       "Frente de caixa rápida, com cobrança integrada, descontos e cupom fiscal em segundos.",
-    device: "pos-terminal",
+    device: "desktop",
     icon: "Calculator",
     tags: ["PDV", "Caixa", "Frente de loja"],
     companions: ["POSCardReader", "OrderTicket"],
@@ -222,7 +222,7 @@ export const solutions: Solution[] = [
     tagline: "Pedido direto da mesa",
     description:
       "Cardápio interativo para o cliente pedir do próprio celular ou tablet de mesa, com integração à cozinha.",
-    device: "tablet",
+    device: "mobile",
     icon: "BookOpen",
     tags: ["Cardápio", "QR", "Mesa"],
     companions: ["SimulatedNotification", "KitchenDisplay"],

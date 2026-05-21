@@ -11,6 +11,7 @@ import { useMeasure } from "@/hooks/useMeasure";
 import { useShowcase } from "@/lib/store";
 import { segmentsById } from "@/data/solutions";
 import { SolutionFrame } from "@/components/mockups/frames";
+import { Device3DCanvas } from "@/components/mockups-3d/Device3DCanvas";
 import { SegmentIcon } from "@/components/ui/SegmentIcon";
 import { TourOverlay } from "@/components/ui/TourOverlay";
 import {
@@ -38,6 +39,11 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
   const [completionVisible, setCompletionVisible] = useState(false);
   const [loadingKey, setLoadingKey] = useState(0);
   const [frameRef, frameSize] = useMeasure<HTMLDivElement>();
+
+  // Feature flag: enable 3D devices for Frente de Loja segment
+  const use3D =
+    process.env.NEXT_PUBLIC_USE_3D_DEVICES === "true" &&
+    solution?.segment === "frente-de-loja";
 
   const tour = useTour({
     steps,
@@ -120,22 +126,39 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
           className="relative flex h-full min-h-0 items-center justify-center"
         >
           {frameSize.height > 0 && (
-            <SolutionFrame
-              device={solution.device}
-              containerWidth={frameSize.width}
-              containerHeight={frameSize.height}
-            >
-              <div className="relative h-full w-full">
-                <LoadingBar key={loadingKey} visible duration={500} />
-                {Mockup ? (
-                  <Mockup step={tour.index} />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-neutral-400">
-                    Mockup não disponível
-                  </div>
-                )}
-              </div>
-            </SolutionFrame>
+            use3D ? (
+              /* ─── 3D mode: canvas fills the entire column ─────────────── */
+              <Device3DCanvas device={solution.device}>
+                <div className="relative h-full w-full">
+                  <LoadingBar key={loadingKey} visible duration={500} />
+                  {Mockup ? (
+                    <Mockup step={tour.index} />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-neutral-400">
+                      Mockup não disponível
+                    </div>
+                  )}
+                </div>
+              </Device3DCanvas>
+            ) : (
+              /* ─── 2D mode: original SolutionFrame ──────────────────────── */
+              <SolutionFrame
+                device={solution.device}
+                containerWidth={frameSize.width}
+                containerHeight={frameSize.height}
+              >
+                <div className="relative h-full w-full">
+                  <LoadingBar key={loadingKey} visible duration={500} />
+                  {Mockup ? (
+                    <Mockup step={tour.index} />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-neutral-400">
+                      Mockup não disponível
+                    </div>
+                  )}
+                </div>
+              </SolutionFrame>
+            )
           )}
         </div>
 

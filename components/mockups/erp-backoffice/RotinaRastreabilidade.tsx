@@ -82,7 +82,7 @@ export function RotinaRastreabilidadeMockup({ step }: RotinaRastreabilidadeProps
       <main className="grid flex-1 grid-cols-[1fr_36%] gap-3 p-3">
         <section className="flex flex-col gap-2">
           <div className="rounded-md bg-white p-2 shadow-card">
-            <div className="flex items-center gap-2 rounded bg-surface-raised px-2 py-1.5">
+            <div data-tour="rr-search" className="flex items-center gap-2 rounded bg-surface-raised px-2 py-1.5">
               <Search size={12} strokeWidth={2} className="text-neutral-400" />
               <span className="text-[9px] font-mono text-neutral-700">
                 LOTE-AP247-2026-05
@@ -111,6 +111,7 @@ export function RotinaRastreabilidadeMockup({ step }: RotinaRastreabilidadeProps
 
           {showTimeline && (
             <motion.div
+              data-tour="rr-timeline"
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex-1 rounded-md bg-white p-2 shadow-card"
@@ -158,6 +159,7 @@ export function RotinaRastreabilidadeMockup({ step }: RotinaRastreabilidadeProps
         <aside className="flex flex-col gap-2">
           {showOrigin && (
             <motion.div
+              data-tour="rr-chain"
               initial={{ opacity: 0, x: 8 }}
               animate={{ opacity: 1, x: 0 }}
               className="rounded-md bg-white p-2 shadow-card"
@@ -176,6 +178,7 @@ export function RotinaRastreabilidadeMockup({ step }: RotinaRastreabilidadeProps
 
           {showRecall && (
             <motion.div
+              data-tour="rr-recall"
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               className="flex items-center gap-2 rounded-md border border-danger/30 bg-danger/5 p-2"
@@ -194,6 +197,7 @@ export function RotinaRastreabilidadeMockup({ step }: RotinaRastreabilidadeProps
 
           {showReport && (
             <motion.div
+              data-tour="rr-report"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="mt-auto rounded-md bg-white p-2 shadow-card"

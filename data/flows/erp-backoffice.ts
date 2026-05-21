@@ -1,104 +1,148 @@
-import type { FlowStep } from "../solutions";
+import type { TourStep } from "../solutions";
 
-export const rotinaFiscalFlow: FlowStep[] = [
+export const rotinaFiscalFlow: TourStep[] = [
   {
     id: "painel",
-    label: "Obrigações",
-    tooltip: "Painel de obrigações do mês",
-    highlightArea: { x: 6, y: 22, width: 88, height: 28 },
+    targetSelector: '[data-tour="rf-obligations"]',
+    placement: "right",
+    title: "Painel de obrigações fiscais",
+    description:
+      "SPED Fiscal, EFD-Reinf, DCTFWeb — todas as obrigações do mês com status e vencimento. Zero dispersão.",
     companions: ["FiscalBadge"],
   },
   {
     id: "reforma",
-    label: "Reforma Tributária",
-    tooltip: "Nova estrutura IBS/CBS/IS",
-    highlightArea: { x: 6, y: 50, width: 88, height: 22 },
+    targetSelector: '[data-tour="rf-reform-card"]',
+    placement: "right",
+    title: "Preparado para a Reforma 2026",
+    description:
+      "Estrutura IBS, CBS, IS e Split Payment já configurada. A Teknisa absorve a mudança regulatória sem você precisar refazer cadastros.",
     companions: ["FiscalBadge"],
   },
   {
     id: "validacao",
-    label: "Validação",
-    tooltip: "Validação automática de notas",
-    highlightArea: { x: 6, y: 22, width: 88, height: 50 },
+    targetSelector: '[data-tour="rf-validation"]',
+    placement: "right",
+    title: "Validação automática de notas",
+    description:
+      "1.842 notas validadas, 12 com inconsistência — sinalizadas para correção pontual. Sem revisar uma a uma manualmente.",
     companions: ["FiscalBadge"],
   },
   {
     id: "apuracao",
-    label: "Apuração",
-    tooltip: "Comparativo regime atual vs. novo",
-    highlightArea: { x: 6, y: 22, width: 88, height: 68 },
+    targetSelector: '[data-tour="rf-comparison"]',
+    placement: "left",
+    title: "Comparativo regime atual vs novo",
+    description:
+      "Apuração paralela: regime atual R$ 84,2k vs novo R$ 79,4k. Veja impacto da Reforma na sua operação antes de 2026.",
     companions: ["FiscalBadge", "MiniDashboard"],
   },
   {
     id: "declaracao",
-    label: "SPED enviado",
+    targetSelector: '[data-tour="rf-send"]',
+    placement: "top",
+    title: "SPED gerado e transmitido",
+    description:
+      "Um toque envia a declaração ao SEFAZ. Confirmação chega no painel — auditoria fica com tudo registrado.",
+    requiresInteraction: true,
+    actionLabel: "Transmitir",
     companions: ["FiscalBadge", "SimulatedNotification"],
   },
 ];
 
-export const rotinaRastreabilidadeFlow: FlowStep[] = [
+export const rotinaRastreabilidadeFlow: TourStep[] = [
   {
     id: "busca",
-    label: "Busca",
-    tooltip: "Pesquise por lote ou produto",
-    highlightArea: { x: 6, y: 18, width: 88, height: 12 },
+    targetSelector: '[data-tour="rr-search"]',
+    placement: "bottom",
+    title: "Busca por lote",
+    description:
+      "Digite o número do lote ou escaneie o código. O sistema entrega o histórico completo em segundos.",
   },
   {
     id: "timeline",
-    label: "Movimentações",
-    tooltip: "Linha do tempo do lote",
-    highlightArea: { x: 6, y: 30, width: 88, height: 40 },
+    targetSelector: '[data-tour="rr-timeline"]',
+    placement: "right",
+    title: "Linha do tempo de movimentações",
+    description:
+      "Cada passo do lote registrado com data, hora e responsável: recebimento, conferência, transferência, saída.",
     companions: ["StockIndicator"],
   },
   {
     id: "origem",
-    label: "Origem",
-    tooltip: "Fornecedor → estoque → saída",
-    highlightArea: { x: 6, y: 70, width: 88, height: 22 },
+    targetSelector: '[data-tour="rr-chain"]',
+    placement: "left",
+    title: "Cadeia de origem completa",
+    description:
+      "Do produtor à sua filial — origem, distribuidor, CD, unidade. Compliance e segurança alimentar sem caixa-preta.",
     companions: ["StockIndicator"],
   },
   {
     id: "recall",
-    label: "Alerta de recall",
+    targetSelector: '[data-tour="rr-recall"]',
+    placement: "left",
+    title: "Alerta de recall ativado",
+    description:
+      "Em caso de problema, todas as unidades que receberam o lote são notificadas imediatamente para suspender o uso.",
     companions: ["StockIndicator", "SimulatedNotification"],
   },
   {
     id: "relatorio",
-    label: "Relatório",
+    targetSelector: '[data-tour="rr-report"]',
+    placement: "left",
+    title: "Relatório de rastreabilidade",
+    description:
+      "Documento pronto para auditoria sanitária. PDF assinado digitalmente, sem montagem manual de dossiê.",
     companions: ["StockIndicator"],
   },
 ];
 
-export const appRotinasEstoqueFlow: FlowStep[] = [
+export const appRotinasEstoqueFlow: TourStep[] = [
   {
     id: "tarefas",
-    label: "Tarefas",
-    tooltip: "Lista de tarefas do dia",
-    highlightArea: { x: 6, y: 18, width: 88, height: 60 },
+    targetSelector: '[data-tour="ae-task-list"]',
+    placement: "bottom",
+    title: "Tarefas de estoque do dia",
+    description:
+      "Contagem por setor, validade, conferência — distribuídas conforme escala. Mobile pensado para uso no chão de loja.",
     companions: ["StockIndicator"],
   },
   {
     id: "contagem",
-    label: "Contagem",
-    tooltip: "Informe a quantidade contada",
-    highlightArea: { x: 14, y: 38, width: 72, height: 18 },
+    targetSelector: '[data-tour="ae-counter"]',
+    placement: "bottom",
+    title: "Contagem direto no mobile",
+    description:
+      "Stepper grande, sem digitar números pequenos. Cada item conta em segundos.",
+    requiresInteraction: true,
+    actionLabel: "Ajuste a quantidade",
     companions: ["StockIndicator"],
   },
   {
     id: "divergencia",
-    label: "Divergência",
+    targetSelector: '[data-tour="ae-divergence"]',
+    placement: "top",
+    title: "Divergência detectada na hora",
+    description:
+      "Sistema esperava 22 kg, contagem deu 18,4. Divergência aparece imediatamente — sem esperar fechar inventário.",
     companions: ["StockIndicator", "SimulatedNotification"],
   },
   {
     id: "justificativa",
-    label: "Justificativa",
-    tooltip: "Registre a justificativa",
-    highlightArea: { x: 6, y: 56, width: 88, height: 26 },
+    targetSelector: '[data-tour="ae-justification"]',
+    placement: "top",
+    title: "Justificativa rastreável",
+    description:
+      "Perda, erro de etiquetagem, transferência não registrada — opções pré-definidas + campo livre vinculado a documento.",
     companions: ["StockIndicator"],
   },
   {
     id: "sincronizado",
-    label: "Sincronizado",
+    targetSelector: '[data-tour="ae-sync"]',
+    placement: "top",
+    title: "Sincronizado com o ERP",
+    description:
+      "Contagem entra no ERP em tempo real. Estoque atualizado, divergência registrada — tudo pronto para conciliação.",
     companions: ["StockIndicator"],
   },
 ];

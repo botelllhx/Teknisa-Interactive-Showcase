@@ -1,168 +1,238 @@
-import type { FlowStep } from "../solutions";
+import type { TourStep } from "../solutions";
 
-export const taaFlow: FlowStep[] = [
+export const taaFlow: TourStep[] = [
   {
     id: "boas-vindas",
-    label: "Boas-vindas",
-    tooltip: "Toque em uma das opções para começar o pedido",
-    highlightArea: { x: 18, y: 58, width: 64, height: 18 },
+    targetSelector: '[data-tour="taa-welcome-action"]',
+    placement: "top",
+    title: "Comece o pedido",
+    description:
+      "Toque em uma das opções para iniciar. Comer aqui ou levar: o totem adapta o fluxo conforme a escolha do cliente.",
+    actionLabel: "Toque para começar",
+    requiresInteraction: true,
   },
   {
     id: "categoria",
-    label: "Categoria",
-    tooltip: "Escolha uma categoria do cardápio",
-    highlightArea: { x: 8, y: 28, width: 84, height: 20 },
+    targetSelector: '[data-tour="taa-categories"]',
+    placement: "bottom",
+    title: "Categorias bem organizadas",
+    description:
+      "Pratos, lanches, saladas, bebidas, sobremesas. Atalhos visuais com ícone reduzem o tempo de decisão na fila.",
   },
   {
     id: "monta-pedido",
-    label: "Monta o pedido",
-    tooltip: "Adicione itens e personalize",
-    highlightArea: { x: 8, y: 52, width: 56, height: 24 },
+    targetSelector: '[data-tour="taa-build-list"]',
+    placement: "right",
+    title: "Monte o pedido em poucos toques",
+    description:
+      "Itens com foto, preço e botão de adicionar. Personalizações aparecem em um passo só — sem fricção.",
     companions: ["OrderTicket"],
   },
   {
     id: "resumo",
-    label: "Resumo",
-    tooltip: "Confirme os itens e siga para pagamento",
-    highlightArea: { x: 14, y: 78, width: 72, height: 14 },
+    targetSelector: '[data-tour="taa-summary"]',
+    placement: "top",
+    title: "Resumo claro antes de pagar",
+    description:
+      "O cliente revisa, ajusta e confirma. A senha e o tempo estimado aparecem imediatamente após o pagamento.",
     companions: ["OrderTicket"],
   },
   {
     id: "pagamento",
-    label: "Pagamento",
-    tooltip: "Pagamento aprovado",
-    companions: ["OrderTicket", "SimulatedNotification"],
+    targetSelector: '[data-tour="taa-payment-done"]',
+    placement: "top",
+    title: "Senha emitida e operação registrada",
+    description:
+      "Em segundos o cliente sai com a senha. O pedido entra automaticamente na cozinha — sem retrabalho de balcão.",
+    companions: ["SimulatedNotification"],
   },
 ];
 
-export const pdvNovoFlow: FlowStep[] = [
+export const pdvNovoFlow: TourStep[] = [
   {
     id: "tela-principal",
-    label: "Pedido aberto",
-    tooltip: "Toque em um item do cardápio para adicionar",
-    highlightArea: { x: 8, y: 24, width: 84, height: 42 },
+    targetSelector: '[data-tour="pdv-first-product"]',
+    placement: "right",
+    title: "Cardápio sempre visível",
+    description:
+      "Grid de produtos com foto e preço — toque para adicionar. Layout pensado para operação contínua sem confusão.",
+    requiresInteraction: true,
+    actionLabel: "Toque em um produto",
   },
   {
     id: "adicionar-item",
-    label: "Item adicionado",
-    tooltip: "Item adicionado ao pedido",
-    highlightArea: { x: 56, y: 30, width: 36, height: 8 },
+    targetSelector: '[data-tour="pdv-cart"]',
+    placement: "left",
+    title: "Carrinho lateral em tempo real",
+    description:
+      "Cada item adicionado aparece instantaneamente no carrinho com quantidade, preço e total atualizados.",
     companions: ["OrderTicket"],
   },
   {
     id: "desconto",
-    label: "Desconto",
-    tooltip: "Aplique um desconto promocional",
-    highlightArea: { x: 8, y: 70, width: 40, height: 10 },
+    targetSelector: '[data-tour="pdv-discount"]',
+    placement: "top",
+    title: "Descontos e promoções aplicados em um toque",
+    description:
+      "Promoções automáticas e cupons manuais ficam visíveis na linha do total. Sem ir e voltar entre telas.",
     companions: ["OrderTicket"],
   },
   {
     id: "pagamento",
-    label: "Pagamento",
-    tooltip: "Selecione a forma de pagamento",
-    highlightArea: { x: 8, y: 82, width: 84, height: 12 },
+    targetSelector: '[data-tour="pdv-payment"]',
+    placement: "top",
+    title: "Todas as formas de pagamento",
+    description:
+      "Crédito, débito, PIX e dinheiro lado a lado. Integração nativa com SmartPOS para finalização sem digitar valor.",
     companions: ["POSCardReader", "OrderTicket"],
   },
   {
     id: "cupom",
-    label: "Cupom emitido",
+    targetSelector: '[data-tour="pdv-receipt"]',
+    placement: "top",
+    title: "Cupom fiscal emitido em segundos",
+    description:
+      "Cupom impresso e enviado por e-mail simultaneamente. Operação fiscal integrada ao Rotina Fiscal automaticamente.",
     companions: ["POSCardReader", "OrderTicket", "SimulatedNotification"],
   },
 ];
 
-export const smartPosFlow: FlowStep[] = [
+export const smartPosFlow: TourStep[] = [
   {
     id: "catalogo",
-    label: "Catálogo",
-    tooltip: "Toque em um produto",
-    highlightArea: { x: 6, y: 22, width: 88, height: 50 },
+    targetSelector: '[data-tour="smartpos-catalog-item"]',
+    placement: "right",
+    title: "Catálogo na palma da mão",
+    description:
+      "Operador percorre o catálogo direto no SmartPOS. Atende em qualquer ponto da loja sem terminal fixo.",
+    requiresInteraction: true,
+    actionLabel: "Toque em um item",
   },
   {
     id: "quantidade",
-    label: "Quantidade",
-    tooltip: "Ajuste a quantidade desejada",
-    highlightArea: { x: 22, y: 56, width: 56, height: 14 },
+    targetSelector: '[data-tour="smartpos-qty"]',
+    placement: "top",
+    title: "Ajuste de quantidade rápido",
+    description:
+      "Stepper grande, contagem instantânea. Pensado para uso com luvas e em movimento.",
   },
   {
     id: "pagamento",
-    label: "Pagamento",
-    tooltip: "Escolha a forma de pagamento",
-    highlightArea: { x: 6, y: 70, width: 88, height: 20 },
+    targetSelector: '[data-tour="smartpos-payment-list"]',
+    placement: "right",
+    title: "Forma de pagamento direto no app",
+    description:
+      "Tudo integrado: o mesmo dispositivo que tira o pedido recebe o pagamento e emite o comprovante.",
     companions: ["POSCardReader"],
   },
   {
     id: "cartao",
-    label: "Aproxime o cartão",
-    tooltip: "Simulação de leitura de cartão",
+    targetSelector: '[data-tour="smartpos-tap"]',
+    placement: "top",
+    title: "Aproximação e pagamento",
+    description:
+      "Cliente aproxima o cartão ou celular. Aprovação em segundos, sem trocar de aparelho.",
     companions: ["POSCardReader"],
   },
   {
     id: "aprovado",
-    label: "Aprovado",
+    targetSelector: '[data-tour="smartpos-approved"]',
+    placement: "top",
+    title: "Aprovado e comprovante enviado",
+    description:
+      "Comprovante digital por e-mail ou SMS. Zero papel, zero fila.",
     companions: ["POSCardReader", "SimulatedNotification"],
   },
 ];
 
-export const cardapioDigitalFlow: FlowStep[] = [
+export const cardapioDigitalFlow: TourStep[] = [
   {
     id: "categorias",
-    label: "Cardápio",
-    tooltip: "Selecione uma categoria",
-    highlightArea: { x: 6, y: 18, width: 88, height: 22 },
+    targetSelector: '[data-tour="cd-categories"]',
+    placement: "bottom",
+    title: "Cardápio próprio do cliente",
+    description:
+      "O cliente navega no próprio celular ou no tablet da mesa. Categorias com foto e tempo médio de preparo.",
   },
   {
     id: "detalhe",
-    label: "Detalhe do item",
-    tooltip: "Personalize o item",
-    highlightArea: { x: 6, y: 36, width: 88, height: 36 },
+    targetSelector: '[data-tour="cd-detail"]',
+    placement: "right",
+    title: "Detalhe do prato com personalização",
+    description:
+      "Foto, descrição, adicionais e restrições. O pedido sai do jeito que o cliente quer — sem ruído de comanda manual.",
   },
   {
     id: "carrinho",
-    label: "Carrinho",
-    tooltip: "Confira o resumo",
-    highlightArea: { x: 6, y: 72, width: 88, height: 16 },
+    targetSelector: '[data-tour="cd-cart"]',
+    placement: "top",
+    title: "Carrinho com total dinâmico",
+    description:
+      "Itens, observações e total. O cliente revisa e confirma sem chamar atendente.",
   },
   {
     id: "confirmar",
-    label: "Confirmação",
+    targetSelector: '[data-tour="cd-confirm"]',
+    placement: "top",
+    title: "Pedido enviado direto à cozinha",
+    description:
+      "O pedido vai imediatamente para o KDS da cozinha — zero erro de digitação, zero pedido perdido.",
     companions: ["SimulatedNotification"],
   },
   {
     id: "em-preparo",
-    label: "Em preparo",
+    targetSelector: '[data-tour="cd-kitchen"]',
+    placement: "top",
+    title: "Status em tempo real para o cliente",
+    description:
+      "Recebido, em preparo, a caminho — visibilidade total. Cliente para de perguntar 'já saiu?'.",
     companions: ["KitchenDisplay", "SimulatedNotification"],
   },
 ];
 
-export const quickPassFlow: FlowStep[] = [
+export const quickPassFlow: TourStep[] = [
   {
     id: "login",
-    label: "Identificação",
-    tooltip: "Toque para autenticar",
-    highlightArea: { x: 16, y: 70, width: 68, height: 14 },
+    targetSelector: '[data-tour="qp-login"]',
+    placement: "bottom",
+    title: "Acesso sem cartão físico",
+    description:
+      "QR Code ou biometria. Funcionário libera entrada e benefícios sem precisar levar nada além do crachá digital.",
   },
   {
     id: "saldo",
-    label: "Saldo",
-    tooltip: "Confira seu saldo e benefícios",
-    highlightArea: { x: 8, y: 30, width: 84, height: 22 },
+    targetSelector: '[data-tour="qp-balance"]',
+    placement: "bottom",
+    title: "Saldo e benefícios visíveis",
+    description:
+      "Refeição executiva, café da manhã, créditos. Tudo consolidado em um único cartão digital.",
     companions: ["StockIndicator"],
   },
   {
     id: "selecao",
-    label: "Refeitório",
-    tooltip: "Escolha o local",
-    highlightArea: { x: 8, y: 56, width: 84, height: 24 },
+    targetSelector: '[data-tour="qp-restaurant"]',
+    placement: "top",
+    title: "Escolha o refeitório",
+    description:
+      "Distância, fila estimada, capacidade. Funcionário decide informado — refeitório cheio não vira surpresa.",
     companions: ["StockIndicator"],
   },
   {
     id: "liberacao",
-    label: "Acesso liberado",
+    targetSelector: '[data-tour="qp-access"]',
+    placement: "top",
+    title: "Acesso liberado em < 1 segundo",
+    description:
+      "Catraca abre, refeição registrada. Sem fila, sem ficha, sem perda de tempo.",
     companions: ["StockIndicator", "SimulatedNotification"],
   },
   {
     id: "atualizado",
-    label: "Saldo atualizado",
+    targetSelector: '[data-tour="qp-updated"]',
+    placement: "top",
+    title: "Saldo atualizado em tempo real",
+    description:
+      "O funcionário sabe exatamente quanto restou. RH e financeiro veem o consumo agregado para gestão de benefícios.",
     companions: ["StockIndicator"],
   },
 ];

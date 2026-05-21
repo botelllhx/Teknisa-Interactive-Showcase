@@ -7,7 +7,7 @@ import { SegmentGrid } from "@/components/home/SegmentGrid";
 import { SolutionGrid } from "@/components/home/SolutionGrid";
 import { ShowcaseNav } from "@/components/layout/ShowcaseNav";
 import { IdleReset } from "@/components/layout/IdleReset";
-import { SolutionDemoPlaceholder } from "@/components/demo/SolutionDemoPlaceholder";
+import { SolutionDemo } from "@/components/demo/SolutionDemo";
 import { pageTransition } from "@/lib/animations";
 
 export default function ShowcasePage() {
@@ -54,7 +54,7 @@ export default function ShowcasePage() {
             animate="animate"
             exit="exit"
           >
-            <SolutionDemoPlaceholder solutionId={activeSolution} />
+            <SolutionDemo solutionId={activeSolution} />
           </motion.div>
         )}
       </AnimatePresence>

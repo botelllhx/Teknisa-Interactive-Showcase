@@ -48,7 +48,7 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
 
       <main className="grid flex-1 grid-cols-[1fr_38%] gap-3 p-3">
         <section className="flex flex-col gap-2">
-          <div className="rounded-md bg-white p-2 shadow-card">
+          <div data-tour="ip-kpis" className="rounded-md bg-white p-2 shadow-card">
             <div className="flex items-center justify-between">
               <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
                 Indicadores de RH
@@ -98,6 +98,7 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
 
           {step >= 1 && (
             <motion.div
+              data-tour="ip-risk-map"
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex-1 rounded-md bg-white p-2 shadow-card"
@@ -111,6 +112,7 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
                   return (
                     <motion.button
                       key={p.name}
+                      data-tour={i === 0 ? "ip-risk-item" : undefined}
                       initial={{ x: 6, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
                       transition={{ delay: 0.04 * i }}
@@ -164,6 +166,7 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
         <aside className="flex flex-col gap-2">
           {step >= 3 && (
             <motion.div
+              data-tour="ip-suggestion"
               initial={{ opacity: 0, x: 8 }}
               animate={{ opacity: 1, x: 0 }}
               className="relative overflow-hidden rounded-md border border-brand/30 bg-gradient-to-br from-brand-ghost via-white to-brand-subtle p-2"
@@ -215,6 +218,7 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
 
           {step >= 4 && (
             <motion.div
+              data-tour="ip-impact"
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               className="rounded-md bg-white p-2 shadow-card"

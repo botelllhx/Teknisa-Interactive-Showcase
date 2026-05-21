@@ -86,7 +86,7 @@ function DashboardView() {
       <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
         Dashboard de equipe
       </p>
-      <div className="grid grid-cols-4 gap-1.5">
+      <div data-tour="pg-dashboard" className="grid grid-cols-4 gap-1.5">
         {TEAM_KPIS.map((kpi, i) => (
           <motion.div
             key={kpi.label}
@@ -143,7 +143,7 @@ function ScheduleView() {
       <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
         Escala · semana 21
       </p>
-      <div className="mt-2 rounded-md bg-white p-2 shadow-card">
+      <div data-tour="pg-schedule" className="mt-2 rounded-md bg-white p-2 shadow-card">
         <div className="grid grid-cols-[80px_repeat(6,1fr)] items-center gap-1 border-b border-neutral-100 pb-1 text-[7px] font-semibold uppercase text-neutral-500">
           <span>Funcionário</span>
           {WEEK_DAYS.map((d) => (
@@ -193,7 +193,7 @@ function PunchView() {
       <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
         Espelho de ponto · hoje
       </p>
-      <div className="mt-2 flex-1 rounded-md bg-white p-2 shadow-card">
+      <div data-tour="pg-punch" className="mt-2 flex-1 rounded-md bg-white p-2 shadow-card">
         {PUNCH_LIST.map((p, i) => (
           <motion.div
             key={p.who}
@@ -238,7 +238,7 @@ function RequestsView() {
       <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
         Solicitações pendentes
       </p>
-      <div className="mt-2 space-y-1.5">
+      <div data-tour="pg-requests" className="mt-2 space-y-1.5">
         {REQUESTS.map((r, i) => (
           <motion.div
             key={r.type}
@@ -282,7 +282,7 @@ function ReportExportedView() {
       animate={{ opacity: 1, scale: 1 }}
       className="flex h-full flex-col items-center justify-center gap-3"
     >
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand text-white shadow-brand">
+      <div data-tour="pg-export" className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand text-white shadow-brand">
         <Download size={28} strokeWidth={2} />
       </div>
       <p className="font-display text-[12px] font-bold text-neutral-900">

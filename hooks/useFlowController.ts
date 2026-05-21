@@ -3,12 +3,12 @@
 import { useEffect, useMemo } from "react";
 import { useShowcase } from "@/lib/store";
 import { getFlow } from "@/data/flows";
-import type { FlowStep } from "@/data/solutions";
+import type { TourStep } from "@/data/solutions";
 
 interface UseFlowControllerResult {
-  steps: FlowStep[];
+  steps: TourStep[];
   currentStep: number;
-  currentStepData: FlowStep | undefined;
+  currentStepData: TourStep | undefined;
   isFirst: boolean;
   isLast: boolean;
   next: () => void;

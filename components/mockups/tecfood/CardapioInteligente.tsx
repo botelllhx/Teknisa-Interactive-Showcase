@@ -50,7 +50,7 @@ export function CardapioInteligenteMockup({ step }: CardapioInteligenteProps) {
             TecFood
           </span>
           {published ? (
-            <span className="flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[8px] font-semibold text-success">
+            <span data-tour="ci-publish" className="flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[8px] font-semibold text-success">
               <CheckCircle2 size={9} strokeWidth={2.5} />
               Publicado
             </span>
@@ -67,7 +67,7 @@ export function CardapioInteligenteMockup({ step }: CardapioInteligenteProps) {
           <p className="text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
             Planejamento semanal
           </p>
-          <div className="mt-2 grid flex-1 grid-cols-5 gap-1.5">
+          <div data-tour="ci-week-grid" className="mt-2 grid flex-1 grid-cols-5 gap-1.5">
             {WEEK.map((day, i) => {
               const dishes = [...DEFAULT_DISHES[day]];
               const highlight = step === 1 && day === "Qua";
@@ -106,6 +106,7 @@ export function CardapioInteligenteMockup({ step }: CardapioInteligenteProps) {
                   </ul>
                   <button
                     type="button"
+                    data-tour={day === "Qua" ? "ci-add-dish" : undefined}
                     className={cn(
                       "mt-1 flex items-center justify-center gap-0.5 rounded py-0.5 text-[7px] font-semibold",
                       highlight
@@ -125,6 +126,7 @@ export function CardapioInteligenteMockup({ step }: CardapioInteligenteProps) {
         <aside className="flex flex-col gap-2">
           {showNutrition ? (
             <motion.div
+              data-tour="ci-nutrition"
               initial={{ opacity: 0, x: 6 }}
               animate={{ opacity: 1, x: 0 }}
               className="rounded-md bg-white p-2 shadow-card"
@@ -169,7 +171,7 @@ export function CardapioInteligenteMockup({ step }: CardapioInteligenteProps) {
             </div>
           )}
 
-          <div className="mt-auto rounded-md bg-white p-2 shadow-card">
+          <div data-tour="ci-approve" className="mt-auto rounded-md bg-white p-2 shadow-card">
             <p className="font-display text-[8px] font-bold uppercase text-brand">
               Aprovação
             </p>

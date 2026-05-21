@@ -53,7 +53,7 @@ function TaskListView() {
         </p>
       </div>
 
-      <div className="mt-2 space-y-1.5">
+      <div data-tour="ae-task-list" className="mt-2 space-y-1.5">
         {TASKS.map((task, i) => (
           <motion.button
             key={task.label}
@@ -122,7 +122,7 @@ function CountingView() {
       <p className="mt-3 text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
         Quantidade contada
       </p>
-      <div className="mt-1 flex items-center justify-between rounded-md border-2 border-brand bg-white p-2 shadow-brand">
+      <div data-tour="ae-counter" className="mt-1 flex items-center justify-between rounded-md border-2 border-brand bg-white p-2 shadow-brand">
         <button
           type="button"
           className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-raised text-neutral-600"
@@ -155,6 +155,7 @@ function CountingView() {
 function DivergenceView() {
   return (
     <motion.div
+      data-tour="ae-divergence"
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-1 flex-col items-center justify-center gap-3 px-4"
@@ -224,7 +225,7 @@ function JustificationView() {
           </button>
         ))}
       </div>
-      <div className="mt-2 rounded-md border border-dashed border-brand/30 bg-surface-raised p-2">
+      <div data-tour="ae-justification" className="mt-2 rounded-md border border-dashed border-brand/30 bg-surface-raised p-2">
         <p className="text-[8px] text-neutral-500">Observação</p>
         <p className="mt-0.5 text-[9px] text-neutral-700">
           &ldquo;Perda durante porcionamento, registrada em RP-2847&rdquo;
@@ -242,6 +243,7 @@ function SyncedView() {
       className="flex flex-1 flex-col items-center justify-center gap-2 px-4"
     >
       <motion.div
+        data-tour="ae-sync"
         animate={{ rotate: 360 }}
         transition={{ duration: 1.4, ease: "easeInOut" }}
         className="flex h-16 w-16 items-center justify-center rounded-full bg-brand text-white shadow-brand"

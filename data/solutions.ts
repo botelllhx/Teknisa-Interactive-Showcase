@@ -27,18 +27,30 @@ export type CompanionType =
 
 export type SolutionBadge = "IA" | "Em breve" | "Reforma Tributária";
 
-export interface FlowStep {
+export type TourPlacement =
+  | "top"
+  | "bottom"
+  | "left"
+  | "right"
+  | "top-start"
+  | "bottom-end";
+
+export interface TourStep {
   id: string;
-  label: string;
-  tooltip?: string;
-  highlightArea?: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
+  // CSS selector for the target element inside the mockup
+  // e.g. '[data-tour="pdv-add-item"]'
+  targetSelector: string;
+  placement: TourPlacement;
+  title: string;
+  description: string;
+  actionLabel?: string;
+  // If true: advance only when the target element is clicked (PulsingDot shows on element)
+  // If false: advance via the tooltip's primary button
+  requiresInteraction?: boolean;
+  // Visual emphasis on the target beyond the spotlight
+  highlightStyle?: "pulse" | "ring" | "glow";
+  // Companions that should appear during this step (still supported)
   companions?: CompanionType[];
-  duration?: number;
 }
 
 export interface Solution {

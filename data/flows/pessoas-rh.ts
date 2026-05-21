@@ -1,166 +1,244 @@
-import type { FlowStep } from "../solutions";
+import type { TourStep } from "../solutions";
 
-export const portalGestorFlow: FlowStep[] = [
+export const portalGestorFlow: TourStep[] = [
   {
     id: "dashboard",
-    label: "Equipe",
-    tooltip: "Indicadores de presença e escala",
-    highlightArea: { x: 6, y: 22, width: 88, height: 30 },
+    targetSelector: '[data-tour="pg-dashboard"]',
+    placement: "bottom",
+    title: "Dashboard da equipe",
+    description:
+      "Presença, hora extra, solicitações abertas — todos os indicadores que o gestor precisa em uma única tela.",
     companions: ["EmployeeCard", "MiniDashboard"],
   },
   {
     id: "escala",
-    label: "Escala",
-    tooltip: "Edite a escala da semana",
-    highlightArea: { x: 6, y: 52, width: 88, height: 30 },
+    targetSelector: '[data-tour="pg-schedule"]',
+    placement: "top",
+    title: "Escala da semana",
+    description:
+      "Edite turnos diretamente na grade. Conflitos e horas extras destacados automaticamente.",
     companions: ["EmployeeCard", "MiniDashboard"],
   },
   {
     id: "ponto",
-    label: "Ponto",
-    tooltip: "Aprove marcações e hora extra",
-    highlightArea: { x: 6, y: 22, width: 88, height: 60 },
+    targetSelector: '[data-tour="pg-punch"]',
+    placement: "right",
+    title: "Espelho de ponto consolidado",
+    description:
+      "Marcações, horas extras, ausências — tudo por colaborador. Ajuste registrado com histórico para auditoria.",
     companions: ["EmployeeCard"],
   },
   {
     id: "solicitacoes",
-    label: "Solicitações",
-    tooltip: "Pendências da equipe",
-    highlightArea: { x: 6, y: 22, width: 88, height: 60 },
+    targetSelector: '[data-tour="pg-requests"]',
+    placement: "right",
+    title: "Solicitações pendentes",
+    description:
+      "Férias, folgas, trocas de turno — o gestor aprova ou recusa sem sair do portal. Sem WhatsApp paralelo.",
     companions: ["EmployeeCard", "MiniDashboard"],
   },
   {
     id: "exportar",
-    label: "Relatório",
+    targetSelector: '[data-tour="pg-export"]',
+    placement: "top",
+    title: "Relatório consolidado",
+    description:
+      "Export para o RH corporativo em um toque. Dados padronizados, sem retrabalho de planilha.",
     companions: ["MiniDashboard", "SimulatedNotification"],
   },
 ];
 
-export const portalFuncionarioFlow: FlowStep[] = [
+export const portalFuncionarioFlow: TourStep[] = [
   {
     id: "boas-vindas",
-    label: "Olá",
-    tooltip: "Entre no aplicativo",
-    highlightArea: { x: 16, y: 70, width: 68, height: 12 },
+    targetSelector: '[data-tour="pf-login"]',
+    placement: "top",
+    title: "Acesso por biometria",
+    description:
+      "O funcionário acessa direto do celular — sem senha para esquecer, sem ligar para o RH para resetar.",
+    requiresInteraction: true,
+    actionLabel: "Entrar",
   },
   {
     id: "ponto",
-    label: "Ponto",
-    tooltip: "Espelho de ponto do mês",
-    highlightArea: { x: 6, y: 22, width: 88, height: 56 },
+    targetSelector: '[data-tour="pf-punch-sheet"]',
+    placement: "right",
+    title: "Espelho de ponto pessoal",
+    description:
+      "Saldo do mês, marcações dos últimos dias, horas extras. Tudo transparente para o colaborador.",
   },
   {
     id: "ferias",
-    label: "Solicitar férias",
-    tooltip: "Solicite seu período",
-    highlightArea: { x: 16, y: 80, width: 68, height: 12 },
+    targetSelector: '[data-tour="pf-vacation-button"]',
+    placement: "top",
+    title: "Solicitação de férias em um toque",
+    description:
+      "Datas, saldo, dias úteis — tudo calculado automaticamente. A solicitação vai direto para o gestor.",
+    requiresInteraction: true,
+    actionLabel: "Enviar solicitação",
   },
   {
     id: "status",
-    label: "Status",
+    targetSelector: '[data-tour="pf-status"]',
+    placement: "top",
+    title: "Acompanhe a aprovação",
+    description:
+      "Etapas visíveis: enviada, análise do gestor, aprovação RH. Notificação push em cada mudança.",
     companions: ["SimulatedNotification"],
   },
   {
     id: "holerite",
-    label: "Holerite",
+    targetSelector: '[data-tour="pf-payslip"]',
+    placement: "top",
+    title: "Holerite no app",
+    description:
+      "Disponível assim que processado. Detalhamento por verba e download em PDF — sem ir ao RH pegar via papel.",
     companions: ["SimulatedNotification"],
   },
 ];
 
-export const mesaOperacoesFlow: FlowStep[] = [
+export const mesaOperacoesFlow: TourStep[] = [
   {
     id: "visao-geral",
-    label: "Visão geral",
-    tooltip: "Visão consolidada das unidades",
-    highlightArea: { x: 6, y: 18, width: 88, height: 64 },
+    targetSelector: '[data-tour="mo-grid"]',
+    placement: "right",
+    title: "Visão consolidada de unidades",
+    description:
+      "Indicador de presença por unidade em tempo real. Visão de comando para operações multi-loja.",
     companions: ["MiniDashboard"],
   },
   {
     id: "alerta",
-    label: "Alerta",
+    targetSelector: '[data-tour="mo-alert"]',
+    placement: "left",
+    title: "Alerta de absenteísmo crítico",
+    description:
+      "Quando uma unidade fica abaixo do crítico, alerta dispara automaticamente. Mesa age antes do problema escalar.",
     companions: ["MiniDashboard", "SimulatedNotification"],
   },
   {
     id: "realocacao",
-    label: "Realocação",
-    tooltip: "Realoque um funcionário",
-    highlightArea: { x: 40, y: 40, width: 54, height: 30 },
+    targetSelector: '[data-tour="mo-realloc"]',
+    placement: "left",
+    title: "Ação imediata: realocação",
+    description:
+      "Sistema sugere realocação entre unidades. Centro tem 2 disponíveis → Norte precisa cobrir. Um toque confirma.",
+    requiresInteraction: true,
+    actionLabel: "Confirmar realocação",
     companions: ["MiniDashboard"],
   },
   {
     id: "confirmacao",
-    label: "Atualizado",
+    targetSelector: '[data-tour="mo-confirmed"]',
+    placement: "left",
+    title: "Painel atualizado",
+    description:
+      "Norte projeta agora 82% de presença. Funcionários realocados recebem push com nova escala.",
     companions: ["MiniDashboard"],
   },
   {
     id: "log",
-    label: "Log registrado",
+    targetSelector: '[data-tour="mo-log"]',
+    placement: "left",
+    title: "Log de operação",
+    description:
+      "Cada ação fica registrada. Auditoria operacional sem caderno paralelo. Aprendizado para próximos ciclos.",
     companions: ["MiniDashboard"],
   },
 ];
 
-export const analisePreditivaFlow: FlowStep[] = [
+export const analisePreditivaFlow: TourStep[] = [
   {
     id: "dashboard",
-    label: "Indicadores",
-    tooltip: "Painel preditivo de RH",
-    highlightArea: { x: 6, y: 22, width: 88, height: 30 },
+    targetSelector: '[data-tour="ip-kpis"]',
+    placement: "right",
+    title: "Indicadores preditivos de RH",
+    description:
+      "Turnover atual, predição de 90 dias, risco crítico — IA aplicada nos próprios dados da empresa.",
     companions: ["MiniDashboard"],
   },
   {
     id: "mapa-risco",
-    label: "Mapa de risco",
-    tooltip: "Funcionários por risco",
-    highlightArea: { x: 6, y: 52, width: 88, height: 30 },
+    targetSelector: '[data-tour="ip-risk-map"]',
+    placement: "right",
+    title: "Mapa de risco de turnover",
+    description:
+      "Cada colaborador com um score de probabilidade nos próximos 90 dias. Priorize quem precisa de conversa de carreira.",
     companions: ["MiniDashboard"],
   },
   {
     id: "identificacao",
-    label: "Em risco",
-    tooltip: "Selecione um perfil",
-    highlightArea: { x: 6, y: 52, width: 50, height: 30 },
+    targetSelector: '[data-tour="ip-risk-item"]',
+    placement: "right",
+    title: "Detalhe por colaborador",
+    description:
+      "Selecione uma pessoa para entender os fatores que contribuem para o risco — atestados, hora extra, salário vs mercado.",
+    requiresInteraction: true,
+    actionLabel: "Selecione um perfil",
     companions: ["MiniDashboard"],
   },
   {
     id: "sugestao",
-    label: "Sugestão IA",
+    targetSelector: '[data-tour="ip-suggestion"]',
+    placement: "left",
+    title: "Plano de retenção sugerido pela IA",
+    description:
+      "Ações concretas: conversa com gestor, ajuste salarial, mentoria. Cada item com prazo e responsável.",
     companions: ["MiniDashboard", "SimulatedNotification"],
   },
   {
     id: "simulacao",
-    label: "Impacto",
+    targetSelector: '[data-tour="ip-impact"]',
+    placement: "left",
+    title: "Impacto simulado",
+    description:
+      "Antes: 87% de risco. Depois da ação: 34%. Tomada de decisão com clareza, sem 'achismo'.",
     companions: ["MiniDashboard"],
   },
 ];
 
-export const assistenteRegrasFlow: FlowStep[] = [
+export const assistenteRegrasFlow: TourStep[] = [
   {
     id: "regras",
-    label: "Regras",
-    tooltip: "Toque para criar nova",
-    highlightArea: { x: 60, y: 18, width: 34, height: 12 },
+    targetSelector: '[data-tour="ar-new-rule"]',
+    placement: "bottom-end",
+    title: "Regras configuradas",
+    description:
+      "Toda regra de ponto, escala e benefícios em um único lugar — com toggle de ativação. Toque em Nova regra para criar.",
+    requiresInteraction: true,
+    actionLabel: "Nova regra",
   },
   {
     id: "wizard",
-    label: "Wizard IA",
-    tooltip: "Descreva a regra desejada",
-    highlightArea: { x: 6, y: 32, width: 88, height: 30 },
+    targetSelector: '[data-tour="ar-wizard"]',
+    placement: "bottom",
+    title: "Descreva em linguagem natural",
+    description:
+      "Diga em português o que precisa: 'quando funcionário fizer hora extra aos sábados, pagar 80% a mais'. A IA estrutura a regra.",
   },
   {
     id: "condicoes",
-    label: "Condições",
-    tooltip: "Configure os critérios",
-    highlightArea: { x: 6, y: 32, width: 88, height: 50 },
+    targetSelector: '[data-tour="ar-conditions"]',
+    placement: "right",
+    title: "Condições estruturadas",
+    description:
+      "WHEN / AND / THEN / ALSO — a IA traduz sua descrição em blocos editáveis. Revise e ajuste antes de ativar.",
   },
   {
     id: "preview",
-    label: "Preview",
-    tooltip: "Confira o resultado",
-    highlightArea: { x: 6, y: 50, width: 88, height: 32 },
+    targetSelector: '[data-tour="ar-preview"]',
+    placement: "left",
+    title: "Preview com impacto estimado",
+    description:
+      "Veja a regra como vai aparecer no sistema. Custo médio mensal calculado: 12 colaboradores, ~R$ 320/mês.",
   },
   {
     id: "ativacao",
-    label: "Ativada",
+    targetSelector: '[data-tour="ar-activated"]',
+    placement: "top",
+    title: "Regra ativada e sincronizada",
+    description:
+      "Folha de pagamento e ponto entendem a nova regra imediatamente. Sem precisar de TI ou consultoria.",
     companions: ["SimulatedNotification"],
   },
 ];

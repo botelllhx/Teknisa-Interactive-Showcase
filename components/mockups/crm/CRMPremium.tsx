@@ -64,7 +64,7 @@ export function CRMPremiumMockup({ step }: CRMPremiumProps) {
 
       <main className="grid flex-1 grid-cols-[1fr_38%] gap-3 p-3">
         <section className="flex flex-col gap-2">
-          <div className="rounded-md bg-white p-2 shadow-card">
+          <div data-tour="crm-kpis" className="rounded-md bg-white p-2 shadow-card">
             <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
               Indicadores · 30 dias
             </p>
@@ -122,6 +122,7 @@ export function CRMPremiumMockup({ step }: CRMPremiumProps) {
 
           {profile && (
             <motion.div
+              data-tour="crm-profile"
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex-1 rounded-md bg-white p-2 shadow-card"
@@ -175,6 +176,7 @@ export function CRMPremiumMockup({ step }: CRMPremiumProps) {
         <aside className="flex flex-col gap-2">
           {campaign && !activated && (
             <motion.div
+              data-tour="crm-campaign"
               initial={{ opacity: 0, x: 8 }}
               animate={{ opacity: 1, x: 0 }}
               className="rounded-md border border-brand/30 bg-gradient-to-br from-brand-ghost via-white to-brand-subtle p-2"
@@ -206,6 +208,7 @@ export function CRMPremiumMockup({ step }: CRMPremiumProps) {
 
           {offer && !activated && (
             <motion.div
+              data-tour="crm-offer"
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               className="rounded-md bg-white p-2 shadow-card"
@@ -244,6 +247,7 @@ export function CRMPremiumMockup({ step }: CRMPremiumProps) {
 
           {activated && (
             <motion.div
+              data-tour="crm-activated"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="rounded-md border border-success/30 bg-success/5 p-3"

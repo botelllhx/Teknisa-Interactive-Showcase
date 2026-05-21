@@ -75,7 +75,7 @@ function MenuOfDayView() {
       <p className="mt-2 text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
         Almoço
       </p>
-      <div className="mt-1 space-y-1.5">
+      <div data-tour="mm-menu-list" className="mt-1 space-y-1.5">
         {DISHES.map((d, i) => (
           <motion.div
             key={d.name}
@@ -102,7 +102,7 @@ function MenuOfDayView() {
 
 function DetailView() {
   return (
-    <div className="flex-1 px-3 py-1">
+    <div data-tour="mm-dish-detail" className="flex-1 px-3 py-1">
       <div className="h-20 w-full rounded-md bg-gradient-to-br from-brand-subtle via-brand-ghost to-white" />
       <h3 className="mt-2 font-display text-[11px] font-bold text-neutral-900">
         Frango grelhado com brócolis
@@ -175,6 +175,7 @@ function ReserveView() {
 
       <button
         type="button"
+        data-tour="mm-reserve"
         className="mt-auto w-full rounded-md bg-brand py-2 text-center font-display text-[10px] font-bold text-white shadow-brand"
       >
         Reservar
@@ -186,6 +187,7 @@ function ReserveView() {
 function ConfirmView() {
   return (
     <motion.div
+      data-tour="mm-confirmed"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-1 flex-col items-center justify-center gap-2 px-4"
@@ -210,7 +212,7 @@ function QRView() {
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-1 flex-col items-center justify-center gap-2 px-4"
     >
-      <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-white shadow-card">
+      <div data-tour="mm-qr" className="flex h-24 w-24 items-center justify-center rounded-2xl bg-white shadow-card">
         <QrCode size={68} strokeWidth={1.5} className="text-brand" />
       </div>
       <p className="font-display text-[10px] font-bold text-neutral-900">

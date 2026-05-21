@@ -24,6 +24,20 @@ O painel funciona como uma vitrine de produto: o usuário navega por segmentos, 
 > **"Mostrar antes de explicar."**
 > Cada solução deve comunicar sua proposta de valor através da experiência interativa, não através de texto descritivo.
 
+### Lições aprendidas na v1 — iteração obrigatória
+
+A primeira implementação validou a estrutura geral, navegação e identidade visual. Os pontos críticos a corrigir:
+
+1. **Header HOME — rotação de soluções:** o componente rotativo atual é lento, visualmente pobre e não agrega. Substituir por experiência de impacto real (ver seção 13).
+2. **StepIndicator eliminado:** a barra de etapas ocupa espaço e é visualmente fraca. Removida completamente. O guia de fluxo migra para sistema de tooltip contextual (ver seção 10-B).
+3. **Sistema de Tooltip/Tour refatorado:** precisa funcionar como driver.js/intro.js — overlay com spotlight, seta apontando para o elemento, texto contextual, navegação entre passos. É o coração da experiência interativa.
+4. **Mockups maiores:** devem ocupar o máximo possível da área disponível. Nada de mockup pequeno centrado com muito espaço vazio ao redor.
+5. **Logo Teknisa obrigatória:** usar `<Image src="/logo-teknisa.svg" />` em vez de texto em todos os contextos. Nunca escrever "Teknisa" como texto onde a logo couber.
+6. **Companions refatorados:** ou têm qualidade visual premium integrada ao mockup, ou são removidos. Companions ruins pioram mais do que ajudam.
+7. **Aproveitamento máximo de tela:** viewport 1920×1080 deve ser aproveitado de forma agressiva. Padding excessivo é desperdício.
+8. **Molduras de device redesenhadas:** mais realistas, melhor proporcionadas, com detalhes que lembram o equipamento real (botões, câmera, indicadores), mas sempre em cinza claro.
+9. **Interatividade real nos mockups:** o usuário deve clicar/tocar em elementos reais da interface simulada — botões que respondem, listas que selecionam, campos que recebem input simulado.
+
 ---
 
 ## 2. Contexto da Empresa
@@ -451,20 +465,22 @@ interface ShowcaseStore {
   activeSegment: SolutionSegment | null;
   activeSolution: string | null;
 
-  // Fluxo
+  // Fluxo — tour guiado
   currentStep: number;
   totalSteps: number;
-  isAutoPlaying: boolean;
+  tourActive: boolean;       // se o tour está rodando
+  tourCompleted: boolean;    // se completou todos os passos
 
   // UI
-  showTooltip: boolean;
   idleSeconds: number;
 
   // Actions
   selectSegment: (id: SolutionSegment) => void;
   selectSolution: (id: string) => void;
-  nextStep: () => void;
-  prevStep: () => void;
+  startTour: () => void;
+  nextTourStep: () => void;
+  prevTourStep: () => void;
+  endTour: () => void;
   resetFlow: () => void;
   goHome: () => void;
 }
@@ -474,99 +490,246 @@ interface ShowcaseStore {
 
 ```
 [HOME]
-  → Tela inicial com logo Teknisa, tagline animada e grade de segmentos
+  → Logo Teknisa + área de destaque animada + grade 4×2 de grupos
   
-  → [SEGMENTO]
-      → Ao tocar num segmento, a tela faz transição para a grade de soluções
-      → Cards das soluções aparecem com stagger animation
+  → [GRADE DE SOLUÇÕES do grupo]
+      → Cards das soluções com stagger animation
       
-      → [SOLUÇÃO / DEMO]
-          → Mockup da solução em fullscreen (com moldura de dispositivo)
-          → StepIndicator no topo (progresso do fluxo)
-          → Tooltips e highlights visuais guiam o usuário
-          → Ao final do fluxo, confirmação visual + botão "Explorar outra solução"
-          → Botão "Voltar" sempre visível (touch-friendly, canto superior esquerdo)
+      → [DEMO DA SOLUÇÃO]
+          → Mockup ocupa 80–90% da área útil (fullscreen-like)
+          → Tour guiado via TourTooltip inicia automaticamente
+          → Overlay escurece tudo exceto o elemento alvo (spotlight)
+          → Tooltip posicionado adjacente ao elemento, com seta
+          → Usuário interage com o elemento destacado para avançar
+          → Ao final: tela de conclusão com CTA "Explorar outra solução"
+          → Botão "Voltar" sempre visível (top-left, touch-friendly)
 
 [IDLE RESET]
-  → Após 90 segundos sem interação, volta animadamente para a HOME
-  → Exibe overlay sutil de "Toque para explorar"
+  → Após 90s sem interação: overlay "Toque para explorar"
+  → Após +5s: volta para HOME com pageTransition
 ```
 
 ---
 
-## 8. Sistema de Molduras (Device Frames)
+## 8. Sistema de Molduras (Device Frames) — v2 Redesign
 
-### Princípios de design das molduras
+### Princípios obrigatórios (v2)
 
-- **Cor base:** cinza claro (`#e2e5ea`) — moderno, não chama atenção para o dispositivo
-- **Bordas arredondadas:** generosas, mas não exageradas
-- **Sem reflexo de tela ou efeitos de vidro pesados** — mantém foco no conteúdo
-- **Sombra suave:** `0 20px 60px rgba(0,0,0,0.10)` — profundidade sem peso
-- **Proporção real:** cada frame deve usar proporções que lembrem o dispositivo real
+- **Cinza claro moderno:** carcaça `#e2e5ea`, detalhes `#d0d4db`, sombra `rgba(0,0,0,0.08)`
+- **Proporções fiéis ao dispositivo real** — não distorcer aspect ratio
+- **Detalhes anatômicos:** cada frame deve ter os elementos físicos do dispositivo (câmera, botões, porta, base, etc.) renderizados em SVG ou CSS — não como placeholder, mas como componente visual real
+- **Tamanho máximo:** o frame deve preencher o máximo da área disponível. Nunca deixar o frame pequeno centrado com mar de espaço vazio
+- **Área de tela scrollable:** a área de conteúdo dentro do frame deve ter `overflow: hidden` + `border-radius` interno para cortar a interface nos cantos
+- **Sombra projetada:** `box-shadow: 0 32px 80px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06)` — presença física sem peso visual
 
-### Especificações por dispositivo
+### Especificações por dispositivo (v2)
 
-#### `DesktopFrame`
-- Monitor com base fina
-- Proporção 16:10
-- Área de tela com `border-radius: 4px`
-- Cor: `#e2e5ea` para carcaça, `#d0d4db` para bordas
+#### `DesktopFrame` — Monitor widescreen
+```
+Anatomia:
+├── Painel da tela: bordas 16px, top 12px (mais fino), cinza #e2e5ea
+│   ├── Câmera: ponto 6px centralizado no top bezel
+│   ├── Área de tela: border-radius 4px, overflow hidden
+│   └── Borda interna sutil: 1px sólido #d0d4db
+├── Pescoço: haste fina centralizada (~40px altura, 20px largura), gradiente #d8dbe2→#e2e5ea
+└── Base: elipse achatada (~240px × 16px), gradiente radial, #d4d7de
 
-#### `MobileFrame`
-- Smartphone fino, sem notch exagerado
-- Proporção 9:19.5
-- Câmera frontal como ponto discreto
-- Botões laterais sutis
+Proporção: 16:10 para a área de tela
+Tamanho alvo: máximo que couber na área útil, respeitando margens de 24px
+```
 
-#### `TabletFrame`
-- Tablet sem case
-- Proporção 4:3 ou 3:4 (portrait)
-- Bordas finas
+#### `MobileFrame` — Smartphone moderno
+```
+Anatomia:
+├── Carcaça: border-radius 40px, padding 12px lateral, 16px top, 20px bottom
+│   ├── Dynamic Island / câmera: pill shape centralizado, 80px × 28px, #c8cdd6, top 8px
+│   ├── Área de tela: border-radius 32px, overflow hidden, fill height
+│   ├── Botão volume: 2 botões lado esquerdo, 40px cada, 2px largura, #d0d4db, border-radius 2px
+│   ├── Botão power: lado direito, 56px, 2px largura, #d0d4db
+│   └── Barra home: pill 120px × 4px, centrado no bottom, #c8cdd6, margin 8px bottom
+└── Sombra: box-shadow profunda
 
-#### `POSTerminalFrame`
-- Terminal PDV com display + teclado numérico abaixo
-- Base com leitor de cartão
-- Companion: `POSCardReader` ao lado
+Proporção tela: 9:19.5
+Tamanho alvo: altura ~85vh da área de demo
+```
 
-#### `KioskFrame`
-- Totem vertical
-- Moldura mais robusta, lembra um totem real
-- Proporção 9:16
+#### `TabletFrame` — Tablet landscape ou portrait
+```
+Anatomia:
+├── Carcaça: border-radius 24px, padding 14px todos os lados
+│   ├── Câmera: ponto 8px no bezel lateral (landscape) ou superior (portrait)
+│   ├── Área de tela: border-radius 16px, overflow hidden
+│   ├── Botão home (opcional): círculo 20px no bezel lateral
+│   └── Borda interna: 1px #d0d4db
+└── Sombra projetada
+
+Proporções: 4:3 (portrait) ou 16:10 (landscape)
+```
+
+#### `POSTerminalFrame` — Terminal PDV
+```
+Anatomia:
+├── Display principal: proporção 16:10, bezel 12px, border-radius 8px
+│   └── Câmera pequena no topo
+├── Corpo central: gradiente sutil, conectando display ao teclado
+│   └── Logo placeholder ou slot de cartão decorativo
+├── Área de teclado numérico: grid 3×4 de teclas estilizadas + teclas de função
+│   ├── Teclas: border-radius 6px, background #d8dbe2, shadow inset
+│   └── Teclas coloridas: verde (confirmar), vermelho (cancelar)
+└── Base: suporte com inclinação visual
+
+O display é a área interativa. O teclado é decorativo mas visualmente detalhado.
+```
+
+#### `KioskFrame` — Totem de autoatendimento
+```
+Anatomia:
+├── Cabeçalho do totem: logo placeholder / stripe brand color
+├── Display principal: proporção 9:16, bezel 16px, border-radius 12px
+│   └── Câmera/sensor no topo
+├── Corpo do totem: mais largo que o display, gradiente #e2e5ea→#d8dbe2
+│   ├── Slot de impressão (decorativo): linha horizontal 60px × 4px
+│   └── Leitor de cartão (decorativo): slot retangular
+└── Base: suporte robusto, mais largo
+
+Visual robusto mas clean — reconhecível como totem de fast food / autoatendimento
+```
 
 ---
 
-## 9. Componentes Visuais Complementares (Companions)
+## 9. Componentes Visuais Complementares (Companions) — v2
 
-Elementos visuais que **aparecem ao redor do mockup** para contextualizar o uso da solução. Devem aparecer com animações de entrada suaves e serem sutis — enriquecem sem poluir.
+### Filosofia v2
 
-### Catálogo de companions
+**Regra crítica:** companions que existiam na v1 e ficavam ruins devem ser completamente redesenhados ou removidos. Um companion só existe se elevar visualmente a cena. A decisão é: companion de alta qualidade OU sem companion (mockup maior e mais impactante).
 
-| Componente | Quando usar | Animação de entrada |
+### Padrão visual obrigatório (v2)
+
+Todos os companions devem:
+- Ter fundo branco com `border-radius: 16px` e `box-shadow: 0 4px 24px rgba(0,0,0,0.08)`
+- Usar a mesma tipografia (Sora/Rubik) e paleta da interface principal
+- Conter **dados simulados realistas** (não placeholders genéricos)
+- Ter animação de entrada própria e reagir ao step atual do fluxo
+- Nunca ter mais de 3 elementos de informação visíveis ao mesmo tempo
+- **Conversar visualmente com o mockup** — usar as mesmas cores de acento, ícones e terminologia
+
+### Catálogo revisado de companions
+
+| Componente | Redesign v2 | Dados obrigatórios |
 |---|---|---|
-| `POSCardReader` | PDV, SmartPOS | Slide from right + fade |
-| `OrderTicket` | PDV Novo, TAA, Cardápio Digital | Drop + fade |
-| `KitchenDisplay` | TecFood, Approve | Slide from top |
-| `MiniDashboard` | CRM, ERP, HCM | Scale + fade |
-| `StockIndicator` | Rotinas Estoque, WasteControl | Slide from bottom |
-| `EmployeeCard` | Portal Gestor, Portal Funcionário | Flip + fade |
-| `SimulatedNotification` | Qualquer fluxo com confirmação | Slide from top-right |
-| `FiscalBadge` | Rotina Fiscal | Pulse + fade |
+| `POSCardReader` | Maquininha realista com tela de status e LED | Bandeira do cartão, valor, status animado |
+| `OrderTicket` | Cupom térmico com fonte mono, linhas tracejadas | Itens reais, subtotal, total, número do pedido |
+| `KitchenDisplay` | Monitor de cozinha tipo KDS com fila de pedidos | Pedidos com status (novo/em preparo/pronto), timers |
+| `MiniDashboard` | Card de métricas com micro gráfico sparkline | 3 KPIs relevantes ao contexto, variação % |
+| `StockIndicator` | Card de estoque com barra de nível visual | Item, quantidade, unidade, status (ok/baixo/crítico) |
+| `EmployeeCard` | Card de crachá digital com foto placeholder | Nome, cargo, unidade, status de turno |
+| `FiscalBadge` | Badge premium com shield icon | "Preparado para Reforma Tributária 2026", IBS/CBS |
 
-### Estrutura de um companion
+### Posicionamento dos companions
+
+```
+Layout com companion lateral direito (mais comum):
+┌─────────────────────────────────────────────────┐
+│  [Device Frame — 70% da largura]  [Companion]   │
+│                                   [  Card 1  ]   │
+│                                   [  Card 2  ]   │
+└─────────────────────────────────────────────────┘
+
+Layout com companion inferior (mobile frames):
+┌──────────────────────────────────┐
+│  [Device Frame — centralizado]   │
+│  [altura máxima disponível]      │
+└──────────────────────────────────┘
+│  [Companion Card 1]  [Card 2]    │  ← row abaixo
+
+Layout sem companion (mockup dominante):
+┌─────────────────────────────────────────────────┐
+│         [Device Frame — 90%+ da área]            │
+└─────────────────────────────────────────────────┘
+```
+
+---
+
+## 10. Sistema de Tour Guiado (substitui StepIndicator + FlowGuide)
+
+### Conceito
+
+O sistema de guia de fluxo é inspirado em **driver.js** e **intro.js**, mas implementado do zero com Framer Motion. É a peça central da experiência interativa — sem ele o painel é apenas uma galeria estática.
+
+### Componente `TourTooltip`
 
 ```tsx
-// Exemplo: OrderTicket
-interface OrderTicketProps {
-  items: { name: string; qty: number; price: number }[];
-  total: number;
-  visible: boolean;  // Controla entrada/saída animada
-  step: number;      // Reage ao passo atual do fluxo
+interface TourStep {
+  id: string;
+  // Seletor ou ref do elemento alvo dentro do mockup
+  targetSelector: string;
+  // Posição do tooltip em relação ao elemento
+  placement: 'top' | 'bottom' | 'left' | 'right' | 'top-start' | 'bottom-end';
+  title: string;           // Título curto do passo
+  description: string;     // Descrição da ação/valor
+  actionLabel?: string;    // Label do botão de avanço ("Toque aqui", "Próximo", "Ver resultado")
+  // Se true, o usuário deve clicar no elemento alvo para avançar (não no botão do tooltip)
+  requiresInteraction?: boolean;
+  // Highlight especial no elemento além do spotlight
+  highlightStyle?: 'pulse' | 'ring' | 'glow';
 }
 ```
 
+### Comportamento do `TourOverlay`
+
+```
+1. Ao entrar na demo: TourOverlay inicia com step 0 (delay 400ms)
+2. Overlay escurece o fundo: backdrop rgba(0,0,0,0.55) com blur(2px)
+3. Spotlight: recorte transparente (clip-path ou box-shadow inset) revela apenas o elemento alvo
+   - O recorte tem border-radius que corresponde ao elemento
+   - Animação do recorte: scale de 0.8→1 com spring
+4. Tooltip aparece adjacente ao spotlight:
+   - Card branco, border-radius 16px, shadow proeminente
+   - Seta CSS apontando para o elemento
+   - Título em Sora 18px bold
+   - Descrição em Rubik 15px
+   - Contador "Passo X de Y" em label-sm, cor brand
+   - Botão primário: avançar / interagir
+   - Botão fantasma: "Pular tour"
+5. Se requiresInteraction=true:
+   - Botão do tooltip mostra "Toque no elemento destacado"
+   - PulsingDot aparece sobre o elemento
+   - Clicar no elemento faz o spotlight piscar (success) e avança
+6. Transição entre steps:
+   - Spotlight se move suavemente para o próximo elemento (spring animation)
+   - Tooltip faz fadeOut/fadeIn com nova posição
+7. Último step: "Concluído" — spotlight desaparece, overlay some, tela de conclusão aparece
+```
+
+### Anatomia visual do Tooltip
+
+```
+┌──────────────────────────────────┐
+│  Passo 2 de 5                    │  ← label-sm, brand color
+│                                  │
+│  Adicione um produto             │  ← Sora 18px, bold, neutral-900
+│                                  │
+│  Toque em qualquer item do       │  ← Rubik 15px, neutral-600
+│  cardápio para adicioná-lo ao    │
+│  pedido. O carrinho atualiza     │
+│  em tempo real.                  │
+│                                  │
+│  [Toque no item ↑]  [Pular]      │  ← botão primário + link fantasma
+└──────────────────────────────────┘
+         ▲ seta CSS apontando pro elemento
+```
+
+### Posicionamento dinâmico
+
+O tooltip deve ser posicionado dinamicamente usando `getBoundingClientRect()` do elemento alvo dentro do device frame, com ajuste de viewport para não sair da tela.
+
+### Regra: StepIndicator ELIMINADO
+
+**Não existirá mais barra de steps no header da tela de demo.** O progresso é comunicado apenas pelo contador interno do tooltip ("Passo 2 de 5") e pelo comportamento natural do tour.
+
 ---
 
-## 10. Sistema de Animações
+## 10-B. Sistema de Animações
 
 ### Princípios
 
@@ -575,8 +738,9 @@ interface OrderTicketProps {
 3. **Easing** — usar `[0.16, 1, 0.3, 1]` (spring-like) para entradas, `easeOut` para saídas
 4. **Stagger** — cards e listas sempre em stagger (50–80ms por item)
 5. **Feedback imediato** — toda ação touch deve ter resposta visual em < 100ms
+6. **Spotlight move** — a transição do recorte de spotlight entre steps usa spring com stiffness 200, damping 30
 
-### Variantes Framer Motion reutilizáveis
+### Variantes Framer Motion
 
 ```ts
 // lib/animations.ts
@@ -585,40 +749,37 @@ export const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }
 }
-
 export const fadeIn = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 0.3 } }
 }
-
 export const scaleIn = {
   hidden: { opacity: 0, scale: 0.92 },
   visible: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }
 }
-
 export const slideFromRight = {
   hidden: { opacity: 0, x: 40 },
   visible: { opacity: 1, x: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }
 }
-
 export const staggerContainer = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.06 } }
 }
-
 export const pageTransition = {
   initial: { opacity: 0, scale: 0.97 },
   animate: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
   exit:    { opacity: 0, scale: 1.02, transition: { duration: 0.25 } }
 }
-
-// Pulsação do indicador "clique aqui"
 export const pulseRing = {
   animate: {
-    scale: [1, 1.4, 1],
-    opacity: [0.8, 0, 0.8],
-    transition: { duration: 1.8, repeat: Infinity, ease: 'easeInOut' }
+    scale: [1, 1.5, 1],
+    opacity: [0.7, 0, 0.7],
+    transition: { duration: 1.6, repeat: Infinity, ease: 'easeInOut' }
   }
+}
+// Spotlight move entre steps
+export const spotlightTransition = {
+  type: 'spring', stiffness: 200, damping: 28, mass: 0.8
 }
 ```
 
@@ -626,76 +787,85 @@ export const pulseRing = {
 
 | Ação | Animação |
 |---|---|
-| Toque em card de segmento | Scale 0.97 → 1.0 (spring) + ripple sutil |
-| Toque em solução | Scale 0.96 + flash de brand color |
-| Avançar etapa do fluxo | Slide horizontal (conteúdo) + StepIndicator atualiza |
-| Confirmar ação simulada | Check icon com scale bounce + cor success |
-| Carregar tela | Barra de progresso brand color (500ms) |
-| Notificação simulada | Slide from top-right + auto-dismiss 3s |
-| Tooltip aparecer | FadeIn + scale 0.95 → 1 |
-| Voltar | Slide from left |
-| Idle overlay | FadeIn gradual (após 90s) |
+| Toque em card de grupo | scale 0.97→1 (spring) + brilho brand sutil |
+| Toque em card de solução | scale 0.96 + flash brand color 150ms |
+| Spotlight muda de step | move suave com spring + tooltip fadeOut/In |
+| Elemento clicado no tour | flash success (verde) + spotlight pisca |
+| Confirmar ação simulada | Check icon scale bounce + success color |
+| Notificação simulada | slide from top-right + auto-dismiss 3s |
+| Voltar | slide from left |
+| Idle overlay | fadeIn gradual (após 90s) |
 
 ---
 
-## 11. Componentes UI Reutilizáveis
+## 11. Componentes UI Reutilizáveis (v2)
+
+### `TourOverlay` ← componente central v2
+
+Gerencia todo o sistema de tour: overlay, spotlight, posicionamento dinâmico do tooltip. Deve ser um portal React renderizado fora do device frame, no root do documento.
+
+### `TourTooltip`
+
+Card de tooltip do tour. Recebe posição calculada, dados do step atual e callbacks.
+
+```tsx
+interface TourTooltipProps {
+  step: TourStep;
+  stepIndex: number;
+  totalSteps: number;
+  targetRect: DOMRect;         // getBoundingClientRect() do elemento alvo
+  onNext: () => void;
+  onSkip: () => void;
+  onPrev: () => void;
+}
+```
 
 ### `PulsingDot`
 
-Indicador visual pulsante que marca onde o usuário deve tocar. Deve ser visível, mas não agressivo.
+Indicador visual pulsante. Renderizado sobre o elemento alvo quando `requiresInteraction=true`.
 
 ```tsx
-// Composição: círculo externo pulsando + ponto interno fixo
+// Composição: 3 anéis concêntricos com delays escalonados
 // Cor: brand DEFAULT (#020788)
-// Tamanho: 40px (toque confortável em touch)
-// Pulse: scale 1 → 1.6, opacity 0.6 → 0, loop infinito
-```
-
-### `StepIndicator`
-
-Barra de progresso do fluxo com labels das etapas.
-
-```tsx
-// Posição: topo da tela de demo, abaixo do header
-// Layout: dots conectados por linha, com label abaixo de cada dot
-// Dot ativo: brand color sólido
-// Dot concluído: brand color + check
-// Dot futuro: neutral 200
-// Linha de progresso: preenchimento animado brand color
-```
-
-### `FlowGuide`
-
-Card sutil no canto da tela que indica a ação atual esperada do usuário.
-
-```tsx
-// Posição: bottom-left fixo
-// Conteúdo: ícone + texto curto ("Toque no botão Confirmar")
-// Background: branco com borda brand/10
-// Aparece e desaparece com fadeIn/fadeOut
-// Auto-atualiza conforme o passo do fluxo
+// Tamanho: 48px área total, ponto central 12px
+// Pulse: rings se expandem de 12px para 48px com opacidade 0.6→0
 ```
 
 ### `SimulatedNotification`
 
-Notificação que aparece simulando o sistema notificando o usuário.
+Toast que aparece simulando notificação do sistema. Não faz parte do tour — aparece como elemento diegético da interface demonstrada.
 
 ```tsx
-// Posição: top-right
-// Tipos: success, warning, info
-// Auto-dismiss: 3 segundos
-// Animação: slide from right + bounce
+// Posição: top-right absoluto, z-index acima do frame mas abaixo do tour overlay
+// Background: branco, border-left 4px brand/success/warning
+// Ícone Lucide + título + mensagem
+// Auto-dismiss: 3.5s com barra de progresso na base
+// Animação: slideFromRight + spring bounce
 ```
 
 ### `LoadingBar`
 
-Barra de carregamento que simula ações do sistema.
+Barra de progresso horizontal no topo da área de tela do device frame, simulando carregamento.
 
 ```tsx
-// Full-width na parte superior da tela simulada
-// Duração: 400–800ms
+// Posição: absolute top-0 left-0 right-0, z-10, height 3px
+// Animação: width 0%→100% em 600ms easeInOut
 // Cor: brand DEFAULT
-// Aparece antes de cada transição de tela simulada
+// Aparece/desaparece com fade
+```
+
+### `ConfirmationFeedback`
+
+Tela de conclusão do tour — aparece após o último step.
+
+```tsx
+// Overlay sobre o mockup (não sobre o tour overlay)
+// Check animado: circle + checkmark com stroke animation, cor success
+// Título: "Exploração concluída!" (Sora 28px)
+// Subtítulo: nome da solução + tagline
+// CTA primário: "Explorar outra solução" → volta para a grade
+// CTA secundário: "Repetir tour" → reinicia o tour
+// Auto-redirect: após 8s sem interação, volta para a grade
 ```
 
 ---
@@ -957,77 +1127,145 @@ Cada solução deve ter **3 a 5 etapas** bem definidas que demonstrem o valor ce
 
 ---
 
-## 13. Tela HOME — Especificação
+## 13. Tela HOME — Especificação v2
 
-### Layout
-
-A tela inicial deve ter **alto impacto visual** e ser navegável com poucos toques. Com 8 grupos, o layout deve usar uma **grade 4×2** (4 colunas, 2 linhas), que preenche bem uma tela 1920×1080 em modo paisagem.
+### Layout geral
 
 ```
-┌────────────────────────────────────────────────────────┐
-│  [Logo Teknisa]              [Tagline animada]          │  ← Header (10%)
-├────────────────────────────────────────────────────────┤
-│                                                        │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │
-│  │ FRENTE   │ │ TECFOOD  │ │   ERP    │ │PESSOAS   │  │  ← Linha 1 (4 cards)
-│  │ DE LOJA  │ │          │ │BACKOFFICE│ │  E RH    │  │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────┘  │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │
-│  │ SUPPLY   │ │   CRM    │ │    IA    │ │ GESTÃO   │  │  ← Linha 2 (4 cards)
-│  │ E COMPRAS│ │          │ │          │ │CORPORAT. │  │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────┘  │
-│                                                        │
-└────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────┐
+│  [Logo SVG Teknisa]    [Área de destaque animada]           │  ← Header 18%
+├────────────────────────────────────────────────────────────┤
+│                                                            │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐      │
+│  │ FRENTE   │ │ TECFOOD  │ │   ERP    │ │PESSOAS   │      │  ← Linha 1
+│  │ DE LOJA  │ │          │ │BACKOFFICE│ │  E RH    │      │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘      │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐      │
+│  │ SUPPLY   │ │   CRM    │ │    IA    │ │ GESTÃO   │      │  ← Linha 2
+│  │ E COMPRAS│ │          │ │ (v2)     │ │CORP.(v2) │      │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘      │
+│                                                            │
+└────────────────────────────────────────────────────────────┘
 ```
 
-> Cards de IA e Gestão Corporativa devem exibir badge `"Em breve"` ou `"v2"` se não tiverem soluções na v1, ainda assim sendo visíveis na grade (não ocultados).
+### Header da HOME — Área de destaque animada (substituição do rotativo ruim)
 
-### Card de segmento
+**O componente rotativo antigo deve ser completamente removido e substituído por uma das seguintes abordagens** (escolher a que entregar mais impacto):
 
-- **Tamanho:** grande (touch-friendly), mínimo 200x200px
-- **Conteúdo:** Ícone Lucide (48px) + nome do segmento + número de soluções + tagline curta
-- **Estado hover/press:** scale sutil + sombra brand color
-- **Background:** branco com borda brand/10 → on hover: brand ghost
-- **Ícone:** brand color no estado default → branco on hover/active
+**Opção A — Contadores animados de impacto (recomendada):**
+```
+┌─────────────────────────────────────────────────────┐
+│  [Logo Teknisa SVG]   │  34+      6        20k+      │
+│                       │  anos   países  instalações   │
+│  Tecnologia que       │                               │
+│  transforma o         │  [tag pill: Food Service]     │
+│  food service         │  [tag pill: Refeições Colet.] │
+│                       │  [tag pill: ERP & HCM]        │
+└─────────────────────────────────────────────────────┘
+- Contadores fazem count-up animado ao carregar (0→34, 0→6, 0→20.000)
+- Tags pulsam suavemente em sequência
+- Visual clean, tipografia grande, dados reais da Teknisa
+```
 
-### Transição para grade de soluções
+**Opção B — Marquee de soluções com mockup thumbnail:**
+```
+Faixa horizontal animada com miniatura dos sistemas + nome
+Velocidade suave (60s por ciclo), pausa no hover/touch
+Cards com aspect ratio, screenshot/mockup thumb estilizado
+```
 
-Ao tocar num segmento:
-1. O card selecionado faz scale up suave
-2. Os outros cards fazem fadeOut
-3. A tela "expande" para mostrar a grade de soluções (slide up)
-4. Cards de solução entram em stagger
+**Opção C — Frase animada com troca de palavras (typewriter refinado):**
+```
+"Gestão inteligente para [food service / refeições coletivas / redes de restaurantes]"
+A palavra em colchetes faz crossfade suave, não typewriter
+Velocidade de troca: 2.5s por palavra, transition 400ms opacity
+Sem cursor piscante — apenas crossfade limpo
+```
+
+> **Qualquer que seja a opção implementada: deve ter animação fluida (≥60fps), ser imediatamente legível à distância e comunica a dimensão e autoridade da Teknisa.**
+
+### Card de grupo (segmento)
+
+```
+Anatomia do card:
+├── Background: branco, border 1px solid rgba(2,7,136,0.08)
+├── Border-radius: 20px
+├── Padding: 32px
+├── Shadow: card shadow (0 2px 12px rgba(0,0,0,0.06))
+│
+├── Ícone Lucide: 52px, cor brand DEFAULT
+├── Nome do grupo: Sora 22px, 600, neutral-900
+├── Tagline: Rubik 14px, neutral-500
+├── Contagem: "5 soluções" — label-sm brand color
+│
+└── Estado hover/press:
+    ├── background: brand-ghost (#f0f1fc)
+    ├── border-color: brand-subtle
+    ├── scale: 0.98 (active/press)
+    ├── sombra brand: 0 4px 20px rgba(2,7,136,0.15)
+    └── ícone: transition para brand-lighter
+
+Cards IA e Gestão Corporativa:
+├── opacity: 0.55
+├── pointer-events: none
+├── Badge "Em breve" no canto superior direito
+└── Cursor: default (não pointer)
+```
+
+### Transição HOME → Grade de soluções
+
+```
+1. Toque no card → scale 0.97 (100ms) → scale 1.02 (150ms) → scale 1 (100ms)
+2. Overlay brand/5 sobre os outros cards (fadeIn 200ms)
+3. Card selecionado: border brand sólida + sombra brand
+4. Layout transition: header HOME sai (slide up + fade, 300ms)
+5. Grid de soluções entra (slide up from bottom, stagger 60ms/card)
+6. Breadcrumb aparece no novo header: "← [ícone grupo] Nome do grupo"
+```
 
 ---
 
-## 14. Tela de SOLUÇÃO/DEMO — Especificação
+## 14. Tela de SOLUÇÃO/DEMO — Especificação v2
 
-### Layout
+### Layout v2
 
 ```
-┌───────────────────────────────────────────────┐
-│ [←] [Logo] │ Segmento > Solução   [StepBar]   │  ← Header (8%)
-├───────────────────────────────────────────────┤
-│                                               │
-│   [Companion     [   DEVICE FRAME          ]  │  ← Área de demo (84%)
-│    esquerdo]     [   com mockup interativo ]  │
-│                  [                         ]  │
-│   [Companion     [                         ]  │
-│    inferior]                                  │
-│                                               │
-├───────────────────────────────────────────────┤
-│  [FlowGuide: "Toque em..."]  [Próxima etapa→] │  ← Footer (8%)
-└───────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────┐
+│ [←Logo] [breadcrumb: Frente de Loja › PDV Novo]            │  ← Header slim 56px
+├────────────────────────────────────────────────────────────┤
+│                                                            │
+│  ┌─────────────────────────────────────┐  ┌───────────┐   │
+│  │                                     │  │ Companion │   │
+│  │        DEVICE FRAME                 │  │  Card 1   │   │
+│  │   (80–85% da altura disponível)     │  │           │   │
+│  │   (70% da largura se tem companion) │  │ Companion │   │
+│  │                                     │  │  Card 2   │   │
+│  └─────────────────────────────────────┘  └───────────┘   │
+│                                                            │
+└────────────────────────────────────────────────────────────┘
+        ↑ TourOverlay renderizado como portal acima de tudo
 ```
 
-### Comportamentos
+**Quando não há companion:** device frame ocupa 88% da largura e 85% da altura útil, centralizado.
 
-- O device frame deve ser centralizado e dimensionado para ocupar 60–75% da área disponível
-- Companions aparecem nas bordas, com animação de entrada
-- O botão "Próxima etapa" avança o fluxo manualmente
-- O FlowGuide orienta a ação esperada (tooltip de ação)
-- PulsingDot aparece sobre o elemento interativo da etapa atual
-- Ao final da última etapa: tela de conclusão com checkmark animado + "Explorar outra solução"
+### Comportamentos v2
+
+- **Header slim** (56px): apenas logo Teknisa SVG (não texto) + breadcrumb com ícone do grupo + nome da solução. Sem StepBar, sem contador de passos no header.
+- **Device frame:** dimensionado para preencher agressivamente a área útil. Mínimo de margens.
+- **TourOverlay:** inicia automaticamente 400ms após a tela de demo montar. Renderizado via `createPortal` no `document.body`, z-index 9999.
+- **Companions:** renderizados no espaço lateral ou inferior, fora do device frame, com animação de entrada sincronizada com o step do tour em que são relevantes.
+- **Sem footer fixo:** a navegação é feita exclusivamente pelo TourTooltip. Sem botões de "próxima etapa" fixos no rodapé.
+- **Botão Voltar:** no header, 56×56px mínimo, sempre visível e acessível. Nunca coberto pelo tour overlay.
+
+### Hierarquia de z-index
+
+```
+z-0:    device frame e conteúdo do mockup
+z-10:   companions
+z-20:   simulatedNotification (dentro do contexto da demo)
+z-9998: idle overlay
+z-9999: TourOverlay (backdrop + spotlight + tooltip)
+```
 
 ---
 
@@ -1066,13 +1304,17 @@ const IDLE_TIMEOUT = 90_000; // 90 segundos
 
 ## 16. Padrões de Implementação
 
-### Regras de componente
+### Regras de componente (v2)
 
-1. **Todo componente de mockup** recebe `step: number` como prop e reage ao step atual
-2. **Toda animação de entrada** usa `AnimatePresence` com mode `"wait"` para transições limpas
-3. **Companions** são sempre `position: absolute` ou em grid lateral, nunca sobrepõem o frame
-4. **PulsingDot** é sempre renderizado relativo ao device frame, usando coordenadas percentuais
-5. **Fluxos** são definidos em `/data/flows/*.ts` e nunca embutidos no componente do mockup
+1. **Todo componente de mockup** recebe `tourStep: number` como prop e renderiza o estado visual correspondente ao passo do tour
+2. **TourOverlay** é um portal React (`createPortal`) renderizado em `document.body` — nunca dentro do device frame
+3. **Posicionamento do spotlight** calculado com `getBoundingClientRect()` + `useLayoutEffect` — recalcular no resize
+4. **Companions** são sempre externos ao device frame — em coluna lateral ou row inferior
+5. **StepIndicator REMOVIDO** — não existe mais no codebase. Não recriar.
+6. **FlowGuide REMOVIDO** — substituído pelo TourTooltip
+7. **Logo Teknisa:** sempre `<Image src="/logo-teknisa.svg" alt="Teknisa" />` — nunca texto puro
+8. **Mockups:** preenchem agressivamente a área disponível — calcular dimensões em `useEffect` baseado no viewport atual
+9. **Fluxos** definidos em `/data/flows/*.ts` com array de `TourStep[]` — nunca embutidos no componente
 
 ### Convenções de nomenclatura
 
@@ -1081,8 +1323,9 @@ Componentes: PascalCase
 Hooks: camelCase com prefixo "use"
 Variantes Framer: camelCase (fadeInUp, scaleIn)
 IDs de solução: kebab-case ('pdv-novo', 'waste-control')
-IDs de segmento: kebab-case ('tecfood', 'hcm')
+IDs de segmento: kebab-case ('frente-de-loja', 'tecfood', 'erp-backoffice', 'pessoas-rh', 'supply-compras', 'crm', 'ia', 'gestao-corporativa')
 Arquivos: PascalCase para componentes, camelCase para utils/hooks
+Tour steps: kebab-case com prefixo do mockup ('pdv-step-select-item', 'pdv-step-confirm')
 ```
 
 ### Performance
@@ -1114,23 +1357,48 @@ Arquivos: PascalCase para componentes, camelCase para utils/hooks
 
 ---
 
-## 18. Checklist de Qualidade por Solução
+## 18. Checklist de Qualidade por Solução (v2)
 
 Antes de considerar uma solução implementada, verificar:
 
-- [ ] Device frame correto para o contexto
-- [ ] Dados do mockup são realistas e com terminologia do produto
-- [ ] 3–5 etapas de fluxo bem definidas
-- [ ] PulsingDot aparece na área correta de cada etapa
-- [ ] FlowGuide orienta o usuário em cada etapa
-- [ ] Pelo menos 1 companion contextual
-- [ ] Animação de entrada única para esta solução
-- [ ] Transição entre etapas limpa (sem flicker)
-- [ ] Última etapa tem tela de conclusão
-- [ ] Botão Voltar funcional e visível
-- [ ] Funciona bem em viewport 1920x1080 (TV padrão)
-- [ ] Tamanhos de toque adequados (min 56px)
-- [ ] Sem emojis — apenas ícones Lucide
+**Device Frame**
+- [ ] Frame correto para o contexto e com anatomia detalhada (câmera, botões, base)
+- [ ] Frame preenche agressivamente a área disponível (mínimo de padding desperdiçado)
+- [ ] Área de tela interna com `overflow: hidden` e `border-radius` correto
+
+**Tour Guiado**
+- [ ] TourStep[] definido em `/data/flows/*.ts` com 3–5 passos
+- [ ] TourOverlay inicia automaticamente após 400ms
+- [ ] Spotlight recorta corretamente o elemento alvo via `getBoundingClientRect()`
+- [ ] Tooltip posicionado dinamicamente sem sair do viewport
+- [ ] PulsingDot aparece quando `requiresInteraction: true`
+- [ ] Interação com o elemento alvo avança o tour
+- [ ] Último step exibe `ConfirmationFeedback`
+- [ ] Botão "Pular tour" funcional
+
+**Mockup**
+- [ ] Dados simulados realistas (não placeholders genéricos)
+- [ ] Terminologia correta do produto Teknisa
+- [ ] Elementos clicáveis respondem visualmente ao toque
+- [ ] Estado visual muda conforme o tourStep atual
+
+**Companions**
+- [ ] Se tem companion: qualidade visual premium, dados realistas
+- [ ] Companion nunca sobrepõe o device frame
+- [ ] Companion aparece com animação de entrada no step relevante
+- [ ] Se companion é fraco visualmente: remover e ampliar o device frame
+
+**Marca e Identidade**
+- [ ] Logo Teknisa SVG em uso — nunca texto "Teknisa"
+- [ ] Azul #020788 como cor de destaque primária
+- [ ] Fontes Sora (títulos) e Rubik (corpo) em uso
+- [ ] Zero emojis — apenas ícones Lucide
+
+**TV Touch**
+- [ ] Funciona bem em viewport 1920×1080
+- [ ] Touch targets ≥ 56px em todos os elementos interativos
+- [ ] Botão Voltar sempre visível e acessível (não coberto pelo tour)
+- [ ] Texto mínimo 16px em qualquer elemento
 
 ---
 
@@ -1229,14 +1497,6 @@ Os IDs de segmento no código devem seguir o padrão kebab-case dos nomes reais:
 
 ### IA e Gestão Corporativa — v2
 Na v1, estes dois grupos exibem na grade HOME com visual levemente diferenciado (opacidade reduzida, badge "Em breve") e não são clicáveis. Não devem ser ocultados — a presença na grade comunica a amplitude da plataforma Teknisa.
-
----
-
-## 21. Convenções de Commit
-
-- **Sem coautoria.** Nunca adicione `Co-Authored-By: Claude ...` (ou qualquer trailer de coautoria) nas mensagens de commit deste projeto. Os commits devem aparecer como autoria única do desenvolvedor.
-- Mensagens claras e concisas, focadas no *porquê* da mudança.
-- Prefira criar um novo commit ao invés de `git commit --amend` em commits já publicados.
 
 ---
 

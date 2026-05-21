@@ -37,7 +37,7 @@ export function QuickPassMockup({ step }: QuickPassProps) {
 
 function LoginView() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-3 px-3">
+    <div data-tour="qp-login" className="flex flex-1 flex-col items-center justify-center gap-3 px-3">
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -73,7 +73,7 @@ function BalanceView() {
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-1 flex-col px-3 py-2"
     >
-      <div className="rounded-frame bg-brand p-3 text-white shadow-brand">
+      <div data-tour="qp-balance" className="rounded-frame bg-brand p-3 text-white shadow-brand">
         <p className="text-[8px] font-medium uppercase tracking-wider opacity-80">
           Saldo disponível
         </p>
@@ -121,7 +121,7 @@ function SelectionView() {
       <p className="text-[9px] font-semibold uppercase tracking-wider text-neutral-500">
         Escolha o refeitório
       </p>
-      <div className="mt-2 space-y-1.5">
+      <div data-tour="qp-restaurant" className="mt-2 space-y-1.5">
         {[
           {
             label: "Restaurante Central",
@@ -178,6 +178,7 @@ function AccessGrantedView() {
       className="flex flex-1 flex-col items-center justify-center gap-2 px-4"
     >
       <motion.div
+        data-tour="qp-access"
         initial={{ scale: 0.4 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 240, damping: 14 }}
@@ -217,7 +218,7 @@ function BalanceUpdatedView() {
         <span className="text-[8px] text-neutral-500">há instantes</span>
       </div>
 
-      <div className="mt-3 rounded-frame bg-brand p-3 text-white shadow-brand">
+      <div data-tour="qp-updated" className="mt-3 rounded-frame bg-brand p-3 text-white shadow-brand">
         <p className="text-[8px] font-medium uppercase tracking-wider opacity-80">
           Saldo atualizado
         </p>

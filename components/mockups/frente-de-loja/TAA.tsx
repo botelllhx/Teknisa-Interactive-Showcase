@@ -71,7 +71,7 @@ function WelcomeStep() {
         Como você prefere consumir?
       </p>
 
-      <div className="mt-5 grid w-full grid-cols-2 gap-2">
+      <div data-tour="taa-welcome-action" className="mt-5 grid w-full grid-cols-2 gap-2">
         {[
           { label: "Comer aqui", Icon: UtensilsCrossed },
           { label: "Levar", Icon: ShoppingBasket },
@@ -107,7 +107,7 @@ function CategoryStep() {
       <p className="text-[9px] font-semibold uppercase tracking-wider text-neutral-500">
         Categorias
       </p>
-      <div className="mt-2 grid grid-cols-2 gap-1.5">
+      <div data-tour="taa-categories" className="mt-2 grid grid-cols-2 gap-1.5">
         {CATEGORIES.map(({ icon: Icon, label }, i) => (
           <motion.button
             key={label}
@@ -136,7 +136,7 @@ function BuildOrderStep() {
       <p className="text-[9px] font-semibold uppercase tracking-wider text-neutral-500">
         Monte seu pedido
       </p>
-      <div className="mt-2 space-y-1.5">
+      <div data-tour="taa-build-list" className="mt-2 space-y-1.5">
         {ITEMS.map((item, i) => (
           <motion.div
             key={item.name}
@@ -181,7 +181,7 @@ function SummaryStep() {
       <p className="text-[9px] font-semibold uppercase tracking-wider text-neutral-500">
         Resumo do pedido
       </p>
-      <div className="mt-2 flex-1 rounded-md bg-white p-2 shadow-card">
+      <div data-tour="taa-summary" className="mt-2 flex-1 rounded-md bg-white p-2 shadow-card">
         {items.map((item) => (
           <div
             key={item.name}
@@ -222,6 +222,7 @@ function SummaryStep() {
 function PaymentSuccessStep() {
   return (
     <motion.div
+      data-tour="taa-payment-done"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-1 flex-col items-center justify-center px-4"

@@ -70,6 +70,7 @@ function CheckInView() {
       </div>
       <button
         type="button"
+        data-tour="mq-checkin"
         className="w-full rounded-md bg-brand py-2 text-center font-display text-[10px] font-bold text-white shadow-brand"
       >
         Entrar na fila
@@ -101,7 +102,7 @@ function QueueView() {
           }}
           className="absolute inset-0 rounded-full bg-brand/10"
         />
-        <div className="relative flex h-24 w-24 flex-col items-center justify-center rounded-full bg-brand text-white shadow-brand">
+        <div data-tour="mq-position" className="relative flex h-24 w-24 flex-col items-center justify-center rounded-full bg-brand text-white shadow-brand">
           <span className="text-[8px] font-medium uppercase tracking-wider opacity-80">
             Posição
           </span>
@@ -133,6 +134,7 @@ function CallView() {
       className="flex flex-1 flex-col items-center justify-center gap-3 px-4"
     >
       <motion.div
+        data-tour="mq-call"
         animate={{ rotate: [-12, 12, -12] }}
         transition={{ duration: 0.8, repeat: 5, ease: "easeInOut" }}
         className="flex h-16 w-16 items-center justify-center rounded-full bg-brand text-white shadow-brand"
@@ -171,6 +173,7 @@ function ConfirmView() {
       </p>
       <button
         type="button"
+        data-tour="mq-confirm"
         className="mt-2 w-full rounded-md bg-brand py-2 text-center font-display text-[10px] font-bold text-white shadow-brand"
       >
         Confirmar presença
@@ -189,7 +192,7 @@ function RatingView() {
         Sua avaliação ajuda a melhorar o serviço
       </p>
 
-      <div className="mt-4 flex justify-center gap-1">
+      <div data-tour="mq-rating" className="mt-4 flex justify-center gap-1">
         {Array.from({ length: 5 }).map((_, i) => (
           <motion.div
             key={i}

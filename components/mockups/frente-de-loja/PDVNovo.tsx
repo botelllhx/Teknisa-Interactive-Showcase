@@ -58,6 +58,7 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
                 <motion.button
                   key={p.name}
                   type="button"
+                  data-tour={isFirst ? "pdv-first-product" : undefined}
                   animate={highlight ? { scale: [1, 1.03, 1] } : undefined}
                   transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
                   className={cn(
@@ -92,7 +93,7 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
           </div>
         </section>
 
-        <aside className="flex flex-col rounded-md bg-white p-2 shadow-card">
+        <aside data-tour="pdv-cart" className="flex flex-col rounded-md bg-white p-2 shadow-card">
           <div className="flex items-center justify-between">
             <p className="font-display text-[9px] font-bold uppercase text-brand">
               Pedido #A1247
@@ -130,6 +131,7 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
               <span className="tabular-nums">{brl(subtotal)}</span>
             </div>
             <motion.div
+              data-tour="pdv-discount"
               animate={
                 step === 2 ? { backgroundColor: ["#fff0", "#fef3c7", "#fff0"] } : undefined
               }
@@ -158,7 +160,7 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
             </span>
           </div>
 
-          <div className="mt-2 grid grid-cols-4 gap-1">
+          <div data-tour="pdv-payment" className="mt-2 grid grid-cols-4 gap-1">
             {[
               { Icon: CreditCard, label: "Crédito" },
               { Icon: CreditCard, label: "Débito" },
@@ -188,6 +190,7 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
 
       {completed && (
         <motion.div
+          data-tour="pdv-receipt"
           initial={{ opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
           className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 bg-white/95 backdrop-blur"

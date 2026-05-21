@@ -72,7 +72,7 @@ export function MercadumMockup({ step }: MercadumProps) {
               </p>
               <span className="text-[8px] text-neutral-500">3 itens · 8 fornecedores</span>
             </div>
-            <ul className="mt-2 space-y-1">
+            <ul data-tour="mc-quote-list" className="mt-2 space-y-1">
               {ITEMS.map((item, i) => (
                 <motion.li
                   key={item.name}
@@ -94,6 +94,7 @@ export function MercadumMockup({ step }: MercadumProps) {
 
           {compare && (
             <motion.div
+              data-tour="mc-supplier-grid"
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex-1 rounded-md bg-white p-2 shadow-card"
@@ -107,6 +108,7 @@ export function MercadumMockup({ step }: MercadumProps) {
                   return (
                     <motion.div
                       key={s.name}
+                      data-tour={s.best ? "mc-best-pick" : undefined}
                       initial={{ x: 6, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
                       transition={{ delay: 0.05 * i }}
@@ -160,6 +162,7 @@ export function MercadumMockup({ step }: MercadumProps) {
         <aside className="flex flex-col gap-2">
           {order ? (
             <motion.div
+              data-tour="mc-po"
               initial={{ opacity: 0, x: 8 }}
               animate={{ opacity: 1, x: 0 }}
               className="rounded-md bg-white p-2 shadow-card"
@@ -197,6 +200,7 @@ export function MercadumMockup({ step }: MercadumProps) {
               </div>
               <button
                 type="button"
+                data-tour="mc-sent"
                 className={cn(
                   "mt-2 flex w-full items-center justify-center gap-1 rounded py-1.5 text-[9px] font-bold",
                   sent

@@ -67,7 +67,7 @@ function CategoriesView() {
       <p className="text-[9px] font-semibold uppercase tracking-wider text-neutral-500">
         Categorias
       </p>
-      <div className="mt-2 grid grid-cols-4 gap-1.5">
+      <div data-tour="cd-categories" className="mt-2 grid grid-cols-4 gap-1.5">
         {CATEGORIES.map(({ Icon, label }, i) => (
           <motion.button
             key={label}
@@ -118,7 +118,7 @@ function CategoriesView() {
 
 function DishDetailView() {
   return (
-    <div className="flex-1 px-3 py-2">
+    <div data-tour="cd-detail" className="flex-1 px-3 py-2">
       <div className="h-20 w-full rounded-md bg-gradient-to-br from-brand-subtle via-brand-ghost to-white" />
       <h3 className="mt-2 font-display text-[12px] font-bold text-neutral-900">
         Penne ao molho funghi
@@ -160,7 +160,7 @@ function DishDetailView() {
 
 function CartView() {
   return (
-    <div className="flex flex-1 flex-col px-3 py-2">
+    <div data-tour="cd-cart" className="flex flex-1 flex-col px-3 py-2">
       <p className="text-[9px] font-semibold uppercase tracking-wider text-neutral-500">
         Seu pedido
       </p>
@@ -199,6 +199,7 @@ function CartView() {
 function ConfirmView() {
   return (
     <motion.div
+      data-tour="cd-confirm"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-1 flex-col items-center justify-center gap-2 px-4"
@@ -219,7 +220,7 @@ function ConfirmView() {
 function KitchenStatusView() {
   return (
     <div className="flex-1 px-3 py-3">
-      <div className="rounded-md bg-white p-3 shadow-card">
+      <div data-tour="cd-kitchen" className="rounded-md bg-white p-3 shadow-card">
         <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
           Status do pedido
         </p>

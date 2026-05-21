@@ -61,7 +61,7 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
 
       <main className="grid flex-1 grid-cols-[1fr_36%] gap-3 p-3">
         <section className="flex flex-col gap-2">
-          <div className="rounded-md bg-white p-2 shadow-card">
+          <div data-tour="rf-obligations" className="rounded-md bg-white p-2 shadow-card">
             <div className="flex items-center justify-between">
               <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
                 Obrigações do mês
@@ -101,6 +101,7 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
 
           {showReforma && (
             <motion.div
+              data-tour="rf-reform-card"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               className="relative overflow-hidden rounded-md border border-warning/30 bg-gradient-to-br from-warning/5 via-white to-warning/10 p-3"
@@ -141,6 +142,7 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
 
           {showValidation && (
             <motion.div
+              data-tour="rf-validation"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex-1 rounded-md bg-white p-2 shadow-card"
@@ -164,6 +166,7 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
         <aside className="flex flex-col gap-2">
           {showApuracao ? (
             <motion.div
+              data-tour="rf-comparison"
               initial={{ opacity: 0, x: 8 }}
               animate={{ opacity: 1, x: 0 }}
               className="rounded-md bg-white p-2 shadow-card"
@@ -217,6 +220,7 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
             </p>
             <button
               type="button"
+              data-tour="rf-send"
               className={cn(
                 "mt-2 flex w-full items-center justify-center gap-1 rounded py-1.5 text-[9px] font-bold",
                 declared

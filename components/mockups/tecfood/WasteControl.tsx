@@ -72,7 +72,7 @@ function RegisterView() {
       <p className="text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
         Sobras a registrar
       </p>
-      <div className="mt-2 space-y-1.5">
+      <div data-tour="wc-item-list" className="mt-2 space-y-1.5">
         {ITEMS.map((item, i) => (
           <motion.div
             key={item.name}
@@ -119,7 +119,7 @@ function WeighingView() {
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-1 flex-col px-3 py-2"
     >
-      <div className="rounded-md bg-white p-3 text-center shadow-card">
+      <div data-tour="wc-weighing" className="rounded-md bg-white p-3 text-center shadow-card">
         <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
           Pesagem em andamento
         </p>
@@ -172,7 +172,7 @@ function ComparisonView({ highlight }: { highlight: boolean }) {
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-1 flex-col px-3 py-2"
     >
-      <div className="rounded-md bg-white p-2 shadow-card">
+      <div data-tour="wc-chart" className="rounded-md bg-white p-2 shadow-card">
         <div className="flex items-center justify-between">
           <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
             Sobra · esta semana
@@ -227,6 +227,7 @@ function ComparisonView({ highlight }: { highlight: boolean }) {
 
       {highlight && (
         <motion.div
+          data-tour="wc-alert"
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           className="mt-2 flex items-center gap-2 rounded-md border border-warning/30 bg-warning/5 p-2"
@@ -249,6 +250,7 @@ function ComparisonView({ highlight }: { highlight: boolean }) {
 function ReportView() {
   return (
     <motion.div
+      data-tour="wc-report"
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-1 flex-col items-center justify-center gap-3 px-4"

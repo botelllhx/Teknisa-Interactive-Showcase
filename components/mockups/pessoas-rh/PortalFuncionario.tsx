@@ -50,6 +50,7 @@ function LoginView() {
       </div>
       <button
         type="button"
+        data-tour="pf-login"
         className="w-full rounded-md bg-brand py-2 text-center font-display text-[10px] font-bold text-white shadow-brand"
       >
         Entrar
@@ -88,7 +89,7 @@ function PunchSheetView() {
       <p className="mt-3 text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
         Últimas marcações
       </p>
-      <div className="mt-1 flex-1 space-y-1">
+      <div data-tour="pf-punch-sheet" className="mt-1 flex-1 space-y-1">
         {days.map((d, i) => (
           <motion.div
             key={d.day}
@@ -149,6 +150,7 @@ function RequestVacationView() {
 
       <button
         type="button"
+        data-tour="pf-vacation-button"
         className="mt-auto w-full rounded-md bg-brand py-2 text-center font-display text-[10px] font-bold text-white shadow-brand"
       >
         Enviar solicitação
@@ -173,7 +175,7 @@ function StatusView() {
       <p className="text-center text-[9px] text-neutral-500">
         Sua solicitação está com o gestor João Costa
       </p>
-      <div className="w-full rounded-md bg-surface-raised p-2">
+      <div data-tour="pf-status" className="w-full rounded-md bg-surface-raised p-2">
         <Step Icon={CheckCircle2} label="Enviada" done time="há 2 min" />
         <Step Icon={Clock} label="Em análise pelo gestor" active />
         <Step Icon={CheckCircle2} label="Aprovação RH" />
@@ -189,7 +191,7 @@ function PayslipView() {
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-1 flex-col px-3 py-2"
     >
-      <div className="rounded-md bg-brand p-3 text-white shadow-brand">
+      <div data-tour="pf-payslip" className="rounded-md bg-brand p-3 text-white shadow-brand">
         <p className="text-[8px] font-medium uppercase tracking-wider opacity-80">
           Holerite · Maio 2026
         </p>

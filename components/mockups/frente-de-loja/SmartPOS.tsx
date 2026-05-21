@@ -53,6 +53,7 @@ export function SmartPOSMockup({ step }: SmartPOSProps) {
             {PRODUCTS.map((p, i) => (
               <motion.button
                 key={p.name}
+                data-tour={i === 1 ? "smartpos-catalog-item" : undefined}
                 initial={{ y: 6, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.05 * i }}
@@ -85,7 +86,7 @@ export function SmartPOSMockup({ step }: SmartPOSProps) {
           <p className="mt-3 text-[9px] font-semibold uppercase tracking-wider text-neutral-500">
             Quantidade
           </p>
-          <div className="mt-1 flex items-center justify-between rounded-md border border-brand/20 bg-white p-2">
+          <div data-tour="smartpos-qty" className="mt-1 flex items-center justify-between rounded-md border border-brand/20 bg-white p-2">
             <button
               type="button"
               className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-raised text-neutral-600"
@@ -122,7 +123,7 @@ export function SmartPOSMockup({ step }: SmartPOSProps) {
           <p className="text-[9px] font-semibold uppercase tracking-wider text-neutral-500">
             Forma de pagamento
           </p>
-          <div className="mt-2 space-y-1.5">
+          <div data-tour="smartpos-payment-list" className="mt-2 space-y-1.5">
             {[
               { Icon: CreditCard, label: "Crédito" },
               { Icon: CreditCard, label: "Débito" },
@@ -157,6 +158,7 @@ export function SmartPOSMockup({ step }: SmartPOSProps) {
 
       {showCardReader && !approved && (
         <motion.div
+          data-tour="smartpos-tap"
           initial={{ opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
           className="flex flex-1 flex-col items-center justify-center gap-2 px-4"
@@ -179,6 +181,7 @@ export function SmartPOSMockup({ step }: SmartPOSProps) {
 
       {approved && (
         <motion.div
+          data-tour="smartpos-approved"
           initial={{ opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
           className="flex flex-1 flex-col items-center justify-center gap-2 px-4"

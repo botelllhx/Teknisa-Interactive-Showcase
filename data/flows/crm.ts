@@ -1,37 +1,51 @@
-import type { FlowStep } from "../solutions";
+import type { TourStep } from "../solutions";
 
-export const crmPremiumFlow: FlowStep[] = [
+export const crmPremiumFlow: TourStep[] = [
   {
     id: "dashboard",
-    label: "Visão geral",
-    tooltip: "Métricas de fidelidade",
-    highlightArea: { x: 6, y: 22, width: 88, height: 30 },
+    targetSelector: '[data-tour="crm-kpis"]',
+    placement: "right",
+    title: "Indicadores de fidelidade",
+    description:
+      "Base ativa, LTV médio, recompra. Métricas que mostram saúde do relacionamento — não apenas vendas no caixa.",
     companions: ["MiniDashboard"],
   },
   {
     id: "perfil",
-    label: "Perfil",
-    tooltip: "Histórico e preferências",
-    highlightArea: { x: 6, y: 52, width: 88, height: 36 },
+    targetSelector: '[data-tour="crm-profile"]',
+    placement: "top",
+    title: "Perfil do cliente em foco",
+    description:
+      "Frequência, ticket médio, categoria favorita. CRM com dados de venda integrados, não cadastro de e-mail isolado.",
     companions: ["MiniDashboard"],
   },
   {
     id: "campanha",
-    label: "Campanha",
-    tooltip: "Crie uma campanha de fidelidade",
-    highlightArea: { x: 6, y: 22, width: 88, height: 60 },
+    targetSelector: '[data-tour="crm-campaign"]',
+    placement: "left",
+    title: "Crie campanhas segmentadas",
+    description:
+      "Defina público (VIPs inativos, por categoria, por LTV) e o sistema sugere o conteúdo. Marketing direto, sem agência.",
     companions: ["MiniDashboard"],
   },
   {
     id: "oferta",
-    label: "Oferta",
-    tooltip: "Configure desconto personalizado",
-    highlightArea: { x: 6, y: 40, width: 88, height: 38 },
+    targetSelector: '[data-tour="crm-offer"]',
+    placement: "left",
+    title: "Oferta personalizada",
+    description:
+      "Desconto, brinde, frete — combinação por segmento. IA estima alcance de 1.842 clientes para a campanha atual.",
+    requiresInteraction: true,
+    actionLabel: "Ativar campanha",
     companions: ["MiniDashboard"],
   },
   {
     id: "ativada",
-    label: "Ativada",
+    targetSelector: '[data-tour="crm-activated"]',
+    placement: "left",
+    title: "Campanha ativada e monitorada",
+    description:
+      "Funil em tempo real: enviadas, abertas, resgatadas. Resultado mensurável — sem 'achismo' de retorno.",
     companions: ["MiniDashboard", "SimulatedNotification"],
   },
 ];

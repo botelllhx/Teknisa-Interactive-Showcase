@@ -1,4 +1,4 @@
-import type { FlowStep } from "../solutions";
+import type { TourStep } from "../solutions";
 import {
   taaFlow,
   pdvNovoFlow,
@@ -28,7 +28,7 @@ import {
 import { mercadumFlow, appComercialFlow } from "./supply-compras";
 import { crmPremiumFlow } from "./crm";
 
-export const flows: Record<string, FlowStep[]> = {
+export const flows: Record<string, TourStep[]> = {
   taa: taaFlow,
   "pdv-novo": pdvNovoFlow,
   "smart-pos": smartPosFlow,
@@ -57,6 +57,6 @@ export const flows: Record<string, FlowStep[]> = {
   "crm-premium": crmPremiumFlow,
 };
 
-export function getFlow(solutionId: string): FlowStep[] {
+export function getFlow(solutionId: string): TourStep[] {
   return flows[solutionId] ?? [];
 }

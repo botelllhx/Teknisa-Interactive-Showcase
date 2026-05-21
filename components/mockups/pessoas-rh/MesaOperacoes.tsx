@@ -55,7 +55,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
           <p className="text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
             Mapa de unidades
           </p>
-          <div className="grid flex-1 grid-cols-3 gap-1.5">
+          <div data-tour="mo-grid" className="grid flex-1 grid-cols-3 gap-1.5">
             {UNITS.map((unit, i) => {
               const isAlert = unit.status === "alert";
               return (
@@ -103,6 +103,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
         <aside className="flex flex-col gap-2">
           {alertActive && !reallocating && (
             <motion.div
+              data-tour="mo-alert"
               initial={{ opacity: 0, x: 8 }}
               animate={{ opacity: 1, x: 0 }}
               className="flex items-start gap-2 rounded-md border border-danger/30 bg-danger/5 p-2"
@@ -149,6 +150,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
               </div>
               <button
                 type="button"
+                data-tour="mo-realloc"
                 className="mt-2 w-full rounded bg-brand py-1.5 text-[9px] font-bold text-white shadow-brand"
               >
                 Confirmar realocação
@@ -158,6 +160,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
 
           {confirmed && (
             <motion.div
+              data-tour="mo-confirmed"
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               className="rounded-md border border-success/30 bg-success/5 p-2"
@@ -176,6 +179,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
 
           {logged && (
             <motion.div
+              data-tour="mo-log"
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               className="mt-auto rounded-md bg-white p-2 shadow-card"

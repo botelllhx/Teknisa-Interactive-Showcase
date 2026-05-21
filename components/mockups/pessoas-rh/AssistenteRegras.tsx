@@ -69,6 +69,7 @@ function ExistingRulesView() {
         </p>
         <button
           type="button"
+          data-tour="ar-new-rule"
           className="flex items-center gap-1 rounded-full bg-brand px-3 py-1 text-[9px] font-bold text-white shadow-brand"
         >
           <Plus size={11} strokeWidth={2.5} />
@@ -117,7 +118,7 @@ function WizardView() {
       animate={{ opacity: 1, y: 0 }}
       className="flex h-full flex-col"
     >
-      <div className="rounded-md border border-brand/30 bg-gradient-to-br from-brand-ghost via-white to-brand-subtle p-3">
+      <div data-tour="ar-wizard" className="rounded-md border border-brand/30 bg-gradient-to-br from-brand-ghost via-white to-brand-subtle p-3">
         <div className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-white shadow-brand">
             <Sparkles size={16} strokeWidth={2} />
@@ -181,7 +182,7 @@ function ConditionsView() {
       <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
         Configuração detectada
       </p>
-      <div className="mt-2 space-y-1.5">
+      <div data-tour="ar-conditions" className="mt-2 space-y-1.5">
         <Block
           label="Quando"
           value="Hora extra realizada"
@@ -227,7 +228,7 @@ function PreviewView() {
           Rascunho
         </span>
       </div>
-      <div className="mt-2 flex-1 rounded-md border border-brand/30 bg-white p-3 shadow-card">
+      <div data-tour="ar-preview" className="mt-2 flex-1 rounded-md border border-brand/30 bg-white p-3 shadow-card">
         <p className="font-display text-[11px] font-bold text-neutral-900">
           Hora extra sábado · adicional 80%
         </p>
@@ -253,6 +254,7 @@ function PreviewView() {
 function ActivatedView() {
   return (
     <motion.div
+      data-tour="ar-activated"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       className="flex h-full flex-col items-center justify-center gap-3"

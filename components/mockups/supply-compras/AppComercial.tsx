@@ -56,7 +56,7 @@ function DashboardView() {
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-1 flex-col px-3 py-1"
     >
-      <div className="rounded-md bg-brand p-3 text-white shadow-brand">
+      <div data-tour="ac-goal" className="rounded-md bg-brand p-3 text-white shadow-brand">
         <p className="text-[8px] font-medium uppercase tracking-wider opacity-80">
           Meta do mês
         </p>
@@ -125,6 +125,7 @@ function ClientView() {
         {CLIENTS.map((c, i) => (
           <motion.button
             key={c.cnpj}
+            data-tour={c.active ? "ac-client" : undefined}
             initial={{ x: 6, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.05 * i }}
@@ -180,6 +181,7 @@ function ProductsView() {
         {PRODUCTS.map((p, i) => (
           <motion.div
             key={p.name}
+            data-tour={i === 0 ? "ac-product-suggested" : undefined}
             initial={{ x: 6, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.05 * i }}
@@ -230,7 +232,7 @@ function SummaryView() {
         </p>
       </div>
 
-      <div className="mt-2 rounded-md bg-white p-2 shadow-card">
+      <div data-tour="ac-summary" className="mt-2 rounded-md bg-white p-2 shadow-card">
         <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
           Resumo do pedido
         </p>
@@ -271,6 +273,7 @@ function SummaryView() {
 function SentView() {
   return (
     <motion.div
+      data-tour="ac-sent"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-1 flex-col items-center justify-center gap-3 px-4"

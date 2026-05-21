@@ -76,7 +76,7 @@ function PendingListView() {
       <p className="text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
         Pendentes
       </p>
-      <div className="mt-2 space-y-1.5">
+      <div data-tour="ap-pending-list" className="mt-2 space-y-1.5">
         {REQUESTS.map((req, i) => (
           <motion.button
             key={req.title}
@@ -140,7 +140,7 @@ function DetailView({ showComment }: { showComment: boolean }) {
         </div>
       </div>
 
-      <div className="mt-2 rounded-md bg-white p-2 shadow-card">
+      <div data-tour="ap-detail" className="mt-2 rounded-md bg-white p-2 shadow-card">
         <p className="text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
           Alterações
         </p>
@@ -162,6 +162,7 @@ function DetailView({ showComment }: { showComment: boolean }) {
 
       {showComment ? (
         <motion.div
+          data-tour="ap-comment"
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           className="mt-2 rounded-md border-2 border-brand bg-white p-2"
@@ -193,6 +194,7 @@ function DetailView({ showComment }: { showComment: boolean }) {
         </button>
         <button
           type="button"
+          data-tour="ap-approve-button"
           className="flex items-center justify-center gap-1 rounded-md bg-brand py-1.5 text-[9px] font-bold text-white shadow-brand"
         >
           <Check size={11} strokeWidth={2.5} />
@@ -230,6 +232,7 @@ function ApprovingView() {
 function NotifiedView() {
   return (
     <motion.div
+      data-tour="ap-notified"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="flex flex-1 flex-col items-center justify-center gap-2 px-4"

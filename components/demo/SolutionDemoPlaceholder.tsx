@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/SimulatedNotification";
 import { LoadingBar } from "@/components/ui/LoadingBar";
 import { ConfirmationFeedback } from "@/components/ui/ConfirmationFeedback";
+import { Companion } from "@/components/companions";
+import type { CompanionType } from "@/data/solutions";
 import { cn } from "@/lib/cn";
 
 interface SolutionDemoPlaceholderProps {
@@ -92,7 +94,10 @@ export function SolutionDemoPlaceholder({ solutionId }: SolutionDemoPlaceholderP
           </div>
         </div>
 
-        <CompanionsPanel companions={currentStepData?.companions ?? []} />
+        <CompanionsPanel
+          companions={currentStepData?.companions ?? []}
+          stepLabel={currentStepData?.label}
+        />
       </div>
 
       <div className="mt-8 flex items-end justify-between gap-6">
@@ -192,10 +197,18 @@ function SolutionInfo({ solution }: { solution: Solution }) {
   );
 }
 
-function CompanionsPanel({ companions }: { companions: string[] }) {
-  if (companions.length === 0) {
+function CompanionsPanel({
+  companions,
+  stepLabel,
+}: {
+  companions: CompanionType[];
+  stepLabel?: string;
+}) {
+  const visual = companions.filter((c) => c !== "SimulatedNotification");
+
+  if (visual.length === 0) {
     return (
-      <aside className="rounded-frame border border-dashed border-brand/20 bg-white/50 p-6">
+      <aside className="rounded-frame border border-dashed border-brand/20 bg-white/40 p-6">
         <p className="text-caption font-medium uppercase tracking-wider text-neutral-400">
           Companions
         </p>
@@ -205,27 +218,23 @@ function CompanionsPanel({ companions }: { companions: string[] }) {
       </aside>
     );
   }
+
   return (
-    <aside>
-      <p className="text-caption font-medium uppercase tracking-wider text-neutral-500">
-        Companions ativos
-      </p>
-      <ul className="mt-3 flex flex-col gap-2">
-        {companions.map((c) => (
-          <motion.li
-            key={c}
-            initial={{ opacity: 0, x: 12 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="rounded-frame-inner border border-brand/10 bg-white px-4 py-3 shadow-card"
+    <aside className="flex flex-col items-end gap-4">
+      <AnimatePresence mode="popLayout">
+        {visual.map((c) => (
+          <motion.div
+            key={`${c}-${stepLabel}`}
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
           >
-            <span className="font-display text-body-md font-semibold text-neutral-900">
-              {c}
-            </span>
-            <p className="text-caption text-neutral-500">Sprint 5</p>
-          </motion.li>
+            <Companion type={c} stepLabel={stepLabel} />
+          </motion.div>
         ))}
-      </ul>
+      </AnimatePresence>
     </aside>
   );
 }

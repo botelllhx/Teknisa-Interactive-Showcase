@@ -23,7 +23,10 @@ export type CompanionType =
   | "StockIndicator"
   | "EmployeeCard"
   | "SimulatedNotification"
-  | "FiscalBadge";
+  | "FiscalBadge"
+  | "OperatorDailyPanel"
+  | "CustomerReceiptPhone"
+  | "RestaurantQueueBoard";
 
 export type SolutionBadge = "IA" | "Em breve" | "Reforma Tributária";
 

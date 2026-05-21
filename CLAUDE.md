@@ -1500,6 +1500,212 @@ Na v1, estes dois grupos exibem na grade HOME com visual levemente diferenciado 
 
 ---
 
+## 21. Padrão V6 — Cena interativa integrada (referência: TAA)
+
+A v6 substitui o tour passivo por uma cena onde **o usuário toca, o mockup reage e os companions ao redor reagem junto**. Toda nova solução deve seguir os padrões abaixo. O TAA é a referência canônica.
+
+### 21.1 Tour: interação real (sem botão "Próximo" em passos de ação)
+
+```ts
+// data/flows/*.ts
+const myFlow: TourStep[] = [
+  {
+    id: "step-x",
+    targetSelector: '[data-tour="solution-action"]',
+    placement: "right",
+    title: "Comece o pedido",
+    description: "Frase curta de instrução.",
+    requiresInteraction: true, // user MUST tap the target
+    companions: ["OrderTicket"],
+  },
+  // ...
+  {
+    id: "final",
+    targetSelector: '[data-tour="solution-result"]',
+    placement: "left",
+    title: "Concluído",
+    description: "Sistema mostra o resultado.",
+    actionLabel: "Concluir", // passive step gets a Next button
+    companions: ["OrderTicket", "POSCardReader"],
+  },
+];
+```
+
+- `requiresInteraction: true` → usuário precisa tocar no elemento alvo no mockup. O tooltip mostra "Toque para continuar" como hint, sem botão clicável.
+- Sem `requiresInteraction` (ou no último step) → passo passivo. Tooltip mostra botão "Próximo" ou "Concluir".
+- Sempre acessível: botão X de skip no canto do tooltip.
+
+### 21.2 TourOverlay sem backdrop escuro
+
+**Regra:** nada deve cobrir a tela inteira em opacidade alta. Companions e mockup precisam ficar 100% visíveis durante o tour.
+
+- Spotlight = ring brand 3px sólido + halo brand pulsante de 3 camadas (`0 0 0 6px rgba(brand, 0.18)`, `0 0 32px 8px rgba(brand, 0.30)`, `0 0 60px 12px rgba(brand, 0.12)`).
+- Animação do halo: `opacity [0.45, 0.85, 0.45]` em loop de 1.8s.
+- Movimento do ring entre steps: spring (stiffness 220, damping 26).
+- Sem máscara SVG escura, sem `bg-black/60`.
+
+### 21.3 Layout 3 colunas (companion-left, frame, companion-right)
+
+```tsx
+// SolutionDemo grid
+className="grid min-h-0 flex-1 items-stretch gap-6 p-6 grid-cols-[340px_1fr_340px]"
+```
+
+- Coluna esquerda: `340px` — companions com `align: end` (encostam no frame).
+- Coluna central: `1fr` — device frame, mede via `useMeasure` e se dimensiona ao container.
+- Coluna direita: `340px` — companions com `align: start` (encostam no frame).
+- Quando NÃO há companions: collapse para `grid-cols-1`.
+
+Per-solução, mapear quais companions vão de cada lado:
+
+```tsx
+const COMPANION_LAYOUT: Record<string, { left?: CompanionType[]; right?: CompanionType[] }> = {
+  taa: { left: ["OrderTicket"], right: ["POSCardReader"] },
+  // ...
+};
+```
+
+### 21.4 CompanionShell — equipamento, não widget
+
+Todo companion é envolto em `CompanionShell` para ler como **equipamento físico na mesma cena do device**, não card flutuante:
+
+```tsx
+<CompanionShell
+  label="Cupom do cliente"        // pequeno caps brand
+  sublabel="Impressora térmica"   // posiciona na cena
+  live                            // chip verde "ao vivo" com bolinha pulsando
+  pulse={pulse}                   // scale 1.015 ao receber novo dado
+>
+  {/* corpo do companion */}
+</CompanionShell>
+```
+
+Padrão visual obrigatório:
+- Etiqueta contextual no topo (brand 10px font-bold uppercase tracking-[2px])
+- Sublabel discreta (neutral-400)
+- Live indicator (chip success-tinted com dot pulsando)
+- Pulse animation quando estado muda
+- `max-width: 320px`
+
+### 21.5 Regra do cinza claro (TUDO que é hardware)
+
+**Regra absoluta:** qualquer elemento que represente equipamento físico — device frames, maquininhas, leitores, totens, monitores em companion — usa o mesmo gradiente cinza claro:
+
+```css
+background: linear-gradient(180deg, #ebedf1 0%, #dde0e5 60%, #d4d7de 100%);
+box-shadow:
+  0 0 0 1px rgba(0,0,0,0.06),
+  0 18px 44px rgba(0,0,0,0.16),
+  0 4px 12px rgba(0,0,0,0.06),
+  inset 0 1px 0 rgba(255,255,255,0.7);
+```
+
+**Não:** corpo preto, dark grey escuro, qualquer cor saturada.
+**Exceção válida:** displays/telas dentro do equipamento podem ter LCD branco-cinza com inner shadow.
+
+### 21.6 Companion resolver per-solução, step-aware
+
+```tsx
+// components/companions/index.tsx
+export function Companion({ type, solutionId, step, stepLabel }: CompanionProps) {
+  // Per-solução overrides primeiro
+  if (solutionId === "taa") {
+    if (type === "OrderTicket") {
+      const items = step >= 2 ? TAA_COMBO_ITEMS : []; // fill in real time
+      return <OrderTicket items={items} approved={step >= 4} ... />;
+    }
+    if (type === "POSCardReader") {
+      if (step < 3) return null; // só aparece no step de pagamento
+      return <POSCardReader status={step >= 4 ? "approved" : "waiting"} amount={TAA_TOTAL} />;
+    }
+  }
+  // ... fallback genérico depois
+}
+```
+
+Cada solução define como cada companion progride com os steps. Companions devem **reagir narrativamente**: cupom enche conforme items são adicionados, maquininha aprova depois do tap, etc.
+
+### 21.7 Variedade de companions por contexto
+
+**Não use cupom+maquininha em todas as soluções.** Cada produto tem um conjunto de equipamentos/contextos diferente. Pense em "o que está na cena ao redor do operador/cliente real?":
+
+| Contexto | Companions sugeridos |
+|---|---|
+| TAA / PDV operador | OrderTicket (cupom térmico), POSCardReader (maquininha cinza claro) |
+| SmartPOS (mobile, IS a maquininha) | OperatorDailyPanel (KPIs do dia), CustomerReceiptPhone (SMS do cliente) |
+| Cardápio Digital (cliente na mesa) | KitchenDisplay (KDS recebe o pedido), WaiterMobile (notif do garçom) |
+| QuickPass (acesso refeitório) | EmployeeBadge (crachá digital), RestaurantQueueBoard (fila de cada refeitório) |
+| Approve (workflow tablet) | MiniDashboard (KPIs de aprovação) |
+| Análise Preditiva (RH IA) | MiniDashboard (gráficos preditivos), EmployeeCard (perfil em risco) |
+| Rotina Fiscal (ERP desktop) | FiscalBadge (Reforma 2026 + IBS/CBS) |
+
+Crie novos componentes quando o contexto pedir. Sempre dentro de CompanionShell.
+
+### 21.8 Animação: rápida e narrativa
+
+- Entradas: 200–300ms máximo (sem delays encadeados).
+- Transições entre steps: instantâneas com `duration: 0.2`.
+- Microinterações de toque: feedback em <100ms (`whileTap={{ scale: 0.96 }}`).
+- Stagger só em listas que aparecem juntas (ex: items do cupom): 50ms entre items.
+- Sem `LoadingBar` artificial entre steps — o mockup re-renderizando JÁ é o feedback.
+
+### 21.9 Tooltip discreto, ancorado
+
+- Largura 280px (não centralizado, não grande).
+- Posicionamento `right > left > bottom > top` baseado no espaço disponível.
+- Seta CSS aponta de volta para o elemento alvo.
+- Skip vira X discreto no canto.
+- Contador "1 / 5" em caps brand.
+- "Próximo" SOMENTE em passos passivos.
+
+### 21.10 Dados reais sempre
+
+Lista de nomes/lugares/valores que devem ser usados como referência (não placeholder):
+
+**Lojas e unidades:**
+- Sapore — Berrini
+- Restaurante Central
+- Café da Praça
+- Padaria Centro
+
+**Operadores e funcionários:**
+- Maria Santos, Carlos Eduardo Silva, Mariana Costa, Ana Costa, João Pedro
+
+**Combos e pratos (TAA / fast food):**
+- X-Burguer Artesanal Combo — R$ 61,70 (lanche + batata + suco)
+- Chicken Crispy Combo — R$ 54,90
+- Veggie Bowl Combo — R$ 48,50
+
+**Pratos executivos (Cardápio Digital / TecFood):**
+- Penne ao molho funghi — R$ 42,00
+- Salmão grelhado com purê — R$ 58,90
+- Costela no bafo 350g — R$ 44,90
+
+**Códigos e identificadores:**
+- Pedido #A1247 (kiosk/PDV)
+- Pedido #C1247 (cardápio digital)
+- Pedido #PED-2026-08471 (commercial)
+- NSU 871402 (transação cartão)
+- Cartão ****4128 · VISA
+- Matrícula 28471
+
+### 21.11 Replicação para novas soluções
+
+Antes de marcar uma solução como pronta no padrão V6, validar:
+
+- [ ] Flow é interaction-driven (`requiresInteraction: true` nos passos de ação)
+- [ ] Mockup tem `data-tour` nos elementos certos por step
+- [ ] Mockup reage à interação com animação (`whileTap: scale 0.96`)
+- [ ] Companions per-solução definidos no `COMPANION_LAYOUT`
+- [ ] Companions reagem ao step via resolver (não são estáticos)
+- [ ] Todos os companions têm CompanionShell (label + sublabel + live + pulse)
+- [ ] Hardware é cinza claro (regra 21.5)
+- [ ] Dados realistas (lojas, valores, códigos, nomes)
+- [ ] Logo SVG no lugar de texto "TEKNISA"
+- [ ] Tooltip discreto, ancorado, sem "Próximo" em passos de ação
+
+---
+
 *Este documento deve ser mantido atualizado conforme o projeto evolui. Qualquer decisão de arquitetura, visual ou de fluxo que desvie das diretrizes aqui definidas deve ser documentada com justificativa.*
 
-*Versão: 1.0 | Projeto: Teknisa Interactive Showcase*
+*Versão: 6.0 | Projeto: Teknisa Interactive Showcase*

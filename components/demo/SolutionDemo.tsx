@@ -32,11 +32,22 @@ const COMPANION_LAYOUT: Record<
   string,
   { left?: CompanionType[]; right?: CompanionType[] }
 > = {
+  // Frente de Loja — V6 patterns
   taa: { left: ["OrderTicket"], right: ["POSCardReader"] },
   "pdv-novo": { left: ["OrderTicket"], right: ["POSCardReader"] },
-  "smart-pos": { right: ["POSCardReader"] },
-  "cardapio-digital": { right: ["KitchenDisplay"] },
-  quickpass: { right: ["StockIndicator"] },
+  "smart-pos": {
+    left: ["OperatorDailyPanel"],
+    right: ["CustomerReceiptPhone"],
+  },
+  "cardapio-digital": {
+    left: ["OrderTicket"],
+    right: ["KitchenDisplay"],
+  },
+  quickpass: {
+    left: ["EmployeeCard"],
+    right: ["RestaurantQueueBoard"],
+  },
+  // Other groups (kept as-is until their V6 pass)
   approve: { right: ["MiniDashboard"] },
   "cardapio-inteligente": { right: ["KitchenDisplay"] },
   "waste-control": { right: ["StockIndicator"] },

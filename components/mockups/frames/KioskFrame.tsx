@@ -2,54 +2,148 @@
 
 import { motion } from "framer-motion";
 import { type ReactNode } from "react";
-import { cn } from "@/lib/cn";
 
 interface KioskFrameProps {
   children?: ReactNode;
-  className?: string;
+  height: number;
 }
 
-export function KioskFrame({ children, className }: KioskFrameProps) {
+const ASPECT = 9 / 16;
+
+export function KioskFrame({ children, height }: KioskFrameProps) {
+  const width = height * ASPECT;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className={cn("relative flex flex-col items-center", className)}
+      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+      style={{
+        width,
+        height,
+        background: "linear-gradient(180deg, #e8eaed 0%, #dde0e5 100%)",
+        borderRadius: 24,
+        boxShadow:
+          "0 0 0 1px rgba(0,0,0,0.08), 0 40px 100px rgba(0,0,0,0.15), 0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6)",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        position: "relative",
+      }}
     >
-      <div className="relative rounded-3xl bg-gradient-to-b from-frame-body to-[#d8dbe2] p-4 shadow-[0_32px_80px_rgba(0,0,0,0.14),0_8px_24px_rgba(0,0,0,0.06)]">
-        <div className="mb-2 flex h-2 items-center justify-center rounded-t-md bg-brand/80" aria-hidden />
-        <div
-          className="relative overflow-hidden rounded-xl bg-white"
-          style={{ aspectRatio: "9 / 16" }}
+      <div
+        style={{
+          height: 36,
+          background: "#020788",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "var(--font-display)",
+            color: "white",
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: 3,
+          }}
         >
-          <span
-            aria-hidden
-            className="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-neutral-300"
-          />
-          {children}
-        </div>
-        <div className="mt-3 flex items-center justify-between rounded-md bg-frame-screen px-3 py-1.5">
-          <span className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-success/70" />
-            <span className="font-display text-caption font-semibold uppercase tracking-wider text-neutral-500">
-              Teknisa
-            </span>
-          </span>
-          <span
-            aria-hidden
-            className="h-1 w-12 rounded-full bg-neutral-300"
-            title="Slot de impressão"
-          />
-        </div>
-        <div
-          aria-hidden
-          className="mt-1.5 mx-auto h-2.5 w-16 rounded-sm bg-neutral-300/80"
-          title="Leitor de cartão"
+          TEKNISA
+        </span>
+      </div>
+
+      <div
+        style={{
+          height: 18,
+          background: "#d4d7de",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 8,
+          flexShrink: 0,
+        }}
+      >
+        <span
+          style={{
+            width: 8,
+            height: 8,
+            borderRadius: "50%",
+            background: "#b0b5bf",
+            boxShadow: "inset 0 1px 2px rgba(0,0,0,0.3)",
+          }}
+        />
+        <span
+          style={{
+            width: 32,
+            height: 4,
+            borderRadius: 2,
+            background: "#b8bcc6",
+          }}
         />
       </div>
-      <div className="-mt-px h-3 w-3/4 rounded-b-3xl bg-gradient-to-b from-[#d8dbe2] to-frame-body" />
-      <div className="h-6 w-full max-w-[92%] rounded-b-2xl bg-frame-bezel/70 shadow-[0_10px_24px_rgba(0,0,0,0.10)]" />
+
+      <div
+        style={{
+          flex: 1,
+          background: "#fff",
+          overflow: "hidden",
+          position: "relative",
+        }}
+      >
+        {children}
+      </div>
+
+      <div
+        style={{
+          height: 22,
+          background: "#d4d7de",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        <span
+          style={{
+            width: "60%",
+            height: 4,
+            borderRadius: 2,
+            background: "#c0c4ce",
+            boxShadow: "inset 0 1px 2px rgba(0,0,0,0.2)",
+          }}
+        />
+      </div>
+
+      <div
+        style={{
+          height: 28,
+          background: "#cdd0d8",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        <span
+          style={{
+            width: "40%",
+            height: 6,
+            borderRadius: 3,
+            background: "#b8bcc8",
+            border: "1px solid #adb2bc",
+          }}
+        />
+      </div>
+
+      <div
+        style={{
+          height: 40,
+          background: "linear-gradient(180deg, #d4d7de 0%, #c8cbd4 100%)",
+          flexShrink: 0,
+        }}
+      />
     </motion.div>
   );
 }

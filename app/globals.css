@@ -40,7 +40,6 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  cursor: none;
 }
 
 h1,
@@ -54,8 +53,10 @@ h6 {
 }
 
 button,
-[role="button"] {
-  cursor: none;
+[role="button"],
+a,
+[data-tour] {
+  cursor: pointer;
   user-select: none;
 }
 
@@ -64,13 +65,38 @@ button,
   color: var(--brand);
 }
 
+/* Presentation mode: showroom TV with no cursor */
+body.presentation-mode,
+body.presentation-mode * {
+  cursor: none !important;
+}
+
+/* Ring animation used by the tour spotlight */
+@keyframes pulse-ring {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(2, 7, 136, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(2, 7, 136, 0);
+  }
+}
+
+/* Discreet scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #ced4da;
+  border-radius: 4px;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
-  }
-
-  .no-cursor,
-  .no-cursor * {
-    cursor: none !important;
   }
 }

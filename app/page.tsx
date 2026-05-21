@@ -7,6 +7,7 @@ import { SegmentGrid } from "@/components/home/SegmentGrid";
 import { SolutionGrid } from "@/components/home/SolutionGrid";
 import { ShowcaseNav } from "@/components/layout/ShowcaseNav";
 import { IdleReset } from "@/components/layout/IdleReset";
+import { PresentationToggle } from "@/components/layout/PresentationToggle";
 import { SolutionDemo } from "@/components/demo/SolutionDemo";
 import { pageTransition } from "@/lib/animations";
 
@@ -60,6 +61,7 @@ export default function ShowcasePage() {
       </AnimatePresence>
 
       <IdleReset />
+      <PresentationToggle />
     </main>
   );
 }

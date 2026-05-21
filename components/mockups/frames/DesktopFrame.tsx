@@ -2,50 +2,138 @@
 
 import { motion } from "framer-motion";
 import { type ReactNode } from "react";
-import { cn } from "@/lib/cn";
 
 interface DesktopFrameProps {
   children?: ReactNode;
-  className?: string;
+  width: number;
   url?: string;
 }
 
+const ASPECT_INVERSE = 10 / 16;
+
 export function DesktopFrame({
   children,
-  className,
+  width,
   url = "teknisa.com.br/app",
 }: DesktopFrameProps) {
+  const screenHeight = width * ASPECT_INVERSE;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className={cn("relative flex flex-col items-center", className)}
+      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
-      <div className="relative w-full rounded-2xl bg-gradient-to-b from-frame-body to-[#d8dbe2] p-[14px] shadow-[0_32px_80px_rgba(0,0,0,0.12),0_8px_24px_rgba(0,0,0,0.06)]">
+      <div
+        style={{
+          width,
+          background: "linear-gradient(180deg, #e8eaed 0%, #dde0e5 100%)",
+          borderRadius: "16px 16px 4px 4px",
+          padding: "14px 14px 10px",
+          boxShadow:
+            "0 0 0 1px rgba(0,0,0,0.08), 0 32px 80px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.6)",
+          position: "relative",
+        }}
+      >
         <span
           aria-hidden
-          className="absolute left-1/2 top-1.5 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-neutral-300"
+          style={{
+            position: "absolute",
+            top: 6,
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: 8,
+            height: 8,
+            borderRadius: "50%",
+            background: "#b8bcc6",
+            boxShadow: "inset 0 1px 2px rgba(0,0,0,0.3)",
+          }}
         />
-        <div className="rounded-xl bg-frame-screen p-[3px]">
-          <div className="flex h-7 items-center gap-1.5 rounded-t-md bg-frame-body px-3">
-            <span className="h-2.5 w-2.5 rounded-full bg-neutral-300" />
-            <span className="h-2.5 w-2.5 rounded-full bg-neutral-300" />
-            <span className="h-2.5 w-2.5 rounded-full bg-neutral-300" />
-            <div className="ml-3 flex h-5 flex-1 items-center justify-center rounded bg-white/70 px-3 text-caption font-medium text-neutral-500">
+
+        <div
+          style={{
+            width: "100%",
+            height: screenHeight,
+            background: "#fff",
+            borderRadius: 6,
+            overflow: "hidden",
+            boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.06)",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div
+            style={{
+              height: 32,
+              background: "#f5f6f8",
+              borderBottom: "1px solid #e8eaed",
+              display: "flex",
+              alignItems: "center",
+              padding: "0 12px",
+              gap: 8,
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ display: "flex", gap: 6 }}>
+              <span style={dotStyle("#ff5f57")} />
+              <span style={dotStyle("#febc2e")} />
+              <span style={dotStyle("#28c840")} />
+            </div>
+            <div
+              style={{
+                flex: 1,
+                height: 20,
+                background: "#eceef1",
+                borderRadius: 4,
+                marginLeft: 8,
+                display: "flex",
+                alignItems: "center",
+                paddingLeft: 8,
+                fontSize: 11,
+                fontFamily: "var(--font-ui)",
+                color: "#6c757d",
+              }}
+            >
               {url}
             </div>
           </div>
-          <div
-            className="relative overflow-hidden rounded-b-md bg-white"
-            style={{ aspectRatio: "16 / 10" }}
-          >
+          <div style={{ flex: 1, overflow: "hidden", position: "relative" }}>
             {children}
           </div>
         </div>
       </div>
-      <div className="relative -mt-px h-6 w-32 rounded-b-[14px] bg-gradient-to-b from-[#d8dbe2] to-frame-body" />
-      <div className="h-1.5 w-56 rounded-full bg-frame-bezel/70 shadow-[0_6px_16px_rgba(0,0,0,0.08)]" />
+
+      <div
+        aria-hidden
+        style={{
+          width: 44,
+          height: 28,
+          background: "linear-gradient(180deg, #d4d7de 0%, #c8cad2 100%)",
+          clipPath: "polygon(30% 0%, 70% 0%, 80% 100%, 20% 100%)",
+        }}
+      />
+
+      <div
+        aria-hidden
+        style={{
+          width: 220,
+          height: 10,
+          background: "linear-gradient(180deg, #d0d3da 0%, #c4c7ce 100%)",
+          borderRadius: 6,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+        }}
+      />
     </motion.div>
   );
+}
+
+function dotStyle(color: string): React.CSSProperties {
+  return {
+    width: 10,
+    height: 10,
+    borderRadius: "50%",
+    background: color,
+    display: "inline-block",
+  };
 }

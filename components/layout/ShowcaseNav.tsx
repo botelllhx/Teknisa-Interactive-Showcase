@@ -14,7 +14,9 @@ export function ShowcaseNav() {
   const goBack = useShowcase((s) => s.goBack);
   const goHome = useShowcase((s) => s.goHome);
 
-  if (view === "home") return null;
+  // HOME has its own hero; SOLUTION has its own slim header inside SolutionDemo.
+  // We only render the nav on the SEGMENT view.
+  if (view !== "segment") return null;
 
   const segment = activeSegment ? segmentsById[activeSegment] : null;
   const solution = activeSolution ? solutionsById[activeSolution] : null;

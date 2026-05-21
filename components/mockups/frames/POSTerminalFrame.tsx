@@ -2,79 +2,140 @@
 
 import { motion } from "framer-motion";
 import { type ReactNode } from "react";
-import { cn } from "@/lib/cn";
 
 interface POSTerminalFrameProps {
   children?: ReactNode;
-  className?: string;
-  showKeypad?: boolean;
+  height: number;
 }
 
-const KEYPAD = [
-  { label: "1" }, { label: "2" }, { label: "3" },
-  { label: "4" }, { label: "5" }, { label: "6" },
-  { label: "7" }, { label: "8" }, { label: "9" },
-  { label: "*" }, { label: "0" }, { label: "#" },
-];
+// The terminal is taller than its display screen because of the keypad below.
+// We allocate 60% of height to the screen (16:10 aspect) and 40% to the keypad.
+const SCREEN_RATIO = 0.55;
 
-export function POSTerminalFrame({
-  children,
-  className,
-  showKeypad = true,
-}: POSTerminalFrameProps) {
+const KEYPAD = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"];
+
+export function POSTerminalFrame({ children, height }: POSTerminalFrameProps) {
+  const screenHeight = height * SCREEN_RATIO;
+  const width = (screenHeight * 16) / 10 + 24; // 24px padding from the body
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-      className={cn("relative", className)}
+      style={{
+        width,
+        height,
+        background: "linear-gradient(180deg, #e8eaed 0%, #dde0e5 100%)",
+        borderRadius: 20,
+        padding: 12,
+        boxShadow:
+          "0 0 0 1px rgba(0,0,0,0.08), 0 32px 80px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+      }}
     >
-      <div className="rounded-2xl bg-gradient-to-b from-frame-body to-[#d8dbe2] p-3 shadow-[0_32px_80px_rgba(0,0,0,0.12),0_8px_24px_rgba(0,0,0,0.06)]">
-        <div className="rounded-xl bg-frame-screen p-[3px]">
-          <span aria-hidden className="mx-auto mb-0.5 block h-0.5 w-1.5 rounded-full bg-neutral-300" />
-          <div
-            className="relative overflow-hidden rounded-md bg-white"
-            style={{ aspectRatio: "16 / 10" }}
-          >
-            {children}
-          </div>
+      <div
+        style={{
+          background: "#d4d7de",
+          borderRadius: 12,
+          padding: 3,
+          flexShrink: 0,
+        }}
+      >
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: 8,
+            overflow: "hidden",
+            position: "relative",
+            height: screenHeight - 6,
+          }}
+        >
+          {children}
         </div>
+      </div>
 
-        {showKeypad && (
-          <div className="mt-3 rounded-xl bg-gradient-to-b from-[#e8ebef] to-frame-body p-2.5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]">
-            <div className="grid grid-cols-3 gap-1.5">
-              {KEYPAD.map((k) => (
-                <button
-                  key={k.label}
-                  type="button"
-                  tabIndex={-1}
-                  aria-hidden
-                  className="flex h-9 items-center justify-center rounded-lg bg-white font-display text-body-lg font-semibold text-neutral-700 shadow-[0_1px_0_rgba(255,255,255,0.8)_inset,0_1px_3px_rgba(0,0,0,0.06)]"
-                >
-                  {k.label}
-                </button>
-              ))}
-            </div>
-            <div className="mt-1.5 grid grid-cols-2 gap-1.5">
-              <button
-                type="button"
-                tabIndex={-1}
-                aria-hidden
-                className="flex h-8 items-center justify-center rounded-lg bg-danger/80 font-display text-label-sm font-bold text-white shadow-[0_1px_3px_rgba(0,0,0,0.10)]"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                tabIndex={-1}
-                aria-hidden
-                className="flex h-8 items-center justify-center rounded-lg bg-success/85 font-display text-label-sm font-bold text-white shadow-[0_1px_3px_rgba(0,0,0,0.10)]"
-              >
-                Confirmar
-              </button>
-            </div>
-          </div>
-        )}
+      <div
+        style={{
+          flex: 1,
+          background:
+            "linear-gradient(180deg, #e8ebef 0%, #dde0e5 100%)",
+          borderRadius: 12,
+          padding: 8,
+          boxShadow: "inset 0 1px 2px rgba(0,0,0,0.04)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 6,
+        }}
+      >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 6,
+            flex: 1,
+          }}
+        >
+          {KEYPAD.map((label) => (
+            <button
+              key={label}
+              type="button"
+              tabIndex={-1}
+              aria-hidden
+              style={{
+                background: "#fff",
+                borderRadius: 8,
+                border: "none",
+                fontFamily: "var(--font-display)",
+                fontSize: 16,
+                fontWeight: 600,
+                color: "#495057",
+                boxShadow:
+                  "0 1px 0 rgba(255,255,255,0.8) inset, 0 1px 3px rgba(0,0,0,0.08)",
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden
+            style={{
+              background: "#dc2626",
+              borderRadius: 8,
+              border: "none",
+              color: "white",
+              fontFamily: "var(--font-display)",
+              fontSize: 11,
+              fontWeight: 700,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
+            }}
+          >
+            CANCELAR
+          </button>
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden
+            style={{
+              background: "#16a34a",
+              borderRadius: 8,
+              border: "none",
+              color: "white",
+              fontFamily: "var(--font-display)",
+              fontSize: 11,
+              fontWeight: 700,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
+            }}
+          >
+            CONFIRMAR
+          </button>
+        </div>
       </div>
     </motion.div>
   );

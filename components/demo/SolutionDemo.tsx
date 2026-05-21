@@ -1,12 +1,17 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
 import { useState } from "react";
+import { ArrowLeft, ChevronRight, Home } from "lucide-react";
 import { solutionsById } from "@/data/solutions";
 import { useFlowController } from "@/hooks/useFlowController";
 import { useTour } from "@/hooks/useTour";
+import { useMeasure } from "@/hooks/useMeasure";
 import { useShowcase } from "@/lib/store";
+import { segmentsById } from "@/data/solutions";
 import { SolutionFrame } from "@/components/mockups/frames";
+import { SegmentIcon } from "@/components/ui/SegmentIcon";
 import { TourOverlay } from "@/components/ui/TourOverlay";
 import {
   NotificationStack,
@@ -25,10 +30,14 @@ interface SolutionDemoProps {
 
 export function SolutionDemo({ solutionId }: SolutionDemoProps) {
   const solution = solutionsById[solutionId];
+  const segment = solution ? segmentsById[solution.segment] : null;
   const { steps } = useFlowController(solutionId);
   const goBack = useShowcase((s) => s.goBack);
+  const goHome = useShowcase((s) => s.goHome);
+
   const [completionVisible, setCompletionVisible] = useState(false);
   const [loadingKey, setLoadingKey] = useState(0);
+  const [frameRef, frameSize] = useMeasure<HTMLDivElement>();
 
   const tour = useTour({
     steps,
@@ -41,8 +50,6 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
   const visualCompanions: CompanionType[] = (currentStepData?.companions ?? []).filter(
     (c) => c !== "SimulatedNotification",
   );
-
-  const isMobileFrame = solution?.device === "mobile" || solution?.device === "kiosk";
   const hasCompanions = visualCompanions.length > 0;
 
   if (!solution) return null;
@@ -50,29 +57,74 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
   const Mockup = getMockup(solutionId);
 
   return (
-    <div className="relative h-[calc(100vh-56px)] w-full overflow-hidden bg-surface-raised">
-      <div
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-surface-raised">
+      {/* Slim header — 56px */}
+      <header className="z-30 flex h-14 flex-shrink-0 items-center justify-between border-b border-brand/5 bg-white/95 px-6 backdrop-blur">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={goBack}
+            aria-label="Voltar"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-white shadow-brand transition-colors hover:bg-brand-light"
+          >
+            <ArrowLeft size={18} strokeWidth={2.25} />
+          </button>
+          <button
+            type="button"
+            onClick={goHome}
+            aria-label="Voltar para início"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-brand/10 bg-white text-neutral-700 transition-colors hover:bg-brand-ghost"
+          >
+            <Home size={18} strokeWidth={2} />
+          </button>
+          <Image
+            src="/teknisa-logo.svg"
+            alt="Teknisa"
+            width={108}
+            height={20}
+            className="ml-1 select-none"
+            priority
+          />
+          {segment && (
+            <div className="ml-3 flex items-center gap-2 text-label-sm font-medium text-neutral-500">
+              <ChevronRight size={14} strokeWidth={2.25} className="text-neutral-300" />
+              <span className="flex items-center gap-1.5">
+                <SegmentIcon name={segment.icon} size={14} />
+                {segment.label}
+              </span>
+              <ChevronRight size={14} strokeWidth={2.25} className="text-neutral-300" />
+              <span className="font-semibold text-brand">{solution.name}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col items-end leading-tight">
+          <span className="font-display text-[15px] font-semibold text-neutral-900">
+            {solution.name}
+          </span>
+          <span className="font-ui text-caption text-neutral-500">
+            {solution.tagline}
+          </span>
+        </div>
+      </header>
+
+      {/* Main: fills 100% of remaining height */}
+      <main
         className={cn(
-          "grid h-full w-full gap-5 px-6 py-4",
-          hasCompanions
-            ? isMobileFrame
-              ? "grid-rows-[1fr_auto]"
-              : "grid-cols-[1fr_280px]"
-            : "grid-cols-1",
+          "grid min-h-0 flex-1 gap-4 p-4",
+          hasCompanions ? "grid-cols-[1fr_280px]" : "grid-cols-1",
         )}
       >
-        <div className="flex h-full w-full items-center justify-center">
-          <div
-            className={cn(
-              "flex h-full max-h-full items-center justify-center",
-              solution.device === "desktop" && "w-full max-w-[88%]",
-              solution.device === "tablet" && "h-full max-h-[88%]",
-              solution.device === "pos-terminal" && "w-full max-w-[58%]",
-              solution.device === "mobile" && "h-full max-h-[92%]",
-              solution.device === "kiosk" && "h-full max-h-[94%]",
-            )}
-          >
-            <SolutionFrame device={solution.device} className="h-full">
+        <div
+          ref={frameRef}
+          className="relative flex h-full min-h-0 items-center justify-center"
+        >
+          {frameSize.height > 0 && (
+            <SolutionFrame
+              device={solution.device}
+              containerWidth={frameSize.width}
+              containerHeight={frameSize.height}
+            >
               <div className="relative h-full w-full">
                 <LoadingBar key={loadingKey} visible duration={500} />
                 {Mockup ? (
@@ -84,16 +136,11 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
                 )}
               </div>
             </SolutionFrame>
-          </div>
+          )}
         </div>
 
         {hasCompanions && (
-          <aside
-            className={cn(
-              "flex gap-4",
-              isMobileFrame ? "flex-row items-end justify-center" : "flex-col items-stretch",
-            )}
-          >
+          <aside className="flex h-full min-h-0 flex-col items-stretch gap-3 overflow-y-auto">
             <AnimatePresence mode="popLayout">
               {visualCompanions.map((c) => (
                 <motion.div
@@ -110,7 +157,7 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
             </AnimatePresence>
           </aside>
         )}
-      </div>
+      </main>
 
       <NotificationStack>
         {wantsNotification && (

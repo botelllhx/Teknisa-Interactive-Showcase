@@ -1,24 +1,24 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import {
-  ShoppingCart,
-  Search,
+  Home,
+  BookOpen,
+  ShoppingBag,
+  User,
+  MoreVertical,
+  ChevronLeft,
+  ChevronRight,
+  Minus,
   Plus,
+  Trash2,
+  Edit3,
   CheckCircle2,
   ChefHat,
-  Utensils,
-  Sandwich,
-  Salad,
-  Coffee,
-  IceCream,
-  Bell,
   Clock,
-  Flame,
-  Leaf,
-  Heart,
-  Star,
-  ChevronRight,
+  Bell,
+  Utensils,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
@@ -26,276 +26,299 @@ interface CardapioDigitalProps {
   step: number;
 }
 
-const CATEGORIES = [
-  { Icon: Utensils, label: "Pratos", count: 18 },
-  { Icon: Sandwich, label: "Lanches", count: 12 },
-  { Icon: Salad, label: "Saladas", count: 9 },
-  { Icon: Coffee, label: "Bebidas", count: 24 },
-  { Icon: IceCream, label: "Doces", count: 8 },
-];
-
-const FEATURED_DISHES = [
-  {
-    name: "Penne ao molho funghi",
-    desc: "Massa fresca, funghi porcini, parmesão e azeite trufado",
-    price: 42.0,
-    time: "18 min",
-    rating: 4.8,
-    badge: "Mais pedido",
-  },
-  {
-    name: "Salmão grelhado com purê",
-    desc: "Salmão da Noruega, purê de batata baroa, vegetais salteados",
-    price: 58.9,
-    time: "22 min",
-    rating: 4.9,
-  },
-];
-
 export function CardapioDigitalMockup({ step }: CardapioDigitalProps) {
   return (
-    <div className="flex h-full w-full flex-col bg-surface-raised text-neutral-800">
-      <Header step={step} />
-      <main className="flex flex-1 flex-col overflow-hidden">
-        {step === 0 && <CategoriesView />}
-        {step === 1 && <DishDetailView />}
-        {step === 2 && <CartView />}
-        {step === 3 && <ConfirmView />}
-        {step >= 4 && <KitchenStatusView />}
+    <div className="flex h-full w-full flex-col bg-white text-neutral-800">
+      <StatusBar />
+      <TopBar />
+      <main className="flex-1 overflow-hidden">
+        <AnimatePresence mode="wait">
+          {step === 0 && <HomeView key="home" />}
+          {step === 1 && <DetailView key="detail" />}
+          {step === 2 && <CartView key="cart" />}
+          {step === 3 && <ConfirmView key="confirm" />}
+          {step >= 4 && <KitchenStatusView key="kitchen" />}
+        </AnimatePresence>
       </main>
+      <BottomNav step={step} />
     </div>
   );
 }
 
-function Header({ step }: { step: number }) {
-  const cartCount = step >= 2 ? 1 : 0;
+function StatusBar() {
   return (
-    <header className="flex items-center justify-between bg-white px-5 py-3 shadow-card">
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand text-white shadow-brand">
-          <ChefHat size={20} strokeWidth={1.75} />
-        </div>
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-wider text-brand">
-            Mesa 12 · Atendimento
-          </p>
-          <p className="font-display text-[15px] font-bold text-neutral-900">
-            Boa noite, Sr. Carlos
-          </p>
-        </div>
+    <div className="flex items-center justify-between px-5 pt-1 pb-0.5">
+      <span className="font-display text-[12px] font-bold text-neutral-900 tabular-nums">
+        09:41
+      </span>
+      <div className="flex items-center gap-1 text-neutral-700">
+        <span className="text-[10px] font-bold tracking-wide">5G</span>
+        <span className="text-[10px] tabular-nums">94%</span>
       </div>
-
-      <button
-        type="button"
-        className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-brand-subtle text-brand"
-      >
-        <ShoppingCart size={18} strokeWidth={2} />
-        {cartCount > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-brand font-display text-[10px] font-bold text-white shadow-brand">
-            {cartCount}
-          </span>
-        )}
-      </button>
-    </header>
+    </div>
   );
 }
 
-function CategoriesView() {
+function TopBar() {
   return (
-    <div className="flex flex-1 flex-col px-5 py-4">
-      <div className="flex items-center gap-2 rounded-xl bg-white px-3 py-2.5 shadow-card">
-        <Search size={14} strokeWidth={2} className="text-neutral-400" />
-        <span className="text-[12px] text-neutral-400">
-          Buscar prato, ingrediente ou bebida…
+    <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-2">
+      <Image
+        src="/logo-teknisa.svg"
+        alt="Teknisa"
+        width={42}
+        height={8}
+        className="select-none"
+      />
+      <div className="flex items-center gap-1.5">
+        <span className="font-display text-[11px] font-bold italic text-neutral-800">
+          MUNDO
+        </span>
+        <span className="font-display text-[11px] font-bold tracking-wider text-neutral-900">
+          ANIMAL
+        </span>
+      </div>
+      <button className="text-neutral-400">
+        <MoreVertical size={14} strokeWidth={2.25} />
+      </button>
+    </div>
+  );
+}
+
+function HomeView() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex h-full flex-col overflow-y-auto"
+    >
+      {/* Restaurant banner */}
+      <div className="relative h-28 w-full overflow-hidden">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(135deg, #4a3a2a 0%, #6b5237 40%, #8a6b48 100%)",
+          }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <p className="font-display text-[18px] font-bold uppercase tracking-[3px] text-white drop-shadow">
+              Mundo
+            </p>
+            <p className="font-display text-[10px] font-bold tracking-widest text-white/80">
+              ANIMAL
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Restaurant info */}
+      <div className="px-4 pt-3">
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="font-display text-[18px] font-bold text-brand">
+              Mundo Animal
+            </h1>
+            <p className="text-[11px] font-medium text-brand underline">
+              Ver mais detalhes
+            </p>
+          </div>
+          <span className="rounded-md bg-neutral-100 px-2.5 py-1 font-display text-[11px] font-semibold text-neutral-700">
+            Mesa 10
+          </span>
+        </div>
+        <span className="mt-2 inline-block rounded-md bg-success/15 px-2 py-0.5 text-[10px] font-bold text-success">
+          Aberto · 14:00 às 17:00
         </span>
       </div>
 
-      <p className="mt-4 text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-        Categorias
-      </p>
-      <div data-tour="cd-categories" className="mt-2 grid grid-cols-5 gap-2">
-        {CATEGORIES.map(({ Icon, label, count }, i) => (
-          <motion.button
-            key={label}
-            initial={{ y: 6, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.04 * i, duration: 0.3 }}
-            className={cn(
-              "flex flex-col items-center gap-1.5 rounded-xl py-3 transition-shadow",
-              i === 0
-                ? "bg-brand text-white shadow-brand"
-                : "border border-brand/10 bg-white text-neutral-700",
-            )}
-          >
-            <Icon size={20} strokeWidth={1.75} />
-            <div className="text-center">
-              <p className="font-display text-[11px] font-bold">{label}</p>
-              <p
+      {/* Cardápio big card */}
+      <div className="mx-4 mt-3" data-tour="cd-categories">
+        <motion.button
+          whileTap={{ scale: 0.98 }}
+          className="flex w-full items-center gap-3 rounded-xl border-2 border-brand/15 bg-[#eef0f7] p-4"
+        >
+          <div className="flex h-12 w-12 flex-none items-center justify-center rounded-lg bg-white">
+            <BookOpen size={24} strokeWidth={1.75} className="text-brand/40" />
+          </div>
+          <div className="text-left">
+            <p className="text-[10px] font-medium text-neutral-600">
+              Veja todas as opções no
+            </p>
+            <p className="font-display text-[16px] font-bold text-brand">
+              CARDÁPIO
+            </p>
+          </div>
+        </motion.button>
+      </div>
+
+      {/* Promoções */}
+      <div className="mt-4 flex-1 px-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-[14px] font-bold text-brand">
+            Promoções
+          </h2>
+          <button className="flex items-center gap-0.5 text-[11px] font-medium text-brand">
+            Ver todos
+            <ChevronRight size={12} strokeWidth={2.25} />
+          </button>
+        </div>
+
+        <div className="mt-2 space-y-2.5">
+          {[
+            {
+              name: "Combo Frango Simples",
+              old: 30,
+              now: 20,
+              gradient: "from-yellow-300 via-orange-400 to-red-500",
+            },
+            {
+              name: "Sonho de Morango com Creme",
+              old: 18,
+              now: 12,
+              gradient: "from-pink-200 via-pink-300 to-red-300",
+            },
+          ].map((p) => (
+            <div
+              key={p.name}
+              className="flex items-center gap-3 border-b border-neutral-100 py-2"
+            >
+              <div
                 className={cn(
-                  "text-[9px]",
-                  i === 0 ? "opacity-80" : "text-neutral-400",
+                  "h-14 w-14 flex-none rounded-lg bg-gradient-to-br",
+                  p.gradient,
                 )}
-              >
-                {count} itens
-              </p>
-            </div>
-          </motion.button>
-        ))}
-      </div>
-
-      <p className="mt-4 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-        Em destaque hoje
-        <span className="rounded-full bg-warning/15 px-2 py-0.5 text-[9px] text-warning">
-          Chef recomenda
-        </span>
-      </p>
-
-      <div className="mt-2 space-y-2.5">
-        {FEATURED_DISHES.map((dish, i) => (
-          <motion.div
-            key={dish.name}
-            initial={{ x: 6, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.08 + 0.06 * i, duration: 0.3 }}
-            className="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-card"
-          >
-            <div className="flex h-16 w-16 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-warning/20 via-warning/5 to-white text-warning">
-              <Utensils size={28} strokeWidth={1.5} />
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="font-display text-[13px] font-bold text-neutral-900">
-                    {dish.name}
-                  </p>
-                  <p className="mt-0.5 line-clamp-1 text-[10px] text-neutral-500">
-                    {dish.desc}
-                  </p>
-                </div>
-                {dish.badge && (
-                  <span className="rounded-full bg-warning/15 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-warning">
-                    {dish.badge}
+              />
+              <div className="flex-1">
+                <p className="font-display text-[13px] font-bold text-neutral-900">
+                  {p.name}
+                </p>
+                <p className="text-[11px] text-neutral-500">
+                  De{" "}
+                  <span className="line-through">
+                    R$ {p.old},00
+                  </span>{" "}
+                  por{" "}
+                  <span className="font-bold text-success">
+                    R$ {p.now.toFixed(2).replace(".", ",")}
                   </span>
-                )}
-              </div>
-              <div className="mt-2 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-[10px] text-neutral-500">
-                  <span className="flex items-center gap-1">
-                    <Clock size={10} strokeWidth={2} />
-                    {dish.time}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Star size={10} strokeWidth={2} className="fill-warning text-warning" />
-                    {dish.rating}
-                  </span>
-                </div>
-                <p className="font-display text-[14px] font-bold text-brand">
-                  R$ {dish.price.toFixed(2).replace(".", ",")}
                 </p>
               </div>
             </div>
-          </motion.div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-function DishDetailView() {
+function DetailView() {
   return (
     <motion.div
       data-tour="cd-detail"
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-1 flex-col px-5 py-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex h-full flex-col"
     >
-      <div className="flex h-32 w-full items-center justify-center rounded-2xl bg-gradient-to-br from-warning/30 via-warning/10 to-brand-ghost shadow-card">
-        <Utensils size={56} strokeWidth={1.25} className="text-warning/80" />
-      </div>
-
-      <div className="mt-4">
-        <div className="flex items-start justify-between gap-3">
-          <h2 className="font-display text-[20px] font-bold leading-tight text-neutral-900">
-            Penne ao molho funghi
-          </h2>
-          <button
-            type="button"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-brand shadow-card"
-          >
-            <Heart size={14} strokeWidth={2} />
-          </button>
-        </div>
-        <p className="mt-1 text-[12px] leading-relaxed text-neutral-600">
-          Massa fresca com molho de funghi porcini, parmesão envelhecido 24 meses
-          e finalização com azeite trufado.
-        </p>
-
-        <div className="mt-3 flex items-center gap-4 text-[10px] text-neutral-500">
-          <span className="flex items-center gap-1">
-            <Clock size={11} strokeWidth={2} className="text-brand" />
-            18 min
-          </span>
-          <span className="flex items-center gap-1">
-            <Flame size={11} strokeWidth={2} className="text-warning" />
-            580 kcal
-          </span>
-          <span className="flex items-center gap-1">
-            <Leaf size={11} strokeWidth={2} className="text-success" />
-            Vegetariano
-          </span>
-          <span className="flex items-center gap-1">
-            <Star size={11} strokeWidth={2} className="fill-warning text-warning" />
-            4.8 · 247 avaliações
-          </span>
+      {/* Back + title */}
+      <div className="flex items-start gap-2 px-4 pt-2">
+        <button className="text-brand">
+          <ChevronLeft size={20} strokeWidth={2.5} />
+        </button>
+        <div>
+          <h1 className="font-display text-[20px] font-bold text-brand">
+            Pizza Marguerita P
+          </h1>
+          <p className="font-display text-[12px] font-bold text-brand">
+            R$ 19,90
+          </p>
         </div>
       </div>
 
-      <p className="mt-4 text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-        Personalize
+      {/* Photo */}
+      <div className="mx-4 mt-3 flex h-32 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-amber-200 via-red-300 to-red-500">
+        <Utensils size={56} strokeWidth={1} className="text-white/40" />
+      </div>
+
+      {/* Description */}
+      <p className="mt-3 px-4 text-[12px] leading-relaxed text-neutral-600">
+        Uma combinação clássica e irresistível: molho de tomate, muçarela
+        derretida, rodelas de tomate fresco, toque de manjericão e um fio de
+        azeite para finalizar.
       </p>
-      <div className="mt-2 space-y-1.5">
-        {[
-          { label: "Parmesão extra", price: 4.0, selected: true },
-          { label: "Trufa adicional", price: 8.5, selected: false },
-          { label: "Sem cebola", price: 0, selected: false },
-          { label: "Sem alho", price: 0, selected: false },
-        ].map((add) => (
-          <button
-            key={add.label}
-            type="button"
-            className={cn(
-              "flex w-full items-center justify-between rounded-xl border px-3 py-2 text-[12px]",
-              add.selected
-                ? "border-brand bg-brand-ghost text-brand"
-                : "border-brand/10 bg-white text-neutral-700",
-            )}
-          >
-            <span className="flex items-center gap-2 font-semibold">
-              {add.selected ? (
-                <CheckCircle2 size={14} strokeWidth={2.5} />
-              ) : (
-                <Plus size={14} strokeWidth={2} />
-              )}
-              {add.label}
-            </span>
-            <span className="font-display font-bold">
-              {add.price > 0
-                ? `+ R$ ${add.price.toFixed(2).replace(".", ",")}`
-                : "Grátis"}
-            </span>
-          </button>
-        ))}
+
+      {/* Acréscimo section */}
+      <div className="mt-3 bg-[#eef0f7] px-4 py-2">
+        <p className="font-display text-[13px] font-bold text-brand">
+          Escolha o acréscimo
+        </p>
+        <p className="text-[10px] text-neutral-500">0 / 3</p>
       </div>
 
-      <button
-        type="button"
-        className="mt-auto flex w-full items-center justify-between rounded-2xl bg-brand p-3.5 text-white shadow-brand"
-      >
-        <span className="font-display text-[14px] font-bold">Adicionar</span>
-        <span className="font-display text-[16px] font-bold tabular-nums">
-          R$ 46,00
-        </span>
-      </button>
+      <div className="flex-1 overflow-y-auto px-4 py-2">
+        <div className="space-y-2">
+          {[
+            { label: "Bacon", price: 3.5, selected: true },
+            { label: "Queijo", price: 3.0 },
+            { label: "Calabresa Extra", price: 5.5 },
+          ].map((add) => (
+            <div
+              key={add.label}
+              className="flex items-center justify-between border-b border-neutral-100 py-2"
+            >
+              <div>
+                <p className="font-display text-[12px] font-bold text-neutral-900">
+                  {add.label}
+                </p>
+                <p className="font-display text-[12px] font-bold text-neutral-900">
+                  R$ {add.price.toFixed(2).replace(".", ",")}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button className="flex h-8 w-8 items-center justify-center rounded-md bg-neutral-100 text-neutral-500">
+                  <Minus size={12} strokeWidth={2.25} />
+                </button>
+                <span className="w-4 text-center font-display text-[14px] font-bold text-neutral-700">
+                  {add.selected ? 1 : 0}
+                </span>
+                <button className="flex h-8 w-8 items-center justify-center rounded-md bg-[#dee3f2] text-brand">
+                  <Plus size={12} strokeWidth={2.5} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom CTA */}
+      <div className="flex items-center gap-2 border-t border-neutral-100 px-3 py-2.5">
+        <div className="flex items-center gap-1.5">
+          <button className="text-neutral-400">
+            <Trash2 size={14} strokeWidth={2} />
+          </button>
+          <span className="w-4 text-center font-display text-[12px] font-bold text-neutral-900">
+            1
+          </span>
+          <button className="flex h-7 w-7 items-center justify-center rounded-md bg-[#dee3f2] text-brand">
+            <Plus size={12} strokeWidth={2.5} />
+          </button>
+        </div>
+        <button
+          type="button"
+          className="flex flex-1 items-center justify-between rounded-md bg-brand px-3 py-2 text-white shadow-brand"
+        >
+          <span className="font-display text-[11px] font-bold">
+            Adicionar aos pedidos
+          </span>
+          <span className="font-display text-[12px] font-bold tabular-nums">
+            R$ 50,00
+          </span>
+        </button>
+      </div>
     </motion.div>
   );
 }
@@ -304,73 +327,110 @@ function CartView() {
   return (
     <motion.div
       data-tour="cd-cart"
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-1 flex-col px-5 py-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex h-full flex-col overflow-y-auto"
     >
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-wider text-brand">
-          Seu pedido · Mesa 12
-        </p>
-        <h2 className="font-display text-[18px] font-bold text-neutral-900">
-          1 item no carrinho
+      <h1 className="px-4 pt-2 font-display text-[20px] font-bold text-brand">
+        Pedidos
+      </h1>
+
+      {/* Restaurant banner small */}
+      <div className="mx-4 mt-2 h-20 overflow-hidden rounded-xl bg-gradient-to-r from-amber-700 via-orange-700 to-red-700" />
+
+      <div className="mt-3 flex items-center justify-between px-4">
+        <h2 className="font-display text-[14px] font-bold text-brand">
+          Mundo Animal
         </h2>
+        <span className="rounded-md bg-neutral-100 px-2 py-0.5 text-[10px] font-bold text-neutral-700">
+          Mesa 10
+        </span>
       </div>
 
-      <div className="mt-3 flex-1 space-y-2.5">
-        <div className="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-card">
-          <div className="flex h-14 w-14 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-warning/20 to-white text-warning">
-            <Utensils size={22} strokeWidth={1.5} />
-          </div>
-          <div className="flex-1">
-            <p className="font-display text-[13px] font-bold text-neutral-900">
-              Penne ao molho funghi
-            </p>
-            <p className="text-[10px] text-neutral-500">
-              + Parmesão extra
-            </p>
-            <div className="mt-1 flex items-center gap-1 rounded-md bg-surface-raised px-2 py-0.5 w-fit text-[10px] font-bold text-neutral-700">
-              <button>−</button>
-              <span className="px-1.5 tabular-nums">1x</span>
-              <button className="text-brand">+</button>
+      <div className="mt-2 flex-1 space-y-2 px-4 py-2">
+        {[
+          {
+            name: "Pizza Marguerita P",
+            price: 19.9,
+            qty: 1,
+            color: "from-amber-300 via-red-400 to-red-500",
+          },
+          {
+            name: "Coca Cola Zero LT 350ml",
+            price: 7.0,
+            qty: 1,
+            color: "from-red-500 via-red-600 to-red-800",
+          },
+          {
+            name: "Combo Frango Simples",
+            price: 20.0,
+            qty: 1,
+            color: "from-yellow-300 via-orange-400 to-red-500",
+          },
+        ].map((item) => (
+          <div key={item.name} className="border-b border-neutral-100 pb-2">
+            <div className="flex items-start gap-3">
+              <div
+                className={cn(
+                  "h-12 w-12 flex-none rounded-lg bg-gradient-to-br",
+                  item.color,
+                )}
+              />
+              <div className="flex-1">
+                <p className="font-display text-[12px] font-bold text-neutral-900">
+                  {item.name}
+                </p>
+                <div className="mt-1 flex items-center gap-2">
+                  <button className="flex items-center gap-1 rounded-md bg-[#eef0f7] px-2 py-0.5 text-[10px] font-medium text-neutral-700">
+                    <Edit3 size={9} strokeWidth={2.25} />
+                    Editar
+                  </button>
+                </div>
+              </div>
+              <div className="flex flex-col items-end gap-1">
+                <span className="font-display text-[13px] font-bold text-brand">
+                  R$ {item.price.toFixed(2).replace(".", ",")}
+                </span>
+                <div className="flex items-center gap-1">
+                  <button className="text-neutral-400">
+                    <Trash2 size={11} strokeWidth={2} />
+                  </button>
+                  <span className="w-4 text-center font-display text-[11px] font-bold">
+                    {item.qty}
+                  </span>
+                  <button className="flex h-5 w-5 items-center justify-center rounded bg-[#dee3f2] text-brand">
+                    <Plus size={9} strokeWidth={2.5} />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-          <p className="font-display text-[14px] font-bold text-neutral-900 tabular-nums">
-            R$ 46,00
-          </p>
-        </div>
-
-        <div className="rounded-2xl border-2 border-dashed border-brand/30 bg-brand-ghost/40 p-3 text-center">
-          <p className="text-[11px] font-medium text-brand">
-            <Plus size={11} className="mr-1 inline" strokeWidth={2.5} />
-            Adicionar bebida ou sobremesa?
-          </p>
-        </div>
+        ))}
       </div>
 
-      <div className="space-y-1.5 rounded-2xl bg-white p-4 shadow-card">
-        <div className="flex justify-between text-[12px] text-neutral-500">
-          <span>Subtotal</span>
-          <span className="tabular-nums">R$ 46,00</span>
-        </div>
-        <div className="flex justify-between text-[12px] text-neutral-500">
-          <span>Taxa de serviço (10%)</span>
-          <span className="tabular-nums">R$ 4,60</span>
-        </div>
-        <div className="mt-2 flex items-baseline justify-between border-t border-dashed border-neutral-200 pt-2">
-          <span className="font-display text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-            Total
+      {/* Total + CTAs */}
+      <div className="border-t border-neutral-100 bg-white px-4 py-3">
+        <div className="flex items-center justify-between">
+          <span className="font-display text-[14px] font-bold text-brand">
+            Total a pagar:
           </span>
-          <span className="font-display text-[22px] font-bold text-brand tabular-nums">
-            R$ 50,60
+          <span className="font-display text-[16px] font-bold text-brand tabular-nums">
+            R$ 100,00
           </span>
         </div>
         <button
           type="button"
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-brand py-3 font-display text-[13px] font-bold uppercase tracking-wider text-white shadow-brand"
+          className="mt-2 w-full rounded-md bg-brand py-2.5 text-center font-display text-[12px] font-bold text-white shadow-brand"
         >
-          Confirmar pedido
-          <ChevronRight size={14} strokeWidth={2.5} />
+          Chamar Garçom
+        </button>
+        <button
+          type="button"
+          className="mt-1.5 w-full rounded-md border-2 border-brand bg-white py-2 text-center font-display text-[11px] font-bold text-brand"
+        >
+          Fazer outro pedido
         </button>
       </div>
     </motion.div>
@@ -381,47 +441,32 @@ function ConfirmView() {
   return (
     <motion.div
       data-tour="cd-confirm"
-      initial={{ opacity: 0, scale: 0.94 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="flex flex-1 flex-col items-center justify-center px-6"
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+      className="flex h-full flex-col items-center justify-center px-6"
     >
       <motion.div
-        initial={{ scale: 0.4 }}
+        initial={{ scale: 0.5 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 240, damping: 14 }}
         className="relative flex h-24 w-24 items-center justify-center rounded-full bg-success/15 text-success"
       >
         <motion.span
           animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
           className="absolute inset-0 rounded-full bg-success/20"
         />
         <CheckCircle2 size={54} strokeWidth={2.25} />
       </motion.div>
-
-      <motion.h2
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.25, duration: 0.4 }}
-        className="mt-5 text-center font-display text-[22px] font-bold text-neutral-900"
-      >
+      <h2 className="mt-5 font-display text-[22px] font-bold text-brand">
         Pedido enviado!
-      </motion.h2>
-      <motion.p
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.35, duration: 0.4 }}
-        className="mt-1 text-center text-[12px] text-neutral-500"
-      >
+      </h2>
+      <p className="mt-1 text-center text-[12px] text-neutral-500">
         A cozinha já recebeu seu pedido
-      </motion.p>
-
-      <motion.div
-        initial={{ y: 14, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.45, duration: 0.5 }}
-        className="mt-6 rounded-2xl border-2 border-dashed border-success/30 bg-success/5 px-6 py-3 text-center"
-      >
+      </p>
+      <div className="mt-6 rounded-2xl border-2 border-dashed border-success/30 bg-success/5 px-6 py-3 text-center">
         <p className="text-[10px] font-bold uppercase tracking-wider text-success">
           Número do pedido
         </p>
@@ -429,22 +474,22 @@ function ConfirmView() {
           #C1247
         </p>
         <p className="mt-2 text-[11px] text-neutral-600">
-          Mesa 12 · R$ 50,60
+          Mesa 10 · Mundo Animal · R$ 100,00
         </p>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
 
 function KitchenStatusView() {
   return (
-    <div className="flex flex-1 flex-col px-5 py-4">
+    <div data-tour="cd-kitchen" className="flex h-full flex-col px-4 pt-2">
       <div className="mb-3 flex items-center justify-between">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-wider text-brand">
-            Pedido #C1247 · Mesa 12
+            Pedido #C1247 · Mesa 10
           </p>
-          <h2 className="font-display text-[16px] font-bold text-neutral-900">
+          <h2 className="font-display text-[15px] font-bold text-brand">
             Acompanhe seu pedido
           </h2>
         </div>
@@ -453,13 +498,13 @@ function KitchenStatusView() {
         </span>
       </div>
 
-      <div data-tour="cd-kitchen" className="flex-1 rounded-2xl bg-white p-4 shadow-card">
+      <div className="rounded-2xl border-2 border-brand/10 bg-[#eef0f7] p-4">
         <div className="relative">
           <span
             aria-hidden
-            className="absolute left-[19px] top-2 bottom-2 w-px border-l-2 border-dashed border-neutral-200"
+            className="absolute left-[19px] top-2 bottom-2 w-px border-l-2 border-dashed border-brand/20"
           />
-          <div className="space-y-4">
+          <div className="space-y-3">
             {[
               {
                 Icon: CheckCircle2,
@@ -474,13 +519,8 @@ function KitchenStatusView() {
                 active: true,
               },
               {
-                Icon: Utensils,
-                label: "Pronto para entrega",
-                time: "Aguardando",
-              },
-              {
                 Icon: Bell,
-                label: "Entregue na mesa",
+                label: "Pronto na mesa",
                 time: "Aguardando",
               },
             ].map((item, i) => (
@@ -488,9 +528,9 @@ function KitchenStatusView() {
                 <span
                   className={cn(
                     "relative z-10 flex h-10 w-10 flex-none items-center justify-center rounded-full",
-                    item.done && "bg-success text-white shadow-brand",
+                    item.done && "bg-success text-white",
                     item.active && "bg-brand text-white shadow-brand",
-                    !item.done && !item.active && "bg-neutral-100 text-neutral-400",
+                    !item.done && !item.active && "bg-white text-neutral-400",
                   )}
                 >
                   <item.Icon size={18} strokeWidth={2} />
@@ -526,5 +566,33 @@ function KitchenStatusView() {
         </span>
       </div>
     </div>
+  );
+}
+
+function BottomNav({ step }: { step: number }) {
+  const items = [
+    { Icon: Home, label: "Início", active: step === 0 },
+    { Icon: BookOpen, label: "Cardápio", active: step === 1 },
+    { Icon: ShoppingBag, label: "Pedidos", active: step >= 2 },
+    { Icon: User, label: "Conta", active: false },
+  ];
+  return (
+    <nav className="flex items-center justify-around border-t border-neutral-100 bg-white py-1.5">
+      {items.map((item) => (
+        <button
+          key={item.label}
+          type="button"
+          className={cn(
+            "flex flex-col items-center gap-0.5",
+            item.active ? "text-brand" : "text-neutral-400",
+          )}
+        >
+          <item.Icon size={18} strokeWidth={2} />
+          <span className="font-display text-[9px] font-semibold">
+            {item.label}
+          </span>
+        </button>
+      ))}
+    </nav>
   );
 }

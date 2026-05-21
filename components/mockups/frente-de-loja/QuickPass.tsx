@@ -1,458 +1,501 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import {
-  Fingerprint,
+  ChevronLeft,
+  X,
+  Edit3,
+  Trash2,
+  Plus,
   QrCode,
-  Wallet,
-  Utensils,
-  MapPin,
+  Lock,
+  ChevronLeft as Back,
+  ChevronRight as Fwd,
+  Share,
+  BookOpen as Library,
+  Copy,
+  ExternalLink,
+  MoreVertical,
   CheckCircle2,
-  Coffee,
-  Sun,
-  ArrowRight,
-  Signal,
-  Wifi,
-  Battery,
-  TrendingDown,
-  Clock,
-  Sparkles,
+  Type as Aa,
 } from "lucide-react";
-import { cn } from "@/lib/cn";
 
 interface QuickPassProps {
   step: number;
 }
 
+// QuickPass is a mobile WEB APP (runs inside Safari). We frame each screen
+// with the iOS status bar + Safari URL bar at the bottom per the references.
+
 export function QuickPassMockup({ step }: QuickPassProps) {
   return (
     <div className="flex h-full w-full flex-col bg-white text-neutral-800">
       <StatusBar />
-      {step === 0 && <LoginView />}
-      {step === 1 && <BalanceView />}
-      {step === 2 && <RestaurantPickerView />}
-      {step === 3 && <AccessGrantedView />}
-      {step >= 4 && <BalanceUpdatedView />}
+      <main className="flex-1 overflow-hidden">
+        <AnimatePresence mode="wait">
+          {step === 0 && <QrScannerView key="scan" />}
+          {step === 1 && <ScannedItemView key="scanned" />}
+          {step === 2 && <CartView key="cart" />}
+          {step === 3 && <PixPaymentView key="pix" />}
+          {step >= 4 && <CompraConcluidaView key="done" />}
+        </AnimatePresence>
+      </main>
+      <SafariBottomBar />
     </div>
   );
 }
 
 function StatusBar() {
   return (
-    <div className="flex items-center justify-between px-5 py-1.5">
-      <span className="font-display text-[11px] font-bold text-neutral-900 tabular-nums">
-        11:42
+    <div className="flex items-center justify-between px-5 pt-1.5 pb-1">
+      <span className="font-display text-[12px] font-bold text-neutral-900 tabular-nums">
+        09:41
       </span>
       <div className="flex items-center gap-1 text-neutral-700">
-        <Signal size={11} strokeWidth={2.25} />
-        <Wifi size={11} strokeWidth={2.25} />
-        <span className="text-[10px] font-bold tabular-nums">94%</span>
-        <Battery size={13} strokeWidth={2} />
+        <span className="text-[10px] font-bold tracking-wide">5G</span>
+        <span className="text-[10px] tabular-nums">94%</span>
       </div>
     </div>
   );
 }
 
-function LoginView() {
+function AppHeader({ withMenu = true }: { withMenu?: boolean }) {
   return (
-    <div data-tour="qp-login" className="flex flex-1 flex-col items-center justify-center px-6">
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand text-white shadow-brand"
-      >
-        <Sparkles size={22} strokeWidth={2} />
-      </motion.div>
-
-      <motion.h1
-        initial={{ y: 8, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.15 }}
-        className="mt-4 font-display text-[22px] font-bold text-neutral-900"
-      >
-        QuickPass
-      </motion.h1>
-      <motion.p
-        initial={{ y: 8, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.25 }}
-        className="mt-1 text-[12px] text-neutral-500"
-      >
-        Acesso ao refeitório · Teknisa
-      </motion.p>
-
-      <motion.div
-        initial={{ scale: 0.92, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.35, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        className="mt-8 flex h-44 w-44 items-center justify-center rounded-3xl border-4 border-brand/10 bg-gradient-to-br from-brand-ghost via-white to-brand-subtle shadow-card"
-      >
-        <QrCode size={130} strokeWidth={1} className="text-brand" />
-      </motion.div>
-
-      <p className="mt-5 text-center text-[12px] font-bold text-neutral-900">
-        Aproxime o QR Code do leitor
-      </p>
-      <p className="mt-1 text-center text-[10px] text-neutral-500">
-        Você também pode usar biometria
-      </p>
-
-      <div className="my-5 flex w-full items-center gap-3 px-2">
-        <span className="h-px flex-1 bg-neutral-200" />
-        <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-400">
-          ou
+    <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-2">
+      <Image
+        src="/logo-teknisa.svg"
+        alt="Teknisa"
+        width={42}
+        height={8}
+        className="select-none"
+      />
+      <div className="flex items-center gap-1.5">
+        <span className="font-display text-[11px] font-bold italic text-neutral-800">
+          HELL&apos;S
         </span>
-        <span className="h-px flex-1 bg-neutral-200" />
+        <span className="font-display text-[11px] font-bold tracking-wider text-neutral-900">
+          BURGERS
+        </span>
       </div>
-
-      <motion.button
-        whileTap={{ scale: 0.97 }}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand py-3.5 font-display text-[13px] font-bold text-white shadow-brand"
-      >
-        <Fingerprint size={16} strokeWidth={2} />
-        Usar biometria
-      </motion.button>
+      {withMenu ? (
+        <button className="text-neutral-400">
+          <MoreVertical size={14} strokeWidth={2.25} />
+        </button>
+      ) : (
+        <span className="w-3.5" />
+      )}
     </div>
   );
 }
 
-function BalanceView() {
+function QrScannerView() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-1 flex-col px-5 py-3"
+      data-tour="qp-login"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex h-full flex-col"
     >
-      <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-brand font-display text-[14px] font-bold text-white shadow-brand">
-          MC
-        </div>
-        <div>
-          <p className="text-[10px] text-neutral-500">Bem-vinda</p>
-          <p className="font-display text-[15px] font-bold text-neutral-900">
-            Mariana Costa
-          </p>
-        </div>
+      <div className="flex items-center gap-2 px-4 py-3">
+        <button className="text-brand">
+          <X size={18} strokeWidth={2.25} />
+        </button>
+        <h1 className="font-display text-[16px] font-bold text-brand">
+          Escanear QR Code
+        </h1>
       </div>
 
-      <motion.div
-        data-tour="qp-balance"
-        initial={{ y: 12, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.15, duration: 0.45 }}
-        className="mt-4 overflow-hidden rounded-2xl bg-gradient-to-br from-brand via-brand-light to-brand-lighter p-5 text-white shadow-brand"
-      >
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-[10px] font-medium uppercase tracking-wider opacity-80">
-              Saldo disponível
-            </p>
-            <p className="mt-1 font-display text-[34px] font-bold tabular-nums leading-none">
-              R$ 84,50
-            </p>
-            <p className="mt-2 text-[10px] opacity-90">
-              Mat. 28471 · Departamento TI
-            </p>
-          </div>
-          <Wallet size={22} strokeWidth={2} className="opacity-70" />
+      <div className="relative flex-1 overflow-hidden bg-[#222]">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <ScannerFrame />
         </div>
-        <div className="mt-3 flex items-center justify-between rounded-xl bg-white/15 px-3 py-2 backdrop-blur">
-          <span className="text-[10px] font-medium opacity-90">
-            Recarga mensal automática
-          </span>
-          <span className="text-[10px] font-bold">15/Jun</span>
-        </div>
-      </motion.div>
-
-      <p className="mt-4 text-[10px] font-bold uppercase tracking-wider text-neutral-500">
-        Benefícios ativos
-      </p>
-      <div className="mt-2 space-y-2">
-        {[
-          {
-            Icon: Utensils,
-            label: "Refeição executiva",
-            remaining: "12 de 22 dias",
-            tone: "primary",
-          },
-          {
-            Icon: Coffee,
-            label: "Café da manhã",
-            remaining: "Disponível",
-            tone: "success",
-          },
-          {
-            Icon: Sun,
-            label: "Lanche tarde",
-            remaining: "8 de 22 dias",
-            tone: "neutral",
-          },
-        ].map((b, i) => (
-          <motion.div
-            key={b.label}
-            initial={{ x: 8, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.25 + i * 0.06 }}
-            className="flex items-center gap-3 rounded-xl border border-brand/10 bg-white p-3 shadow-card"
-          >
-            <span
-              className={cn(
-                "flex h-9 w-9 flex-none items-center justify-center rounded-lg",
-                b.tone === "primary" && "bg-brand-subtle text-brand",
-                b.tone === "success" && "bg-success/15 text-success",
-                b.tone === "neutral" && "bg-neutral-100 text-neutral-500",
-              )}
-            >
-              <b.Icon size={16} strokeWidth={2} />
-            </span>
-            <div className="flex-1">
-              <p className="font-display text-[12px] font-bold text-neutral-900">
-                {b.label}
-              </p>
-              <p className="text-[10px] text-neutral-500">{b.remaining}</p>
-            </div>
-            <ArrowRight size={14} strokeWidth={2} className="text-neutral-300" />
-          </motion.div>
-        ))}
       </div>
     </motion.div>
   );
 }
 
-function RestaurantPickerView() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-1 flex-col px-5 py-3"
-    >
-      <div>
-        <p className="text-[10px] font-bold uppercase tracking-wider text-brand">
-          Almoço · 11:42
-        </p>
-        <h2 className="font-display text-[16px] font-bold text-neutral-900">
-          Escolha o refeitório
-        </h2>
-      </div>
-
-      <div data-tour="qp-restaurant" className="mt-3 flex-1 space-y-2">
-        {[
-          {
-            label: "Restaurante Central",
-            sub: "200 m · 20 min de espera",
-            queue: 18,
-            active: true,
-            primary: true,
-          },
-          {
-            label: "Restaurante Ala B",
-            sub: "450 m · 8 min de espera",
-            queue: 6,
-            active: false,
-          },
-          {
-            label: "Café da Praça",
-            sub: "320 m · sem fila",
-            queue: 0,
-            active: false,
-          },
-        ].map((r, i) => (
-          <motion.button
-            key={r.label}
-            initial={{ x: 8, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.05 * i, duration: 0.3 }}
-            className={cn(
-              "flex w-full items-center gap-3 rounded-2xl p-3.5 text-left transition-shadow",
-              r.primary
-                ? "bg-brand text-white shadow-brand"
-                : "border border-brand/10 bg-white text-neutral-800",
-            )}
-          >
-            <span
-              className={cn(
-                "flex h-12 w-12 flex-none items-center justify-center rounded-xl",
-                r.primary ? "bg-white/15" : "bg-brand-subtle text-brand",
-              )}
-            >
-              <MapPin size={20} strokeWidth={2} />
-            </span>
-            <div className="flex-1">
-              <p className="font-display text-[13px] font-bold">{r.label}</p>
-              <p
-                className={cn(
-                  "mt-0.5 text-[10px]",
-                  r.primary ? "opacity-85" : "text-neutral-500",
-                )}
-              >
-                {r.sub}
-              </p>
-            </div>
-            <div className="flex flex-col items-end">
-              <span
-                className={cn(
-                  "rounded-full px-2 py-0.5 text-[9px] font-bold",
-                  r.queue === 0 && "bg-success/20 text-success",
-                  r.queue > 0 && r.queue < 10 && (r.primary ? "bg-white/20" : "bg-warning/15 text-warning"),
-                  r.queue >= 10 && (r.primary ? "bg-white/20" : "bg-danger/15 text-danger"),
-                )}
-              >
-                {r.queue === 0 ? "Livre" : `${r.queue} pessoas`}
-              </span>
-              <ArrowRight size={14} strokeWidth={2.25} className="mt-1" />
-            </div>
-          </motion.button>
-        ))}
-      </div>
-
-      <button
-        type="button"
-        className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-brand py-3 font-display text-[13px] font-bold text-white shadow-brand"
-      >
-        Confirmar acesso
-        <ArrowRight size={14} strokeWidth={2.5} />
-      </button>
-    </motion.div>
-  );
-}
-
-function AccessGrantedView() {
+function ScannedItemView() {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-1 flex-col items-center justify-center px-6"
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex h-full flex-col"
     >
-      <motion.div
-        data-tour="qp-access"
-        initial={{ scale: 0.4 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 220, damping: 14 }}
-        className="relative flex h-28 w-28 items-center justify-center rounded-full bg-success text-white shadow-brand"
-      >
-        <motion.span
-          animate={{ scale: [1, 1.6, 1], opacity: [0.4, 0, 0.4] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 rounded-full ring-2 ring-success/40"
-        />
-        <motion.span
-          animate={{ scale: [1, 2, 1], opacity: [0.3, 0, 0.3] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
-          className="absolute inset-0 rounded-full ring-2 ring-success/30"
-        />
-        <Utensils size={56} strokeWidth={2} />
-      </motion.div>
+      <div className="flex items-center gap-2 px-4 py-3">
+        <button className="text-brand">
+          <X size={18} strokeWidth={2.25} />
+        </button>
+        <h1 className="font-display text-[16px] font-bold text-brand">
+          Escanear QR Code
+        </h1>
+      </div>
 
-      <motion.h2
-        initial={{ y: 12, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="mt-6 font-display text-[24px] font-bold text-neutral-900"
-      >
-        Acesso liberado
-      </motion.h2>
-      <motion.p
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.4 }}
-        className="mt-1 text-center text-[12px] text-neutral-500"
-      >
-        Restaurante Central · 1 refeição executiva
-      </motion.p>
-
-      <motion.div
-        initial={{ y: 14, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="mt-6 flex items-center gap-3 rounded-2xl border border-success/30 bg-success/5 px-5 py-3"
-      >
-        <CheckCircle2 size={20} strokeWidth={2} className="text-success" />
-        <div>
-          <p className="font-display text-[12px] font-bold text-success">
-            Refeição registrada
-          </p>
-          <p className="text-[10px] text-neutral-500">
-            Catraca liberada · Bom apetite!
-          </p>
+      <div className="relative flex-1 overflow-hidden bg-[#222]">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <ScannerFrame />
         </div>
-      </motion.div>
+
+        <motion.div
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 260, damping: 24 }}
+          className="absolute inset-x-3 bottom-3 flex items-center gap-3 rounded-xl bg-white p-3 shadow-frame"
+        >
+          <div
+            className="h-10 w-10 flex-none rounded-md bg-gradient-to-br from-red-500 via-red-600 to-red-800"
+            aria-hidden
+          />
+          <div className="flex-1">
+            <p className="font-display text-[11px] font-bold text-neutral-900">
+              Coca Cola Zero LT 350ml
+            </p>
+            <p className="font-display text-[14px] font-bold text-neutral-900">
+              R$ 7,00
+            </p>
+          </div>
+          <motion.button
+            data-tour="qp-balance"
+            whileTap={{ scale: 0.94 }}
+            className="flex h-9 w-9 items-center justify-center rounded-md bg-success text-white shadow-brand"
+          >
+            <CheckCircle2 size={18} strokeWidth={2.5} />
+          </motion.button>
+        </motion.div>
+      </div>
     </motion.div>
   );
 }
 
-function BalanceUpdatedView() {
+function ScannerFrame() {
+  return (
+    <div className="relative h-56 w-56">
+      {/* Corner brackets */}
+      <span className="absolute left-0 top-0 h-8 w-8 border-l-2 border-t-2 border-white" />
+      <span className="absolute right-0 top-0 h-8 w-8 border-r-2 border-t-2 border-white" />
+      <span className="absolute left-0 bottom-0 h-8 w-8 border-l-2 border-b-2 border-white" />
+      <span className="absolute right-0 bottom-0 h-8 w-8 border-r-2 border-b-2 border-white" />
+
+      {/* QR Code placeholder */}
+      <div className="absolute inset-4 flex items-center justify-center rounded bg-white p-3">
+        <QrCode size={130} strokeWidth={0.5} className="text-neutral-900" />
+      </div>
+    </div>
+  );
+}
+
+function CartView() {
   return (
     <motion.div
-      data-tour="qp-updated"
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-1 flex-col px-5 py-3"
+      data-tour="qp-restaurant"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex h-full flex-col"
     >
-      <div className="flex items-center gap-2 rounded-xl bg-success/10 px-3 py-2.5">
-        <CheckCircle2 size={16} strokeWidth={2.25} className="text-success" />
-        <div className="flex-1">
-          <p className="text-[11px] font-bold text-success">
-            Refeição registrada
-          </p>
-          <p className="text-[9px] text-neutral-500">há instantes · 11:42</p>
-        </div>
-      </div>
+      <AppHeader />
 
-      <motion.div
-        initial={{ y: 8, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="mt-3 rounded-2xl bg-gradient-to-br from-brand via-brand-light to-brand-lighter p-5 text-white shadow-brand"
-      >
-        <p className="text-[10px] font-medium uppercase tracking-wider opacity-80">
-          Saldo atualizado
-        </p>
-        <div className="mt-1 flex items-baseline gap-2">
-          <p className="font-display text-[34px] font-bold tabular-nums leading-none">
-            R$ 72,90
-          </p>
-          <p className="flex items-center gap-1 text-[11px] font-bold opacity-90">
-            <TrendingDown size={12} strokeWidth={2.5} />
-            R$ 11,60
-          </p>
-        </div>
-        <div className="mt-3 flex items-center justify-between text-[10px] opacity-90">
-          <span>10 refeições restantes</span>
-          <span>Recarga 15/Jun</span>
-        </div>
-      </motion.div>
+      <div className="flex-1 overflow-y-auto">
+        <h1 className="px-4 pt-3 font-display text-[18px] font-bold text-brand">
+          Carrinho
+        </h1>
 
-      <p className="mt-4 text-[10px] font-bold uppercase tracking-wider text-neutral-500">
-        Histórico recente
-      </p>
-      <div className="mt-2 space-y-1.5">
-        {[
-          { label: "Refeição executiva", place: "Restaurante Central", time: "Agora", value: "− R$ 11,60" },
-          { label: "Café da manhã", place: "Café da Praça", time: "Hoje · 07:48", value: "Grátis" },
-          { label: "Refeição executiva", place: "Restaurante Ala B", time: "Ontem · 12:15", value: "− R$ 11,60" },
-        ].map((h, i) => (
-          <motion.div
-            key={i}
-            initial={{ x: 6, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.3 + i * 0.05 }}
-            className="flex items-center justify-between rounded-xl border border-brand/10 bg-white px-3 py-2"
-          >
-            <div className="flex items-center gap-2">
-              <Clock size={12} strokeWidth={2} className="text-brand" />
-              <div>
-                <p className="font-display text-[11px] font-bold text-neutral-900">
-                  {h.label}
-                </p>
-                <p className="text-[9px] text-neutral-500">{h.place} · {h.time}</p>
+        <div className="mt-3 space-y-3 px-4">
+          <div className="flex items-start gap-3 border-b border-neutral-100 pb-3">
+            <div
+              className="h-12 w-12 flex-none rounded-md bg-gradient-to-br from-red-500 via-red-600 to-red-800"
+              aria-hidden
+            />
+            <div className="flex-1">
+              <p className="font-display text-[12px] font-medium text-neutral-700">
+                Coca Cola Zero LT 350ml
+              </p>
+              <button className="mt-1 flex items-center gap-1 rounded-md bg-[#eef0f7] px-2 py-0.5 text-[10px] font-medium text-neutral-700">
+                <Edit3 size={9} strokeWidth={2.25} />
+                Editar
+              </button>
+            </div>
+            <div className="flex flex-col items-end gap-1.5">
+              <span className="font-display text-[14px] font-bold text-brand">
+                R$ 7,00
+              </span>
+              <div className="flex items-center gap-1.5">
+                <button className="text-neutral-400">
+                  <Trash2 size={12} strokeWidth={2} />
+                </button>
+                <span className="w-3 text-center font-display text-[12px] font-bold">
+                  1
+                </span>
+                <button className="flex h-6 w-6 items-center justify-center rounded bg-[#dee3f2] text-brand">
+                  <Plus size={11} strokeWidth={2.5} />
+                </button>
               </div>
             </div>
-            <span className="font-display text-[11px] font-bold text-neutral-900 tabular-nums">
-              {h.value}
+          </div>
+        </div>
+
+        <div className="mt-3 space-y-2 px-4">
+          <div className="flex items-center justify-between">
+            <span className="font-display text-[12px] font-bold text-neutral-700">
+              Descontos
             </span>
-          </motion.div>
-        ))}
+            <button className="text-[11px] font-bold text-brand underline">
+              Adicionar cupom
+            </button>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="font-display text-[12px] font-bold text-neutral-700">
+              Subtotal
+            </span>
+            <span className="font-display text-[12px] font-bold text-brand">
+              R$ 7,00
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-neutral-100 bg-white px-4 py-3">
+        <div className="space-y-1">
+          <div className="flex items-center justify-between text-[11px] text-neutral-600">
+            <span>Descontos:</span>
+            <span className="font-mono tabular-nums">R$ 00,00</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="font-display text-[13px] font-bold text-neutral-800">
+              Total a pagar:
+            </span>
+            <span className="font-display text-[15px] font-bold text-brand tabular-nums">
+              R$ 7,00
+            </span>
+          </div>
+        </div>
+        <button
+          type="button"
+          data-tour="qp-access"
+          className="mt-2 w-full rounded-md bg-brand py-2.5 text-center font-display text-[12px] font-bold text-white shadow-brand"
+        >
+          Finalizar Compra
+        </button>
+        <button
+          type="button"
+          className="mt-1.5 w-full rounded-md border border-brand bg-white py-2 text-center font-display text-[11px] font-bold text-brand"
+        >
+          Continuar Comprando
+        </button>
       </div>
     </motion.div>
+  );
+}
+
+function PixPaymentView() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex h-full flex-col"
+    >
+      <AppHeader />
+
+      <div className="flex items-center gap-1 px-4 py-2.5">
+        <button className="text-brand">
+          <ChevronLeft size={18} strokeWidth={2.5} />
+        </button>
+        <h1 className="font-display text-[16px] font-bold text-brand">
+          Pagamento
+        </h1>
+      </div>
+
+      <div className="bg-[#eef0f7] px-4 py-2.5">
+        <p className="font-display text-[15px] font-bold text-brand">
+          Forma de Pagamento
+        </p>
+        <p className="text-[10px] text-neutral-500">
+          Selecione uma forma de pagamento
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 border-b border-neutral-200">
+        <button className="py-3 text-center font-display text-[12px] font-bold text-neutral-500">
+          Cartão
+        </button>
+        <button
+          data-tour="qp-updated"
+          className="border-b-2 border-brand py-3 text-center font-display text-[12px] font-bold text-brand"
+        >
+          Pix
+        </button>
+      </div>
+
+      <div className="bg-[#eef0f7] px-4 py-2">
+        <div className="flex items-center justify-between text-[11px]">
+          <span className="text-neutral-600">Subtotal:</span>
+          <span className="font-mono tabular-nums">R$ 50,00</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="font-display text-[13px] font-bold text-brand">
+            Total do pedido:
+          </span>
+          <span className="font-display text-[14px] font-bold text-brand tabular-nums">
+            R$ 50,00
+          </span>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-hidden px-4 py-4">
+        <button
+          type="button"
+          className="w-full rounded-md bg-brand py-2.5 text-center font-display text-[12px] font-bold text-white shadow-brand"
+        >
+          Copiar código Pix
+        </button>
+
+        <div className="mx-auto mt-4 flex h-48 w-48 items-center justify-center rounded-lg border-2 border-neutral-200 bg-white">
+          <QrCode size={150} strokeWidth={0.5} className="text-neutral-900" />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function CompraConcluidaView() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex h-full flex-col"
+    >
+      <AppHeader />
+
+      <div className="flex items-center gap-1 px-4 py-2.5">
+        <button className="text-brand">
+          <ChevronLeft size={18} strokeWidth={2.5} />
+        </button>
+        <h1 className="font-display text-[16px] font-bold text-brand">
+          Compra concluída
+        </h1>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-4 py-3">
+        <motion.div
+          initial={{ scale: 0.94, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 220, damping: 18 }}
+          className="rounded-lg bg-[#e8f3d8] p-4"
+        >
+          <div className="flex items-start gap-2">
+            <CheckCircle2
+              size={18}
+              strokeWidth={2}
+              className="text-success"
+            />
+            <div>
+              <p className="font-display text-[13px] font-bold text-success">
+                Agradecemos pela sua compra
+              </p>
+              <p className="mt-1 text-[11px] leading-relaxed text-neutral-600">
+                Você poderá evitar filas no estádio e resgatar seus produtos
+                com mais facilidade.
+              </p>
+              <p className="mt-2 text-[11px] leading-relaxed text-neutral-600">
+                O cupom fiscal será enviado para o seu e-mail.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="mt-4 rounded-lg bg-[#eef0f7] p-3">
+          <div className="flex items-start gap-3">
+            <div className="flex h-16 w-16 flex-none items-center justify-center rounded-md bg-white p-1.5">
+              <QrCode
+                size={48}
+                strokeWidth={0.5}
+                className="text-neutral-900"
+              />
+            </div>
+            <div className="flex-1">
+              <p className="font-display text-[14px] font-bold text-brand">
+                Pedido #320108
+              </p>
+              <p className="mt-0.5 text-[11px] text-neutral-600">
+                <span>Válido até: </span>
+                <span className="font-display font-bold text-neutral-900">
+                  19/05/2025 17:00
+                </span>
+              </p>
+              <button
+                type="button"
+                className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-brand px-2.5 py-1.5 text-[10px] font-bold text-white"
+              >
+                Enviar cupom fiscal por e-mail
+                <ExternalLink size={10} strokeWidth={2.25} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button className="mt-3 block w-full text-center font-display text-[12px] font-bold text-brand underline">
+          Ver todos os pedidos
+        </button>
+
+        <button
+          type="button"
+          className="mt-3 w-full rounded-md bg-brand py-2.5 text-center font-display text-[12px] font-bold text-white shadow-brand"
+        >
+          Comprar novamente
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+function SafariBottomBar() {
+  return (
+    <div className="border-t border-neutral-200 bg-[#f5f5f7]">
+      <div className="mx-3 my-1.5 flex items-center gap-2 rounded-lg bg-white px-2.5 py-1.5 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]">
+        <span className="font-display text-[11px] font-bold text-neutral-500">
+          <Aa size={13} strokeWidth={2.25} />
+        </span>
+        <span className="text-neutral-400">
+          <Lock size={10} strokeWidth={2.25} />
+        </span>
+        <span className="flex-1 text-center text-[11px] text-neutral-700">
+          quickpass.teknisa.com
+        </span>
+        <span className="text-neutral-400">
+          <Copy size={11} strokeWidth={2.25} />
+        </span>
+      </div>
+      <div className="flex items-center justify-around px-4 pb-2 text-[#007aff]">
+        <button>
+          <Back size={18} strokeWidth={2} />
+        </button>
+        <button className="opacity-40">
+          <Fwd size={18} strokeWidth={2} />
+        </button>
+        <button>
+          <Share size={16} strokeWidth={2} />
+        </button>
+        <button>
+          <Library size={16} strokeWidth={2} />
+        </button>
+        <button>
+          <span className="grid h-4 w-4 grid-cols-2 gap-px">
+            <span className="rounded-sm border border-[#007aff]" />
+            <span className="rounded-sm border border-[#007aff]" />
+            <span className="rounded-sm border border-[#007aff]" />
+            <span className="rounded-sm border border-[#007aff]" />
+          </span>
+        </button>
+      </div>
+    </div>
   );
 }

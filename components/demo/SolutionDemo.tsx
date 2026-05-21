@@ -11,7 +11,6 @@ import { useMeasure } from "@/hooks/useMeasure";
 import { useShowcase } from "@/lib/store";
 import { segmentsById } from "@/data/solutions";
 import { SolutionFrame } from "@/components/mockups/frames";
-import { Device3DCanvas } from "@/components/mockups-3d/Device3DCanvas";
 import { SegmentIcon } from "@/components/ui/SegmentIcon";
 import { TourOverlay } from "@/components/ui/TourOverlay";
 import {
@@ -93,11 +92,6 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
 
   const [completionVisible, setCompletionVisible] = useState(false);
   const [frameRef, frameSize] = useMeasure<HTMLDivElement>();
-
-  // Feature flag: enable 3D devices for Frente de Loja segment
-  const use3D =
-    process.env.NEXT_PUBLIC_USE_3D_DEVICES === "true" &&
-    solution?.segment === "frente-de-loja";
 
   const tour = useTour({
     steps,

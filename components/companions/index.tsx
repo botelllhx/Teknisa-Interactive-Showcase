@@ -1,7 +1,7 @@
 "use client";
 
 import type { CompanionType } from "@/data/solutions";
-import { POSCardReader } from "./POSCardReader";
+import { POSCardReader, type PaymentMethodKind } from "./POSCardReader";
 import { OrderTicket, type OrderItem } from "./OrderTicket";
 import { KitchenDisplay } from "./KitchenDisplay";
 import { MiniDashboard } from "./MiniDashboard";
@@ -11,6 +11,7 @@ import { FiscalBadge } from "./FiscalBadge";
 import { OperatorDailyPanel } from "./OperatorDailyPanel";
 import { CustomerReceiptPhone } from "./CustomerReceiptPhone";
 import { RestaurantQueueBoard } from "./RestaurantQueueBoard";
+import { useTourLive } from "@/lib/tourState";
 
 export {
   POSCardReader,
@@ -60,29 +61,68 @@ const CD_ORDER_ITEMS: OrderItem[] = [
 ];
 
 export function Companion({ type, solutionId, step, stepLabel }: CompanionProps) {
+  const live = useTourLive((s) => s.live);
+  const livePaymentMethod = (live.paymentMethod as PaymentMethodKind | undefined) ?? undefined;
+  const liveCartTotal =
+    typeof live.cartTotal === "number" && (live.cartTotal as number) > 0
+      ? (live.cartTotal as number)
+      : undefined;
+
   // ============================================
-  // TAA — Self-service kiosk fast food
+  // TAA — Self-service kiosk (commerce white-label demo)
   // ============================================
   if (solutionId === "taa") {
+    const storeName =
+      (live.skinName as string | undefined) ?? "Restaurante Central";
     if (type === "OrderTicket") {
-      const items = step >= 2 ? TAA_COMBO_ITEMS : [];
+      const liveItems = (live.cartItems as
+        | { name: string; qty: number; price: number }[]
+        | undefined) ?? [];
+      const items: OrderItem[] =
+        liveItems.length > 0
+          ? liveItems.map((i) => ({
+              name: i.name,
+              qty: i.qty,
+              price: i.price,
+            }))
+          : step >= 2
+            ? TAA_COMBO_ITEMS
+            : [];
       return (
         <OrderTicket
           items={items}
           orderNumber="A1247"
-          store="Sapore — Berrini"
+          store={storeName}
           approved={step >= 4}
         />
       );
     }
     if (type === "POSCardReader") {
       if (step < 3) return null;
+      const method = livePaymentMethod ?? "pix";
+      const brandByMethod =
+        method === "credito"
+          ? "Crédito Visa"
+          : method === "debito"
+            ? "Débito Visa"
+            : method === "dinheiro"
+              ? "Dinheiro"
+              : "Pix";
+      const installmentsByMethod =
+        method === "credito"
+          ? "Até 3× sem juros"
+          : method === "debito"
+            ? "Aprovação na hora"
+            : method === "dinheiro"
+              ? "Com troco"
+              : "Aprovação imediata";
       return (
         <POSCardReader
           status={step >= 4 ? "approved" : "waiting"}
-          amount={TAA_TOTAL}
-          brand="PIX"
-          installments="Aprovação imediata"
+          amount={liveCartTotal ?? TAA_TOTAL}
+          method={method}
+          brand={brandByMethod}
+          installments={installmentsByMethod}
         />
       );
     }

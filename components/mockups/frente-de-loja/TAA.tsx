@@ -22,6 +22,8 @@ import {
   UserRound,
   Wallet,
   Wifi,
+  Salad,
+  Beef,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
@@ -31,40 +33,35 @@ interface TAAProps {
 }
 
 // ---------------------------------------------------------------------------
-// White-label skins — same TAA, different commerce brand. The skin toggle is
-// the "pulo do gato" the client wants showcased: Teknisa (default navy) and
-// Astrobox (red themed cosmic pizzaria) using identical UI scaffolding.
+// Skins — same TAA, different commerce brand. The selector is the central
+// "show, don't tell" demo of how the kiosk adapts to each client's identity.
+// "Restaurante Central" = default neutral commerce; "Astrobox" = themed
+// pizzaria. Both render the same components with different brand tokens.
 // ---------------------------------------------------------------------------
 
 interface Skin {
-  id: "teknisa" | "astrobox";
+  id: "central" | "astrobox";
   name: string;
   brand: string;
   brandSoft: string;
   brandDark: string;
   accent: string;
-  buttonText: string;
-  // welcome screen
-  tagline: string;
-  taglineSecondary: string;
-  // header banner inside home
   bannerTitle: string;
   bannerSubtitle: string;
+  bannerCaption: string;
 }
 
-const SKINS: Record<"teknisa" | "astrobox", Skin> = {
-  teknisa: {
-    id: "teknisa",
-    name: "Sapore",
+const SKINS: Record<"central" | "astrobox", Skin> = {
+  central: {
+    id: "central",
+    name: "Restaurante Central",
     brand: "#020788",
     brandSoft: "#e8e9f8",
     brandDark: "#01055e",
     accent: "#1a1fa8",
-    buttonText: "#ffffff",
-    tagline: "Bem-vindo ao Sapore",
-    taglineSecondary: "Toque na tela para começar",
     bannerTitle: "Economize na sua",
     bannerSubtitle: "próxima compra",
+    bannerCaption: "R$ 25,00",
   },
   astrobox: {
     id: "astrobox",
@@ -73,34 +70,52 @@ const SKINS: Record<"teknisa" | "astrobox", Skin> = {
     brandSoft: "#fde8eb",
     brandDark: "#8b0a1f",
     accent: "#e62848",
-    buttonText: "#ffffff",
-    tagline: "fly me to the pizza!",
-    taglineSecondary: "Toque na tela para iniciar",
     bannerTitle: "Complemente",
     bannerSubtitle: "seu pedido",
+    bannerCaption: "fly me to the pizza!",
   },
 };
 
 // ---------------------------------------------------------------------------
-// Categories + products (mirror the reference layout)
+// Categories + per-category catalog (each tab shows its own products)
 // ---------------------------------------------------------------------------
 
+type CategoryId =
+  | "promo"
+  | "pratos"
+  | "sushi"
+  | "peixes"
+  | "massas"
+  | "sobremesas"
+  | "bebidas";
+
 interface Category {
-  id: string;
+  id: CategoryId;
   label: string;
   Icon: typeof Tag;
-  promo?: boolean;
 }
 
 const CATEGORIES: Category[] = [
-  { id: "cupom", label: "CUPOM", Icon: Tag, promo: true },
-  { id: "promo", label: "Promoções", Icon: Pizza },
+  { id: "promo", label: "Promoções", Icon: Tag },
+  { id: "pratos", label: "Pratos", Icon: Utensils },
   { id: "sushi", label: "Sushi", Icon: Fish },
   { id: "peixes", label: "Peixes", Icon: Fish },
-  { id: "massas", label: "Massas", Icon: Utensils },
+  { id: "massas", label: "Massas", Icon: Soup },
   { id: "sobremesas", label: "Sobremesas", Icon: IceCream },
   { id: "bebidas", label: "Bebidas", Icon: Coffee },
 ];
+
+// Product customization configs (per product). Each product declares which
+// sections of the detail modal to render. Keeps detail screen relevant.
+type CustomKind = "addons" | "ponto" | "sabores" | "tamanho";
+
+interface CustomSection {
+  kind: CustomKind;
+  title: string;
+  required?: string;
+  options: { id: string; label: string; price?: number }[];
+  single?: boolean; // single-select (radio) vs multi-stepper
+}
 
 interface Product {
   id: string;
@@ -110,151 +125,517 @@ interface Product {
   price: number;
   emoji: string;
   bg: string;
+  customSections: CustomSection[];
 }
 
-const PRODUCTS_TEKNISA: Product[] = [
-  {
-    id: "carne",
-    name: "Carne de Boi",
-    desc: "Prato feito montado com arroz, feijão, batata frita, salada",
-    oldPrice: 29.9,
-    price: 29.9,
-    emoji: "🍛",
-    bg: "linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #d97706 100%)",
-  },
-  {
-    id: "frango-aceb",
-    name: "Frango Acebolado",
-    desc: "Prato feito montado com arroz, feijão, batata, salada",
-    oldPrice: 29.9,
-    price: 29.9,
-    emoji: "🍗",
-    bg: "linear-gradient(135deg, #fef3c7 0%, #fcd34d 50%, #b45309 100%)",
-  },
-  {
-    id: "costela",
-    name: "Costela de Boi",
-    desc: "Prato feito montado com arroz, feijão, salada",
-    oldPrice: 29.9,
-    price: 29.9,
-    emoji: "🥩",
-    bg: "linear-gradient(135deg, #fef3c7 0%, #f59e0b 50%, #92400e 100%)",
-  },
-  {
-    id: "frango-grelhado",
-    name: "Frango Grelhado",
-    desc: "Filé suculento, arroz integral e legumes",
-    oldPrice: 29.9,
-    price: 29.9,
-    emoji: "🍗",
-    bg: "linear-gradient(135deg, #fef9c3 0%, #facc15 50%, #a16207 100%)",
-  },
-  {
-    id: "file",
-    name: "Filé Mignon",
-    desc: "Corte nobre com risoto de parmesão",
-    oldPrice: 29.9,
-    price: 29.9,
-    emoji: "🥩",
-    bg: "linear-gradient(135deg, #fee2e2 0%, #fca5a5 50%, #b91c1c 100%)",
-  },
-];
+// --- Default brand catalog (Restaurante Central) ----------------------------
+const CATALOG_CENTRAL: Record<CategoryId, Product[]> = {
+  promo: [
+    {
+      id: "carne-boi",
+      name: "Carne de Boi",
+      desc: "Prato feito com arroz, feijão, batata frita e salada",
+      oldPrice: 36.9,
+      price: 29.9,
+      emoji: "🍛",
+      bg: "linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #d97706 100%)",
+      customSections: [
+        {
+          kind: "ponto",
+          title: "Ponto da carne",
+          required: "0/1",
+          single: true,
+          options: [
+            { id: "mal", label: "Mal passada" },
+            { id: "ao-ponto", label: "Ao ponto" },
+            { id: "bem", label: "Bem passada" },
+          ],
+        },
+        {
+          kind: "addons",
+          title: "Acompanhamentos extras",
+          required: "0/3",
+          options: [
+            { id: "ovo", label: "Ovo frito", price: 4.0 },
+            { id: "bacon", label: "Bacon crocante", price: 6.0 },
+            { id: "salada", label: "Salada do dia", price: 5.0 },
+          ],
+        },
+      ],
+    },
+    {
+      id: "frango-aceb",
+      name: "Frango Acebolado",
+      desc: "Filé de frango grelhado, cebolas caramelizadas, arroz e legumes",
+      oldPrice: 34.9,
+      price: 27.9,
+      emoji: "🍗",
+      bg: "linear-gradient(135deg, #fef3c7 0%, #fcd34d 50%, #b45309 100%)",
+      customSections: [
+        {
+          kind: "addons",
+          title: "Acompanhamentos extras",
+          required: "0/3",
+          options: [
+            { id: "queijo", label: "Queijo gratinado", price: 5.0 },
+            { id: "purê", label: "Purê de batata", price: 4.5 },
+          ],
+        },
+      ],
+    },
+    {
+      id: "costela",
+      name: "Costela de Boi",
+      desc: "Costela 12h no bafo com arroz, feijão e farofa",
+      oldPrice: 44.9,
+      price: 36.9,
+      emoji: "🥩",
+      bg: "linear-gradient(135deg, #fef3c7 0%, #f59e0b 50%, #92400e 100%)",
+      customSections: [
+        {
+          kind: "addons",
+          title: "Acompanhamentos extras",
+          required: "0/3",
+          options: [
+            { id: "vinagrete", label: "Vinagrete", price: 3.0 },
+            { id: "farofa", label: "Farofa premium", price: 4.0 },
+          ],
+        },
+      ],
+    },
+  ],
+  pratos: [
+    {
+      id: "file-mignon",
+      name: "Filé Mignon ao Molho Madeira",
+      desc: "Corte nobre 220g com risoto de parmesão",
+      oldPrice: 78.9,
+      price: 64.9,
+      emoji: "🥩",
+      bg: "linear-gradient(135deg, #fee2e2 0%, #fca5a5 50%, #b91c1c 100%)",
+      customSections: [
+        {
+          kind: "ponto",
+          title: "Ponto da carne",
+          required: "0/1",
+          single: true,
+          options: [
+            { id: "mal", label: "Mal passada" },
+            { id: "ao-ponto", label: "Ao ponto" },
+            { id: "bem", label: "Bem passada" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "frango-grelhado",
+      name: "Frango Grelhado",
+      desc: "Filé suculento, arroz integral, legumes salteados",
+      oldPrice: 32.9,
+      price: 26.9,
+      emoji: "🍗",
+      bg: "linear-gradient(135deg, #fef9c3 0%, #facc15 50%, #a16207 100%)",
+      customSections: [
+        {
+          kind: "addons",
+          title: "Acompanhamentos extras",
+          required: "0/2",
+          options: [{ id: "queijo", label: "Queijo gratinado", price: 5.0 }],
+        },
+      ],
+    },
+  ],
+  sushi: [
+    {
+      id: "combo-15",
+      name: "Combo Sushi 15 peças",
+      desc: "Sashimi salmão, niguiri, hot rolls, joe",
+      oldPrice: 79.9,
+      price: 64.9,
+      emoji: "🍣",
+      bg: "linear-gradient(135deg, #fef3c7 0%, #fca5a5 50%, #b91c1c 100%)",
+      customSections: [
+        {
+          kind: "addons",
+          title: "Adicionais",
+          required: "0/3",
+          options: [
+            { id: "wasabi", label: "Wasabi extra", price: 2.0 },
+            { id: "shoyu", label: "Shoyu adicional", price: 1.5 },
+            { id: "gengibre", label: "Gengibre", price: 1.0 },
+          ],
+        },
+      ],
+    },
+    {
+      id: "salmao-sashimi",
+      name: "Sashimi de Salmão 10 fatias",
+      desc: "Cortes finos de salmão fresco com shoyu",
+      oldPrice: 54.9,
+      price: 49.9,
+      emoji: "🐟",
+      bg: "linear-gradient(135deg, #fed7aa 0%, #f97316 50%, #9a3412 100%)",
+      customSections: [],
+    },
+  ],
+  peixes: [
+    {
+      id: "salmao-grelhado",
+      name: "Salmão Grelhado",
+      desc: "Filé 180g com purê de batata e legumes",
+      oldPrice: 64.9,
+      price: 54.9,
+      emoji: "🐟",
+      bg: "linear-gradient(135deg, #fed7aa 0%, #fb923c 50%, #c2410c 100%)",
+      customSections: [
+        {
+          kind: "addons",
+          title: "Molhos",
+          required: "0/2",
+          options: [
+            { id: "limao", label: "Manteiga de limão", price: 3.0 },
+            { id: "ervas", label: "Molho de ervas", price: 3.0 },
+          ],
+        },
+      ],
+    },
+    {
+      id: "tilapia",
+      name: "Tilápia ao Molho de Maracujá",
+      desc: "Filé empanado com arroz cremoso",
+      oldPrice: 48.9,
+      price: 39.9,
+      emoji: "🐠",
+      bg: "linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #ca8a04 100%)",
+      customSections: [],
+    },
+  ],
+  massas: [
+    {
+      id: "penne-funghi",
+      name: "Penne ao Molho Funghi",
+      desc: "Funghi porcini, parmesão e creme de leite fresco",
+      oldPrice: 48.9,
+      price: 42.0,
+      emoji: "🍝",
+      bg: "linear-gradient(135deg, #fef9c3 0%, #facc15 50%, #92400e 100%)",
+      customSections: [
+        {
+          kind: "addons",
+          title: "Adicionais",
+          required: "0/3",
+          options: [
+            { id: "parmesao", label: "Parmesão extra", price: 4.0 },
+            { id: "frango", label: "Frango grelhado", price: 8.0 },
+          ],
+        },
+      ],
+    },
+    {
+      id: "spaghetti",
+      name: "Spaghetti Carbonara",
+      desc: "Bacon, ovo, parmesão, pimenta-do-reino",
+      oldPrice: 42.9,
+      price: 36.9,
+      emoji: "🍜",
+      bg: "linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #b45309 100%)",
+      customSections: [],
+    },
+  ],
+  sobremesas: [
+    {
+      id: "petit",
+      name: "Petit Gateau",
+      desc: "Bolo de chocolate com recheio cremoso e sorvete",
+      oldPrice: 24.9,
+      price: 19.9,
+      emoji: "🍰",
+      bg: "linear-gradient(135deg, #fce7f3 0%, #fbcfe8 50%, #be185d 100%)",
+      customSections: [],
+    },
+    {
+      id: "pudim",
+      name: "Pudim de Leite",
+      desc: "Receita clássica com calda de caramelo",
+      oldPrice: 18.9,
+      price: 14.9,
+      emoji: "🍮",
+      bg: "linear-gradient(135deg, #fef3c7 0%, #fcd34d 50%, #b45309 100%)",
+      customSections: [],
+    },
+  ],
+  bebidas: [
+    {
+      id: "suco-laranja",
+      name: "Suco de Laranja 400ml",
+      desc: "Natural, sem açúcar, espremido na hora",
+      oldPrice: 12.9,
+      price: 9.9,
+      emoji: "🍊",
+      bg: "linear-gradient(135deg, #fed7aa 0%, #fb923c 50%, #c2410c 100%)",
+      customSections: [],
+    },
+    {
+      id: "agua",
+      name: "Água Mineral 500ml",
+      desc: "Com ou sem gás",
+      oldPrice: 6.9,
+      price: 5.0,
+      emoji: "💧",
+      bg: "linear-gradient(135deg, #dbeafe 0%, #93c5fd 50%, #1d4ed8 100%)",
+      customSections: [],
+    },
+    {
+      id: "coca",
+      name: "Coca-Cola Zero 350ml",
+      desc: "Lata gelada",
+      oldPrice: 8.9,
+      price: 6.9,
+      emoji: "🥤",
+      bg: "linear-gradient(135deg, #fecaca 0%, #f87171 50%, #7f1d1d 100%)",
+      customSections: [],
+    },
+  ],
+};
 
-const PRODUCTS_ASTROBOX: Product[] = [
-  {
-    id: "calabresa",
-    name: "Calabresa Cósmica",
-    desc: "Fatias generosas de calabresa com cebola e um toque especial de temperos",
-    oldPrice: 29.9,
-    price: 29.9,
-    emoji: "🍕",
-    bg: "linear-gradient(135deg, #fef3c7 0%, #fbbf24 50%, #b45309 100%)",
-  },
-  {
-    id: "frango-estelar",
-    name: "Frango Estelar",
-    desc: "Pedaços de frango grelhado com mussarela em massa fina",
-    oldPrice: 29.9,
-    price: 29.9,
-    emoji: "🍕",
-    bg: "linear-gradient(135deg, #fde68a 0%, #f59e0b 50%, #92400e 100%)",
-  },
-  {
-    id: "combo-astrobox",
-    name: "Combo Astrobox",
-    desc: "Uma experiência completa: pizza + fritas + bebida",
-    oldPrice: 29.9,
-    price: 29.9,
-    emoji: "🌌",
-    bg: "linear-gradient(135deg, #fecaca 0%, #f87171 50%, #7f1d1d 100%)",
-  },
-  {
-    id: "combo-basico",
-    name: "Combo Básico",
-    desc: "A opção perfeita para quem quer um combo completo",
-    oldPrice: 29.9,
-    price: 29.9,
-    emoji: "🥤",
-    bg: "linear-gradient(135deg, #fee2e2 0%, #fca5a5 50%, #991b1b 100%)",
-  },
-  {
-    id: "marguerita",
-    name: "Marguerita Magnética",
-    desc: "Mussarela, manjericão e molho de tomate fresco",
-    oldPrice: 29.9,
-    price: 29.9,
-    emoji: "🍕",
-    bg: "linear-gradient(135deg, #fef9c3 0%, #fcd34d 50%, #b45309 100%)",
-  },
-];
+// --- Astrobox brand catalog -------------------------------------------------
+const CATALOG_ASTROBOX: Record<CategoryId, Product[]> = {
+  promo: [
+    {
+      id: "combo-basico",
+      name: "Combo Básico",
+      desc: "1 pizza (salgada), 1 porção de fritas média, 1 bebida",
+      oldPrice: 39.9,
+      price: 29.9,
+      emoji: "🍕",
+      bg: "linear-gradient(135deg, #fee2e2 0%, #fca5a5 50%, #991b1b 100%)",
+      customSections: [
+        {
+          kind: "sabores",
+          title: "Escolha sua pizza",
+          required: "0/1",
+          single: true,
+          options: [
+            { id: "bacon", label: "Bacon Astronômico" },
+            { id: "calabresa", label: "Calabresa Cósmica" },
+            { id: "frango", label: "Frango Estelar" },
+            { id: "lombo", label: "Lombo Galático" },
+            { id: "marguerita", label: "Marguerita Magnética" },
+            { id: "pepperoni", label: "Pepperoni Marciano" },
+          ],
+        },
+        {
+          kind: "tamanho",
+          title: "Escolha sua batata",
+          required: "0/3",
+          options: [
+            { id: "batata-m", label: "Batata M", price: 2.0 },
+            { id: "batata-g", label: "Batata G", price: 5.0 },
+          ],
+        },
+      ],
+    },
+    {
+      id: "combo-astrobox",
+      name: "Combo Astrobox",
+      desc: "1 pizza grande + fritas G + bebida 600ml",
+      oldPrice: 64.9,
+      price: 54.9,
+      emoji: "🌌",
+      bg: "linear-gradient(135deg, #fecaca 0%, #f87171 50%, #7f1d1d 100%)",
+      customSections: [
+        {
+          kind: "sabores",
+          title: "Escolha sua pizza",
+          required: "0/1",
+          single: true,
+          options: [
+            { id: "calabresa", label: "Calabresa Cósmica" },
+            { id: "pepperoni", label: "Pepperoni Marciano" },
+            { id: "marguerita", label: "Marguerita Magnética" },
+          ],
+        },
+      ],
+    },
+  ],
+  pratos: [
+    {
+      id: "calabresa",
+      name: "Pizza Calabresa Cósmica",
+      desc: "Calabresa, cebola, mussarela e orégano",
+      oldPrice: 39.9,
+      price: 34.9,
+      emoji: "🍕",
+      bg: "linear-gradient(135deg, #fef3c7 0%, #fbbf24 50%, #b45309 100%)",
+      customSections: [],
+    },
+    {
+      id: "frango-estelar",
+      name: "Pizza Frango Estelar",
+      desc: "Frango grelhado, mussarela, milho",
+      oldPrice: 39.9,
+      price: 34.9,
+      emoji: "🍕",
+      bg: "linear-gradient(135deg, #fde68a 0%, #f59e0b 50%, #92400e 100%)",
+      customSections: [],
+    },
+    {
+      id: "marguerita",
+      name: "Pizza Marguerita Magnética",
+      desc: "Tomate, mussarela, manjericão",
+      oldPrice: 36.9,
+      price: 29.9,
+      emoji: "🍕",
+      bg: "linear-gradient(135deg, #fef9c3 0%, #fcd34d 50%, #b45309 100%)",
+      customSections: [],
+    },
+  ],
+  sushi: [
+    {
+      id: "pizza-japa",
+      name: "Pizza Japonesa Marciana",
+      desc: "Salmão, cream cheese, cebolinha",
+      oldPrice: 54.9,
+      price: 44.9,
+      emoji: "🍕",
+      bg: "linear-gradient(135deg, #fed7aa 0%, #fb923c 50%, #c2410c 100%)",
+      customSections: [],
+    },
+  ],
+  peixes: [
+    {
+      id: "atum",
+      name: "Pizza de Atum",
+      desc: "Atum, cebola, azeitona, milho",
+      oldPrice: 42.9,
+      price: 36.9,
+      emoji: "🍕",
+      bg: "linear-gradient(135deg, #fef3c7 0%, #fcd34d 50%, #ca8a04 100%)",
+      customSections: [],
+    },
+  ],
+  massas: [
+    {
+      id: "lasanha",
+      name: "Lasanha Galática",
+      desc: "Massa caseira, ragu, mussarela, parmesão",
+      oldPrice: 44.9,
+      price: 38.9,
+      emoji: "🍝",
+      bg: "linear-gradient(135deg, #fee2e2 0%, #fca5a5 50%, #b91c1c 100%)",
+      customSections: [],
+    },
+  ],
+  sobremesas: [
+    {
+      id: "brownie",
+      name: "Brownie Estelar",
+      desc: "Chocolate belga com sorvete de baunilha",
+      oldPrice: 22.9,
+      price: 18.9,
+      emoji: "🍫",
+      bg: "linear-gradient(135deg, #fcd34d 0%, #b45309 50%, #451a03 100%)",
+      customSections: [],
+    },
+  ],
+  bebidas: [
+    {
+      id: "coca-600",
+      name: "Coca-Cola 600ml",
+      desc: "Gelada, sem açúcar disponível",
+      oldPrice: 12.9,
+      price: 9.9,
+      emoji: "🥤",
+      bg: "linear-gradient(135deg, #fecaca 0%, #f87171 50%, #7f1d1d 100%)",
+      customSections: [],
+    },
+    {
+      id: "guarana",
+      name: "Guaraná 600ml",
+      desc: "Gelado",
+      oldPrice: 11.9,
+      price: 8.9,
+      emoji: "🥫",
+      bg: "linear-gradient(135deg, #fef9c3 0%, #facc15 50%, #a16207 100%)",
+      customSections: [],
+    },
+  ],
+};
+
+const FALLBACK_PRODUCT: Product = {
+  id: "vazio",
+  name: "Em breve",
+  desc: "Novos itens chegando.",
+  oldPrice: 0,
+  price: 0,
+  emoji: "✨",
+  bg: "linear-gradient(135deg, #f3f4f6, #e5e7eb)",
+  customSections: [],
+};
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 export function TAAMockup({ step }: TAAProps) {
-  const [skinId, setSkinId] = useState<"teknisa" | "astrobox">("teknisa");
+  const [skinId, setSkinId] = useState<"central" | "astrobox">("central");
   const skin = SKINS[skinId];
-  const products = skinId === "teknisa" ? PRODUCTS_TEKNISA : PRODUCTS_ASTROBOX;
+  const catalog = skinId === "central" ? CATALOG_CENTRAL : CATALOG_ASTROBOX;
+  const [activeCategory, setActiveCategory] = useState<CategoryId>("promo");
 
-  const [cart, setCart] = useState<Record<string, number>>({});
-  const [, setOrderType] = useState<"local" | "viagem" | null>(null);
+  const products = catalog[activeCategory] ?? [];
+
+  const [cart, setCart] = useState<Record<string, { qty: number; product: Product }>>({});
+  const [openProductId, setOpenProductId] = useState<string | null>(null);
   const [payment, setPayment] = useState<"credito" | "debito" | "pix" | null>(
     null,
   );
 
   const subtotal = useMemo(
     () =>
-      Object.entries(cart).reduce(
-        (s, [id, qty]) => s + (products.find((p) => p.id === id)?.price ?? 0) * qty,
+      Object.values(cart).reduce(
+        (s, { qty, product }) => s + product.price * qty,
         0,
       ),
-    [cart, products],
+    [cart],
   );
-  const cartCount = Object.values(cart).reduce((s, q) => s + q, 0);
+  const cartCount = Object.values(cart).reduce((s, e) => s + e.qty, 0);
 
-  const addItem = (id: string) =>
-    setCart((p) => ({ ...p, [id]: (p[id] ?? 0) + 1 }));
+  const addItem = (product: Product) =>
+    setCart((p) => {
+      const cur = p[product.id]?.qty ?? 0;
+      return { ...p, [product.id]: { product, qty: cur + 1 } };
+    });
   const removeItem = (id: string) =>
     setCart((p) => {
-      const n = { ...p };
-      if ((n[id] ?? 0) > 1) n[id] -= 1;
-      else delete n[id];
-      return n;
+      const cur = p[id];
+      if (!cur) return p;
+      const next = { ...p };
+      if (cur.qty > 1) next[id] = { ...cur, qty: cur.qty - 1 };
+      else delete next[id];
+      return next;
     });
+
+  // Find product to show in detail modal. Step 2 opens the first product if
+  // nothing was tapped, so the tour always has something to point at.
+  const openProduct =
+    (openProductId && findProductInCatalog(catalog, openProductId)) ||
+    (step === 2 ? products[0] ?? FALLBACK_PRODUCT : null);
 
   const patchLive = useTourLive((s) => s.patch);
   useEffect(() => {
-    const items = Object.entries(cart).map(([id, qty]) => {
-      const p = products.find((x) => x.id === id);
-      return { id, qty, name: p?.name ?? id, price: p?.price ?? 0 };
-    });
+    const cartItems = Object.values(cart).map(({ qty, product }) => ({
+      id: product.id,
+      qty,
+      name: product.name,
+      price: product.price,
+    }));
     patchLive({
-      cartItems: items,
+      cartItems,
       cartCount,
       cartTotal: subtotal,
       cartSubtotal: subtotal,
-      selectedItemName: items[items.length - 1]?.name,
+      selectedItemName: cartItems[cartItems.length - 1]?.name,
       paymentMethod: payment ?? undefined,
       paymentLabel:
         payment === "credito"
@@ -265,50 +646,46 @@ export function TAAMockup({ step }: TAAProps) {
               ? "Pix"
               : undefined,
       skinName: skin.name,
+      activeCategoryLabel:
+        CATEGORIES.find((c) => c.id === activeCategory)?.label,
     });
-  }, [cart, cartCount, subtotal, payment, skin.name, products, patchLive]);
+  }, [cart, cartCount, subtotal, payment, skin.name, activeCategory, patchLive]);
 
   return (
     <div
       className="relative flex h-full w-full flex-col overflow-hidden bg-white font-ui"
       style={{ color: "#1f2330" }}
     >
-      <BrandStripe skin={skin} />
-      <SkinToggle skinId={skinId} onChange={setSkinId} />
+      <BrandStripe skin={skin} skinId={skinId} onSkinChange={setSkinId} />
 
       <main className="relative flex-1 overflow-hidden">
         <HomeView
           skin={skin}
           products={products}
           cart={cart}
-          subtotal={subtotal}
-          step={step}
+          activeCategory={activeCategory}
+          onPickCategory={setActiveCategory}
+          onPickProduct={(p) => setOpenProductId(p.id)}
         />
 
-        {/* Modals & overlays per step */}
         <AnimatePresence mode="wait">
-          {step === 0 && (
-            <OrderTypeModal
-              key="order-type"
-              skin={skin}
-              onPick={(t) => setOrderType(t)}
-            />
-          )}
-          {step === 2 && (
+          {step === 0 && <OrderTypeModal key="order-type" skin={skin} />}
+          {step === 2 && openProduct && (
             <ItemDetailModal
-              key="item-detail"
+              key={`detail-${openProduct.id}`}
               skin={skin}
-              products={products}
-              cart={cart}
-              onAdd={addItem}
-              onRemove={removeItem}
+              product={openProduct}
+              quantity={cart[openProduct.id]?.qty ?? 0}
+              onAdd={() => addItem(openProduct)}
+              onRemove={() => removeItem(openProduct.id)}
+              onClose={() => setOpenProductId(null)}
             />
           )}
           {step === 3 && (
             <PaymentModal
               key="payment"
               skin={skin}
-              total={subtotal || 162.9}
+              total={subtotal || 0}
               selected={payment}
               onPick={setPayment}
             />
@@ -317,22 +694,42 @@ export function TAAMockup({ step }: TAAProps) {
             <ProcessingDoneOverlay
               key="done"
               skin={skin}
-              total={subtotal || 162.9}
+              total={subtotal || 0}
+              method={payment}
             />
           )}
         </AnimatePresence>
       </main>
 
-      <BottomTotalBar skin={skin} total={subtotal || 162.9} cartCount={cartCount} />
+      <BottomTotalBar skin={skin} total={subtotal} cartCount={cartCount} />
     </div>
   );
 }
 
+function findProductInCatalog(
+  catalog: Record<CategoryId, Product[]>,
+  id: string,
+): Product | null {
+  for (const list of Object.values(catalog)) {
+    const found = list.find((p) => p.id === id);
+    if (found) return found;
+  }
+  return null;
+}
+
 // ---------------------------------------------------------------------------
-// Top brand stripe (status bar style + commerce name)
+// Top brand stripe — logo + status + discreet brand selector
 // ---------------------------------------------------------------------------
 
-function BrandStripe({ skin }: { skin: Skin }) {
+function BrandStripe({
+  skin,
+  skinId,
+  onSkinChange,
+}: {
+  skin: Skin;
+  skinId: "central" | "astrobox";
+  onSkinChange: (id: "central" | "astrobox") => void;
+}) {
   return (
     <div
       className="flex items-center justify-between px-3 py-1.5 text-white"
@@ -344,90 +741,72 @@ function BrandStripe({ skin }: { skin: Skin }) {
           alt="Teknisa"
           width={62}
           height={11}
-          className="select-none opacity-95"
+          className="select-none opacity-90"
         />
-        <span className="text-[9px] font-medium uppercase tracking-wider opacity-80">
-          {skin.name}
-        </span>
       </div>
       <div className="flex items-center gap-2">
-        <Search size={11} strokeWidth={2.25} className="opacity-80" />
-        <span className="flex items-center gap-1 rounded-full bg-white/15 px-1.5 py-0.5 text-[9px] font-bold">
-          <Wifi size={9} strokeWidth={2.5} />
-          ON
-        </span>
+        <div className="inline-flex items-center rounded-full bg-white/15 p-0.5 backdrop-blur">
+          {(["central", "astrobox"] as const).map((id) => {
+            const active = id === skinId;
+            return (
+              <motion.button
+                key={id}
+                type="button"
+                whileTap={{ scale: 0.94 }}
+                onClick={() => onSkinChange(id)}
+                className={cn(
+                  "rounded-full px-2 py-0.5 font-ui text-[9px] font-bold transition-colors",
+                  active ? "text-white" : "text-white/70",
+                )}
+                style={{
+                  background: active ? "rgba(0,0,0,0.25)" : "transparent",
+                }}
+              >
+                {SKINS[id].name.split(" ")[0]}
+              </motion.button>
+            );
+          })}
+        </div>
+        <Wifi size={11} strokeWidth={2.5} className="opacity-80" />
       </div>
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Skin toggle — the white-label hero of this demo
-// ---------------------------------------------------------------------------
-
-function SkinToggle({
-  skinId,
-  onChange,
-}: {
-  skinId: "teknisa" | "astrobox";
-  onChange: (id: "teknisa" | "astrobox") => void;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-2 border-b border-neutral-200 bg-neutral-50 px-3 py-1.5">
-      <span className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider text-neutral-500">
-        <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand" />
-        White-label
-      </span>
-      <div className="inline-flex items-center rounded-full border border-neutral-200 bg-white p-0.5 shadow-sm">
-        {(["teknisa", "astrobox"] as const).map((id) => {
-          const active = skinId === id;
-          return (
-            <motion.button
-              key={id}
-              type="button"
-              whileTap={{ scale: 0.96 }}
-              onClick={() => onChange(id)}
-              className={cn(
-                "rounded-full px-2.5 py-1 font-ui text-[10px] font-bold transition-colors",
-                active ? "text-white" : "text-neutral-500",
-              )}
-              style={{
-                background: active ? SKINS[id].brand : "transparent",
-              }}
-            >
-              {SKINS[id].name}
-            </motion.button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Home — sidebar + promo banner + product grid (matches "início.png")
+// Home — sidebar + promo banner + product grid
 // ---------------------------------------------------------------------------
 
 function HomeView({
   skin,
   products,
   cart,
+  activeCategory,
+  onPickCategory,
+  onPickProduct,
 }: {
   skin: Skin;
   products: Product[];
-  cart: Record<string, number>;
-  subtotal: number;
-  step: number;
+  cart: Record<string, { qty: number; product: Product }>;
+  activeCategory: CategoryId;
+  onPickCategory: (id: CategoryId) => void;
+  onPickProduct: (p: Product) => void;
 }) {
-  const [activeCategory, setActiveCategory] = useState("promo");
-
   return (
     <div className="flex h-full">
-      {/* Left sidebar */}
-      <aside
-        className="flex w-[78px] flex-col border-r border-neutral-200 bg-white"
-        data-tour="taa-cat-lanches"
-      >
+      {/* Sidebar */}
+      <aside className="flex w-[78px] flex-col border-r border-neutral-200 bg-white">
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.95 }}
+          className="flex flex-col items-center justify-center gap-1 border-b border-neutral-100 py-3"
+          style={{ color: skin.brand }}
+        >
+          <Tag size={14} strokeWidth={2.5} />
+          <span className="font-ui text-[9px] font-bold tracking-wider">
+            CUPOM
+          </span>
+        </motion.button>
         {CATEGORIES.map((c) => {
           const active = c.id === activeCategory;
           return (
@@ -435,29 +814,22 @@ function HomeView({
               key={c.id}
               type="button"
               whileTap={{ scale: 0.95 }}
-              onClick={() => setActiveCategory(c.id)}
+              onClick={() => onPickCategory(c.id)}
+              data-tour={c.id === "promo" ? "taa-cat-lanches" : undefined}
               className={cn(
                 "flex flex-col items-center justify-center gap-1 py-3 transition-colors",
                 active ? "" : "hover:bg-neutral-50",
               )}
               style={{
                 background: active ? skin.brandSoft : undefined,
-                color: active ? skin.brand : c.promo ? skin.brand : "#6b7280",
+                color: active ? skin.brand : "#6b7280",
                 borderLeft: active
                   ? `3px solid ${skin.brand}`
                   : "3px solid transparent",
               }}
             >
-              <c.Icon
-                size={c.promo ? 14 : 18}
-                strokeWidth={c.promo ? 2.5 : 1.75}
-              />
-              <span
-                className={cn(
-                  "font-ui leading-tight",
-                  c.promo ? "text-[9px] font-bold tracking-wider" : "text-[9px] font-medium",
-                )}
-              >
+              <c.Icon size={18} strokeWidth={1.75} />
+              <span className="font-ui text-[9px] font-medium leading-tight">
                 {c.label}
               </span>
             </motion.button>
@@ -481,80 +853,101 @@ function HomeView({
             <p className="mt-0.5 font-ui text-[13px] font-bold leading-tight">
               {skin.bannerSubtitle}
             </p>
-            <p className="mt-1.5 font-ui text-[18px] font-bold tabular-nums">
-              R$ 25,00
+            <p className="mt-1.5 font-ui text-[16px] font-bold tabular-nums">
+              {skin.bannerCaption}
             </p>
           </div>
           <div className="relative flex h-14 w-14 flex-none items-center justify-center rounded-xl bg-white/15 backdrop-blur">
             {skin.id === "astrobox" ? (
               <Pizza size={26} strokeWidth={1.5} />
             ) : (
-              <Soup size={26} strokeWidth={1.5} />
+              <Salad size={26} strokeWidth={1.5} />
             )}
           </div>
         </div>
 
-        {/* Section title */}
-        <div className="flex items-center justify-between px-2.5 pb-1">
+        {/* Section title + search */}
+        <div className="flex items-center justify-between px-2.5 pb-1.5">
           <h2 className="font-ui text-[13px] font-bold text-neutral-900">
-            Promoções
+            {CATEGORIES.find((c) => c.id === activeCategory)?.label ?? ""}
           </h2>
-          <span className="text-[9px] font-medium text-neutral-400">
-            {products.length} itens
-          </span>
+          <button
+            type="button"
+            className="flex items-center gap-1 rounded-full border border-neutral-200 px-2 py-0.5 text-[9px] font-medium text-neutral-500"
+          >
+            <Search size={10} strokeWidth={2.25} />
+            Buscar
+          </button>
         </div>
 
         {/* Product grid */}
         <div className="flex-1 overflow-y-auto px-2.5 pb-2">
-          <div className="grid grid-cols-2 gap-2">
-            {products.map((p) => {
-              const inCart = cart[p.id] ?? 0;
-              return (
-                <motion.button
-                  key={p.id}
-                  type="button"
-                  whileTap={{ scale: 0.97 }}
-                  className="group relative overflow-hidden rounded-xl bg-white text-left shadow-card transition-shadow hover:shadow-card-hover"
-                  style={{ border: "1px solid #e5e7eb" }}
-                >
-                  <div
-                    className="relative flex h-16 items-center justify-center text-[22px]"
-                    style={{ background: p.bg }}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeCategory}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              className="grid grid-cols-2 gap-2"
+            >
+              {products.length === 0 && (
+                <p className="col-span-2 py-6 text-center text-[11px] text-neutral-400">
+                  Sem itens nesta categoria.
+                </p>
+              )}
+              {products.map((p, i) => {
+                const inCart = cart[p.id]?.qty ?? 0;
+                const isFirst = i === 0;
+                return (
+                  <motion.button
+                    key={p.id}
+                    type="button"
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => onPickProduct(p)}
+                    data-tour={isFirst ? "taa-product-first" : undefined}
+                    className="group relative overflow-hidden rounded-xl bg-white text-left shadow-card transition-shadow hover:shadow-card-hover"
+                    style={{ border: "1px solid #e5e7eb" }}
                   >
-                    <span aria-hidden>{p.emoji}</span>
-                    {inCart > 0 && (
-                      <motion.span
-                        key={inCart}
-                        initial={{ scale: 0.5 }}
-                        animate={{ scale: 1 }}
-                        className="absolute right-1 top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold shadow"
-                        style={{ color: skin.brand }}
-                      >
-                        ×{inCart}
-                      </motion.span>
-                    )}
-                  </div>
-                  <div className="p-1.5">
-                    <p className="font-ui text-[10px] font-bold leading-tight text-neutral-900 line-clamp-1">
-                      {p.name}
-                    </p>
-                    <p className="mt-0.5 text-[8px] leading-tight text-neutral-500 line-clamp-2">
-                      {p.desc}
-                    </p>
-                    <p className="mt-1 text-[9px] text-neutral-400 line-through tabular-nums">
-                      R$ {p.oldPrice.toFixed(2).replace(".", ",")}
-                    </p>
-                    <p
-                      className="font-ui text-[11px] font-bold tabular-nums"
-                      style={{ color: "#16a34a" }}
+                    <div
+                      className="relative flex h-16 items-center justify-center text-[22px]"
+                      style={{ background: p.bg }}
                     >
-                      R$ {p.price.toFixed(2).replace(".", ",")}
-                    </p>
-                  </div>
-                </motion.button>
-              );
-            })}
-          </div>
+                      <span aria-hidden>{p.emoji}</span>
+                      {inCart > 0 && (
+                        <motion.span
+                          key={inCart}
+                          initial={{ scale: 0.5 }}
+                          animate={{ scale: 1 }}
+                          className="absolute right-1 top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold shadow"
+                          style={{ color: skin.brand }}
+                        >
+                          ×{inCart}
+                        </motion.span>
+                      )}
+                    </div>
+                    <div className="p-1.5">
+                      <p className="font-ui text-[10px] font-bold leading-tight text-neutral-900 line-clamp-1">
+                        {p.name}
+                      </p>
+                      <p className="mt-0.5 text-[8px] leading-tight text-neutral-500 line-clamp-2">
+                        {p.desc}
+                      </p>
+                      <p className="mt-1 text-[9px] text-neutral-400 line-through tabular-nums">
+                        R$ {p.oldPrice.toFixed(2).replace(".", ",")}
+                      </p>
+                      <p
+                        className="font-ui text-[11px] font-bold tabular-nums"
+                        style={{ color: "#16a34a" }}
+                      >
+                        R$ {p.price.toFixed(2).replace(".", ",")}
+                      </p>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>
@@ -565,13 +958,7 @@ function HomeView({
 // Order type modal — "Seu pedido é para: Comer aqui / Para Viagem"
 // ---------------------------------------------------------------------------
 
-function OrderTypeModal({
-  skin,
-  onPick,
-}: {
-  skin: Skin;
-  onPick: (t: "local" | "viagem") => void;
-}) {
+function OrderTypeModal({ skin }: { skin: Skin }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -593,7 +980,6 @@ function OrderTypeModal({
           data-tour="taa-eat-here"
           type="button"
           whileTap={{ scale: 0.97 }}
-          onClick={() => onPick("local")}
           className="mt-3 flex w-full items-center justify-between rounded-2xl px-5 py-5 text-left text-white shadow-brand"
           style={{ background: skin.brand }}
         >
@@ -602,7 +988,6 @@ function OrderTypeModal({
         </motion.button>
         <button
           type="button"
-          onClick={() => onPick("viagem")}
           className="mt-2.5 flex w-full items-center justify-between rounded-2xl px-5 py-5 text-left text-white shadow-brand"
           style={{ background: skin.brand }}
         >
@@ -622,37 +1007,44 @@ function OrderTypeModal({
 }
 
 // ---------------------------------------------------------------------------
-// Item detail modal — "personalizar item.png"
+// Item detail — renders the ACTUAL product clicked with its own custom config
 // ---------------------------------------------------------------------------
 
 function ItemDetailModal({
   skin,
-  products,
-  cart,
+  product,
+  quantity,
   onAdd,
   onRemove,
+  onClose,
 }: {
   skin: Skin;
-  products: Product[];
-  cart: Record<string, number>;
-  onAdd: (id: string) => void;
-  onRemove: (id: string) => void;
+  product: Product;
+  quantity: number;
+  onAdd: () => void;
+  onRemove: () => void;
+  onClose: () => void;
 }) {
-  // Spotlight the first product as the demo "current item"
-  const product = products[0];
-  const [pizza, setPizza] = useState("Calabresa Cósmica");
-  const [batataM, setBatataM] = useState(0);
-  const [batataG, setBatataG] = useState(0);
-  const PIZZA_OPTIONS = [
-    "Bacon Astronômico",
-    "Calabresa Cósmica",
-    "Frango Estelar",
-    "Lombo Galático",
-    "Marguerita Magnética",
-    "Pepperoni Marciano",
-  ];
+  // local customization state, fresh per product
+  const [singleChoices, setSingleChoices] = useState<Record<string, string>>({});
+  const [counts, setCounts] = useState<Record<string, number>>({});
 
-  const qty = cart[product.id] ?? 0;
+  const setSingle = (sectionTitle: string, value: string) =>
+    setSingleChoices((p) => ({ ...p, [sectionTitle]: value }));
+  const setCount = (key: string, value: number) =>
+    setCounts((p) => ({ ...p, [key]: Math.max(0, value) }));
+
+  const extrasTotal = product.customSections.reduce((sum, sec) => {
+    if (sec.single) return sum;
+    return (
+      sum +
+      sec.options.reduce(
+        (s, o) => s + (o.price ?? 0) * (counts[`${sec.title}:${o.id}`] ?? 0),
+        0,
+      )
+    );
+  }, 0);
+  const unitPrice = product.price + extrasTotal;
 
   return (
     <motion.div
@@ -680,78 +1072,120 @@ function ItemDetailModal({
           </div>
         </div>
 
-        <Section title="Escolha sua pizza" required="0/1" skin={skin}>
-          <div className="grid grid-cols-2 gap-1.5">
-            {PIZZA_OPTIONS.map((opt) => {
-              const active = opt === pizza;
-              return (
-                <motion.button
-                  key={opt}
-                  type="button"
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => setPizza(opt)}
-                  className={cn(
-                    "flex items-center gap-1.5 rounded-md border-2 px-1.5 py-1.5 text-left transition-colors",
-                  )}
-                  style={{
-                    borderColor: active ? skin.brand : "#e5e7eb",
-                    background: active ? skin.brandSoft : "white",
-                  }}
-                >
-                  <span
-                    className="flex h-3.5 w-3.5 flex-none items-center justify-center rounded-full border-2"
-                    style={{
-                      borderColor: active ? skin.brand : "#cbd5e1",
-                      background: active ? skin.brand : "white",
-                    }}
-                  >
-                    {active && (
-                      <span className="h-1 w-1 rounded-full bg-white" />
-                    )}
-                  </span>
-                  <span className="font-ui text-[9px] font-medium text-neutral-900 line-clamp-1">
-                    {opt}
-                  </span>
-                </motion.button>
-              );
-            })}
-          </div>
-        </Section>
+        {product.customSections.length === 0 && (
+          <p className="mt-4 rounded-md bg-neutral-50 px-3 py-2 text-[11px] text-neutral-500">
+            Este item não tem personalização. Ajuste só a quantidade e adicione
+            ao carrinho.
+          </p>
+        )}
 
-        <Section title="Escolha sua batata" required="0/3" extra="(+R$ 0,00)" skin={skin}>
-          <Stepper
-            label="Batata M"
-            extraLabel="+ R$ 2,00"
-            value={batataM}
-            onChange={setBatataM}
+        {product.customSections.map((sec) => (
+          <Section
+            key={sec.title}
+            title={sec.title}
+            required={sec.required}
             skin={skin}
-          />
-          <Stepper
-            label="Batata G"
-            extraLabel="+ R$ 5,00"
-            value={batataG}
-            onChange={setBatataG}
-            skin={skin}
-          />
-        </Section>
+          >
+            {sec.single ? (
+              <div className="grid grid-cols-2 gap-1.5">
+                {sec.options.map((opt) => {
+                  const active = singleChoices[sec.title] === opt.id;
+                  return (
+                    <motion.button
+                      key={opt.id}
+                      type="button"
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => setSingle(sec.title, opt.id)}
+                      className="flex items-center gap-1.5 rounded-md border-2 px-2 py-2 text-left transition-colors"
+                      style={{
+                        borderColor: active ? skin.brand : "#e5e7eb",
+                        background: active ? skin.brandSoft : "white",
+                      }}
+                    >
+                      <span
+                        className="flex h-3.5 w-3.5 flex-none items-center justify-center rounded-full border-2"
+                        style={{
+                          borderColor: active ? skin.brand : "#cbd5e1",
+                          background: active ? skin.brand : "white",
+                        }}
+                      >
+                        {active && (
+                          <span className="h-1 w-1 rounded-full bg-white" />
+                        )}
+                      </span>
+                      <span className="font-ui text-[10px] font-medium text-neutral-900 line-clamp-1">
+                        {opt.label}
+                      </span>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                {sec.options.map((opt) => {
+                  const key = `${sec.title}:${opt.id}`;
+                  const value = counts[key] ?? 0;
+                  return (
+                    <div
+                      key={opt.id}
+                      className="flex items-center justify-between rounded-md border border-neutral-200 bg-white px-2.5 py-1.5"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="flex h-7 w-7 items-center justify-center rounded-md"
+                          style={{
+                            background: skin.brandSoft,
+                            color: skin.brand,
+                          }}
+                        >
+                          {sec.kind === "sabores" || sec.kind === "tamanho" ? (
+                            <Pizza size={12} strokeWidth={1.75} />
+                          ) : (
+                            <Beef size={12} strokeWidth={1.75} />
+                          )}
+                        </div>
+                        <span className="font-ui text-[11px] font-medium text-neutral-700">
+                          {opt.label}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {opt.price && (
+                          <span className="font-ui text-[10px] font-bold text-neutral-700 tabular-nums">
+                            + R$ {opt.price.toFixed(2).replace(".", ",")}
+                          </span>
+                        )}
+                        <Stepper
+                          value={value}
+                          onChange={(v) => setCount(key, v)}
+                          skin={skin}
+                          compact
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </Section>
+        ))}
 
-        <div className="mt-3 flex items-center justify-between">
+        <div className="mt-4 flex items-center justify-between">
           <div className="flex items-baseline gap-2">
             <span className="text-[12px] text-neutral-400 line-through tabular-nums">
-              R$ 29,90
+              R$ {product.oldPrice.toFixed(2).replace(".", ",")}
             </span>
             <span
               className="font-ui text-[16px] font-bold tabular-nums"
               style={{ color: "#16a34a" }}
             >
-              R$ 29,90
+              R$ {unitPrice.toFixed(2).replace(".", ",")}
             </span>
           </div>
           <Stepper
-            value={qty}
+            value={quantity}
             onChange={(v) => {
-              if (v > qty) onAdd(product.id);
-              else onRemove(product.id);
+              if (v > quantity) onAdd();
+              else onRemove();
             }}
             skin={skin}
             compact
@@ -762,6 +1196,7 @@ function ItemDetailModal({
       <div className="flex gap-2 border-t border-neutral-100 bg-white p-3">
         <button
           type="button"
+          onClick={onClose}
           className="flex-1 rounded-md border-2 py-2.5 font-ui text-[12px] font-bold"
           style={{ borderColor: skin.brand, color: skin.brand }}
         >
@@ -771,7 +1206,7 @@ function ItemDetailModal({
           type="button"
           data-tour="taa-combo-burger"
           whileTap={{ scale: 0.97 }}
-          onClick={() => onAdd(product.id)}
+          onClick={onAdd}
           className="flex-[1.4] rounded-md py-2.5 font-ui text-[12px] font-bold text-white shadow-brand"
           style={{ background: skin.brand }}
         >
@@ -785,13 +1220,11 @@ function ItemDetailModal({
 function Section({
   title,
   required,
-  extra,
   children,
   skin,
 }: {
   title: string;
   required?: string;
-  extra?: string;
   children: React.ReactNode;
   skin: Skin;
 }) {
@@ -807,12 +1240,14 @@ function Section({
         >
           {title}
         </p>
-        <p
-          className="font-ui text-[10px] font-medium"
-          style={{ color: skin.brand }}
-        >
-          {required} {extra && <span className="opacity-70">{extra}</span>}
-        </p>
+        {required && (
+          <p
+            className="font-ui text-[10px] font-medium"
+            style={{ color: skin.brand }}
+          >
+            {required}
+          </p>
+        )}
       </div>
       <div className="mt-2 space-y-1.5">{children}</div>
     </div>
@@ -820,15 +1255,11 @@ function Section({
 }
 
 function Stepper({
-  label,
-  extraLabel,
   value,
   onChange,
   skin,
   compact,
 }: {
-  label?: string;
-  extraLabel?: string;
   value: number;
   onChange: (v: number) => void;
   skin: Skin;
@@ -837,13 +1268,17 @@ function Stepper({
   if (compact) {
     return (
       <div
-        className="flex items-center gap-1.5 rounded-md border px-1 py-0.5"
+        className="flex items-center gap-1 rounded-md border px-1 py-0.5"
         style={{ borderColor: skin.brand }}
       >
         <button
           type="button"
           onClick={() => onChange(Math.max(0, value - 1))}
-          className="flex h-6 w-6 items-center justify-center"
+          disabled={value === 0}
+          className={cn(
+            "flex h-6 w-6 items-center justify-center",
+            value === 0 && "opacity-40",
+          )}
           style={{ color: skin.brand }}
         >
           <Minus size={11} strokeWidth={2.5} />
@@ -867,28 +1302,11 @@ function Stepper({
       </div>
     );
   }
-  return (
-    <div className="flex items-center justify-between rounded-md border border-neutral-200 bg-white px-2 py-1.5">
-      <div className="flex items-center gap-2">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-amber-100 text-amber-700">
-          <Pizza size={12} strokeWidth={1.75} />
-        </div>
-        <span className="font-ui text-[10px] font-medium text-neutral-700">
-          {label}
-        </span>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="text-[10px] font-bold text-neutral-700 tabular-nums">
-          {extraLabel}
-        </span>
-        <Stepper value={value} onChange={onChange} skin={skin} compact />
-      </div>
-    </div>
-  );
+  return null;
 }
 
 // ---------------------------------------------------------------------------
-// Payment modal — list of methods + NFC card prompt when selected
+// Payment modal — methods + NFC banner when selected
 // ---------------------------------------------------------------------------
 
 function PaymentModal({
@@ -979,7 +1397,11 @@ function PaymentModal({
                 className="flex h-9 w-9 flex-none items-center justify-center rounded-md text-white"
                 style={{ background: skin.brand }}
               >
-                <CreditCard size={16} strokeWidth={2} />
+                {selected === "pix" ? (
+                  <Wallet size={16} strokeWidth={2} />
+                ) : (
+                  <CreditCard size={16} strokeWidth={2} />
+                )}
               </span>
               <span
                 className="flex-1 font-ui text-[14px] font-bold"
@@ -996,15 +1418,24 @@ function PaymentModal({
             >
               <motion.span
                 animate={{ scale: [1, 1.08, 1] }}
-                transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                transition={{
+                  duration: 1.6,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
                 className="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-white"
                 style={{ color: skin.brand }}
               >
-                <Wifi size={24} strokeWidth={2.25} />
+                {selected === "pix" ? (
+                  <Wallet size={24} strokeWidth={2.25} />
+                ) : (
+                  <Wifi size={24} strokeWidth={2.25} />
+                )}
               </motion.span>
               <p className="font-ui text-[11px] leading-snug">
-                Insira ou aproxime seu cartão da maquininha para realizar o
-                pagamento
+                {selected === "pix"
+                  ? "Use a câmera do seu app do banco para ler o QR no display do caixa."
+                  : "Insira ou aproxime seu cartão da maquininha para realizar o pagamento."}
               </p>
             </motion.div>
           </div>
@@ -1018,7 +1449,7 @@ function PaymentModal({
         <div>
           <p className="text-[10px] opacity-80">Total:</p>
           <p className="font-ui text-[16px] font-bold tabular-nums">
-            R$ {total.toFixed(2).replace(".", ",")}
+            R$ {(total || 0).toFixed(2).replace(".", ",")}
           </p>
         </div>
         <div className="flex gap-1.5">
@@ -1042,16 +1473,26 @@ function PaymentModal({
 }
 
 // ---------------------------------------------------------------------------
-// Done overlay — processing → confirmed with senha
+// Confirmation overlay
 // ---------------------------------------------------------------------------
 
 function ProcessingDoneOverlay({
   skin,
   total,
+  method,
 }: {
   skin: Skin;
   total: number;
+  method: "credito" | "debito" | "pix" | null;
 }) {
+  const methodLabel =
+    method === "credito"
+      ? "Crédito aprovado"
+      : method === "debito"
+        ? "Débito aprovado"
+        : method === "pix"
+          ? "Pix confirmado"
+          : "Pagamento aprovado";
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -1080,9 +1521,7 @@ function ProcessingDoneOverlay({
         <h2 className="font-ui text-[20px] font-bold text-neutral-900">
           Pedido confirmado
         </h2>
-        <p className="mt-1 text-[12px] text-neutral-500">
-          Acompanhe sua senha no painel da retirada
-        </p>
+        <p className="mt-1 text-[12px] text-neutral-500">{methodLabel}</p>
       </div>
 
       <div
@@ -1120,7 +1559,7 @@ function ProcessingDoneOverlay({
 }
 
 // ---------------------------------------------------------------------------
-// Footer total bar matching the reference (dark + total + cta)
+// Bottom dark total bar
 // ---------------------------------------------------------------------------
 
 function BottomTotalBar({
@@ -1164,4 +1603,3 @@ function BottomTotalBar({
     </div>
   );
 }
-

@@ -16,20 +16,18 @@ const fmtItemList = (items?: unknown): string => {
 };
 
 // ===== TAA ==============================================================
-// O TAA é o sistema de autoatendimento white-label. O mesmo software roda
-// com a marca do cliente (Sapore, Astrobox, etc.). O tour destaca isso no
-// primeiro passo e usa o nome da marca ativa nas descrições.
+// O TAA tem dois temas no topo (Restaurante Central e Astrobox) que demonstram
+// como o mesmo totem se adapta visualmente ao comércio do cliente. O tour
+// menciona isso no primeiro passo sem usar o jargão "white-label".
 export const taaFlow: TourStep[] = [
   {
     id: "welcome",
     targetSelector: '[data-tour="taa-eat-here"]',
     placement: "right",
     title: (live) =>
-      live.skinName
-        ? `Pedido no totem ${live.skinName}`
-        : "Comece o pedido",
+      `Pedido no totem ${live.skinName ?? "Restaurante Central"}`,
     description:
-      "Use o seletor white-label no topo para alternar entre Sapore e Astrobox: o mesmo TAA com a cara do cliente. Toque em Comer aqui para começar.",
+      "No topo dá pra alternar entre Restaurante Central e Astrobox para ver como o mesmo totem ganha a cara de cada comércio. Toque em Comer aqui para começar.",
     requiresInteraction: true,
     companions: ["OrderTicket"],
   },
@@ -37,9 +35,9 @@ export const taaFlow: TourStep[] = [
     id: "category",
     targetSelector: '[data-tour="taa-cat-lanches"]',
     placement: "right",
-    title: "Explore o cardápio",
+    title: "Navegue pelas categorias",
     description:
-      "Categorias na lateral esquerda, banner promocional no topo, grid de pratos na direita. Toque em qualquer prato para personalizar.",
+      "Sushi, peixes, massas, sobremesas, bebidas. Toque em qualquer categoria para trocar o cardápio. Cada uma tem produtos próprios.",
     actionLabel: "Continuar",
     companions: ["OrderTicket"],
   },
@@ -47,9 +45,12 @@ export const taaFlow: TourStep[] = [
     id: "add-combo",
     targetSelector: '[data-tour="taa-combo-burger"]',
     placement: "left",
-    title: "Personalize e adicione",
+    title: (live) =>
+      live.selectedItemName
+        ? `Adicione ${live.selectedItemName}`
+        : "Personalize e adicione",
     description:
-      "Escolha sabor, ajuste acompanhamentos e quantidade. Toque em Adicionar ao carrinho. O cupom ao lado atualiza em tempo real.",
+      "Cada produto abre com suas próprias opções: ponto da carne, sabores, acompanhamentos. Ajuste e toque em Adicionar ao carrinho.",
     requiresInteraction: true,
     companions: ["OrderTicket"],
   },
@@ -57,9 +58,20 @@ export const taaFlow: TourStep[] = [
     id: "pay-pix",
     targetSelector: '[data-tour="taa-pix-button"]',
     placement: "left",
-    title: "Pague com PIX",
-    description: (live) =>
-      `Total ${fmtMoney(live.cartTotal as number)}. Toque em Pix para gerar o QR. Crédito e Débito/Voucher também ficam disponíveis.`,
+    title: (live) =>
+      live.paymentLabel
+        ? `Pagar com ${live.paymentLabel}`
+        : "Escolha o pagamento",
+    description: (live) => {
+      const total = fmtMoney(live.cartTotal as number);
+      if (live.paymentMethod === "pix") {
+        return `Total ${total}. Pix abre o QR no display do caixa para o cliente apontar a câmera do app do banco.`;
+      }
+      if (live.paymentMethod === "credito" || live.paymentMethod === "debito") {
+        return `Total ${total}. ${live.paymentLabel} envia o valor para a maquininha aproximar o cartão.`;
+      }
+      return `Total ${total}. Escolha Crédito, Débito/Voucher ou Pix. O dispositivo de cobrança ao lado se adapta à opção escolhida.`;
+    },
     requiresInteraction: true,
     companions: ["OrderTicket", "POSCardReader"],
   },
@@ -68,8 +80,10 @@ export const taaFlow: TourStep[] = [
     targetSelector: '[data-tour="taa-senha-card"]',
     placement: "left",
     title: "Pedido confirmado",
-    description:
-      "Senha emitida e enviada para a cozinha. O cupom registra o pagamento aprovado.",
+    description: (live) =>
+      live.paymentLabel
+        ? `${live.paymentLabel} aprovado. Senha emitida e enviada para a cozinha.`
+        : "Pagamento aprovado. Senha emitida e enviada para a cozinha.",
     actionLabel: "Concluir",
     companions: ["OrderTicket", "POSCardReader"],
   },

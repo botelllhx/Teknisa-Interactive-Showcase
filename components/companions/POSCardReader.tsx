@@ -1,14 +1,17 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { CreditCard, Wifi, CheckCircle2, Signal } from "lucide-react";
+import { CreditCard, Wifi, CheckCircle2, Signal, QrCode, Smartphone, Banknote } from "lucide-react";
 import { CompanionShell } from "./CompanionShell";
+
+export type PaymentMethodKind = "cartao" | "credito" | "debito" | "pix" | "dinheiro";
 
 interface POSCardReaderProps {
   amount?: number;
   status?: "idle" | "waiting" | "approved";
   brand?: string;
   installments?: string;
+  method?: PaymentMethodKind;
   className?: string;
 }
 
@@ -17,17 +20,30 @@ export function POSCardReader({
   status = "waiting",
   brand = "VISA",
   installments = "1× sem juros",
+  method = "cartao",
   className,
 }: POSCardReaderProps) {
   const formatted = amount.toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
   });
+  const isPix = method === "pix";
+  const isCash = method === "dinheiro";
+  const shellLabel = isPix
+    ? "Pix"
+    : isCash
+      ? "Caixa"
+      : "Maquininha";
+  const shellSubLabel = isPix
+    ? "QR no display do caixa"
+    : isCash
+      ? "Operador conta o troco"
+      : "Operador · caixa 02";
 
   return (
     <CompanionShell
-      label="Maquininha"
-      sublabel="Operador · Caixa 02"
+      label={shellLabel}
+      sublabel={shellSubLabel}
       live
       pulse={status === "approved"}
       className={className}
@@ -123,8 +139,20 @@ export function POSCardReader({
           >
             {formatted}
           </motion.p>
-          <p className="mt-1 text-[10px] font-semibold text-neutral-500">
-            {brand} · {installments}
+          <p className="mt-1 flex items-center gap-1.5 text-[10px] font-semibold text-neutral-500">
+            {isPix ? (
+              <>
+                <Smartphone size={11} strokeWidth={2.25} /> Pix · aprovação imediata
+              </>
+            ) : isCash ? (
+              <>
+                <Banknote size={11} strokeWidth={2.25} /> Dinheiro · troco calculado
+              </>
+            ) : (
+              <>
+                <CreditCard size={11} strokeWidth={2.25} /> {brand} · {installments}
+              </>
+            )}
           </p>
 
           <AnimatePresence mode="wait">
@@ -148,9 +176,37 @@ export function POSCardReader({
                   Pagamento aprovado
                 </span>
               </motion.div>
+            ) : isPix ? (
+              <motion.div
+                key="pix-waiting"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="mt-3 flex flex-col items-center gap-1.5 rounded-lg border border-dashed border-brand/30 bg-white py-2.5"
+              >
+                <QrCode size={64} strokeWidth={0.5} className="text-neutral-900" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-brand">
+                  Aponte a câmera do app
+                </span>
+              </motion.div>
+            ) : isCash ? (
+              <motion.div
+                key="cash-waiting"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-dashed border-warning/30 bg-warning/5 py-2.5 text-warning"
+              >
+                <Banknote size={16} strokeWidth={2} />
+                <span className="text-[11px] font-bold uppercase tracking-wider">
+                  Aguardando o caixa
+                </span>
+              </motion.div>
             ) : (
               <motion.div
-                key="waiting"
+                key="card-waiting"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

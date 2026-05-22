@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useLayoutEffect, useRef, useState } from "react";
 import { ArrowRight, MousePointer2, X } from "lucide-react";
 import { resolveText, type TourStep } from "@/data/solutions";
 import { useTourLive } from "@/lib/tourState";
@@ -19,7 +20,10 @@ export interface TourTooltipProps {
 }
 
 const TOOLTIP_WIDTH = 320;
-const TOOLTIP_HEIGHT_ESTIMATE = 168;
+// Conservative default before we measure the actual tooltip; we always
+// re-clamp after layout to fit the real height. Bigger estimate keeps the
+// first paint from spilling past the viewport on tall tooltips.
+const TOOLTIP_HEIGHT_ESTIMATE = 240;
 const FRAME_GAP = 28;
 const VIEWPORT_MARGIN = 20;
 
@@ -39,6 +43,7 @@ export interface TooltipPosition {
 function computePosition(
   targetRect: DOMRect | null,
   frameRect: DOMRect | null,
+  tooltipHeight: number = TOOLTIP_HEIGHT_ESTIMATE,
 ): TooltipPosition {
   if (typeof window === "undefined") {
     return { top: 80, left: 80, anchor: "center" };
@@ -49,7 +54,7 @@ function computePosition(
   // No frame yet → center fallback
   if (!frameRect) {
     return {
-      top: vh / 2 - TOOLTIP_HEIGHT_ESTIMATE / 2,
+      top: vh / 2 - tooltipHeight / 2,
       left: vw / 2 - TOOLTIP_WIDTH / 2,
       anchor: "center",
     };
@@ -62,35 +67,31 @@ function computePosition(
     ? targetRect.top + targetRect.height / 2
     : frameRect.top + frameRect.height / 2;
 
-  // Space available in each side of the frame
+  // Space available on each side of the frame
   const spaceRight = vw - frameRect.right - FRAME_GAP - VIEWPORT_MARGIN;
   const spaceLeft = frameRect.left - FRAME_GAP - VIEWPORT_MARGIN;
   const spaceBelow = vh - frameRect.bottom - FRAME_GAP - VIEWPORT_MARGIN;
   const spaceAbove = frameRect.top - FRAME_GAP - VIEWPORT_MARGIN;
 
-  // Candidate placements, ordered by preference based on space and target proximity
+  // Candidate placements, ordered by preference
   const candidates: Array<{ anchor: Anchor; fits: boolean; space: number }> = [
     { anchor: "right", fits: spaceRight >= TOOLTIP_WIDTH, space: spaceRight },
     { anchor: "left", fits: spaceLeft >= TOOLTIP_WIDTH, space: spaceLeft },
     {
       anchor: "below",
-      fits: spaceBelow >= TOOLTIP_HEIGHT_ESTIMATE,
+      fits: spaceBelow >= tooltipHeight,
       space: spaceBelow,
     },
     {
       anchor: "above",
-      fits: spaceAbove >= TOOLTIP_HEIGHT_ESTIMATE,
+      fits: spaceAbove >= tooltipHeight,
       space: spaceAbove,
     },
   ];
 
-  // Prefer sides over vertical (companions live in side columns but they are
-  // narrower than the tooltip will overlap, and side placement keeps the
-  // arrow horizontal which reads better on a wide TV).
   const fitting = candidates.filter((c) => c.fits);
   let chosen: Anchor;
   if (fitting.length === 0) {
-    // Pick the one with most room, even if it overflows slightly
     chosen = candidates.sort((a, b) => b.space - a.space)[0].anchor;
   } else {
     chosen = fitting[0].anchor;
@@ -101,34 +102,34 @@ function computePosition(
   switch (chosen) {
     case "right":
       left = frameRect.right + FRAME_GAP;
-      top = targetCenterY - TOOLTIP_HEIGHT_ESTIMATE / 2;
+      top = targetCenterY - tooltipHeight / 2;
       break;
     case "left":
       left = frameRect.left - FRAME_GAP - TOOLTIP_WIDTH;
-      top = targetCenterY - TOOLTIP_HEIGHT_ESTIMATE / 2;
+      top = targetCenterY - tooltipHeight / 2;
       break;
     case "below":
       top = frameRect.bottom + FRAME_GAP;
       left = targetCenterX - TOOLTIP_WIDTH / 2;
       break;
     case "above":
-      top = frameRect.top - FRAME_GAP - TOOLTIP_HEIGHT_ESTIMATE;
+      top = frameRect.top - FRAME_GAP - tooltipHeight;
       left = targetCenterX - TOOLTIP_WIDTH / 2;
       break;
     case "center":
     default:
-      top = vh / 2 - TOOLTIP_HEIGHT_ESTIMATE / 2;
+      top = vh / 2 - tooltipHeight / 2;
       left = vw / 2 - TOOLTIP_WIDTH / 2;
   }
 
-  // Clamp to viewport
+  // Clamp to viewport using the actual height
   left = Math.max(
     VIEWPORT_MARGIN,
     Math.min(left, vw - TOOLTIP_WIDTH - VIEWPORT_MARGIN),
   );
   top = Math.max(
     VIEWPORT_MARGIN,
-    Math.min(top, vh - TOOLTIP_HEIGHT_ESTIMATE - VIEWPORT_MARGIN),
+    Math.min(top, vh - tooltipHeight - VIEWPORT_MARGIN),
   );
 
   return { top, left, anchor: chosen };
@@ -145,7 +146,6 @@ export function TourTooltip({
   isLast,
 }: TourTooltipProps) {
   const live = useTourLive((s) => s.live);
-  const pos = computePosition(targetRect, frameRect);
   const requiresInteraction = step.requiresInteraction === true;
   const showNextButton = !requiresInteraction || isLast;
 
@@ -157,8 +157,28 @@ export function TourTooltip({
       ? "Concluir"
       : "Próximo";
 
+  // Measure the actual tooltip after layout so we can re-clamp against the
+  // real height. Tooltip content varies (long dynamic descriptions, etc.),
+  // so a fixed estimate is not enough to guarantee it never spills past
+  // the viewport.
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [measuredHeight, setMeasuredHeight] = useState<number>(
+    TOOLTIP_HEIGHT_ESTIMATE,
+  );
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const height = el.getBoundingClientRect().height;
+    // setState with the same value is a no-op, so no infinite loop here.
+    setMeasuredHeight(height);
+  }, [step.id, title, description]);
+
+  const pos = computePosition(targetRect, frameRect, measuredHeight);
+
   return (
     <motion.div
+      ref={ref}
       key={step.id}
       role="dialog"
       aria-live="polite"
@@ -235,11 +255,12 @@ export function tooltipEdgePoint(
   pos: TooltipPosition,
   targetCx: number,
   targetCy: number,
+  tooltipHeight: number = TOOLTIP_HEIGHT_ESTIMATE,
 ): { x: number; y: number } {
   const left = pos.left;
   const right = pos.left + TOOLTIP_WIDTH;
   const top = pos.top;
-  const bottom = pos.top + TOOLTIP_HEIGHT_ESTIMATE;
+  const bottom = pos.top + tooltipHeight;
   switch (pos.anchor) {
     case "right":
       return { x: left, y: clamp(targetCy, top + 16, bottom - 16) };
@@ -251,7 +272,7 @@ export function tooltipEdgePoint(
       return { x: clamp(targetCx, left + 16, right - 16), y: top };
     case "center":
     default:
-      return { x: left + TOOLTIP_WIDTH / 2, y: top + TOOLTIP_HEIGHT_ESTIMATE / 2 };
+      return { x: left + TOOLTIP_WIDTH / 2, y: top + tooltipHeight / 2 };
   }
 }
 

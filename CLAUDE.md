@@ -91,8 +91,8 @@ O painel deve usar **exatamente os nomes e agrupamentos do site/produto Teknisa*
 
 | Tecnologia | Uso |
 |---|---|
-| `@fontsource/sora` | Fonte Sora (títulos) |
-| `@fontsource/rubik` | Fonte Rubik (corpo e interface) |
+| `next/font/google` — Sora | Fonte de títulos (display) |
+| `next/font/google` — Roboto | Fonte de corpo e UI (substitui Rubik a partir da v6.6) |
 | `clsx` + `tailwind-merge` | Composição condicional de classes |
 | `zustand` | Estado global simples (navegação, progresso de fluxo) |
 | `react-use` | Hooks utilitários (idle timer, tamanho de tela) |
@@ -265,12 +265,17 @@ export const colors = {
 /* globals.css */
 
 /* Títulos: Sora */
-/* Corpo e UI: Rubik */
+/* Corpo e UI: Roboto (era Rubik até v6.5; trocado em v6.6 por preferência do cliente) */
 
 :root {
   --font-display: 'Sora', sans-serif;
-  --font-ui: 'Rubik', sans-serif;
+  --font-ui: 'Roboto', sans-serif;
 }
+
+/* IMPORTANTE: globals.css força Roboto em button, input, p, span, li, label,
+   td, th, strong, em. Só h1-h6 e quem usa `font-display` explicitamente
+   ficam em Sora. Isso garante que o "texto" do projeto seja Roboto, mesmo
+   em mockups que tinham font-display em rótulos pequenos. */
 
 /* Escala tipográfica */
 /* display-2xl: 4.5rem / 700 — Hero principal */
@@ -306,8 +311,8 @@ module.exports = {
         },
       },
       fontFamily: {
-        display: ['Sora', 'sans-serif'],
-        ui: ['Rubik', 'sans-serif'],
+        display: ['var(--font-display)', 'Sora', 'sans-serif'],
+        ui: ['var(--font-ui)', 'Roboto', 'sans-serif'],
       },
       boxShadow: {
         'frame': '0 20px 60px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.06)',
@@ -1706,6 +1711,142 @@ Antes de marcar uma solução como pronta no padrão V6, validar:
 
 ---
 
+## 22. Padrão V7 — Refinamentos funcionais (v6.6 → v6.8.x)
+
+Iterações sobre o padrão V6 baseadas em feedback do produto rodando em TV touch.
+Tudo aqui é **obrigatório** para qualquer mockup novo ou retrabalho de mockup existente.
+
+### 22.1 Fonte UI: Roboto, não Rubik
+
+- A fonte de **texto** do projeto é Roboto (família UI). Sora segue para títulos display.
+- `app/layout.tsx` carrega via `next/font/google`.
+- `globals.css` força `font-family: var(--font-ui)` em `button, input, textarea, select, label, li, p, span, td, th, small, strong, em` para que rótulos pequenos em mockups (que historicamente usavam `font-display`) também caiam em Roboto.
+- **Não** voltar a usar Rubik. **Não** usar Sora em textos pequenos de mockup.
+
+### 22.2 TV touch não tem teclado
+
+A vitrine roda em TV touch sem teclado físico. Qualquer interação que exija digitação **quebra** o produto. Substitua:
+
+- **Cupons**: lista de chips clicáveis (`COUPONS: { code, label, pct }[]`) em vez de input. Tocar aplica, tocar de novo / botão "Remover" tira. Ver `QuickPass.tsx` como referência.
+- **Busca**: input visual disabled (para parecer que existe) ou botões de categoria.
+- **Observação / CPF / código**: opções pré-definidas em chips ou seletor; nunca campo livre.
+- **Quantidade**: stepper `−/+` sempre, nunca input numérico.
+
+Se o fluxo do produto real depender de digitação, simule com seleção de valores pré-prontos.
+
+### 22.3 Sem em-dashes (`—`) em tooltip text
+
+O cliente lê os em-dashes como travessões longos que poluem visualmente o tooltip. Use **vírgula** ou **frase nova** no lugar.
+
+- Errado: `"Pagou no celular — sem fila."`
+- Certo: `"Pagou no celular, sem fila."` ou `"Pagou no celular. Sem fila."`
+- O sweep em `data/flows/*.ts` foi feito na v6.7. Não reintroduzir em flows novos.
+
+### 22.4 Tooltips dinâmicos via `lib/tourState.ts`
+
+Tooltips estáticos que inventam números (ex: "5 itens, R$ 100") quebram a ilusão quando o usuário interage e o carrinho real é diferente. A v7 resolve isso:
+
+```ts
+// lib/tourState.ts (Zustand)
+export interface TourLiveState {
+  selectedItemName?: string;
+  cartCount?: number;
+  cartTotal?: number;
+  cartItems?: { id: string; qty: number; name: string; price: number }[];
+  paymentMethod?: 'cartao' | 'pix' | 'credito' | 'debito' | 'dinheiro';
+  paymentLabel?: string;
+  couponApplied?: boolean;
+  couponCode?: string;
+  discountValue?: number;
+  selectedAddons?: string[];
+  [key: string]: unknown;
+}
+
+export const useTourLive = create<...>(...);
+```
+
+**Cada mockup deve**:
+
+1. Levantar o state das selections para o topo do componente (cart, payment, qty, addons).
+2. `useEffect` no topo que faz `patchLive({ ... })` sempre que esse state mudar.
+3. Resetar via `useTourLive.getState().reset()` é responsabilidade do `SolutionDemo` ao trocar de solução (já implementado).
+
+**Cada flow step pode declarar `title`, `description`, `actionLabel` como string OU função**:
+
+```ts
+{
+  id: 'pagamento',
+  title: (live) => live.paymentLabel
+    ? `Pagando com ${live.paymentLabel}`
+    : 'Forma de pagamento',
+  description: (live) =>
+    `Total ${brl(live.cartTotal)} via ${live.paymentLabel ?? 'método selecionado'}.`,
+  // ...
+}
+```
+
+`resolveText(step.title, live)` faz a ponte. Helpers de formatação em `lib/tourState.ts` (`brl(value)`).
+
+### 22.5 Tooltip sempre fora do device frame
+
+Tooltip cobrindo o mockup é inaceitável: esconde o que o usuário tem que tocar. A v7 garante isso por construção:
+
+- Cada device frame (`MobileFrame`, `DesktopFrame`, `TabletFrame`, `POSTerminalFrame`, `KioskFrame`) recebe `data-tour-frame="true"` na motion.div raiz.
+- `useTour` mede em paralelo `targetRect` e `frameRect`.
+- `TourTooltip.computePosition` escolhe quadrante (`right` > `left` > `below` > `above`) baseado no espaço **fora do frame**, não do alvo. Gap de 28px entre tooltip e frame.
+- Quando há espaço lateral suficiente, preferir esquerda/direita (a seta horizontal lê melhor em TV).
+- **Re-clamp por altura medida**: o tooltip se mede via `useLayoutEffect` e re-clampa `top` contra o viewport real, evitando que tooltip alto vaze pra fora da tela.
+
+### 22.6 Linha conectora reta + bolinha pulsante
+
+A v6.8 introduziu a linha conectora; a v6.8.1 trocou pra reta com bolinha porque o cliente achou a curva ruim. **Não voltar pra Bézier nem para arrow head**.
+
+- SVG renderizado dentro de `TourOverlay`.
+- `<motion.line>` reta, brand color `#020788`, `strokeWidth 2.5`, `strokeDasharray "6 5"`, anima `pathLength 0→1` em 350ms.
+- Ponta termina logo fora do `SpotlightRing` (não invade a área destacada).
+- `<motion.circle>` r=6 sólida brand + um halo `scale [1, 1.8, 1]` em loop 1.6s para chamar atenção.
+
+### 22.7 PDV: 2 colunas de atalhos
+
+Na referência do produto real, a coluna direita do PDV é uma **grade 2 colunas × 8 linhas** de atalhos com tecla F#/ALT+. O painel atual reflete isso:
+
+- `<main className="grid grid-cols-[260px_1fr_320px]">`
+- `FunctionKeysColumn` = `grid grid-cols-2 gap-1`, botões altura mínima 44px.
+- `FUNCTION_KEYS` tem 16 entradas (ajuste o array antes de mexer no layout).
+
+### 22.8 Mudanças por solução de Frente de Loja (v7)
+
+| Solução | Mudança |
+|---|---|
+| TAA | Mantida (referência V6). |
+| PDV Novo | Coluna direita = 2 colunas de atalhos. Texto do tooltip "Marguerita" (era "Costela"). |
+| SmartPOS | State lifted, 5 views (catalog, detail, cart, payment-select, success). PaymentSelectView com 4 formas (Crédito, Débito, Pix, Dinheiro). Sem processing screen separado. |
+| Cardápio Digital | Gradientes refinados (radial soft + brand). Tooltip da confirmação fala "lá na cozinha o pedido cai no KDS". |
+| QuickPass | **Repensado para eventos** (estádio/show). 4 views: catalog, cart, payment, success. Sem QR scanner (confundia). Companion = `RestaurantQueueBoard` com vendors do evento (Hell's Burgers, Pizza Stop, Doce&Cia). Cupom via chips. |
+
+### 22.9 KitchenDisplay: tema light obrigatório
+
+Companion KDS antes tinha tela LCD escura. Na v7 **toda a tela é light**:
+
+- Casca em cinza claro (regra 21.5 mantida).
+- Tela interna `linear-gradient(180deg, #ffffff, #f8f9fb)` com `inset shadow` sutil.
+- Pills de status (Novo/Em preparo/Pronto) com cor de marca, não invertidas em dark.
+- **Não** reintroduzir o tema escuro.
+
+### 22.10 Checklist V7 para qualquer mockup novo
+
+Antes de marcar pronto, validar (em cima dos checks da §21.11):
+
+- [ ] Mockup levanta state para o topo e patcheia `useTourLive` via `useEffect`.
+- [ ] Flow do mockup tem **pelo menos uma** descrição dinâmica que referencia o que o usuário escolheu.
+- [ ] Tooltip text não tem em-dashes (`—`).
+- [ ] Mockup não tem nenhum `<input>` ativo que exija digitação. Tudo via chip / botão / stepper.
+- [ ] Device frame tem `data-tour-frame="true"` (já vem dos componentes de frame; não remover).
+- [ ] Companions per-solução fazem sentido para o contexto (eventos ≠ refeitório ≠ caixa de loja).
+- [ ] Texto pequeno em mockup usa `font-ui` (Roboto), não `font-display`.
+
+---
+
 *Este documento deve ser mantido atualizado conforme o projeto evolui. Qualquer decisão de arquitetura, visual ou de fluxo que desvie das diretrizes aqui definidas deve ser documentada com justificativa.*
 
-*Versão: 6.0 | Projeto: Teknisa Interactive Showcase*
+*Versão: 7.0 | Projeto: Teknisa Interactive Showcase*

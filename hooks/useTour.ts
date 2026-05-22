@@ -96,15 +96,28 @@ export function useTour({
 
     scheduleMeasure();
 
-    // Poll briefly to wait for mockup transition animations to settle
+    // Poll until the target element exists in the DOM AND its layout has
+    // settled. We poll fast for the first second (8 × 100ms) to catch
+    // mockup transition animations, then slow down to 250ms for up to
+    // 12 seconds so long-running screens (e.g. Cardápio Inteligente AI
+    // generation ~7s) can still mount their target before we give up.
     let polls = 0;
+    let hasFound = false;
     intervalId = setInterval(() => {
+      const el = document.querySelector(step.targetSelector);
+      const found = !!el;
       scheduleMeasure();
       polls += 1;
-      if (polls > 8) {
+      if (found && !hasFound) {
+        hasFound = true;
+      }
+      // If we already found it once, keep polling a few more times to
+      // settle layout, then stop. If we never found it, keep trying for
+      // up to ~12 seconds total.
+      if ((hasFound && polls > 12) || polls > 60) {
         if (intervalId) clearInterval(intervalId);
       }
-    }, 80);
+    }, 200);
 
     const onResize = () => scheduleMeasure();
     window.addEventListener("resize", onResize);

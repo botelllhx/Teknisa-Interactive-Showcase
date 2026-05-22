@@ -146,14 +146,17 @@ export function useTour({
     setActive(true);
   }, []);
 
-  // If the current step requires interaction, listen for click on target
+  // If the current step requires interaction, listen for click on target.
+  // IMPORTANT: do NOT call stopPropagation here — that would block React's
+  // delegated onClick handler at the document root, breaking the mockup's
+  // own click behavior (e.g. "Adicionar ao carrinho"). We just observe the
+  // click and advance the tour; the React handler runs normally.
   useEffect(() => {
     if (!step || !step.requiresInteraction) return;
     const el = document.querySelector(step.targetSelector) as HTMLElement | null;
     if (!el) return;
 
-    const handler = (event: Event) => {
-      event.stopPropagation();
+    const handler = () => {
       advance();
     };
     el.addEventListener("click", handler);

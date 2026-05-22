@@ -1347,73 +1347,68 @@ function PaymentModal({
         <h2 className="font-ui text-[18px] font-bold text-neutral-900">
           Pagamento
         </h2>
+        <p className="mt-2 text-[12px] text-neutral-700">
+          Escolha uma forma de pagamento. Pode trocar quantas vezes quiser.
+        </p>
 
-        {!selected && (
-          <>
-            <p className="mt-2 text-[12px] text-neutral-700">
-              Escolha uma forma de pagamento:
-            </p>
-            <div className="mt-3 space-y-2">
-              {methods.map((m) => (
-                <motion.button
-                  key={m.id}
-                  type="button"
-                  whileTap={{ scale: 0.98 }}
-                  data-tour={m.id === "pix" ? "taa-pix-button" : undefined}
-                  onClick={() => onPick(m.id)}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors"
-                  style={{ background: skin.brandSoft }}
+        <div className="mt-3 space-y-2">
+          {methods.map((m) => {
+            const active = selected === m.id;
+            return (
+              <motion.button
+                key={m.id}
+                type="button"
+                whileTap={{ scale: 0.98 }}
+                data-tour={m.id === "pix" ? "taa-pix-button" : undefined}
+                onClick={() => onPick(m.id)}
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors"
+                style={{
+                  background: active ? skin.brand : skin.brandSoft,
+                  color: active ? "white" : skin.brand,
+                  border: active
+                    ? `2px solid ${skin.brand}`
+                    : "2px solid transparent",
+                }}
+              >
+                <span
+                  className="flex h-9 w-9 flex-none items-center justify-center rounded-md"
+                  style={{
+                    background: active ? "white" : skin.brand,
+                    color: active ? skin.brand : "white",
+                  }}
                 >
-                  <span
-                    className="flex h-9 w-9 flex-none items-center justify-center rounded-md text-white"
-                    style={{ background: skin.brand }}
-                  >
-                    <m.Icon size={16} strokeWidth={2} />
-                  </span>
-                  <span
-                    className="flex-1 font-ui text-[14px] font-bold"
-                    style={{ color: skin.brand }}
-                  >
-                    {m.label}
-                  </span>
+                  <m.Icon size={16} strokeWidth={2} />
+                </span>
+                <span className="flex-1 font-ui text-[14px] font-bold">
+                  {m.label}
+                </span>
+                {active ? (
+                  <CheckCircle2
+                    size={18}
+                    strokeWidth={2.25}
+                    className="text-white"
+                  />
+                ) : (
                   <ChevronRight
                     size={16}
                     strokeWidth={2.25}
                     style={{ color: skin.brand }}
                   />
-                </motion.button>
-              ))}
-            </div>
-          </>
-        )}
-
-        {selected && (
-          <div className="mt-3 space-y-3">
-            <div
-              className="flex items-center gap-3 rounded-xl px-3 py-3"
-              style={{ background: skin.brandSoft }}
-            >
-              <span
-                className="flex h-9 w-9 flex-none items-center justify-center rounded-md text-white"
-                style={{ background: skin.brand }}
-              >
-                {selected === "pix" ? (
-                  <Wallet size={16} strokeWidth={2} />
-                ) : (
-                  <CreditCard size={16} strokeWidth={2} />
                 )}
-              </span>
-              <span
-                className="flex-1 font-ui text-[14px] font-bold"
-                style={{ color: skin.brand }}
-              >
-                {methods.find((m) => m.id === selected)?.label}
-              </span>
-            </div>
+              </motion.button>
+            );
+          })}
+        </div>
+
+        <AnimatePresence mode="wait">
+          {selected && (
             <motion.div
+              key={selected}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-3 rounded-xl p-3 text-white"
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.18 }}
+              className="mt-3 flex items-center gap-3 rounded-xl p-3 text-white"
               style={{ background: skin.brand }}
             >
               <motion.span
@@ -1438,8 +1433,8 @@ function PaymentModal({
                   : "Insira ou aproxime seu cartão da maquininha para realizar o pagamento."}
               </p>
             </motion.div>
-          </div>
-        )}
+          )}
+        </AnimatePresence>
       </div>
 
       <div

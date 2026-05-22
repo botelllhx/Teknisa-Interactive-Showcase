@@ -1,80 +1,110 @@
 import type { TourStep } from "../solutions";
+import { brl } from "../../lib/tourState";
 
+const fmtMoney = (v?: number) =>
+  typeof v === "number" ? brl(v) : "R$ 0,00";
+
+// ===== Mercadum =========================================================
 export const mercadumFlow: TourStep[] = [
   {
-    id: "cotacao",
-    targetSelector: '[data-tour="mc-quote-list"]',
+    id: "lista",
+    targetSelector: '[data-tour="mc-cotacao-table"]',
     placement: "right",
-    title: "Cotação abrangente",
+    title: "Cotações em tempo real",
     description:
-      "Lista de insumos a cotar com volume e unidade. Cotação aberta dispara para todos os fornecedores ativos simultaneamente.",
-  },
-  {
-    id: "comparativo",
-    targetSelector: '[data-tour="mc-supplier-grid"]',
-    placement: "top",
-    title: "Comparativo lado a lado",
-    description:
-      "Preço, prazo, avaliação. Comprador decide com toda informação à mão, sem trocar e-mails com 8 fornecedores.",
+      "Lista de RFQ com cliente, status (Pendente, Negociando, Proposta aceita, Finalizada), prazo e produtos cotados. Toque em qualquer linha para abrir a cotação.",
+    actionLabel: "Abrir cotação",
     companions: ["MiniDashboard"],
   },
   {
-    id: "selecao",
-    targetSelector: '[data-tour="mc-best-pick"]',
-    placement: "left",
-    title: "Seleção sugerida pela IA",
+    id: "abre-cotacao",
+    targetSelector: '[data-tour="mc-row-open"]',
+    placement: "right",
+    title: "Abra a RFQ-2024-001",
     description:
-      "Melhor combinação de preço, prazo e avaliação destacada. Comprador pode aceitar a sugestão ou priorizar outro critério.",
-    companions: ["MiniDashboard"],
-  },
-  {
-    id: "pedido",
-    targetSelector: '[data-tour="mc-po"]',
-    placement: "left",
-    title: "Pedido de compra gerado",
-    description:
-      "Cotação vira pedido formal em um clique. Documento padronizado, integrado ao ERP, pronto para envio.",
-    companions: ["MiniDashboard"],
-  },
-  {
-    id: "enviado",
-    targetSelector: '[data-tour="mc-sent"]',
-    placement: "left",
-    title: "Enviado ao fornecedor",
-    description:
-      "Pedido entra na fila do fornecedor com confirmação automática. Comprador acompanha o status sem ligar pedindo previsão.",
+      "Toque na primeira linha para ver detalhamento por produto, posição na disputa e comparativo com a menor cotação Mercadum.",
     requiresInteraction: true,
-    actionLabel: "Enviar pedido",
-    companions: ["MiniDashboard", "SimulatedNotification"],
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "detalhe",
+    targetSelector: '[data-tour="mc-products-table"]',
+    placement: "right",
+    title: (live) =>
+      live.mcSelected
+        ? `${live.mcSelected} produto(s) na seleção`
+        : "Tabela comparativa por produto",
+    description:
+      "Cada linha mostra Qntd, Valor objetivo, Última cotação, Valor cotação atual, Posição na disputa, Variação e a Menor cotação do marketplace. Selecione produtos para ações em massa.",
+    actionLabel: "Abrir negociação",
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "chat",
+    targetSelector: '[data-tour="mc-open-chat"]',
+    placement: "top",
+    title: "Negociar com o fornecedor",
+    description:
+      "Toque em Abrir negociação para entrar no chat integrado com o fornecedor desta cotação.",
+    requiresInteraction: true,
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "proposta",
+    targetSelector: '[data-tour="mc-proposal-panel"]',
+    placement: "left",
+    title: "Proposta atual ao vivo",
+    description:
+      "Valor original, desconto negociado, valor final, prazo e garantia em um painel. Aceite, decline ou envie contra proposta sem sair do chat.",
+    actionLabel: "Concluir",
+    companions: ["MiniDashboard"],
   },
 ];
 
+// ===== Approve ==========================================================
 export const approveFlow: TourStep[] = [
   {
-    id: "pendentes",
-    targetSelector: '[data-tour="ap-pending-list"]',
+    id: "tabs",
+    targetSelector: '[data-tour="ap-tabs"]',
     placement: "right",
-    title: "Pendências centralizadas",
+    title: (live) =>
+      `${live.apPendingCount ?? 0} pendentes na fila`,
     description:
-      "Cotações, contratos, pedidos de compra, todas as solicitações de aprovação em um único lugar, com prioridade automática.",
+      "Abas Pendentes, Aprovadas, Reprovadas. O Approve concentra compras, contratos e pedidos de compras em um único board para o gestor.",
+    actionLabel: "Continuar",
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "lista",
+    targetSelector: '[data-tour="ap-first-card"]',
+    placement: "right",
+    title: "Cada card é uma decisão",
+    description:
+      "Cada solicitação mostra título, tipo, solicitante, prazo e valor. O card destacado é a primeira pendente, já aberta no painel ao lado.",
+    actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },
   {
     id: "detalhe",
     targetSelector: '[data-tour="ap-detail"]',
-    placement: "right",
-    title: "Detalhe com diff de alterações",
+    placement: "left",
+    title: (live) =>
+      live.apOpenTitle
+        ? `${live.apOpenTitle}`
+        : "Detalhe com diff de valores",
     description:
-      "O que mudou, custo estimado, impacto operacional, gestor decide com contexto completo, não no escuro.",
+      "Painel mostra descrição, diff vs. baseline (Antes vs. Agora) e variação percentual. Gestor decide com contexto, não no escuro.",
+    actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },
   {
     id: "comentar",
     targetSelector: '[data-tour="ap-comment"]',
     placement: "top",
-    title: "Comentário no histórico",
+    title: "Comentário em chips, sem teclado",
     description:
-      "Justificativa de aprovação fica registrada para auditoria. Solicitante recebe contexto, não apenas 'aprovado'.",
+      "Toque em uma das opções pré-prontas (dentro da política, aguardando 2ª cotação, ajuste de prazo). A justificativa fica registrada no histórico.",
+    actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },
   {
@@ -83,22 +113,14 @@ export const approveFlow: TourStep[] = [
     placement: "top",
     title: "Aprovação em um toque",
     description:
-      "Decisão entra em vigor imediatamente. Aprovação assíncrona, gestor não precisa estar online em horário comercial.",
+      "Toque em Aprovar. A solicitação migra para a aba Aprovadas, o solicitante recebe push + e-mail e o pedido segue para o ERP.",
     requiresInteraction: true,
-    actionLabel: "Aprovar",
     companions: ["MiniDashboard"],
-  },
-  {
-    id: "notificado",
-    targetSelector: '[data-tour="ap-notified"]',
-    placement: "top",
-    title: "Solicitante notificado",
-    description:
-      "Push, e-mail e dashboard atualizam em tempo real. Operação destrava sem follow-up manual.",
-    companions: ["MiniDashboard", "SimulatedNotification"],
   },
 ];
 
+// ===== App Comercial ====================================================
+// Mantido como estava: ainda esperando informações do cliente.
 export const appComercialFlow: TourStep[] = [
   {
     id: "dashboard",

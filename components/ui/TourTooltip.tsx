@@ -19,11 +19,11 @@ export interface TourTooltipProps {
   isLast: boolean;
 }
 
-const TOOLTIP_WIDTH = 320;
+const TOOLTIP_WIDTH = 360;
 // Conservative default before we measure the actual tooltip; we always
 // re-clamp after layout to fit the real height. Bigger estimate keeps the
 // first paint from spilling past the viewport on tall tooltips.
-const TOOLTIP_HEIGHT_ESTIMATE = 240;
+const TOOLTIP_HEIGHT_ESTIMATE = 260;
 const FRAME_GAP = 28;
 const VIEWPORT_MARGIN = 20;
 
@@ -197,7 +197,7 @@ export function TourTooltip({
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="inline-block h-2 w-2 rounded-full bg-brand" />
-          <span className="font-ui text-[12px] font-semibold uppercase tracking-wider text-brand">
+          <span className="font-ui text-[13px] font-semibold uppercase tracking-wider text-brand">
             Passo {stepIndex + 1} de {totalSteps}
           </span>
         </div>
@@ -211,10 +211,10 @@ export function TourTooltip({
         </button>
       </div>
 
-      <h3 className="mt-3 font-ui text-[17px] font-bold leading-snug text-neutral-900">
+      <h3 className="mt-3 font-ui text-[19px] font-bold leading-snug text-neutral-900">
         {title}
       </h3>
-      <p className="mt-1.5 font-ui text-[14px] leading-relaxed text-neutral-600">
+      <p className="mt-1.5 font-ui text-[15px] leading-relaxed text-neutral-600">
         {description}
       </p>
 
@@ -223,9 +223,9 @@ export function TourTooltip({
           <motion.span
             animate={{ x: [0, 2, 0] }}
             transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-            className="inline-flex items-center gap-1.5 font-ui text-[12px] font-semibold uppercase tracking-wider text-brand"
+            className="inline-flex items-center gap-1.5 font-ui text-[13px] font-semibold uppercase tracking-wider text-brand"
           >
-            <MousePointer2 size={14} strokeWidth={2.25} />
+            <MousePointer2 size={15} strokeWidth={2.25} />
             Toque no destacado
           </motion.span>
         ) : (
@@ -236,10 +236,10 @@ export function TourTooltip({
           <button
             type="button"
             onClick={onNext}
-            className="inline-flex h-10 items-center gap-1.5 rounded-full bg-brand px-4 font-ui text-[13px] font-semibold text-white shadow-brand transition-colors hover:bg-brand-light"
+            className="inline-flex h-11 items-center gap-1.5 rounded-full bg-brand px-5 font-ui text-[14px] font-semibold text-white shadow-brand transition-colors hover:bg-brand-light"
           >
             {actionLabel}
-            <ArrowRight size={14} strokeWidth={2.5} />
+            <ArrowRight size={15} strokeWidth={2.5} />
           </button>
         )}
       </div>

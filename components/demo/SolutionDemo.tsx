@@ -47,7 +47,7 @@ const COMPANION_LAYOUT: Record<
   quickpass: {
     right: ["RestaurantQueueBoard"],
   },
-  // Other groups (kept as-is until their V6 pass)
+  // Other groups
   approve: { right: ["MiniDashboard"] },
   "cardapio-inteligente": { right: ["MiniDashboard"] },
   "waste-control": { right: ["StockIndicator"] },
@@ -132,8 +132,8 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
 
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-surface-raised">
-      {/* Slim header — 56px */}
-      <header className="z-30 flex h-14 flex-shrink-0 items-center justify-between border-b border-brand/5 bg-white/95 px-6 backdrop-blur">
+      {/* Slim header — 64px for TV touch readability */}
+      <header className="z-30 flex h-16 flex-shrink-0 items-center justify-between border-b border-brand/5 bg-white/95 px-6 backdrop-blur">
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -160,18 +160,18 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
             priority
           />
           {segment && (
-            <div className="ml-3 flex items-center gap-2 text-label-sm font-medium text-neutral-500">
+            <div className="ml-3 flex items-center gap-2 text-[15px] font-medium text-neutral-500">
               <ChevronRight
-                size={14}
+                size={16}
                 strokeWidth={2.25}
                 className="text-neutral-300"
               />
               <span className="flex items-center gap-1.5">
-                <SegmentIcon name={segment.icon} size={14} />
+                <SegmentIcon name={segment.icon} size={16} />
                 {segment.label}
               </span>
               <ChevronRight
-                size={14}
+                size={16}
                 strokeWidth={2.25}
                 className="text-neutral-300"
               />
@@ -181,10 +181,10 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
         </div>
 
         <div className="flex flex-col items-end leading-tight">
-          <span className="font-display text-[15px] font-semibold text-neutral-900">
+          <span className="font-display text-[17px] font-semibold text-neutral-900">
             {solution.name}
           </span>
-          <span className="font-ui text-caption text-neutral-500">
+          <span className="font-ui text-[13px] text-neutral-500">
             {solution.tagline}
           </span>
         </div>

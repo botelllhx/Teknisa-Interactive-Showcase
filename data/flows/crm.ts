@@ -1,51 +1,64 @@
 import type { TourStep } from "../solutions";
+import { brl } from "../../lib/tourState";
 
+const fmtMoney = (v?: number) =>
+  typeof v === "number" ? brl(v) : "R$ 0,00";
+
+// ===== CRM Premium ======================================================
+// App de fidelidade Premium Club. Dark theme + amber accent (paleta do
+// cliente real). Tour passa por cashback, parceiros e histórico.
 export const crmPremiumFlow: TourStep[] = [
   {
-    id: "dashboard",
-    targetSelector: '[data-tour="crm-kpis"]',
+    id: "cashback",
+    targetSelector: '[data-tour="crm-cashback-card"]',
     placement: "right",
-    title: "Indicadores de fidelidade",
+    title: (live) =>
+      typeof live.crmCashbackTotal === "number"
+        ? `Cashback acumulado de ${fmtMoney(live.crmCashbackTotal as number)}`
+        : "Cashback acumulado",
     description:
-      "Base ativa, LTV médio, recompra. Métricas que mostram saúde do relacionamento, não apenas vendas no caixa.",
+      "O cartão Premium Club do cliente. Mostra saldo de cashback, parceiro atual e atalho para ofertas. Atualiza em tempo real.",
+    actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },
   {
-    id: "perfil",
-    targetSelector: '[data-tour="crm-profile"]',
-    placement: "top",
-    title: "Perfil do cliente em foco",
+    id: "categorias",
+    targetSelector: '[data-tour="crm-categories"]',
+    placement: "right",
+    title: "Categorias rápidas",
     description:
-      "Frequência, ticket médio, categoria favorita. CRM com dados de venda integrados, não cadastro de e-mail isolado.",
+      "Restaurantes, bares, mercados e tudo. O cliente filtra com um toque, sem digitar nada.",
+    actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },
   {
-    id: "campanha",
-    targetSelector: '[data-tour="crm-campaign"]',
-    placement: "left",
-    title: "Crie campanhas segmentadas",
+    id: "parceiro",
+    targetSelector: '[data-tour="crm-store-card"]',
+    placement: "right",
+    title: "Toque para abrir o parceiro",
     description:
-      "Defina público (VIPs inativos, por categoria, por LTV) e o sistema sugere o conteúdo. Marketing direto, sem agência.",
-    companions: ["MiniDashboard"],
-  },
-  {
-    id: "oferta",
-    targetSelector: '[data-tour="crm-offer"]',
-    placement: "left",
-    title: "Oferta personalizada",
-    description:
-      "Desconto, brinde, frete, combinação por segmento. IA estima alcance de 1.842 clientes para a campanha atual.",
+      "Cada parceiro tem foto, avaliação, distância e o cashback ativo. Toque no card do Kharina para ver as promoções.",
     requiresInteraction: true,
-    actionLabel: "Ativar campanha",
     companions: ["MiniDashboard"],
   },
   {
-    id: "ativada",
-    targetSelector: '[data-tour="crm-activated"]',
-    placement: "left",
-    title: "Campanha ativada e monitorada",
+    id: "saldo",
+    targetSelector: '[data-tour="crm-nav-saldo"]',
+    placement: "top",
+    title: "Aba Saldo",
     description:
-      "Funil em tempo real: enviadas, abertas, resgatadas. Resultado mensurável, sem 'achismo' de retorno.",
-    companions: ["MiniDashboard", "SimulatedNotification"],
+      "Toque em Saldo para abrir o histórico de cashback recebido e utilizado.",
+    requiresInteraction: true,
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "historico",
+    targetSelector: '[data-tour="crm-history-item"]',
+    placement: "right",
+    title: "Detalhamento do cashback",
+    description:
+      "Toque em uma movimentação para ver o estabelecimento, valor da compra, cashback recebido e validade. Bottom sheet com tudo o que o cliente precisa.",
+    actionLabel: "Concluir",
+    companions: ["MiniDashboard"],
   },
 ];

@@ -96,6 +96,10 @@ O painel deve usar **exatamente os nomes e agrupamentos do site/produto Teknisa*
 | `clsx` + `tailwind-merge` | Composição condicional de classes |
 | `zustand` | Estado global simples (navegação, progresso de fluxo) |
 | `react-use` | Hooks utilitários (idle timer, tamanho de tela) |
+| **shadcn/ui** (instalado em v8) | Primitives `Button`, `Card`, `Badge`, `Separator`, `ScrollArea`, `Tooltip` em `@/components/ui/shadcn`. Variantes brand custom (`Button variant="ai"` = gradiente brand→roxo). Ver §23 |
+| `class-variance-authority` | Suporte ao shadcn (composição de variantes) |
+| `tailwindcss-animate` | Plugin Tailwind para keyframes do shadcn |
+| `@radix-ui/react-*` | Primitives de acessibilidade do shadcn (Slot, ScrollArea, Tooltip, Separator, Dialog) |
 
 ### Proibido
 
@@ -1847,6 +1851,154 @@ Antes de marcar pronto, validar (em cima dos checks da §21.11):
 
 ---
 
+## 23. Padrão V8 — shadcn/ui, sistema de design refinado, Retail Intelligence
+
+Salto qualitativo de v7 → v8 a partir do feedback do cliente: "os chips ali tão bem feios, seu design não está muito bom, dos gráficos e tudo mais você está pecando bastante, você ampliar seu uso de tailwind css e shadcn/ui afinal o que você usou até agora é patético e feio". Inspiração de referência: **Linear, Notion AI, Vercel, Arc**, mais dashboards de produto (Panacea, Knowwio, PMO).
+
+### 23.1 shadcn/ui é o sistema de primitives
+
+Instalado em `components/ui/shadcn/` (não é o CLI completo, é a versão manual com as primitives que usamos). Sempre importar via barrel:
+
+```ts
+import {
+  Button,
+  Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter,
+  Badge,
+  Separator,
+  ScrollArea,
+  Tooltip, TooltipTrigger, TooltipContent, TooltipProvider,
+} from "@/components/ui/shadcn";
+```
+
+**Regras de uso**:
+
+- **Todo card branco/superfície elevada** = `Card`. Os `rounded-2xl border border-brand/8 bg-white shadow-card` ad-hoc devem virar `Card`. (A própria primitive já aplica essa base.)
+- **Todo CTA principal** = `Button`. Variants disponíveis:
+  - `default` — brand sólido, padrão da maioria dos CTAs
+  - `ai` — gradiente `brand → brand-light → #7c3aed`, exclusivo para CTAs de IA/insight (máximo 1 por tela)
+  - `outline` — borda brand, fundo branco
+  - `ghost` — sem fundo, hover suave
+  - `soft` — `brand-ghost` background, brand text
+  - `success` — verde, para "aprovar", "aplicar recomendação"
+  - `link` — texto sublinhado
+  - Sizes: `sm`, `default` (40px), `lg` (48px), `xl` (56px), `icon`
+- **Toda pill/chip de status** = `Badge`. Variants: `default`, `secondary`, `success`, `warning`, `danger`, `outline`, `ai`, `ghost`.
+- **Botão desabilitado**: confiar no `disabled` prop. O `Button` já dá conta de `opacity-50 cursor-not-allowed`. Em `motion.button` custom, sempre fazer `whileTap={enabled ? { scale: 0.98 } : undefined}` para evitar feedback fantasma.
+
+### 23.2 Layout vertical de jornada (substitui StepRail horizontal)
+
+A Retail Intelligence é a referência canônica do padrão. Quando a solução tem mais de 4 etapas ou navega entre telas distintas (não apenas linear no mesmo mockup), use um **painel de jornada vertical à direita** dentro do próprio mockup, no lugar de step pills horizontais no topo. Estrutura:
+
+```tsx
+<div className="flex h-full flex-col overflow-hidden">
+  <Header />
+  <div className="flex min-h-0 flex-1 overflow-hidden">
+    <main className="relative min-w-0 flex-1 overflow-hidden">
+      {/* screens com AnimatePresence */}
+    </main>
+    <aside className="flex w-[280px] flex-none flex-col border-l border-brand/10 bg-white">
+      {/* timeline vertical com nó por etapa */}
+    </aside>
+  </div>
+</div>
+```
+
+Cada nó da timeline:
+
+- 32px círculo com 3 estados: `done` (success verde + Check), `active` (brand + halo pulsante 1.55× / 1.8s loop), `pending` (white + neutral-200 ring)
+- Linha conectora vertical entre nós: cinza neutral-200 quando pending, success verde quando done, gradiente brand→neutral quando ativo
+- Ícone Lucide por etapa (correlacionado ao conteúdo da tela)
+- Label `01 Dashboard` (número em tabular opacidade 60% + label)
+- Hint de 1 linha em `text-[11px] text-neutral-400` (ou `text-neutral-700` quando active)
+- Wrapper da row ativa: `border-l-2 border-brand bg-brand/5`
+
+**Quando a solução tem um painel vertical interno, NÃO atribuir companions à solução** — eles duplicam o painel e roubam espaço. Para a Retail Intelligence isso significa remover `companions: [...]` dos steps e do `solutions.ts`. O frame ganha 680px de largura no 1920×1080.
+
+### 23.3 Disabled de fato (sem pagar R$ 0,00)
+
+Crítico: nenhum mockup de venda pode permitir confirmar pagamento com total zero. Aplicar a TODO botão de "Finalizar", "Pagar", "Confirmar":
+
+```tsx
+<button
+  type="button"
+  disabled={cartCount === 0 || total === 0}
+  className={cn(
+    "rounded-md py-3 px-6 font-bold transition-colors",
+    cartCount === 0 || total === 0
+      ? "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+      : "bg-brand text-white shadow-brand hover:bg-brand-light"
+  )}
+>
+  {cartCount === 0 ? "Carrinho vazio" : `Pagar R$ ${total.toFixed(2).replace(".", ",")}`}
+</button>
+```
+
+Tela de sucesso/aprovado **deve refletir o estado real**, não hardcodar:
+
+- ❌ Antes: SuccessView mostrava "PIX · aprovado em 2s" hardcoded
+- ✅ Agora: SuccessView recebe `paymentLabel` e `total` por prop e renderiza o que o usuário pagou
+
+### 23.4 Refino visual obrigatório (vibe Linear/Notion AI/Vercel/Arc)
+
+- **Números grandes**: `font-ui font-bold tabular-nums text-[28px]+`. Labels pequenos em uppercase tracked.
+- **Eyebrow labels**: `text-[10-11px] font-bold uppercase tracking-[2-3px] text-brand`.
+- **Sombras**: preferir `shadow-card` (`0 2px 12px rgba(0,0,0,0.06)`) e `shadow-card-hover`. Evitar sombras heavy custom.
+- **Gradientes em superfícies de destaque**:
+  - Brand soft: `bg-gradient-to-br from-brand-ghost via-white to-brand-subtle/30`
+  - Brand strong (CTAs `ai`): `from-brand via-brand-light to-[#7c3aed]`
+  - Success: `from-success/5 to-transparent` (horizontal) para banners
+- **Hover/active feedback**: `hover:-translate-y-[1px]` em cards e CTAs, `active:scale-[0.98]` em buttons.
+- **Charts**:
+  - Gradient fill com `<linearGradient>` (2-3 stops, opacidade decrescente)
+  - Topo de barra arredondado (`rx` no `<rect>`)
+  - Hover/highlight dot com halo via `<circle>` empilhados em raios diferentes
+  - Grid horizontal sutil (`stroke="#e5e7eb" stroke-dasharray="2 1.5"`)
+  - Label por barra com a porcentagem em tabular-nums
+
+### 23.5 Animações novas em `lib/animations.ts`
+
+Adicionadas em v8 (não remover, são usadas em múltiplos componentes):
+
+- `softFadeIn` — opacity + y:6, 250ms ease-out (entrada padrão de seções)
+- `staggerFast` — staggerChildren 0.06 (listas curtas que entram juntas)
+- `staggerCards` — staggerChildren 0.08, delayChildren 0.05 (grids de cards)
+- `softSpring` — Transition object: spring stiffness 220, damping 24, mass 0.6
+- `glowPulse` — boxShadow keyframes para halo brand pulsante infinito
+- `countUp` — scale 0.92→1 + opacity 0→1, 0.3s (para valores que mudam)
+
+Regras de animação V8:
+
+- Entradas: 200-300ms ease-out, nunca > 400ms
+- Stagger: 50-80ms por item (curto), nunca > 100ms
+- Spring scale **nunca passa de 1.15** (causa motion sickness em TV)
+- Springs com 3 keyframes (`[0.6, 1.2, 1]`) **dão erro Framer Motion**. Usar key change + initial/animate de 2 keyframes.
+
+### 23.6 Layout sem companions (jornada interna)
+
+Quando o mockup já tem painel de jornada interno (§23.2), o `SolutionDemo` deve renderizar `grid-cols-1` (sem colunas de companion). Isso é automático: se `currentStepData.companions` é `undefined` ou `[]`, o grid colapsa para 1 coluna e o device frame ocupa toda a largura disponível (depois do header).
+
+### 23.7 Flow data: descrições dinâmicas e TV-touch friendly
+
+- Descrição de step que mencione digitação (`"Digite o nome"`, `"Diga em português..."`) **deve ser reescrita** para "Toque para...", "A IA recebe...", "O sistema mostra..." (TV touch não tem teclado físico, V7 §22.2 reforçado).
+- Descrição que cita valor de carrinho/total deve vir de `live.cartTotal` via função, nunca hardcoded.
+- Em-dashes (`—`) em tooltip text são proibidos (V7 §22.3). Em **placeholder de dado vazio** (ex: `"—"` quando "Ausente · sem horas extras"), é aceitável.
+
+### 23.8 Checklist V8 — quando refatorar um mockup existente
+
+- [ ] CTAs trocados para `Button` shadcn (não `motion.button` ad-hoc, salvo casos com animação custom obrigatória)
+- [ ] Cards trocados para `Card` shadcn
+- [ ] Pills/chips trocados para `Badge` shadcn (variant correto: success/warning/danger/ai)
+- [ ] Disabled state com classe e `whileTap` condicional. Botão de pagamento bloqueia carrinho vazio
+- [ ] Success/aprovado screen reflete state real (não hardcoded)
+- [ ] Números KPI ≥ 28px tabular-nums com eyebrow label uppercase tracked
+- [ ] Charts com gradient fill + rounded top + grid sutil + labels por barra
+- [ ] CTA principal de IA usa `Button variant="ai"` (máximo 1 por tela)
+- [ ] Mockup respeita `flex h-full w-full flex-col overflow-hidden` no root, com `min-h-0 overflow-y-auto` em listas
+- [ ] data-tour selectors preservados (compatibilidade com tour flow)
+- [ ] Tooltip do flow não pede digitação
+
+---
+
 *Este documento deve ser mantido atualizado conforme o projeto evolui. Qualquer decisão de arquitetura, visual ou de fluxo que desvie das diretrizes aqui definidas deve ser documentada com justificativa.*
 
-*Versão: 7.0 | Projeto: Teknisa Interactive Showcase*
+*Versão: 8.0 | Projeto: Teknisa Interactive Showcase*

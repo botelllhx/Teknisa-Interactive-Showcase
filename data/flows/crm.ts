@@ -5,59 +5,84 @@ const fmtMoney = (v?: number) =>
   typeof v === "number" ? brl(v) : "R$ 0,00";
 
 // ===== CRM Premium ======================================================
-// App de fidelidade Premium Club. Dark theme + amber accent (paleta do
-// cliente real). Tour passa por cashback, parceiros e histórico.
+// Premium Club: app de fidelidade no celular do cliente. Narrativa do tour:
+// cliente abre o app → escolhe parceiro próximo → simula compra → cashback
+// é creditado em tempo real com animação → push notification → histórico
+// atualizado com a nova entrada destacada.
 export const crmPremiumFlow: TourStep[] = [
   {
-    id: "cashback",
+    id: "saldo",
     targetSelector: '[data-tour="crm-cashback-card"]',
     placement: "right",
     title: (live) =>
       typeof live.crmCashbackTotal === "number"
-        ? `Cashback acumulado de ${fmtMoney(live.crmCashbackTotal as number)}`
-        : "Cashback acumulado",
+        ? `${fmtMoney(live.crmCashbackTotal as number)} no Premium Club`
+        : "Saldo Premium Club",
     description:
-      "O cartão Premium Club do cliente. Mostra saldo de cashback, parceiro atual e atalho para ofertas. Atualiza em tempo real.",
+      "O cartão principal do app. Mostra o saldo de cashback acumulado e a oferta destacada do dia. Usável em qualquer parceiro do programa.",
     actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },
   {
-    id: "categorias",
-    targetSelector: '[data-tour="crm-categories"]',
+    id: "loja",
+    targetSelector: '[data-tour="crm-store-kharina"]',
     placement: "right",
-    title: "Categorias rápidas",
+    title: "Kharina · 10% de cashback hoje",
     description:
-      "Restaurantes, bares, mercados e tudo. O cliente filtra com um toque, sem digitar nada.",
-    actionLabel: "Continuar",
-    companions: ["MiniDashboard"],
-  },
-  {
-    id: "parceiro",
-    targetSelector: '[data-tour="crm-store-card"]',
-    placement: "right",
-    title: "Toque para abrir o parceiro",
-    description:
-      "Toque no card do Kharina. O cliente vê promoções com o Premium Club, abas Cashback/Promoções/Sobre e banner do mês. Toque em Continuar quando terminar.",
-    actionLabel: "Continuar",
-    companions: ["MiniDashboard"],
-  },
-  {
-    id: "saldo",
-    targetSelector: '[data-tour="crm-nav-saldo"]',
-    placement: "top",
-    title: "Aba Saldo",
-    description:
-      "Toque em Saldo para abrir o histórico de cashback recebido e utilizado.",
+      "O Kharina está com oferta exclusiva. Toque no card para abrir o parceiro e escolher uma promoção.",
     requiresInteraction: true,
     companions: ["MiniDashboard"],
   },
   {
-    id: "historico",
-    targetSelector: '[data-tour="crm-history-item"]',
-    placement: "right",
-    title: "Detalhamento do cashback",
+    id: "promo",
+    targetSelector: '[data-tour="crm-promo-pick"]',
+    placement: "left",
+    title: "Promoção elegível para cashback",
     description:
-      "Toque em uma movimentação para abrir o bottom sheet com estabelecimento, valor da compra, cashback recebido e validade. Toque em Concluir quando terminar.",
+      "Cada promoção mostra o valor e o quanto vai voltar de cashback. Toque em qualquer item para selecionar e ver na barra inferior.",
+    actionLabel: "Continuar",
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "checkout",
+    targetSelector: '[data-tour="crm-checkout-cta"]',
+    placement: "top",
+    title: "Simular pagamento",
+    description:
+      "Toque em Simular pagamento. Abre a folha de confirmação com valor da compra, cashback que será creditado e total.",
+    requiresInteraction: true,
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "confirm",
+    targetSelector: '[data-tour="crm-confirm-payment"]',
+    placement: "top",
+    title: (live) =>
+      typeof live.crmLastCashback === "number"
+        ? `Confirmar e ganhar ${fmtMoney(live.crmLastCashback as number)}`
+        : "Confirmar pagamento",
+    description:
+      "Toque em Confirmar pagamento. O app processa, anima o cashback entrando no saldo em tempo real e dispara push notification.",
+    requiresInteraction: true,
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "push",
+    targetSelector: '[data-tour="crm-push"]',
+    placement: "bottom",
+    title: "Push notification em tempo real",
+    description:
+      "O cliente é avisado imediatamente do crédito. A notificação inclui valor, parceiro e validade do cashback.",
+    actionLabel: "Ver histórico",
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "historico",
+    targetSelector: '[data-tour="crm-history"]',
+    placement: "right",
+    title: "Histórico com a nova entrada destacada",
+    description:
+      "A movimentação acabou de entrar no topo da lista, marcada como Nova. Cada linha pode ser tocada para ver o detalhamento completo da operação.",
     actionLabel: "Concluir",
     companions: ["MiniDashboard"],
   },

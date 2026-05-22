@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import {
-  Search,
   Star,
   Heart,
   Home,
@@ -12,10 +11,14 @@ import {
   UserRound,
   ChevronLeft,
   Wifi,
+  Bell,
   ShoppingBasket,
   GlassWater,
   Store,
   LayoutGrid,
+  Sparkles,
+  CheckCircle2,
+  MapPin,
 } from "lucide-react";
 import { useTourLive } from "@/lib/tourState";
 
@@ -24,8 +27,11 @@ interface CRMPremiumProps {
 }
 
 // ============================================================================
-// Premium Club is the mobile app of CRM Premium. Dark theme + amber accent
-// reproducidos da referência (PREMIUM CLUB). Mantemos navy como apoio.
+// Premium Club mobile app. Dark theme + amber accent (própria identidade
+// do programa de fidelidade). Narrativa: cliente abre o app, vê o saldo,
+// escolhe um parceiro próximo, simula uma compra e o cashback é creditado
+// em tempo real com animação e push notification. Não é "chat com IA",
+// é uma experiência de fidelidade que de fato funciona.
 // ============================================================================
 
 const COLORS = {
@@ -35,20 +41,23 @@ const COLORS = {
   amber: "#f59e0b",
   amberSoft: "rgba(245,158,11,0.15)",
   textMuted: "#9aa0b4",
+  brand: "#020788",
+  brandLight: "#3b42c4",
 };
 
 interface Establishment {
   id: string;
   name: string;
   category: "Restaurante" | "Bar" | "Mercado";
-  rating: number; // 0..5
+  rating: number;
   distance: string;
   bg: string;
   initial: string;
   cashbackPct: number;
+  banner?: string;
 }
 
-const ESTABLISHMENTS: Establishment[] = [
+const STORES: Establishment[] = [
   {
     id: "kharina",
     name: "Kharina",
@@ -58,6 +67,7 @@ const ESTABLISHMENTS: Establishment[] = [
     bg: "linear-gradient(135deg, #d97706 0%, #92400e 60%, #451a03 100%)",
     initial: "K",
     cashbackPct: 10,
+    banner: "Dia das Mães · 10% de cashback",
   },
   {
     id: "madero",
@@ -93,11 +103,9 @@ const ESTABLISHMENTS: Establishment[] = [
 
 interface Promo {
   id: string;
-  store: string;
   storeId: string;
   name: string;
   desc: string;
-  oldPrice: number;
   price: number;
   bg: string;
 }
@@ -105,33 +113,27 @@ interface Promo {
 const PROMOS: Promo[] = [
   {
     id: "p1",
-    store: "Kharina",
     storeId: "kharina",
     name: "Combo Cheese Frango",
-    desc: "Filé crocante, batata gourmet, suco",
-    oldPrice: 62.5,
+    desc: "Filé crocante, batata gourmet, suco natural",
     price: 48.0,
     bg: "linear-gradient(135deg, #fbbf24 0%, #b45309 60%, #451a03 100%)",
   },
   {
     id: "p2",
-    store: "Madero",
-    storeId: "madero",
-    name: "Combo Madero Bacon + Coca Cola",
-    desc: "Burger artesanal, fritas e refrigerante",
-    oldPrice: 58.9,
-    price: 46.0,
-    bg: "linear-gradient(135deg, #c2410c 0%, #7c2d12 60%, #422006 100%)",
+    storeId: "kharina",
+    name: "Combo Família",
+    desc: "4 lanches + 4 bebidas + porção de fritas G",
+    price: 89.0,
+    bg: "linear-gradient(135deg, #f59e0b 0%, #92400e 60%, #422006 100%)",
   },
   {
     id: "p3",
-    store: "Madero",
-    storeId: "madero",
-    name: "Batata Strogonoff de Frango",
-    desc: "Receita assinada com pimenta-do-reino",
-    oldPrice: 42.9,
+    storeId: "kharina",
+    name: "Combo Light",
+    desc: "Wrap de frango, salada quinoa, suco verde",
     price: 36.0,
-    bg: "linear-gradient(135deg, #b45309 0%, #78350f 60%, #422006 100%)",
+    bg: "linear-gradient(135deg, #fde68a 0%, #ca8a04 60%, #713f12 100%)",
   },
 ];
 
@@ -139,15 +141,22 @@ interface CashbackEntry {
   id: string;
   store: string;
   date: string;
-  amount: number; // positivo: ganho; negativo: usado
+  amount: number;
   purchase?: number;
+  isNew?: boolean;
 }
 
-const HISTORY: CashbackEntry[] = [
+const HISTORY_INITIAL: CashbackEntry[] = [
   { id: "h1", store: "Kharina", date: "10/05/2026", amount: 12.0, purchase: 120.0 },
   { id: "h2", store: "Madero", date: "08/05/2026", amount: 6.5, purchase: 65.0 },
   { id: "h3", store: "Baked Potato", date: "04/05/2026", amount: -10.0 },
-  { id: "h4", store: "Baked Potato", date: "29/04/2026", amount: 18.0, purchase: 180.0 },
+  {
+    id: "h4",
+    store: "Baked Potato",
+    date: "29/04/2026",
+    amount: 18.0,
+    purchase: 180.0,
+  },
 ];
 
 // ============================================================================
@@ -155,25 +164,59 @@ const HISTORY: CashbackEntry[] = [
 // ============================================================================
 
 type Tab = "inicio" | "parceiros" | "saldo" | "perfil";
+type CheckoutStage = "idle" | "review" | "processing" | "success";
 
 export function CRMPremiumMockup({ step }: CRMPremiumProps) {
-  void step;
   const [tab, setTab] = useState<Tab>("inicio");
   const [openStore, setOpenStore] = useState<Establishment | null>(null);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set(["kharina"]));
-  const [cashbackDetail, setCashbackDetail] = useState<CashbackEntry | null>(null);
+  const [selectedPromo, setSelectedPromo] = useState<Promo>(PROMOS[1]);
+  const [checkoutStage, setCheckoutStage] = useState<CheckoutStage>("idle");
+  const [balance, setBalance] = useState<number>(26.5); // starts net of history
+  const [history, setHistory] = useState<CashbackEntry[]>(HISTORY_INITIAL);
+  const [notificationVisible, setNotificationVisible] = useState(false);
 
-  const toggleFav = (id: string) =>
-    setFavorites((p) => {
-      const next = new Set(p);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+  // Tour-driven screen transitions (auto-open store at step 1, etc.)
+  // Only triggers on step entry, doesn't fight user back actions.
+  useEffect(() => {
+    if (step === 1) {
+      setOpenStore(null);
+      setTab("inicio");
+    } else if (step === 2) {
+      setOpenStore(STORES[0]);
+      setCheckoutStage("idle");
+    } else if (step >= 5) {
+      // After success step, navigate to history tab
+      setTab("saldo");
+      setOpenStore(null);
+      setCheckoutStage("idle");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
 
-  const totalCashback = useMemo(
-    () => HISTORY.reduce((s, h) => s + h.amount, 0),
-    [],
+  // Confirm payment: animates balance, adds history entry, fires notification
+  const confirmPayment = () => {
+    setCheckoutStage("processing");
+    setTimeout(() => {
+      const cashback = +(selectedPromo.price * (openStore?.cashbackPct ?? 10) / 100).toFixed(2);
+      const newEntry: CashbackEntry = {
+        id: `new-${Date.now()}`,
+        store: openStore?.name ?? "Kharina",
+        date: "22/05/2026",
+        amount: cashback,
+        purchase: selectedPromo.price,
+        isNew: true,
+      };
+      setHistory((p) => [newEntry, ...p]);
+      setBalance((b) => +(b + cashback).toFixed(2));
+      setCheckoutStage("success");
+      setTimeout(() => setNotificationVisible(true), 600);
+    }, 1300);
+  };
+
+  const lastCashback = useMemo(
+    () =>
+      +(selectedPromo.price * (openStore?.cashbackPct ?? 10) / 100).toFixed(2),
+    [selectedPromo, openStore],
   );
 
   const patchLive = useTourLive((s) => s.patch);
@@ -181,10 +224,12 @@ export function CRMPremiumMockup({ step }: CRMPremiumProps) {
     patchLive({
       crmTab: tab,
       crmStoreOpen: openStore?.name ?? null,
-      crmFavCount: favorites.size,
-      crmCashbackTotal: totalCashback,
+      crmCashbackTotal: balance,
+      crmCheckoutStage: checkoutStage,
+      crmLastCashback: lastCashback,
+      crmHistoryCount: history.length,
     });
-  }, [tab, openStore, favorites.size, totalCashback, patchLive]);
+  }, [tab, openStore, balance, checkoutStage, lastCashback, history.length, patchLive]);
 
   return (
     <div
@@ -193,52 +238,71 @@ export function CRMPremiumMockup({ step }: CRMPremiumProps) {
     >
       <StatusBar />
 
-      <main className="flex-1 overflow-hidden">
+      <main className="relative flex-1 overflow-hidden">
         <AnimatePresence mode="wait">
-          {tab === "inicio" && (
-            <InicioView
-              key="inicio"
-              favorites={favorites}
-              onToggleFav={toggleFav}
-              onOpenStore={setOpenStore}
-              totalCashback={totalCashback}
+          {!openStore && tab === "inicio" && (
+            <HomeScreen
+              key="home"
+              balance={balance}
+              onOpen={setOpenStore}
             />
           )}
-          {tab === "parceiros" && (
-            <ParceirosView
-              key="parc"
-              favorites={favorites}
-              onToggleFav={toggleFav}
-              onOpenStore={setOpenStore}
-            />
+          {!openStore && tab === "parceiros" && (
+            <ParceirosScreen key="parc" onOpen={setOpenStore} />
           )}
-          {tab === "saldo" && (
-            <SaldoView
+          {!openStore && tab === "saldo" && (
+            <SaldoScreen
               key="saldo"
-              history={HISTORY}
-              total={totalCashback}
-              onOpenDetail={setCashbackDetail}
+              balance={balance}
+              history={history}
             />
           )}
-          {tab === "perfil" && <PerfilView key="perfil" total={totalCashback} />}
+          {!openStore && tab === "perfil" && (
+            <PerfilScreen key="perfil" total={balance} historyLen={history.length} />
+          )}
+          {openStore && (
+            <StoreScreen
+              key={`store-${openStore.id}`}
+              store={openStore}
+              selectedPromo={selectedPromo}
+              onPickPromo={setSelectedPromo}
+              onCheckout={() => setCheckoutStage("review")}
+              onBack={() => setOpenStore(null)}
+            />
+          )}
         </AnimatePresence>
       </main>
 
-      <BottomNav tab={tab} onPick={setTab} />
+      <BottomNav tab={tab} onPick={(t) => { setTab(t); setOpenStore(null); }} />
 
+      {/* Push notification */}
       <AnimatePresence>
-        {openStore && (
-          <StoreDetailModal
-            store={openStore}
-            isFav={favorites.has(openStore.id)}
-            onToggleFav={() => toggleFav(openStore.id)}
-            onClose={() => setOpenStore(null)}
+        {notificationVisible && (
+          <PushNotification
+            cashback={lastCashback}
+            store={openStore?.name ?? "Kharina"}
+            onClose={() => setNotificationVisible(false)}
           />
         )}
-        {cashbackDetail && (
-          <CashbackDetailSheet
-            entry={cashbackDetail}
-            onClose={() => setCashbackDetail(null)}
+      </AnimatePresence>
+
+      {/* Checkout sheet & success overlay */}
+      <AnimatePresence>
+        {checkoutStage === "review" && openStore && (
+          <CheckoutSheet
+            store={openStore}
+            promo={selectedPromo}
+            cashback={lastCashback}
+            onClose={() => setCheckoutStage("idle")}
+            onConfirm={confirmPayment}
+          />
+        )}
+        {checkoutStage === "processing" && <ProcessingOverlay />}
+        {checkoutStage === "success" && (
+          <SuccessOverlay
+            cashback={lastCashback}
+            balance={balance}
+            onClose={() => setCheckoutStage("idle")}
           />
         )}
       </AnimatePresence>
@@ -247,7 +311,7 @@ export function CRMPremiumMockup({ step }: CRMPremiumProps) {
 }
 
 // ============================================================================
-// Status bar + header
+// Status bar
 // ============================================================================
 
 function StatusBar() {
@@ -256,26 +320,22 @@ function StatusBar() {
       <span className="font-ui text-[12px] font-bold tabular-nums">12:30</span>
       <div className="flex items-center gap-1.5">
         <Wifi size={11} strokeWidth={2.5} className="opacity-80" />
-        <span className="text-[10px] font-bold tabular-nums opacity-80">50%</span>
+        <span className="text-[10px] font-bold tabular-nums opacity-80">62%</span>
       </div>
     </div>
   );
 }
 
 // ============================================================================
-// Início — main app screen
+// Home screen
 // ============================================================================
 
-function InicioView({
-  favorites,
-  onToggleFav,
-  onOpenStore,
-  totalCashback,
+function HomeScreen({
+  balance,
+  onOpen,
 }: {
-  favorites: Set<string>;
-  onToggleFav: (id: string) => void;
-  onOpenStore: (s: Establishment) => void;
-  totalCashback: number;
+  balance: number;
+  onOpen: (s: Establishment) => void;
 }) {
   return (
     <motion.div
@@ -313,33 +373,18 @@ function InicioView({
 
       <p className="mt-4 px-5 font-ui text-[18px] font-medium">Olá, Thomas</p>
 
-      {/* Search */}
-      <div className="mx-5 mt-3" data-tour="crm-search">
-        <div
-          className="flex items-center gap-2 rounded-xl px-3 py-3"
-          style={{ background: COLORS.bgLayer }}
-        >
-          <Search size={14} strokeWidth={2.25} className="opacity-50" />
-          <span className="font-ui text-[13px] opacity-60">
-            Procure por bares, restaurantes, ofertas
-          </span>
-        </div>
+      <div className="mx-5 mt-3" data-tour="crm-cashback-card">
+        <CashbackCard balance={balance} />
       </div>
 
-      {/* Cashback card */}
-      <div className="mx-5 mt-4" data-tour="crm-cashback-card">
-        <CashbackCard total={totalCashback} />
-      </div>
-
-      {/* Categories */}
       <div className="mx-5 mt-4">
         <p className="font-ui text-[14px] font-bold text-white">
           O que você está procurando?
         </p>
-        <div data-tour="crm-categories" className="mt-2 grid grid-cols-4 gap-2">
+        <div className="mt-2 grid grid-cols-4 gap-2">
           {[
             { id: "todos", label: "Todos", Icon: LayoutGrid },
-            { id: "rest", label: "Restaurantes", Icon: GlassWater },
+            { id: "rest", label: "Restaurantes", Icon: GlassWater, active: true },
             { id: "bar", label: "Bares", Icon: GlassWater },
             { id: "merc", label: "Mercados", Icon: ShoppingBasket },
           ].map((c) => (
@@ -348,7 +393,10 @@ function InicioView({
               type="button"
               whileTap={{ scale: 0.95 }}
               className="flex flex-col items-center gap-1 rounded-xl py-2.5"
-              style={{ background: COLORS.bgLayer }}
+              style={{
+                background: c.active ? COLORS.amberSoft : COLORS.bgLayer,
+                border: c.active ? `1px solid ${COLORS.amber}40` : "1px solid transparent",
+              }}
             >
               <c.Icon
                 size={18}
@@ -363,63 +411,24 @@ function InicioView({
         </div>
       </div>
 
-      {/* Próximos de você */}
-      <div className="mx-5 mt-4">
-        <p className="font-ui text-[14px] font-bold text-white">
-          Próximos de você
-        </p>
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          {ESTABLISHMENTS.slice(0, 4).map((e) => (
-            <EstablishmentCard
-              key={e.id}
-              store={e}
-              isFav={favorites.has(e.id)}
-              onToggleFav={() => onToggleFav(e.id)}
-              onOpen={() => onOpenStore(e)}
-            />
-          ))}
+      <div className="mx-5 mt-4 pb-3" data-tour="crm-stores">
+        <div className="flex items-center justify-between">
+          <p className="font-ui text-[14px] font-bold text-white">
+            Próximos de você
+          </p>
+          <span className="text-[10px]" style={{ color: COLORS.textMuted }}>
+            {STORES.length} parceiros
+          </span>
         </div>
-      </div>
-
-      {/* Promoções */}
-      <div className="mx-5 mt-4">
-        <p className="font-ui text-[14px] font-bold text-white">
-          Promoções imperdíveis
-        </p>
-        <div data-tour="crm-promos" className="mt-2 grid grid-cols-3 gap-2 pb-3">
-          {PROMOS.map((p) => (
-            <motion.button
-              key={p.id}
-              type="button"
-              whileTap={{ scale: 0.97 }}
-              className="overflow-hidden rounded-xl text-left"
-              style={{ background: COLORS.bgLayer }}
-            >
-              <div className="relative h-14 w-full" style={{ background: p.bg }} />
-              <div className="p-1.5">
-                <p className="font-ui text-[10px] font-bold leading-tight text-white line-clamp-2">
-                  {p.name}
-                </p>
-                <p
-                  className="mt-0.5 font-ui text-[9px]"
-                  style={{ color: COLORS.textMuted }}
-                >
-                  {p.store}
-                </p>
-                <p
-                  className="mt-1 text-[9px] line-through"
-                  style={{ color: COLORS.textMuted }}
-                >
-                  R$ {p.oldPrice.toFixed(2).replace(".", ",")}
-                </p>
-                <p
-                  className="font-ui text-[12px] font-bold tabular-nums"
-                  style={{ color: COLORS.amber }}
-                >
-                  R$ {p.price.toFixed(2).replace(".", ",")}
-                </p>
-              </div>
-            </motion.button>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          {STORES.slice(0, 4).map((s, i) => (
+            <StoreCard
+              key={s.id}
+              store={s}
+              onOpen={() => onOpen(s)}
+              delay={i * 0.06}
+              target={s.id === "kharina"}
+            />
           ))}
         </div>
       </div>
@@ -427,14 +436,9 @@ function InicioView({
   );
 }
 
-// ============================================================================
-// Cashback hero card
-// ============================================================================
-
-function CashbackCard({ total }: { total: number }) {
+function CashbackCard({ balance }: { balance: number }) {
   return (
     <motion.div
-      whileTap={{ scale: 0.99 }}
       className="relative overflow-hidden rounded-2xl p-4"
       style={{
         background:
@@ -443,160 +447,735 @@ function CashbackCard({ total }: { total: number }) {
     >
       <div className="relative flex items-start justify-between">
         <div>
-          <p
-            className="font-ui text-[12px] font-bold uppercase tracking-[3px] text-white/80"
-          >
-            BAKED POTATO
+          <p className="text-[10px] font-bold uppercase tracking-[3px] text-white/75">
+            Saldo Premium Club
           </p>
-          <p className="mt-3 font-ui text-[12px] text-white/80">
-            Cashback acumulado
+          <p className="mt-3 text-[12px] text-white/70">
+            Disponível agora
           </p>
           <motion.p
-            key={total}
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            className="mt-0.5 font-ui text-[26px] font-bold tabular-nums text-white"
+            key={balance}
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 220, damping: 18 }}
+            className="mt-0.5 font-ui text-[30px] font-bold tabular-nums text-white"
           >
-            R$ {total.toFixed(2).replace(".", ",")}
+            R${" "}
+            {balance.toLocaleString("pt-BR", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </motion.p>
         </div>
         <motion.span
           animate={{ scale: [1, 1.08, 1] }}
           transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-          className="flex h-9 w-9 items-center justify-center rounded-full"
-          style={{ background: "rgba(255,255,255,0.15)" }}
+          className="flex h-10 w-10 items-center justify-center rounded-full"
+          style={{ background: "rgba(245,158,11,0.25)", color: COLORS.amber }}
         >
-          <span className="font-ui text-[10px] font-bold uppercase text-white">
-            Ver ofertas
-          </span>
+          <Sparkles size={18} strokeWidth={2.25} />
         </motion.span>
       </div>
 
-      {/* dots indicator */}
-      <div className="relative mt-3 flex items-center gap-1">
-        {[0, 1, 2].map((i) => (
-          <span
-            key={i}
-            className="block h-1 rounded-full"
-            style={{
-              width: i === 0 ? 16 : 6,
-              background: i === 0 ? "white" : "rgba(255,255,255,0.4)",
-            }}
-          />
-        ))}
+      <div className="relative mt-3 flex items-center justify-between">
+        <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.7)" }}>
+          Use em qualquer parceiro do Premium Club
+        </p>
+        <p
+          className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+          style={{ background: COLORS.amber, color: "#000" }}
+        >
+          +10% no Kharina hoje
+        </p>
       </div>
 
-      {/* decorative pulses */}
       <motion.span
         aria-hidden
         animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.08, 0.3] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full"
+        className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full"
         style={{
-          background: "radial-gradient(circle, rgba(255,255,255,0.18), transparent 70%)",
+          background:
+            "radial-gradient(circle, rgba(245,158,11,0.30), transparent 70%)",
         }}
       />
     </motion.div>
   );
 }
 
-// ============================================================================
-// Establishment card (mini)
-// ============================================================================
-
-function EstablishmentCard({
+function StoreCard({
   store,
-  isFav,
-  onToggleFav,
   onOpen,
+  delay,
+  target,
 }: {
   store: Establishment;
-  isFav: boolean;
-  onToggleFav: () => void;
   onOpen: () => void;
+  delay: number;
+  target: boolean;
 }) {
   return (
-    <motion.div
+    <motion.button
+      type="button"
       whileTap={{ scale: 0.97 }}
-      className="relative overflow-hidden rounded-xl"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay }}
+      onClick={onOpen}
+      data-tour={target ? "crm-store-kharina" : undefined}
+      className="relative overflow-hidden rounded-xl text-left"
       style={{ background: COLORS.bgLayer }}
     >
-      <button
-        type="button"
-        data-tour={store.id === "kharina" ? "crm-store-card" : undefined}
-        onClick={onOpen}
-        className="block w-full text-left"
-      >
-        <div className="relative h-14 w-full" style={{ background: store.bg }}>
-          <div className="absolute left-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-md bg-black/30 text-white">
-            <span className="font-ui text-[12px] font-bold">{store.initial}</span>
-          </div>
+      <div className="relative h-20 w-full" style={{ background: store.bg }}>
+        <div className="absolute left-2 top-2 flex h-8 w-8 items-center justify-center rounded-md bg-black/30 text-white">
+          <span className="font-ui text-[14px] font-bold">{store.initial}</span>
         </div>
-        <div className="p-2">
-          <p className="font-ui text-[12px] font-bold text-white line-clamp-1">
-            {store.name}
-          </p>
-          <p
-            className="font-ui text-[10px]"
-            style={{ color: COLORS.textMuted }}
+        {target && (
+          <motion.span
+            animate={{ scale: [1, 1.06, 1], opacity: [0.8, 1, 0.8] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute right-2 top-2 rounded-full px-2 py-0.5 text-[9px] font-bold text-black"
+            style={{ background: COLORS.amber }}
           >
-            {store.category}
-          </p>
-          <div className="mt-1 flex items-center justify-between">
-            <span className="flex items-center gap-0.5">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <Star
-                  key={n}
-                  size={9}
-                  strokeWidth={2}
-                  className={
-                    n <= Math.round(store.rating) ? "" : "opacity-30"
-                  }
-                  style={{
-                    color: COLORS.amber,
-                    fill: n <= Math.round(store.rating) ? COLORS.amber : "none",
-                  }}
-                />
-              ))}
-            </span>
-            <span
-              className="font-ui text-[10px] font-bold tabular-nums"
-              style={{ color: COLORS.amber }}
-            >
-              {store.cashbackPct}%
-            </span>
-          </div>
+            10% CASHBACK
+          </motion.span>
+        )}
+      </div>
+      <div className="p-2.5">
+        <p className="font-ui text-[13px] font-bold text-white">{store.name}</p>
+        <p
+          className="text-[10px]"
+          style={{ color: COLORS.textMuted }}
+        >
+          {store.category} · {store.distance}
+        </p>
+        <div className="mt-1.5 flex items-center justify-between">
+          <span className="flex items-center gap-0.5">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <Star
+                key={n}
+                size={10}
+                strokeWidth={2}
+                className={
+                  n <= Math.round(store.rating) ? "" : "opacity-30"
+                }
+                style={{
+                  color: COLORS.amber,
+                  fill: n <= Math.round(store.rating) ? COLORS.amber : "none",
+                }}
+              />
+            ))}
+          </span>
+          <span
+            className="font-ui text-[11px] font-bold tabular-nums"
+            style={{ color: COLORS.amber }}
+          >
+            {store.cashbackPct}%
+          </span>
         </div>
-      </button>
-      <button
-        type="button"
-        aria-label="Favoritar"
-        onClick={onToggleFav}
-        className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 backdrop-blur"
+      </div>
+    </motion.button>
+  );
+}
+
+// ============================================================================
+// Store screen
+// ============================================================================
+
+function StoreScreen({
+  store,
+  selectedPromo,
+  onPickPromo,
+  onCheckout,
+  onBack,
+}: {
+  store: Establishment;
+  selectedPromo: Promo;
+  onPickPromo: (p: Promo) => void;
+  onCheckout: () => void;
+  onBack: () => void;
+}) {
+  const promos = PROMOS.filter((p) => p.storeId === store.id);
+  return (
+    <motion.div
+      initial={{ x: 40, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: 40, opacity: 0 }}
+      transition={{ duration: 0.22 }}
+      className="flex h-full flex-col overflow-hidden"
+    >
+      {/* Hero photo */}
+      <div className="relative h-32 w-full flex-none" style={{ background: store.bg }}>
+        <button
+          type="button"
+          onClick={onBack}
+          aria-label="Voltar"
+          className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur"
+        >
+          <ChevronLeft size={16} strokeWidth={2.5} />
+        </button>
+        <button
+          type="button"
+          aria-label="Favoritar"
+          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur"
+        >
+          <Heart size={14} strokeWidth={2.25} className="fill-red-500 text-red-500" />
+        </button>
+      </div>
+
+      {/* Store info */}
+      <div
+        className="-mt-6 mx-4 mb-3 flex items-center gap-3 rounded-xl p-3"
+        style={{ background: COLORS.bgCard }}
       >
-        <Heart
-          size={12}
-          strokeWidth={2.25}
-          style={{ color: isFav ? "#ef4444" : "white" }}
-          className={isFav ? "fill-red-500" : ""}
-        />
-      </button>
+        <span
+          className="flex h-12 w-12 flex-none items-center justify-center rounded-md"
+          style={{ background: COLORS.bg }}
+        >
+          <span className="font-ui text-[18px] font-bold text-white">
+            {store.initial}
+          </span>
+        </span>
+        <div className="flex-1 min-w-0">
+          <p className="font-ui text-[15px] font-bold text-white">{store.name}</p>
+          <p className="flex items-center gap-1 text-[10px]" style={{ color: COLORS.textMuted }}>
+            <MapPin size={9} strokeWidth={2.25} />
+            {store.category} · {store.distance}
+          </p>
+          <span className="mt-1 flex items-center gap-0.5">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <Star
+                key={n}
+                size={9}
+                strokeWidth={2}
+                className={n <= Math.round(store.rating) ? "" : "opacity-30"}
+                style={{
+                  color: COLORS.amber,
+                  fill: n <= Math.round(store.rating) ? COLORS.amber : "none",
+                }}
+              />
+            ))}
+            <span className="ml-1 text-[10px] text-white/65">
+              {store.rating.toFixed(1)}
+            </span>
+          </span>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-4 pb-3">
+        {/* Promo banner */}
+        {store.banner && (
+          <motion.div
+            data-tour="crm-promo-banner"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.32 }}
+            className="relative overflow-hidden rounded-xl p-3.5"
+            style={{ background: COLORS.amberSoft, border: `1px solid ${COLORS.amber}30` }}
+          >
+            <div className="flex items-start gap-2.5">
+              <motion.span
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="flex h-10 w-10 flex-none items-center justify-center rounded-full"
+                style={{ background: COLORS.amber, color: "#000" }}
+              >
+                <Sparkles size={16} strokeWidth={2.25} />
+              </motion.span>
+              <div>
+                <p
+                  className="font-ui text-[11px] font-bold uppercase tracking-wider"
+                  style={{ color: COLORS.amber }}
+                >
+                  Oferta exclusiva
+                </p>
+                <p className="font-ui text-[14px] font-bold text-white">
+                  {store.banner}
+                </p>
+                <p className="mt-0.5 text-[11px] text-white/70">
+                  Válido só hoje · Combos selecionados
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Promotions */}
+        <p className="mt-4 font-ui text-[12px] font-bold uppercase tracking-wider text-white/65">
+          Promoções com Premium Club
+        </p>
+        <div data-tour="crm-promo-pick" className="mt-2 space-y-2">
+          {promos.map((p) => {
+            const active = p.id === selectedPromo.id;
+            const cashback = +(p.price * store.cashbackPct / 100).toFixed(2);
+            return (
+              <motion.button
+                key={p.id}
+                type="button"
+                whileTap={{ scale: 0.99 }}
+                onClick={() => onPickPromo(p)}
+                className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-all"
+                style={{
+                  background: active ? COLORS.amberSoft : COLORS.bgLayer,
+                  border: active
+                    ? `2px solid ${COLORS.amber}`
+                    : "2px solid transparent",
+                }}
+              >
+                <div
+                  className="h-14 w-14 flex-none rounded-md"
+                  style={{ background: p.bg }}
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="font-ui text-[12px] font-bold text-white">
+                    {p.name}
+                  </p>
+                  <p
+                    className="mt-0.5 text-[10px]"
+                    style={{ color: COLORS.textMuted }}
+                  >
+                    {p.desc}
+                  </p>
+                  <p
+                    className="mt-1 font-ui text-[14px] font-bold tabular-nums"
+                    style={{ color: COLORS.amber }}
+                  >
+                    R$ {p.price.toFixed(2).replace(".", ",")}
+                  </p>
+                </div>
+                <div className="flex flex-col items-end text-right">
+                  <p
+                    className="font-ui text-[10px] font-bold uppercase tracking-wider"
+                    style={{ color: COLORS.textMuted }}
+                  >
+                    Cashback
+                  </p>
+                  <p
+                    className="font-ui text-[13px] font-bold tabular-nums"
+                    style={{ color: "#22c55e" }}
+                  >
+                    +R$ {cashback.toFixed(2).replace(".", ",")}
+                  </p>
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Sticky checkout */}
+      <div
+        data-tour="crm-checkout-cta"
+        className="flex items-center justify-between gap-3 border-t border-white/8 px-4 py-3"
+        style={{ background: COLORS.bg }}
+      >
+        <div className="leading-tight">
+          <p className="text-[10px]" style={{ color: COLORS.textMuted }}>
+            Total selecionado
+          </p>
+          <p className="font-ui text-[17px] font-bold tabular-nums text-white">
+            R$ {selectedPromo.price.toFixed(2).replace(".", ",")}
+          </p>
+        </div>
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.97 }}
+          onClick={onCheckout}
+          className="flex-1 rounded-xl py-3 font-ui text-[14px] font-bold text-black"
+          style={{ background: COLORS.amber }}
+        >
+          Simular pagamento
+        </motion.button>
+      </div>
     </motion.div>
   );
 }
 
 // ============================================================================
-// Parceiros tab
+// Checkout sheet
 // ============================================================================
 
-function ParceirosView({
-  favorites,
-  onToggleFav,
-  onOpenStore,
+function CheckoutSheet({
+  store,
+  promo,
+  cashback,
+  onClose,
+  onConfirm,
 }: {
-  favorites: Set<string>;
-  onToggleFav: (id: string) => void;
-  onOpenStore: (s: Establishment) => void;
+  store: Establishment;
+  promo: Promo;
+  cashback: number;
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="absolute inset-0 z-40 flex flex-col justify-end bg-black/55 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: 60 }}
+        animate={{ y: 0 }}
+        exit={{ y: 60 }}
+        transition={{ type: "spring", stiffness: 220, damping: 22 }}
+        onClick={(e) => e.stopPropagation()}
+        className="rounded-t-2xl px-5 pb-5 pt-3"
+        style={{ background: COLORS.bg }}
+      >
+        <div className="mx-auto mb-3 h-1 w-12 rounded-full bg-white/20" />
+        <p className="font-ui text-[16px] font-bold text-white">
+          Confirmar pagamento
+        </p>
+        <p
+          className="mt-0.5 text-[11px]"
+          style={{ color: COLORS.textMuted }}
+        >
+          {store.name} · {store.category}
+        </p>
+
+        <div
+          className="mt-4 flex items-center gap-3 rounded-xl p-3"
+          style={{ background: COLORS.bgLayer }}
+        >
+          <div
+            className="h-12 w-12 flex-none rounded-md"
+            style={{ background: promo.bg }}
+          />
+          <div className="flex-1">
+            <p className="font-ui text-[12px] font-bold text-white">
+              {promo.name}
+            </p>
+            <p className="text-[10px]" style={{ color: COLORS.textMuted }}>
+              {promo.desc}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-3 space-y-2 text-[12px]">
+          <Row label="Valor da compra" value={`R$ ${promo.price.toFixed(2).replace(".", ",")}`} />
+          <Row label={`Cashback ${store.cashbackPct}%`} value={`+ R$ ${cashback.toFixed(2).replace(".", ",")}`} tint="#22c55e" />
+          <div className="my-2 h-px bg-white/10" />
+          <div className="flex items-center justify-between">
+            <span className="font-ui text-[13px] font-bold text-white">
+              Total
+            </span>
+            <span className="font-ui text-[18px] font-bold tabular-nums text-white">
+              R$ {promo.price.toFixed(2).replace(".", ",")}
+            </span>
+          </div>
+        </div>
+
+        <div
+          className="mt-3 flex items-start gap-2 rounded-md px-3 py-2 text-[11px]"
+          style={{ background: COLORS.amberSoft, color: COLORS.amber }}
+        >
+          <Sparkles size={12} strokeWidth={2.25} className="mt-0.5" />
+          Você vai receber {`R$ ${cashback.toFixed(2).replace(".", ",")}`} de cashback ao confirmar.
+        </div>
+
+        <motion.button
+          type="button"
+          data-tour="crm-confirm-payment"
+          whileTap={{ scale: 0.97 }}
+          onClick={onConfirm}
+          className="mt-4 w-full rounded-xl py-3 font-ui text-[14px] font-bold text-black"
+          style={{ background: COLORS.amber }}
+        >
+          Confirmar pagamento
+        </motion.button>
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-1.5 w-full rounded-xl py-2.5 font-ui text-[12px] font-medium text-white/70"
+        >
+          Cancelar
+        </button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function Row({
+  label,
+  value,
+  tint,
+}: {
+  label: string;
+  value: string;
+  tint?: string;
+}) {
+  return (
+    <div className="flex items-center justify-between">
+      <span style={{ color: COLORS.textMuted }}>{label}</span>
+      <span
+        className="font-ui font-bold tabular-nums"
+        style={{ color: tint ?? "white" }}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+// ============================================================================
+// Processing overlay
+// ============================================================================
+
+function ProcessingOverlay() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-4 backdrop-blur-md"
+      style={{ background: "rgba(13,14,20,0.85)" }}
+    >
+      <div className="relative flex h-20 w-20 items-center justify-center">
+        <motion.span
+          className="absolute inset-0 rounded-full"
+          style={{
+            border: `3px solid ${COLORS.amber}40`,
+          }}
+        />
+        <motion.span
+          className="absolute inset-0 rounded-full"
+          style={{
+            border: `3px solid transparent`,
+            borderTopColor: COLORS.amber,
+          }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        />
+        <span
+          className="absolute inset-2 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(245,158,11,0.35), transparent 70%)",
+            filter: "blur(4px)",
+          }}
+        />
+      </div>
+      <p className="font-ui text-[14px] font-bold text-white">
+        Processando pagamento...
+      </p>
+      <motion.p
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+        className="text-[11px]"
+        style={{ color: COLORS.textMuted }}
+      >
+        Confirmando com o parceiro
+      </motion.p>
+    </motion.div>
+  );
+}
+
+// ============================================================================
+// Success overlay with confetti + counter animation
+// ============================================================================
+
+function SuccessOverlay({
+  cashback,
+  balance,
+  onClose,
+}: {
+  cashback: number;
+  balance: number;
+  onClose: () => void;
+}) {
+  // Auto dismiss after 4s
+  useEffect(() => {
+    const t = setTimeout(onClose, 4200);
+    return () => clearTimeout(t);
+  }, [onClose]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-3 backdrop-blur-md"
+      style={{ background: "rgba(13,14,20,0.85)" }}
+      onClick={onClose}
+    >
+      <Confetti />
+
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 220, damping: 14 }}
+        className="relative flex h-20 w-20 items-center justify-center rounded-full text-black"
+        style={{
+          background: COLORS.amber,
+          boxShadow: `0 0 40px ${COLORS.amber}80, 0 0 80px ${COLORS.amber}40`,
+        }}
+      >
+        <motion.span
+          animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0, 0.4] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 rounded-full"
+          style={{ background: COLORS.amber }}
+        />
+        <CheckCircle2 size={40} strokeWidth={2.5} />
+      </motion.div>
+
+      <p className="font-ui text-[18px] font-bold text-white">
+        Pagamento aprovado
+      </p>
+      <motion.p
+        initial={{ scale: 0.7, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.25, type: "spring", stiffness: 220, damping: 16 }}
+        className="font-ui text-[28px] font-bold tabular-nums"
+        style={{ color: COLORS.amber }}
+      >
+        +R$ {cashback.toFixed(2).replace(".", ",")}
+      </motion.p>
+      <p className="text-[12px]" style={{ color: COLORS.textMuted }}>
+        creditados no seu Premium Club
+      </p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="mt-2 rounded-xl px-4 py-2 text-center"
+        style={{ background: COLORS.bgLayer, border: `1px solid ${COLORS.amber}40` }}
+      >
+        <p className="text-[10px]" style={{ color: COLORS.textMuted }}>
+          Novo saldo
+        </p>
+        <p
+          className="font-ui text-[20px] font-bold tabular-nums"
+          style={{ color: "white" }}
+        >
+          R${" "}
+          {balance.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function Confetti() {
+  // Deterministic particles flying out
+  const parts = useMemo(
+    () =>
+      Array.from({ length: 24 }).map((_, i) => {
+        const seed = (i * 9301 + 49297) % 233280;
+        const a = ((seed / 233280) * 360 * Math.PI) / 180;
+        const r = ((seed * 1664525) % 233280) / 233280;
+        const c = ["#f59e0b", "#fbbf24", "#fde68a", "#a4b1ff"][i % 4];
+        return {
+          dx: Math.cos(a) * (120 + r * 100),
+          dy: Math.sin(a) * (120 + r * 100),
+          delay: r * 0.3,
+          color: c,
+          size: 4 + r * 4,
+        };
+      }),
+    [],
+  );
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0">
+      {parts.map((p, i) => (
+        <motion.span
+          key={i}
+          className="absolute left-1/2 top-1/2 block rounded-sm"
+          style={{
+            width: p.size,
+            height: p.size,
+            background: p.color,
+            marginLeft: -p.size / 2,
+            marginTop: -p.size / 2,
+          }}
+          initial={{ x: 0, y: 0, opacity: 1, rotate: 0 }}
+          animate={{
+            x: p.dx,
+            y: p.dy,
+            opacity: 0,
+            rotate: 360,
+          }}
+          transition={{
+            duration: 1.2,
+            delay: p.delay,
+            ease: [0.16, 1, 0.3, 1],
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ============================================================================
+// Push notification
+// ============================================================================
+
+function PushNotification({
+  cashback,
+  store,
+  onClose,
+}: {
+  cashback: number;
+  store: string;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const t = setTimeout(onClose, 6500);
+    return () => clearTimeout(t);
+  }, [onClose]);
+  return (
+    <motion.div
+      data-tour="crm-push"
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: -80, opacity: 0 }}
+      transition={{ type: "spring", stiffness: 220, damping: 22 }}
+      className="absolute inset-x-4 top-4 z-60 flex items-start gap-2.5 overflow-hidden rounded-xl p-3 backdrop-blur"
+      style={{
+        background: "rgba(26,29,41,0.95)",
+        border: `1px solid ${COLORS.amber}40`,
+        boxShadow: "0 12px 32px rgba(0,0,0,0.5)",
+      }}
+    >
+      <span
+        className="flex h-9 w-9 flex-none items-center justify-center rounded-md"
+        style={{ background: COLORS.amber, color: "#000" }}
+      >
+        <Bell size={15} strokeWidth={2.25} />
+      </span>
+      <div className="flex-1 min-w-0">
+        <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: COLORS.amber }}>
+          Premium Club
+          <span className="text-white/40">·</span>
+          <span className="text-white/50">agora</span>
+        </p>
+        <p className="mt-0.5 font-ui text-[12px] font-bold text-white">
+          Você ganhou R$ {cashback.toFixed(2).replace(".", ",")} em cashback!
+        </p>
+        <p className="text-[10px]" style={{ color: COLORS.textMuted }}>
+          {store} · vence em 180 dias
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+// ============================================================================
+// Parceiros / Saldo / Perfil tabs
+// ============================================================================
+
+function ParceirosScreen({
+  onOpen,
+}: {
+  onOpen: (s: Establishment) => void;
 }) {
   return (
     <motion.div
@@ -612,21 +1191,17 @@ function ParceirosView({
       >
         Parceiros
       </p>
-      <p
-        className="mt-1 font-ui text-[12px]"
-        style={{ color: COLORS.textMuted }}
-      >
-        {ESTABLISHMENTS.length} estabelecimentos com cashback ativo
+      <p className="mt-1 text-[12px]" style={{ color: COLORS.textMuted }}>
+        {STORES.length} estabelecimentos com cashback ativo
       </p>
-
       <div className="mt-3 grid grid-cols-2 gap-2 pb-3">
-        {ESTABLISHMENTS.map((e) => (
-          <EstablishmentCard
-            key={e.id}
-            store={e}
-            isFav={favorites.has(e.id)}
-            onToggleFav={() => onToggleFav(e.id)}
-            onOpen={() => onOpenStore(e)}
+        {STORES.map((s, i) => (
+          <StoreCard
+            key={s.id}
+            store={s}
+            onOpen={() => onOpen(s)}
+            delay={i * 0.05}
+            target={false}
           />
         ))}
       </div>
@@ -634,18 +1209,12 @@ function ParceirosView({
   );
 }
 
-// ============================================================================
-// Saldo tab
-// ============================================================================
-
-function SaldoView({
+function SaldoScreen({
+  balance,
   history,
-  total,
-  onOpenDetail,
 }: {
+  balance: number;
   history: CashbackEntry[];
-  total: number;
-  onOpenDetail: (h: CashbackEntry) => void;
 }) {
   return (
     <motion.div
@@ -669,14 +1238,24 @@ function SaldoView({
         >
           Saldo disponível
         </p>
-        <p className="mt-1 font-ui text-[28px] font-bold tabular-nums text-white">
-          R$ {total.toFixed(2).replace(".", ",")}
-        </p>
+        <motion.p
+          key={balance}
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 220, damping: 18 }}
+          className="mt-1 font-ui text-[30px] font-bold tabular-nums text-white"
+        >
+          R${" "}
+          {balance.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </motion.p>
         <p
           className="mt-1 font-ui text-[10px]"
           style={{ color: COLORS.textMuted }}
         >
-          Pode ser usado em qualquer parceiro do Premium Club.
+          Use em qualquer parceiro do Premium Club.
         </p>
       </div>
 
@@ -690,24 +1269,49 @@ function SaldoView({
         {history.map((h, i) => {
           const positive = h.amount > 0;
           return (
-            <motion.button
+            <motion.div
               key={h.id}
-              type="button"
-              whileTap={{ scale: 0.98 }}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              data-tour={i === 0 ? "crm-history-item" : undefined}
-              onClick={() => onOpenDetail(h)}
-              className="flex w-full items-center gap-3 rounded-xl p-3 text-left"
-              style={{ background: COLORS.bgLayer }}
+              layout
+              initial={
+                h.isNew
+                  ? { opacity: 0, x: -12, scale: 0.96 }
+                  : { opacity: 0, y: 4 }
+              }
+              animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+              transition={
+                h.isNew
+                  ? { type: "spring", stiffness: 220, damping: 18 }
+                  : { delay: i * 0.04 }
+              }
+              className="flex items-center gap-3 rounded-xl p-3"
+              style={{
+                background: h.isNew ? COLORS.amberSoft : COLORS.bgLayer,
+                border: h.isNew
+                  ? `1px solid ${COLORS.amber}`
+                  : "1px solid transparent",
+                position: "relative",
+              }}
             >
+              {h.isNew && (
+                <motion.span
+                  animate={{ opacity: [1, 0.4, 1] }}
+                  transition={{
+                    duration: 1.4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute right-2 top-2 rounded-full px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider"
+                  style={{ background: COLORS.amber, color: "#000" }}
+                >
+                  Novo
+                </motion.span>
+              )}
               <span
-                className="flex h-9 w-9 flex-none items-center justify-center rounded-full"
+                className="flex h-9 w-9 flex-none items-center justify-center rounded-full font-bold"
                 style={{
                   background: positive
-                    ? "rgba(22,163,74,0.15)"
-                    : "rgba(239,68,68,0.15)",
+                    ? "rgba(34,197,94,0.18)"
+                    : "rgba(239,68,68,0.18)",
                   color: positive ? "#22c55e" : "#ef4444",
                 }}
               >
@@ -722,16 +1326,19 @@ function SaldoView({
                   style={{ color: COLORS.textMuted }}
                 >
                   {h.date}
+                  {h.purchase
+                    ? ` · compra R$ ${h.purchase.toFixed(2).replace(".", ",")}`
+                    : ""}
                 </p>
               </div>
               <p
-                className="font-ui text-[13px] font-bold tabular-nums"
+                className="font-ui text-[14px] font-bold tabular-nums"
                 style={{ color: positive ? "#22c55e" : "#ef4444" }}
               >
                 {positive ? "+" : "−"} R${" "}
                 {Math.abs(h.amount).toFixed(2).replace(".", ",")}
               </p>
-            </motion.button>
+            </motion.div>
           );
         })}
       </div>
@@ -739,11 +1346,13 @@ function SaldoView({
   );
 }
 
-// ============================================================================
-// Perfil tab
-// ============================================================================
-
-function PerfilView({ total }: { total: number }) {
+function PerfilScreen({
+  total,
+  historyLen,
+}: {
+  total: number;
+  historyLen: number;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -782,7 +1391,7 @@ function PerfilView({ total }: { total: number }) {
       <div className="mt-4 grid grid-cols-2 gap-2">
         <div className="rounded-xl p-3" style={{ background: COLORS.bgLayer }}>
           <p className="text-[10px]" style={{ color: COLORS.textMuted }}>
-            Cashback total
+            Cashback disponível
           </p>
           <p
             className="mt-1 font-ui text-[16px] font-bold tabular-nums"
@@ -796,428 +1405,11 @@ function PerfilView({ total }: { total: number }) {
             Compras
           </p>
           <p className="mt-1 font-ui text-[16px] font-bold tabular-nums text-white">
-            32
+            {historyLen}
           </p>
         </div>
       </div>
     </motion.div>
-  );
-}
-
-// ============================================================================
-// Store detail modal — Cashback / Promoções / Sobre
-// ============================================================================
-
-function StoreDetailModal({
-  store,
-  isFav,
-  onToggleFav,
-  onClose,
-}: {
-  store: Establishment;
-  isFav: boolean;
-  onToggleFav: () => void;
-  onClose: () => void;
-}) {
-  const [tab, setTab] = useState<"cashback" | "promocoes" | "sobre">(
-    "promocoes",
-  );
-  const storePromos = PROMOS.filter((p) => p.storeId === store.id);
-  return (
-    <motion.div
-      initial={{ y: 24, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: 24, opacity: 0 }}
-      transition={{ type: "spring", stiffness: 220, damping: 22 }}
-      className="absolute inset-0 z-30 flex flex-col"
-      style={{ background: COLORS.bg }}
-    >
-      <div className="relative h-36 w-full" style={{ background: store.bg }}>
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur"
-        >
-          <ChevronLeft size={16} strokeWidth={2.5} />
-        </button>
-        <button
-          type="button"
-          onClick={onToggleFav}
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 backdrop-blur"
-        >
-          <Heart
-            size={14}
-            strokeWidth={2.25}
-            style={{ color: isFav ? "#ef4444" : "white" }}
-            className={isFav ? "fill-red-500" : ""}
-          />
-        </button>
-      </div>
-
-      <div className="-mt-6 mx-4 flex items-center gap-3 rounded-xl p-3" style={{ background: COLORS.bgCard }}>
-        <span
-          className="flex h-12 w-12 flex-none items-center justify-center rounded-md"
-          style={{ background: COLORS.bg }}
-        >
-          <span className="font-ui text-[18px] font-bold text-white">
-            {store.initial}
-          </span>
-        </span>
-        <div>
-          <p className="font-ui text-[14px] font-bold text-white">{store.name}</p>
-          <p className="text-[10px]" style={{ color: COLORS.textMuted }}>
-            {store.category}
-          </p>
-          <span className="mt-0.5 flex items-center gap-0.5">
-            {[1, 2, 3, 4, 5].map((n) => (
-              <Star
-                key={n}
-                size={10}
-                strokeWidth={2}
-                className={n <= Math.round(store.rating) ? "" : "opacity-30"}
-                style={{
-                  color: COLORS.amber,
-                  fill: n <= Math.round(store.rating) ? COLORS.amber : "none",
-                }}
-              />
-            ))}
-          </span>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="mt-3 flex border-b border-white/10 px-4">
-        {(
-          [
-            { id: "cashback", label: "Cashback" },
-            { id: "promocoes", label: "Promoções" },
-            { id: "sobre", label: "Sobre" },
-          ] as const
-        ).map((t) => {
-          const active = t.id === tab;
-          return (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setTab(t.id)}
-              className="relative flex-1 py-2 text-center font-ui text-[12px] font-bold"
-              style={{
-                color: active ? COLORS.amber : COLORS.textMuted,
-              }}
-            >
-              {t.label}
-              {active && (
-                <motion.span
-                  layoutId="store-tab"
-                  className="absolute inset-x-3 bottom-0 h-0.5"
-                  style={{ background: COLORS.amber }}
-                />
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-4 py-3">
-        {tab === "promocoes" && (
-          <>
-            {/* Banner */}
-            <motion.div
-              initial={{ y: 6, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="relative overflow-hidden rounded-xl p-3"
-              style={{ background: COLORS.bgLayer }}
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="font-ui text-[14px] font-bold text-white">
-                    Dia das Mães no {store.name}
-                  </p>
-                  <p
-                    className="mt-1 text-[10px]"
-                    style={{ color: COLORS.textMuted }}
-                  >
-                    Combos selecionados, válido até 31/05.
-                  </p>
-                  <button
-                    type="button"
-                    className="mt-2 rounded-md px-3 py-1.5 font-ui text-[10px] font-bold text-black"
-                    style={{ background: COLORS.amber }}
-                  >
-                    Confira as unidades mais próximas
-                  </button>
-                </div>
-                <span
-                  className="rounded-full px-2 py-0.5 text-[9px] font-bold"
-                  style={{ background: COLORS.amber, color: "#000" }}
-                >
-                  {store.cashbackPct}% Cashback
-                </span>
-              </div>
-            </motion.div>
-
-            {/* Promos grid */}
-            <p
-              className="mt-4 font-ui text-[11px] font-bold uppercase tracking-wider"
-              style={{ color: COLORS.textMuted }}
-            >
-              Promoções com o Premium Club
-            </p>
-            <div className="mt-2 grid grid-cols-2 gap-2 pb-3">
-              {storePromos.length === 0 ? (
-                <p
-                  className="col-span-2 py-6 text-center text-[11px] italic"
-                  style={{ color: COLORS.textMuted }}
-                >
-                  Sem promoções ativas no momento.
-                </p>
-              ) : (
-                storePromos.concat(storePromos).slice(0, 6).map((p, i) => (
-                  <motion.div
-                    key={`${p.id}-${i}`}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="overflow-hidden rounded-xl"
-                    style={{ background: COLORS.bgLayer }}
-                  >
-                    <div
-                      className="h-16 w-full"
-                      style={{ background: p.bg }}
-                    />
-                    <div className="p-2">
-                      <p className="font-ui text-[11px] font-bold leading-tight text-white">
-                        {p.name}
-                      </p>
-                      <p
-                        className="mt-0.5 text-[9px]"
-                        style={{ color: COLORS.textMuted }}
-                      >
-                        {p.desc}
-                      </p>
-                      <p
-                        className="mt-1 font-ui text-[12px] font-bold tabular-nums"
-                        style={{ color: COLORS.amber }}
-                      >
-                        R$ {p.price.toFixed(2).replace(".", ",")}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))
-              )}
-            </div>
-          </>
-        )}
-
-        {tab === "cashback" && (
-          <CashbackStoreList store={store} />
-        )}
-
-        {tab === "sobre" && <StoreAbout store={store} />}
-      </div>
-    </motion.div>
-  );
-}
-
-function CashbackStoreList({ store }: { store: Establishment }) {
-  const storeHistory = HISTORY.filter((h) => h.store === store.name);
-  return (
-    <>
-      <p
-        className="font-ui text-[11px] font-bold uppercase tracking-wider"
-        style={{ color: COLORS.textMuted }}
-      >
-        Movimentações no {store.name}
-      </p>
-      <div className="mt-2 space-y-2 pb-3">
-        {storeHistory.length === 0 ? (
-          <p
-            className="py-6 text-center text-[11px] italic"
-            style={{ color: COLORS.textMuted }}
-          >
-            Sem movimentações neste parceiro.
-          </p>
-        ) : (
-          storeHistory.map((h, i) => {
-            const positive = h.amount > 0;
-            return (
-              <motion.div
-                key={h.id}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="grid grid-cols-3 gap-2 rounded-xl p-2"
-                style={{ background: COLORS.bgLayer }}
-              >
-                <span
-                  className="font-ui text-[12px] font-bold tabular-nums"
-                  style={{ color: positive ? "#22c55e" : "#ef4444" }}
-                >
-                  {positive ? "+" : "−"} R${" "}
-                  {Math.abs(h.amount).toFixed(2).replace(".", ",")}
-                </span>
-                <span
-                  className="text-center font-ui text-[12px] font-bold tabular-nums text-white"
-                >
-                  {h.purchase
-                    ? `R$ ${h.purchase.toFixed(2).replace(".", ",")}`
-                    : "—"}
-                </span>
-                <span
-                  className="text-right text-[11px] tabular-nums"
-                  style={{ color: COLORS.textMuted }}
-                >
-                  {h.date}
-                </span>
-              </motion.div>
-            );
-          })
-        )}
-      </div>
-    </>
-  );
-}
-
-function StoreAbout({ store }: { store: Establishment }) {
-  return (
-    <div
-      className="space-y-3 text-[12px]"
-      style={{ color: COLORS.textMuted }}
-    >
-      <p>
-        {store.name} é um {store.category.toLowerCase()} parceiro do Premium
-        Club. Ao consumir aqui, você acumula {store.cashbackPct}% de cashback
-        para usar em qualquer parceiro.
-      </p>
-      <div className="grid grid-cols-2 gap-2">
-        <Box label="Distância" value={store.distance} />
-        <Box label="Avaliação" value={`${store.rating.toFixed(1)} / 5`} />
-        <Box label="Cashback" value={`${store.cashbackPct}%`} accent />
-        <Box label="Unidades" value="3" />
-      </div>
-    </div>
-  );
-}
-
-function Box({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: string;
-  accent?: boolean;
-}) {
-  return (
-    <div className="rounded-xl p-2" style={{ background: COLORS.bgLayer }}>
-      <p className="text-[9px]" style={{ color: COLORS.textMuted }}>
-        {label}
-      </p>
-      <p
-        className="font-ui text-[14px] font-bold tabular-nums"
-        style={{ color: accent ? COLORS.amber : "white" }}
-      >
-        {value}
-      </p>
-    </div>
-  );
-}
-
-// ============================================================================
-// Cashback detail bottom sheet (matches detalhamento-cashback.png)
-// ============================================================================
-
-function CashbackDetailSheet({
-  entry,
-  onClose,
-}: {
-  entry: CashbackEntry;
-  onClose: () => void;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className="absolute inset-0 z-40 flex flex-col justify-end bg-black/55 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ y: 60 }}
-        animate={{ y: 0 }}
-        exit={{ y: 60 }}
-        transition={{ type: "spring", stiffness: 220, damping: 22 }}
-        onClick={(e) => e.stopPropagation()}
-        className="rounded-t-2xl px-5 pb-5 pt-3"
-        style={{ background: COLORS.bg }}
-      >
-        <div className="mx-auto mb-3 h-1 w-12 rounded-full bg-white/20" />
-        <p className="font-ui text-[16px] font-bold text-white">
-          Sobre o Cashback
-        </p>
-
-        <div className="mt-4 space-y-2 text-[12px]">
-          <Row label="Estabelecimento da compra" value={entry.store} />
-          {entry.purchase && (
-            <Row
-              label="Valor da compra"
-              value={`R$ ${entry.purchase.toFixed(2).replace(".", ",")}`}
-            />
-          )}
-          <Row
-            label={entry.amount > 0 ? "Cashback recebido" : "Cashback utilizado"}
-            value={`${entry.amount > 0 ? "+" : "−"} R$ ${Math.abs(entry.amount).toFixed(2).replace(".", ",")}`}
-            tint={entry.amount > 0 ? "#22c55e" : "#ef4444"}
-          />
-          <Row label="Validade do cashback" value="10/06/2026" />
-        </div>
-
-        <p className="mt-4 font-ui text-[12px] font-bold text-white">
-          O que acontece após a validade do cashback?
-        </p>
-        <p
-          className="mt-1 text-[11px] leading-snug"
-          style={{ color: COLORS.textMuted }}
-        >
-          O cashback tem validade de 180 dias após a data da compra. Após esse
-          período o valor não utilizado será expirado e não estará disponível
-          para uso.
-        </p>
-
-        <motion.button
-          type="button"
-          whileTap={{ scale: 0.97 }}
-          onClick={onClose}
-          className="mt-4 w-full rounded-xl py-3 font-ui text-[14px] font-bold text-black"
-          style={{ background: COLORS.amber }}
-        >
-          Voltar
-        </motion.button>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-function Row({
-  label,
-  value,
-  tint,
-}: {
-  label: string;
-  value: string;
-  tint?: string;
-}) {
-  return (
-    <div className="flex items-center justify-between">
-      <span style={{ color: COLORS.textMuted }}>{label}</span>
-      <span
-        className="font-ui font-bold tabular-nums"
-        style={{ color: tint ?? "white" }}
-      >
-        {value}
-      </span>
-    </div>
   );
 }
 

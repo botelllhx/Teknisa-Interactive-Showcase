@@ -5,8 +5,8 @@ const fmtMoney = (v?: number) =>
   typeof v === "number" ? brl(v) : "R$ 0,00";
 
 // ===== Cardápio Inteligente ==============================================
-// Refeito com badge IA e loader pulsante. Tooltips referenciam o dia ativo
-// e o estado do workflow (aprovação / publicação).
+// Tour focado na experiência IA: planner → trigger → full-screen brain
+// animation → reveal → approve → publish.
 export const cardapioInteligenteFlow: TourStep[] = [
   {
     id: "semana",
@@ -17,17 +17,27 @@ export const cardapioInteligenteFlow: TourStep[] = [
         ? `Planejando ${live.activeDayLabel}`
         : "Planejamento semanal",
     description:
-      "Cada aba é um dia da semana com a barra de pratos preenchidos. Toque em qualquer dia para alternar o cardápio sem perder o que já foi montado.",
-    actionLabel: "Continuar",
+      "Visão da semana inteira em 5 abas. Cada barra indica quantos pratos já estão definidos para o dia. Mas o atalho mais poderoso é deixar a IA montar tudo.",
+    actionLabel: "Mostrar a IA",
     companions: ["MiniDashboard"],
   },
   {
-    id: "ia",
-    targetSelector: '[data-tour="ci-add-dish"]',
-    placement: "right",
-    title: "Sugestão de prato pela IA",
+    id: "gerar",
+    targetSelector: '[data-tour="ci-generate-ai"]',
+    placement: "bottom",
+    title: "Gerar cardápio com IA",
     description:
-      "Toque em Sugerir com IA na guarnição. O loader pulsante mostra a IA cruzando 240 pratos, custo e perfil nutricional do dia. Aplique uma sugestão e toque em Continuar.",
+      "Toque em Gerar cardápio com IA. O sistema vai cruzar histórico de 4 unidades, restrições contratuais, fichas técnicas e custos para montar a semana inteira em segundos.",
+    requiresInteraction: true,
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "animation",
+    targetSelector: '[data-tour="ci-ai-brain"]',
+    placement: "left",
+    title: "IA pensando ao vivo",
+    description:
+      "Três fases visíveis no topo: Reunir dados → Confirmar parâmetros → Gerar cardápio. O núcleo neural pulsa, anéis rotacionam, partículas orbitam e linhas de circuito disparam entre os nós.",
     actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },
@@ -37,12 +47,12 @@ export const cardapioInteligenteFlow: TourStep[] = [
     placement: "left",
     title: (live) =>
       live.dayBalanced
-        ? "Cardápio balanceado"
-        : "Análise nutricional automática",
+        ? "Cardápio gerado · balanceado"
+        : "Análise nutricional",
     description: (live) =>
       live.dayBalanced
         ? `Calorias, proteína, carboidratos e fibras dentro das metas. Custo médio por refeição: ${fmtMoney(live.dayTotalsCost as number)}.`
-        : `Calorias atuais ${(live.dayTotalsCalories as number) ?? 0} kcal. Os indicadores acendem em verde quando o dia fica dentro das metas. Adicione/troque pratos para chegar lá.`,
+        : `Calorias atuais ${(live.dayTotalsCalories as number) ?? 0} kcal. Os indicadores acendem em verde quando o dia fica dentro das metas.`,
     actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },
@@ -52,7 +62,7 @@ export const cardapioInteligenteFlow: TourStep[] = [
     placement: "bottom",
     title: "Aprovação da nutricionista",
     description:
-      "Toque em Aprovar nutricionista para mandar o cardápio para o workflow oficial. O passo de publicação só destrava depois disso.",
+      "Toque em Aprovar. O cardápio passa pelo workflow oficial e libera a publicação.",
     requiresInteraction: true,
     companions: ["MiniDashboard"],
   },
@@ -62,7 +72,7 @@ export const cardapioInteligenteFlow: TourStep[] = [
     placement: "bottom",
     title: "Publicar para as unidades",
     description:
-      "Toque em Publicar nas unidades. O cardápio aprovado vai direto para o MyMenu de cada funcionário e para o painel das cozinhas. Sem planilha paralela.",
+      "Toque em Publicar. O cardápio aprovado vai direto para o MyMenu de cada funcionário e para o painel das cozinhas. Sem planilha paralela.",
     requiresInteraction: true,
     companions: ["MiniDashboard"],
   },

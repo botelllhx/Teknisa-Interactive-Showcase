@@ -61,59 +61,56 @@ export const mercadumFlow: TourStep[] = [
   },
 ];
 
-// ===== Approve ==========================================================
+// ===== Approve (mobile) =================================================
 export const approveFlow: TourStep[] = [
   {
     id: "tabs",
     targetSelector: '[data-tour="ap-tabs"]',
-    placement: "right",
+    placement: "bottom",
     title: (live) =>
-      `${live.apPendingCount ?? 0} pendentes na fila`,
+      `${live.apPendingCount ?? 0} solicitações aguardando aprovação`,
     description:
-      "Abas Pendentes, Aprovadas, Reprovadas. O Approve concentra compras, contratos e pedidos de compras em um único board para o gestor.",
+      "App Approve no celular do gestor. Abas Pendentes, Aprovadas, Reprovadas com contagem por status. Aprovações de compras, contratos e pedidos em um só lugar.",
     actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },
   {
-    id: "lista",
+    id: "card",
     targetSelector: '[data-tour="ap-first-card"]',
     placement: "right",
-    title: "Cada card é uma decisão",
+    title: "Toque para ver o detalhe",
     description:
-      "Cada solicitação mostra título, tipo, solicitante, prazo e valor. O card destacado é a primeira pendente, já aberta no painel ao lado.",
-    actionLabel: "Continuar",
+      "Cada card mostra título, tipo, solicitante, prazo e valor. Toque na primeira solicitação para abrir o detalhamento completo.",
+    requiresInteraction: true,
     companions: ["MiniDashboard"],
   },
   {
-    id: "detalhe",
+    id: "detail",
     targetSelector: '[data-tour="ap-detail"]',
-    placement: "left",
-    title: (live) =>
-      live.apOpenTitle
-        ? `${live.apOpenTitle}`
-        : "Detalhe com diff de valores",
+    placement: "bottom",
+    title: (live) => (live.apOpenTitle as string) ?? "Detalhamento",
     description:
-      "Painel mostra descrição, diff vs. baseline (Antes vs. Agora) e variação percentual. Gestor decide com contexto, não no escuro.",
+      "Valor, variação vs. baseline e descrição completa da solicitação. Diff Antes/Agora pra o gestor decidir com contexto.",
     actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },
   {
-    id: "comentar",
+    id: "comment",
     targetSelector: '[data-tour="ap-comment"]',
     placement: "top",
     title: "Comentário em chips, sem teclado",
     description:
-      "Toque em uma das opções pré-prontas (dentro da política, aguardando 2ª cotação, ajuste de prazo). A justificativa fica registrada no histórico.",
+      "Toque em uma justificativa pré-pronta. A nota fica registrada no histórico da solicitação pra auditoria.",
     actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },
   {
-    id: "aprovar",
+    id: "approve",
     targetSelector: '[data-tour="ap-approve-button"]',
     placement: "top",
     title: "Aprovação em um toque",
     description:
-      "Toque em Aprovar. A solicitação migra para a aba Aprovadas, o solicitante recebe push + e-mail e o pedido segue para o ERP.",
+      "Toque em Aprovar. A solicitação migra pra aba Aprovadas, o solicitante recebe push + e-mail e o pedido segue pro ERP.",
     requiresInteraction: true,
     companions: ["MiniDashboard"],
   },

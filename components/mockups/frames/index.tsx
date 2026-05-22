@@ -31,47 +31,56 @@ export function SolutionFrame({
 }: SolutionFrameProps) {
   if (containerWidth === 0 || containerHeight === 0) return null;
 
+  // Mockup content is zoomed up for TV touch legibility. The wrapping
+  // div applies CSS zoom so text sizes designed for phone-sized devices
+  // scale up to be readable from 2m on a 55" TV. zoom preserves layout
+  // (no overflow) and getBoundingClientRect returns the zoomed positions
+  // so the tour spotlight aligns correctly.
+  const ZoomedChildren = (
+    <div className="mockup-zoom h-full w-full">{children}</div>
+  );
+
   switch (device) {
     case "kiosk": {
       const aspect = 9 / 16;
       const heightLimit = containerHeight;
       const widthLimit = containerWidth / aspect;
       const finalHeight = Math.min(heightLimit, widthLimit);
-      return <KioskFrame height={finalHeight}>{children}</KioskFrame>;
+      return <KioskFrame height={finalHeight}>{ZoomedChildren}</KioskFrame>;
     }
     case "mobile": {
       const aspect = 9 / 19.5;
       const heightLimit = containerHeight;
       const widthLimit = containerWidth / aspect;
       const finalHeight = Math.min(heightLimit, widthLimit);
-      return <MobileFrame height={finalHeight}>{children}</MobileFrame>;
+      return <MobileFrame height={finalHeight}>{ZoomedChildren}</MobileFrame>;
     }
     case "tablet": {
-      // Portrait 3:4
       const aspect = 3 / 4;
       const heightLimit = containerHeight;
       const widthLimit = containerWidth / aspect;
       const finalHeight = Math.min(heightLimit, widthLimit);
-      return <TabletFrame height={finalHeight}>{children}</TabletFrame>;
+      return <TabletFrame height={finalHeight}>{ZoomedChildren}</TabletFrame>;
     }
     case "pos-terminal": {
-      // Approximated: full height; width derived inside the component
-      // Cap to 50% of container width to avoid overflow on wide screens.
       const heightLimit = containerHeight;
       const widthCap = containerWidth * 0.5;
       const heightFromWidth = (widthCap / 16) * 10 / 0.55;
       const finalHeight = Math.min(heightLimit, heightFromWidth);
-      return <POSTerminalFrame height={finalHeight}>{children}</POSTerminalFrame>;
+      return (
+        <POSTerminalFrame height={finalHeight}>
+          {ZoomedChildren}
+        </POSTerminalFrame>
+      );
     }
     case "desktop":
     default: {
-      // Desktop: width-driven (16:10)
       const aspect = 16 / 10;
       const widthLimit = containerWidth;
       const heightLimit = containerHeight;
       const widthFromHeight = heightLimit * aspect;
       const finalWidth = Math.min(widthLimit, widthFromHeight);
-      return <DesktopFrame width={finalWidth}>{children}</DesktopFrame>;
+      return <DesktopFrame width={finalWidth}>{ZoomedChildren}</DesktopFrame>;
     }
   }
 }

@@ -431,16 +431,14 @@ function GeneratingScreen({ onComplete }: { onComplete: () => void }) {
       className="relative flex flex-1 flex-col overflow-hidden"
       style={{
         background:
-          "radial-gradient(circle at 50% 35%, #161a3e 0%, #0a0c20 60%, #050610 100%)",
-        color: "white",
+          "radial-gradient(circle at 50% 30%, #ffffff 0%, #f0f1fc 55%, #e8e9f8 100%)",
+        color: "#1f2330",
       }}
     >
-      <StarField />
+      <SoftDots />
 
-      {/* Top stepper */}
       <PhaseStepper phaseIdx={phaseIdx} progress={progress} />
 
-      {/* Center loader */}
       <div
         data-tour="ci-ai-brain"
         className="relative flex flex-1 items-center justify-center"
@@ -448,9 +446,8 @@ function GeneratingScreen({ onComplete }: { onComplete: () => void }) {
         <AnimatedAIBrain phaseIdx={phaseIdx} />
       </div>
 
-      {/* Live insight ticker */}
-      <div className="z-10 mb-8 px-10 text-center">
-        <p className="font-ui text-[11px] font-bold uppercase tracking-[4px] text-white/40">
+      <div className="z-10 mb-10 px-10 text-center">
+        <p className="font-ui text-[12px] font-bold uppercase tracking-[4px] text-brand/55">
           Sistema neural Teknisa
         </p>
         <AnimatePresence mode="wait">
@@ -460,7 +457,7 @@ function GeneratingScreen({ onComplete }: { onComplete: () => void }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.3 }}
-            className="mt-2 font-ui text-[16px] font-medium text-white"
+            className="mt-2 font-ui text-[18px] font-medium text-neutral-900"
           >
             {INSIGHTS[insightIdx]}
           </motion.p>
@@ -470,13 +467,13 @@ function GeneratingScreen({ onComplete }: { onComplete: () => void }) {
   );
 }
 
-// ----- Star field background ------------------------------------------------
+// ----- Soft floating dots background ----------------------------------------
 
-function StarField() {
-  // Deterministic stars (avoid hydration mismatch).
-  const stars = useMemo(
+function SoftDots() {
+  // Deterministic soft brand-colored dots, very subtle.
+  const dots = useMemo(
     () =>
-      Array.from({ length: 64 }).map((_, i) => {
+      Array.from({ length: 24 }).map((_, i) => {
         const seed = (i * 9301 + 49297) % 233280;
         const rng1 = (seed / 233280) * 100;
         const rng2 = ((seed * 1664525 + 1013904223) % 233280 / 233280) * 100;
@@ -484,26 +481,30 @@ function StarField() {
         return {
           left: rng1,
           top: rng2,
-          size: 1 + rng3 * 1.6,
+          size: 4 + rng3 * 4,
           delay: rng3 * 4,
-          duration: 2 + rng3 * 3,
+          duration: 4 + rng3 * 4,
         };
       }),
     [],
   );
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      {stars.map((s, i) => (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 overflow-hidden"
+    >
+      {dots.map((s, i) => (
         <motion.span
           key={i}
-          className="absolute rounded-full bg-white"
+          className="absolute rounded-full"
           style={{
             left: `${s.left}%`,
             top: `${s.top}%`,
             width: s.size,
             height: s.size,
+            background: "rgba(2,7,136,0.10)",
           }}
-          animate={{ opacity: [0.15, 0.6, 0.15] }}
+          animate={{ opacity: [0.15, 0.5, 0.15], y: [0, -8, 0] }}
           transition={{
             duration: s.duration,
             repeat: Infinity,
@@ -535,33 +536,26 @@ function PhaseStepper({
             <div key={p.id} className="flex flex-1 items-center">
               <div className="flex flex-col items-center gap-2">
                 <motion.span
-                  className="relative flex h-12 w-12 items-center justify-center rounded-full border-2"
+                  className="relative flex h-14 w-14 items-center justify-center rounded-full border-2 bg-white"
                   animate={{
                     scale: active ? [1, 1.08, 1] : 1,
                     borderColor: done
                       ? "#16a34a"
                       : active
-                        ? "#a4b1ff"
-                        : "rgba(255,255,255,0.18)",
+                        ? "#020788"
+                        : "rgba(2,7,136,0.15)",
                   }}
                   transition={{
                     scale: { duration: 1.4, repeat: Infinity, ease: "easeInOut" },
                   }}
-                  style={{
-                    background: done
-                      ? "rgba(22,163,74,0.18)"
-                      : active
-                        ? "rgba(164,177,255,0.16)"
-                        : "rgba(255,255,255,0.04)",
-                  }}
                 >
                   {done ? (
-                    <Check size={20} strokeWidth={2.5} className="text-success" />
+                    <Check size={22} strokeWidth={2.5} className="text-success" />
                   ) : (
                     <p.Icon
-                      size={18}
+                      size={20}
                       strokeWidth={2}
-                      className={active ? "text-white" : "text-white/40"}
+                      className={active ? "text-brand" : "text-neutral-300"}
                     />
                   )}
                   {active && (
@@ -569,31 +563,35 @@ function PhaseStepper({
                       className="absolute inset-0 rounded-full"
                       animate={{
                         boxShadow: [
-                          "0 0 0 0 rgba(164,177,255,0.5)",
-                          "0 0 0 14px rgba(164,177,255,0)",
-                          "0 0 0 0 rgba(164,177,255,0.5)",
+                          "0 0 0 0 rgba(2,7,136,0.35)",
+                          "0 0 0 14px rgba(2,7,136,0)",
+                          "0 0 0 0 rgba(2,7,136,0.35)",
                         ],
                       }}
-                      transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                      transition={{
+                        duration: 1.6,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
                     />
                   )}
                 </motion.span>
                 <span
                   className={cn(
-                    "font-ui text-[12px] font-bold",
+                    "font-ui text-[13px] font-bold",
                     active
-                      ? "text-white"
+                      ? "text-brand"
                       : done
                         ? "text-success"
-                        : "text-white/40",
+                        : "text-neutral-400",
                   )}
                 >
                   {p.label}
                 </span>
               </div>
               {i < PHASES.length - 1 && (
-                <div className="mx-3 mb-6 flex-1">
-                  <div className="relative h-0.5 rounded-full bg-white/10">
+                <div className="mx-3 mb-7 flex-1">
+                  <div className="relative h-0.5 rounded-full bg-brand/10">
                     <motion.span
                       className="block h-full rounded-full"
                       initial={{ width: 0 }}
@@ -609,7 +607,7 @@ function PhaseStepper({
                       style={{
                         background:
                           phaseIdx >= i
-                            ? "linear-gradient(90deg, #a4b1ff, #16a34a)"
+                            ? "linear-gradient(90deg, #020788, #16a34a)"
                             : "transparent",
                       }}
                     />
@@ -629,283 +627,92 @@ function PhaseStepper({
 // pulsing brain.
 
 function AnimatedAIBrain({ phaseIdx }: { phaseIdx: number }) {
-  const size = 360;
-  const cx = size / 2;
-  const cy = size / 2;
-  const radiusOuter = 160;
-  const radiusInner = 110;
-  // 8 nodes around the circle for the circuit pattern
-  const nodes = useMemo(
-    () =>
-      Array.from({ length: 8 }).map((_, i) => {
-        const a = (i / 8) * Math.PI * 2 - Math.PI / 2;
-        return {
-          x: cx + Math.cos(a) * radiusOuter,
-          y: cy + Math.sin(a) * radiusOuter,
-          delay: i * 0.18,
-          angle: a,
-        };
-      }),
-    [cx, cy],
-  );
-  // Inner circuit hex
-  const innerNodes = useMemo(
-    () =>
-      Array.from({ length: 6 }).map((_, i) => {
-        const a = (i / 6) * Math.PI * 2;
-        return {
-          x: cx + Math.cos(a) * radiusInner,
-          y: cy + Math.sin(a) * radiusInner,
-          angle: a,
-        };
-      }),
-    [cx, cy],
-  );
-
+  // Clean, elegant "AI orb" with breathing ripples.
+  // 3 concentric circles softly emanating outward + a solid core sphere
+  // with the current phase icon. Less mechanical, more premium.
+  const size = 320;
+  const PhaseIcon = PHASES[phaseIdx]?.Icon ?? Brain;
   return (
-    <div className="relative" style={{ width: size, height: size }}>
-      {/* Outer halo */}
+    <div
+      className="relative flex items-center justify-center"
+      style={{ width: size, height: size }}
+    >
+      {/* Soft radial background glow */}
       <motion.span
         aria-hidden
-        animate={{ scale: [1, 1.06, 1], opacity: [0.4, 0.7, 0.4] }}
-        transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ opacity: [0.5, 0.85, 0.5] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         className="absolute inset-0 rounded-full"
         style={{
           background:
-            "radial-gradient(circle, rgba(164,177,255,0.35) 0%, transparent 65%)",
+            "radial-gradient(circle, rgba(164,177,255,0.45) 0%, rgba(164,177,255,0.10) 35%, transparent 70%)",
+          filter: "blur(8px)",
         }}
       />
 
-      <svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
-        className="relative"
-      >
-        <defs>
-          <radialGradient id="ai-core" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#a4b1ff" />
-            <stop offset="60%" stopColor="#3b42c4" />
-            <stop offset="100%" stopColor="#020788" />
-          </radialGradient>
-          <linearGradient id="ai-line" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#a4b1ff" stopOpacity="0.05" />
-            <stop offset="50%" stopColor="#a4b1ff" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#a4b1ff" stopOpacity="0.05" />
-          </linearGradient>
-          <filter id="ai-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-
-        {/* Outer dashed ring (rotating slowly) */}
-        <motion.circle
-          cx={cx}
-          cy={cy}
-          r={radiusOuter + 18}
-          fill="none"
-          stroke="rgba(164,177,255,0.25)"
-          strokeWidth={1}
-          strokeDasharray="2 8"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          style={{ transformOrigin: `${cx}px ${cy}px` }}
-        />
-
-        {/* Mid ring (counter-rotating) */}
-        <motion.circle
-          cx={cx}
-          cy={cy}
-          r={radiusOuter}
-          fill="none"
-          stroke="rgba(164,177,255,0.4)"
-          strokeWidth={1.4}
-          strokeDasharray="14 6"
-          animate={{ rotate: -360 }}
-          transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
-          style={{ transformOrigin: `${cx}px ${cy}px` }}
-        />
-
-        {/* Inner ring */}
-        <motion.circle
-          cx={cx}
-          cy={cy}
-          r={radiusInner}
-          fill="none"
-          stroke="rgba(164,177,255,0.55)"
-          strokeWidth={1}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-          style={{ transformOrigin: `${cx}px ${cy}px` }}
-        />
-
-        {/* Circuit lines — outer nodes to inner hex (cross pattern) */}
-        {nodes.map((n, i) => {
-          const target = innerNodes[i % innerNodes.length];
-          return (
-            <motion.line
-              key={`line-${i}`}
-              x1={n.x}
-              y1={n.y}
-              x2={target.x}
-              y2={target.y}
-              stroke="url(#ai-line)"
-              strokeWidth={1.2}
-              animate={{ opacity: [0.2, 0.85, 0.2] }}
-              transition={{
-                duration: 1.8,
-                repeat: Infinity,
-                delay: i * 0.15,
-                ease: "easeInOut",
-              }}
-            />
-          );
-        })}
-
-        {/* Circuit lines — hex perimeter */}
-        {innerNodes.map((n, i) => {
-          const next = innerNodes[(i + 1) % innerNodes.length];
-          return (
-            <motion.line
-              key={`hex-${i}`}
-              x1={n.x}
-              y1={n.y}
-              x2={next.x}
-              y2={next.y}
-              stroke="rgba(164,177,255,0.45)"
-              strokeWidth={1}
-              animate={{ opacity: [0.3, 0.9, 0.3] }}
-              transition={{
-                duration: 2.2,
-                repeat: Infinity,
-                delay: i * 0.12,
-                ease: "easeInOut",
-              }}
-            />
-          );
-        })}
-
-        {/* Outer node dots */}
-        {nodes.map((n, i) => (
-          <motion.g key={`node-${i}`}>
-            <motion.circle
-              cx={n.x}
-              cy={n.y}
-              r={4}
-              fill="#a4b1ff"
-              filter="url(#ai-glow)"
-              animate={{
-                r: [3, 5.5, 3],
-                opacity: [0.5, 1, 0.5],
-              }}
-              transition={{
-                duration: 1.6,
-                repeat: Infinity,
-                delay: n.delay,
-                ease: "easeInOut",
-              }}
-            />
-          </motion.g>
-        ))}
-
-        {/* Sweeping beam */}
-        <motion.line
-          x1={cx}
-          y1={cy}
-          x2={cx + radiusOuter + 30}
-          y2={cy}
-          stroke="rgba(164,177,255,0.7)"
-          strokeWidth={2}
-          strokeLinecap="round"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 3.6, repeat: Infinity, ease: "linear" }}
+      {/* Breathing ripples — water-drop emanation */}
+      {[0, 1, 2].map((i) => (
+        <motion.span
+          aria-hidden
+          key={i}
+          className="absolute rounded-full"
           style={{
-            transformOrigin: `${cx}px ${cy}px`,
-            filter: "drop-shadow(0 0 8px rgba(164,177,255,0.6))",
+            border: "1.5px solid rgba(164,177,255,0.55)",
+            width: 96,
+            height: 96,
+          }}
+          initial={{ scale: 1, opacity: 0 }}
+          animate={{
+            scale: [1, 3, 3],
+            opacity: [0, 0.7, 0],
+          }}
+          transition={{
+            duration: 3.2,
+            repeat: Infinity,
+            ease: "easeOut",
+            delay: i * 1.05,
           }}
         />
+      ))}
 
-        {/* Beam fade trail */}
-        <motion.path
-          d={`M ${cx} ${cy} L ${cx + radiusOuter + 30} ${cy}`}
-          fill="none"
-          stroke="url(#ai-line)"
-          strokeWidth={6}
-          strokeLinecap="round"
-          opacity={0.4}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 3.6, repeat: Infinity, ease: "linear" }}
-          style={{ transformOrigin: `${cx}px ${cy}px` }}
-        />
-      </svg>
-
-      {/* Core: brain icon with breathing pulse */}
+      {/* Core sphere */}
       <motion.div
-        className="absolute inset-0 flex items-center justify-center"
-        animate={{ scale: [1, 1.06, 1] }}
-        transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+        className="relative flex h-24 w-24 items-center justify-center rounded-full"
+        animate={{
+          scale: [1, 1.04, 1],
+        }}
+        transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          background:
+            "radial-gradient(circle at 30% 25%, #b9c4ff 0%, #3b42c4 45%, #020788 100%)",
+          boxShadow:
+            "0 0 32px rgba(164,177,255,0.55), 0 0 64px rgba(2,7,136,0.45), inset 0 -8px 24px rgba(2,7,136,0.6), inset 0 8px 16px rgba(185,196,255,0.55)",
+        }}
       >
-        <motion.span
-          className="relative flex h-24 w-24 items-center justify-center rounded-full text-white"
+        {/* Highlight shine */}
+        <span
+          aria-hidden
+          className="absolute left-3 top-3 h-5 w-7 rounded-full"
           style={{
             background:
-              "radial-gradient(circle, #a4b1ff 0%, #3b42c4 55%, #020788 100%)",
-            boxShadow:
-              "0 0 40px rgba(164,177,255,0.55), 0 0 80px rgba(164,177,255,0.25)",
+              "radial-gradient(ellipse at center, rgba(255,255,255,0.7) 0%, transparent 70%)",
+            filter: "blur(2px)",
           }}
-          animate={{
-            boxShadow: [
-              "0 0 40px rgba(164,177,255,0.55), 0 0 80px rgba(164,177,255,0.25)",
-              "0 0 60px rgba(164,177,255,0.75), 0 0 120px rgba(164,177,255,0.35)",
-              "0 0 40px rgba(164,177,255,0.55), 0 0 80px rgba(164,177,255,0.25)",
-            ],
-          }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={phaseIdx}
-              initial={{ scale: 0.6, opacity: 0, rotate: -20 }}
-              animate={{ scale: 1, opacity: 1, rotate: 0 }}
-              exit={{ scale: 0.6, opacity: 0, rotate: 20 }}
-              transition={{ type: "spring", stiffness: 220, damping: 14 }}
-            >
-              {(() => {
-                const Ic = PHASES[phaseIdx]?.Icon ?? Brain;
-                return <Ic size={36} strokeWidth={1.75} />;
-              })()}
-            </motion.span>
-          </AnimatePresence>
-        </motion.span>
-      </motion.div>
+        />
 
-      {/* Orbiting particles */}
-      {[0, 1, 2].map((i) => (
-        <motion.div
-          key={`orbit-${i}`}
-          className="absolute left-1/2 top-1/2 h-2 w-2"
-          style={{ marginLeft: -4, marginTop: -4 }}
-          animate={{ rotate: 360 }}
-          transition={{
-            duration: 4 + i * 1.4,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        >
-          <span
-            className="block h-2 w-2 rounded-full"
-            style={{
-              background: "#a4b1ff",
-              boxShadow: "0 0 10px rgba(164,177,255,0.7)",
-              transform: `translate(${130 + i * 20}px, 0)`,
-            }}
-          />
-        </motion.div>
-      ))}
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={phaseIdx}
+            initial={{ scale: 0.6, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.6, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 240, damping: 18 }}
+            className="relative text-white"
+          >
+            <PhaseIcon size={36} strokeWidth={1.5} />
+          </motion.span>
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }

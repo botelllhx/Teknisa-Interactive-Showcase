@@ -2,7 +2,6 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import {
   BadgeCheck,
   ShoppingBasket,
@@ -10,6 +9,7 @@ import {
   FileSpreadsheet,
   Check,
   X,
+  ChevronLeft,
   Filter,
   Search,
   MessageSquare,
@@ -19,7 +19,8 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
-  AlertCircle,
+  Bell,
+  MoreVertical,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
@@ -42,7 +43,7 @@ interface Request {
   byInitials: string;
   when: string;
   amount: number;
-  delta: number; // diff from previous (positive = increase)
+  delta: number;
   status: ReqStatus;
   description: string;
   attachments: number;
@@ -61,7 +62,7 @@ const REQUESTS: Request[] = [
     delta: 320.0,
     status: "pendente",
     description:
-      "Pedido de reposição do estoque mensal do CD Berrini. Fornecedor escolhido pela cotação RFQ-2024-001 com 13% abaixo da última compra.",
+      "Reposição do estoque mensal do CD Berrini. Fornecedor escolhido na cotação RFQ-2024-001, 13% abaixo da última compra.",
     attachments: 3,
     comments: 2,
   },
@@ -76,7 +77,7 @@ const REQUESTS: Request[] = [
     delta: -2_400.0,
     status: "pendente",
     description:
-      "Renovação do contrato anual com desconto de 3% sobre o valor original. Garantia mantida em 12 meses.",
+      "Renovação anual com desconto de 3% sobre o valor original. Garantia mantida em 12 meses.",
     attachments: 5,
     comments: 1,
   },
@@ -153,24 +154,9 @@ const STATUS_META: Record<
   ReqStatus,
   { label: string; bg: string; color: string; Icon: typeof Clock }
 > = {
-  pendente: {
-    label: "Pendente",
-    bg: "rgba(217,119,6,0.15)",
-    color: "#d97706",
-    Icon: Clock,
-  },
-  aprovada: {
-    label: "Aprovada",
-    bg: "rgba(22,163,74,0.15)",
-    color: "#16a34a",
-    Icon: CheckCircle2,
-  },
-  reprovada: {
-    label: "Reprovada",
-    bg: "rgba(220,38,38,0.15)",
-    color: "#dc2626",
-    Icon: XCircle,
-  },
+  pendente: { label: "Pendente", bg: "rgba(217,119,6,0.15)", color: "#d97706", Icon: Clock },
+  aprovada: { label: "Aprovada", bg: "rgba(22,163,74,0.15)", color: "#16a34a", Icon: CheckCircle2 },
+  reprovada: { label: "Reprovada", bg: "rgba(220,38,38,0.15)", color: "#dc2626", Icon: XCircle },
 };
 
 // ============================================================================
@@ -178,10 +164,17 @@ const STATUS_META: Record<
 // ============================================================================
 
 export function ApproveMockup({ step }: ApproveProps) {
-  void step;
   const [tab, setTab] = useState<ReqStatus>("pendente");
   const [openId, setOpenId] = useState<string | null>(null);
   const [items, setItems] = useState<Request[]>(REQUESTS);
+
+  // Sync screen with tour step: step 2 onwards = detail screen open
+  useEffect(() => {
+    if (step >= 2 && !openId) {
+      const firstPending = items.find((r) => r.status === "pendente");
+      if (firstPending) setOpenId(firstPending.id);
+    }
+  }, [step, openId, items]);
 
   const list = useMemo(
     () => items.filter((r) => r.status === tab),
@@ -196,13 +189,6 @@ export function ApproveMockup({ step }: ApproveProps) {
     }),
     [items],
   );
-
-  // Auto-open the first request when switching tab if nothing selected.
-  useEffect(() => {
-    if (list[0] && !list.find((r) => r.id === openId)) {
-      setOpenId(list[0].id);
-    }
-  }, [list, openId]);
 
   const open = useMemo(
     () => items.find((r) => r.id === openId) ?? null,
@@ -221,271 +207,289 @@ export function ApproveMockup({ step }: ApproveProps) {
       apOpenTitle: open?.title,
       apPendingCount: counts.pendente,
       apApprovedCount: counts.aprovada,
+      apRejectedCount: counts.reprovada,
     });
-  }, [tab, openId, open?.title, counts.pendente, counts.aprovada, patchLive]);
+  }, [tab, openId, open?.title, counts, patchLive]);
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden bg-surface-raised font-ui text-neutral-800">
-      <Header pending={counts.pendente} />
+    <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#f5f6fa] font-ui text-neutral-800">
+      <StatusBar />
 
-      <main className="grid flex-1 grid-cols-[320px_1fr] overflow-hidden">
-        <aside className="flex flex-col overflow-hidden border-r border-neutral-200 bg-white">
-          <TabsRow tab={tab} counts={counts} onPick={setTab} />
-          <SearchRow />
-          <PendingList list={list} openId={openId} onOpen={setOpenId} />
-        </aside>
-
-        <section className="flex flex-col overflow-hidden">
-          <AnimatePresence mode="wait">
-            {open ? (
-              <DetailView
-                key={open.id}
-                request={open}
-                onDecide={decide}
-              />
-            ) : (
-              <EmptyDetail key="empty" />
-            )}
-          </AnimatePresence>
-        </section>
-      </main>
+      <AnimatePresence mode="wait">
+        {open ? (
+          <DetailScreen
+            key={`d-${open.id}`}
+            request={open}
+            onBack={() => setOpenId(null)}
+            onDecide={(s) => decide(open.id, s)}
+          />
+        ) : (
+          <ListScreen
+            key="list"
+            tab={tab}
+            counts={counts}
+            list={list}
+            onTab={setTab}
+            onOpen={setOpenId}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
 // ============================================================================
-// Header
+// Mobile chrome
 // ============================================================================
 
-function Header({ pending }: { pending: number }) {
+function StatusBar() {
   return (
-    <header className="flex h-14 items-center justify-between border-b border-brand/8 bg-white px-5">
-      <div className="flex items-center gap-3">
-        <Image src="/logo-teknisa.svg" alt="Teknisa" width={84} height={16} />
-        <span className="h-5 w-px bg-neutral-200" />
-        <div className="flex items-center gap-2">
-          <span
-            className="flex h-7 w-7 items-center justify-center rounded-md text-white"
-            style={{ background: "#020788" }}
-          >
-            <BadgeCheck size={14} strokeWidth={2} />
-          </span>
-          <div className="leading-tight">
-            <p className="font-ui text-[14px] font-bold text-neutral-900">
-              Approve
-            </p>
-            <p className="font-ui text-[11px] text-neutral-500">
-              Aprovações de compras, contratos e pedidos
-            </p>
-          </div>
-        </div>
+    <div className="flex items-center justify-between bg-brand px-5 pt-2 pb-1.5 text-white">
+      <span className="font-ui text-[12px] font-bold tabular-nums">09:41</span>
+      <div className="flex items-center gap-1.5">
+        <span className="text-[10px] font-bold tracking-wide">5G</span>
+        <span className="text-[10px] tabular-nums">96%</span>
       </div>
-      <div className="flex items-center gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-warning/15 px-3 py-1 font-ui text-[11px] font-bold text-warning">
-          <AlertCircle size={11} strokeWidth={2.5} />
-          {pending} pendentes
-        </span>
-        <span className="flex h-9 items-center gap-2 rounded-full bg-neutral-50 px-2.5 py-1">
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white">
-            MS
-          </span>
-          <span className="leading-tight">
-            <span className="block font-ui text-[12px] font-bold text-brand">
-              Mateus Souza
-            </span>
-            <span className="block text-[9px] text-neutral-500">
-              Diretor de Compras
-            </span>
-          </span>
-        </span>
-      </div>
-    </header>
+    </div>
   );
 }
 
 // ============================================================================
-// Tabs
+// List screen (Pendentes / Aprovadas / Reprovadas)
 // ============================================================================
 
-function TabsRow({
+function ListScreen({
   tab,
   counts,
-  onPick,
+  list,
+  onTab,
+  onOpen,
 }: {
   tab: ReqStatus;
   counts: Record<ReqStatus, number>;
-  onPick: (t: ReqStatus) => void;
-}) {
-  const items: { id: ReqStatus; label: string; color: string }[] = [
-    { id: "pendente", label: "Pendentes", color: "#d97706" },
-    { id: "aprovada", label: "Aprovadas", color: "#16a34a" },
-    { id: "reprovada", label: "Reprovadas", color: "#dc2626" },
-  ];
-  return (
-    <div
-      data-tour="ap-tabs"
-      className="flex border-b border-neutral-200"
-    >
-      {items.map((it) => {
-        const active = it.id === tab;
-        return (
-          <button
-            key={it.id}
-            type="button"
-            onClick={() => onPick(it.id)}
-            className="relative flex flex-1 flex-col items-center justify-center py-3"
-          >
-            <span
-              className={cn(
-                "font-ui text-[12px] font-bold",
-                active ? "text-brand" : "text-neutral-400",
-              )}
-            >
-              {it.label}
-            </span>
-            <span
-              className="mt-0.5 inline-flex items-center justify-center rounded-full px-1.5 py-0 text-[9px] font-bold"
-              style={{
-                background: active ? `${it.color}25` : "transparent",
-                color: active ? it.color : "#9ca3af",
-              }}
-            >
-              {counts[it.id]}
-            </span>
-            {active && (
-              <motion.span
-                layoutId="ap-tab-underline"
-                className="absolute inset-x-4 bottom-0 h-0.5 rounded-full"
-                style={{ background: it.color }}
-              />
-            )}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function SearchRow() {
-  return (
-    <div className="flex items-center gap-2 border-b border-neutral-100 bg-neutral-50 px-3 py-2">
-      <div className="flex flex-1 items-center gap-1.5 rounded-md bg-white px-2.5 py-1.5 ring-1 ring-neutral-200">
-        <Search size={12} strokeWidth={2.25} className="text-neutral-400" />
-        <span className="font-ui text-[11px] text-neutral-400">Pesquisar</span>
-      </div>
-      <button
-        type="button"
-        className="flex h-8 w-8 items-center justify-center rounded-md bg-white text-brand ring-1 ring-neutral-200 hover:bg-brand-ghost"
-      >
-        <Filter size={12} strokeWidth={2.25} />
-      </button>
-    </div>
-  );
-}
-
-// ============================================================================
-// Pending list
-// ============================================================================
-
-function PendingList({
-  list,
-  openId,
-  onOpen,
-}: {
   list: Request[];
-  openId: string | null;
+  onTab: (t: ReqStatus) => void;
   onOpen: (id: string) => void;
 }) {
   return (
-    <div
-      data-tour="ap-pending-list"
-      className="flex-1 overflow-y-auto"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
+      className="flex flex-1 flex-col overflow-hidden"
     >
-      {list.length === 0 ? (
-        <p className="px-3 py-8 text-center text-[12px] italic text-neutral-400">
-          Sem solicitações nesta aba.
+      {/* App bar */}
+      <header className="flex items-center justify-between bg-brand px-4 pb-3 text-white">
+        <button
+          type="button"
+          aria-label="Menu"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 backdrop-blur"
+        >
+          <span className="flex flex-col gap-0.5">
+            <span className="block h-0.5 w-3.5 rounded-full bg-white" />
+            <span className="block h-0.5 w-3.5 rounded-full bg-white" />
+            <span className="block h-0.5 w-3.5 rounded-full bg-white" />
+          </span>
+        </button>
+        <div className="flex items-center gap-1.5">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-white/15">
+            <BadgeCheck size={14} strokeWidth={2.25} className="text-white" />
+          </span>
+          <p className="font-ui text-[14px] font-bold">Approve</p>
+        </div>
+        <button
+          type="button"
+          aria-label="Notificações"
+          className="relative flex h-9 w-9 items-center justify-center rounded-full bg-white/15 backdrop-blur"
+        >
+          <Bell size={14} strokeWidth={2.25} className="text-white" />
+          <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-warning ring-2 ring-brand" />
+        </button>
+      </header>
+
+      {/* Greeting + user */}
+      <div className="border-b border-brand/8 bg-white px-4 py-3.5">
+        <p className="text-[11px] text-neutral-500">Bom dia,</p>
+        <div className="mt-0.5 flex items-center justify-between">
+          <p className="font-ui text-[18px] font-bold text-neutral-900">
+            Mateus Souza
+          </p>
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand font-ui text-[14px] font-bold text-white">
+            MS
+          </span>
+        </div>
+        <p className="mt-1 text-[11px] text-neutral-500">
+          {counts.pendente} solicitações aguardando aprovação
         </p>
-      ) : (
-        list.map((r, i) => {
-          const meta = TYPE_META[r.type];
-          const stat = STATUS_META[r.status];
-          const active = r.id === openId;
+      </div>
+
+      {/* Search */}
+      <div className="px-4 py-3">
+        <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2.5">
+          <Search size={14} strokeWidth={2.25} className="text-neutral-400" />
+          <span className="font-ui text-[12px] text-neutral-400">Buscar</span>
+          <span className="ml-auto flex h-6 w-6 items-center justify-center rounded-md bg-neutral-100 text-neutral-500">
+            <Filter size={11} strokeWidth={2.25} />
+          </span>
+        </div>
+      </div>
+
+      {/* Status tabs */}
+      <div data-tour="ap-tabs" className="grid grid-cols-3 border-b border-neutral-200 bg-white">
+        {(["pendente", "aprovada", "reprovada"] as ReqStatus[]).map((t) => {
+          const active = t === tab;
+          const meta = STATUS_META[t];
           return (
             <motion.button
-              key={r.id}
+              key={t}
               type="button"
-              whileTap={{ scale: 0.99 }}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.04 }}
-              data-tour={i === 0 ? "ap-first-card" : undefined}
-              onClick={() => onOpen(r.id)}
-              className={cn(
-                "flex w-full flex-col gap-1.5 border-b border-neutral-100 p-3 text-left transition-colors",
-                active ? "bg-brand-ghost" : "hover:bg-neutral-50",
-              )}
-              style={{
-                borderLeft: active ? `3px solid #020788` : "3px solid transparent",
-              }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => onTab(t)}
+              className="relative flex flex-col items-center gap-0.5 py-3"
             >
-              <div className="flex items-start gap-2">
-                <span
-                  className="flex h-9 w-9 flex-none items-center justify-center rounded-md text-white"
-                  style={{ background: meta.color }}
-                >
-                  <meta.Icon size={14} strokeWidth={2} />
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-1.5">
-                    <p className="font-ui text-[12px] font-bold text-neutral-900 line-clamp-2">
-                      {r.title}
-                    </p>
-                    <span
-                      className="rounded-full px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider"
-                      style={{ background: stat.bg, color: stat.color }}
-                    >
-                      {stat.label}
-                    </span>
-                  </div>
-                  <p className="mt-0.5 text-[10px] text-neutral-500">
-                    {r.id} · {meta.label}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="flex items-center gap-1.5 text-neutral-500">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-100 text-[9px] font-bold text-neutral-600">
-                    {r.byInitials}
-                  </span>
-                  {r.by} · {r.when}
-                </span>
-                <span className="font-ui font-bold text-brand tabular-nums">
-                  R${" "}
-                  {r.amount.toLocaleString("pt-BR", {
-                    minimumFractionDigits: 2,
-                  })}
-                </span>
-              </div>
+              <span
+                className={cn(
+                  "font-ui text-[12px] font-bold",
+                  active ? "text-brand" : "text-neutral-400",
+                )}
+              >
+                {meta.label.replace("Pendente", "Pendentes").replace(
+                  "Aprovada",
+                  "Aprovadas",
+                ).replace("Reprovada", "Reprovadas")}
+              </span>
+              <span
+                className="inline-flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-bold"
+                style={{
+                  background: active ? meta.bg : "transparent",
+                  color: active ? meta.color : "#9ca3af",
+                }}
+              >
+                {counts[t]}
+              </span>
+              {active && (
+                <motion.span
+                  layoutId="ap-tab"
+                  className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-brand"
+                />
+              )}
             </motion.button>
           );
-        })
-      )}
-    </div>
+        })}
+      </div>
+
+      {/* List */}
+      <div
+        data-tour="ap-pending-list"
+        className="flex-1 overflow-y-auto px-4 py-3"
+      >
+        {list.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center py-12 text-center">
+            <Check size={32} strokeWidth={1.5} className="text-neutral-300" />
+            <p className="mt-2 text-[13px] italic text-neutral-400">
+              Sem solicitações nesta aba.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {list.map((r, i) => (
+              <RequestCard
+                key={r.id}
+                request={r}
+                onOpen={() => onOpen(r.id)}
+                delay={i * 0.05}
+                target={i === 0}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+function RequestCard({
+  request,
+  onOpen,
+  delay,
+  target,
+}: {
+  request: Request;
+  onOpen: () => void;
+  delay: number;
+  target: boolean;
+}) {
+  const meta = TYPE_META[request.type];
+  const stat = STATUS_META[request.status];
+  return (
+    <motion.button
+      type="button"
+      whileTap={{ scale: 0.99 }}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, delay }}
+      onClick={onOpen}
+      data-tour={target ? "ap-first-card" : undefined}
+      className="flex w-full flex-col gap-2 rounded-2xl border border-neutral-200 bg-white p-3.5 text-left shadow-card"
+    >
+      <div className="flex items-start gap-2.5">
+        <span
+          className="flex h-10 w-10 flex-none items-center justify-center rounded-xl text-white"
+          style={{ background: meta.color }}
+        >
+          <meta.Icon size={15} strokeWidth={2} />
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <p className="font-ui text-[13px] font-bold leading-tight text-neutral-900 line-clamp-2">
+              {request.title}
+            </p>
+            <span
+              className="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+              style={{ background: stat.bg, color: stat.color }}
+            >
+              {stat.label}
+            </span>
+          </div>
+          <p className="mt-0.5 text-[11px] text-neutral-500">
+            {request.id} · {meta.label}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between border-t border-neutral-100 pt-2 text-[12px]">
+        <span className="flex items-center gap-1.5">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-100 text-[10px] font-bold text-neutral-600">
+            {request.byInitials}
+          </span>
+          <span className="text-neutral-700">{request.by}</span>
+          <span className="text-neutral-400">·</span>
+          <span className="text-neutral-400">{request.when}</span>
+        </span>
+        <span className="font-ui font-bold text-brand tabular-nums">
+          R$ {request.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+        </span>
+      </div>
+    </motion.button>
   );
 }
 
 // ============================================================================
-// Detail
+// Detail screen
 // ============================================================================
 
-function DetailView({
+function DetailScreen({
   request,
+  onBack,
   onDecide,
 }: {
   request: Request;
-  onDecide: (id: string, status: ReqStatus) => void;
+  onBack: () => void;
+  onDecide: (status: ReqStatus) => void;
 }) {
   const meta = TYPE_META[request.type];
+  const stat = STATUS_META[request.status];
   const [comment, setComment] = useState<string>("");
   const presetComments = [
     "Aprovado dentro da política.",
@@ -495,25 +499,44 @@ function DetailView({
 
   return (
     <motion.div
-      key={request.id}
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.18 }}
-      className="flex h-full flex-col overflow-y-auto bg-white"
+      initial={{ x: 30, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: 30, opacity: 0 }}
+      transition={{ duration: 0.22 }}
+      className="flex flex-1 flex-col overflow-hidden"
     >
+      {/* App bar */}
+      <header className="flex items-center justify-between bg-brand px-4 pb-3 text-white">
+        <button
+          type="button"
+          onClick={onBack}
+          aria-label="Voltar"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 backdrop-blur"
+        >
+          <ChevronLeft size={16} strokeWidth={2.25} />
+        </button>
+        <p className="font-ui text-[14px] font-bold">{request.id}</p>
+        <button
+          type="button"
+          aria-label="Mais"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 backdrop-blur"
+        >
+          <MoreVertical size={14} strokeWidth={2.25} />
+        </button>
+      </header>
+
       {/* Hero */}
-      <div className="flex items-start justify-between gap-3 border-b border-neutral-100 px-5 py-4">
+      <div className="border-b border-neutral-100 bg-white px-5 pb-4 pt-4">
         <div className="flex items-start gap-3">
           <span
-            className="flex h-12 w-12 flex-none items-center justify-center rounded-md text-white"
+            className="flex h-12 w-12 flex-none items-center justify-center rounded-xl text-white"
             style={{ background: meta.color }}
           >
-            <meta.Icon size={20} strokeWidth={1.75} />
+            <meta.Icon size={18} strokeWidth={2} />
           </span>
-          <div>
-            <p className="font-ui text-[11px] font-bold uppercase tracking-wider text-brand">
-              {meta.label} · {request.id}
+          <div className="flex-1">
+            <p className="font-ui text-[10px] font-bold uppercase tracking-wider text-brand">
+              {meta.label}
             </p>
             <h2
               data-tour="ap-detail"
@@ -527,210 +550,195 @@ function DetailView({
           </div>
         </div>
         <span
-          className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold"
-          style={{
-            background: STATUS_META[request.status].bg,
-            color: STATUS_META[request.status].color,
-          }}
+          className="mt-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider"
+          style={{ background: stat.bg, color: stat.color }}
         >
-          {(() => {
-            const I = STATUS_META[request.status].Icon;
-            return <I size={11} strokeWidth={2.5} />;
-          })()}
-          {STATUS_META[request.status].label}
+          <stat.Icon size={11} strokeWidth={2.5} />
+          {stat.label}
         </span>
       </div>
 
-      {/* Amount diff */}
-      <div className="grid grid-cols-3 gap-3 border-b border-neutral-100 px-5 py-4">
-        <Stat label="Valor" value={`R$ ${request.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`} accent />
-        <Stat
-          label="Variação"
-          value={
-            request.delta === 0
-              ? "Sem variação"
-              : `${request.delta > 0 ? "+" : "−"} R$ ${Math.abs(
-                  request.delta,
-                ).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
-          }
-          tone={request.delta > 0 ? "#d97706" : "#16a34a"}
-          Icon={request.delta > 0 ? TrendingUp : TrendingDown}
-        />
-        <Stat
-          label="Anexos · Comentários"
-          value={`${request.attachments} arquivos · ${request.comments} mensagens`}
-        />
-      </div>
-
-      {/* Description */}
-      <div className="px-5 py-4">
-        <p className="font-ui text-[11px] font-bold uppercase tracking-wider text-brand">
-          Descrição
-        </p>
-        <p className="mt-1 text-[13px] leading-relaxed text-neutral-700">
-          {request.description}
-        </p>
-      </div>
-
-      {/* Diff card */}
-      <div className="mx-5 mb-4 rounded-xl border border-brand/8 bg-brand-ghost/40 p-4">
-        <p className="font-ui text-[11px] font-bold uppercase tracking-wider text-brand">
-          Diff vs. baseline
-        </p>
-        <div className="mt-2 grid grid-cols-2 gap-3 text-[12px]">
-          <div>
-            <p className="text-[10px] text-neutral-500">Antes</p>
-            <p className="font-ui font-bold text-neutral-700 tabular-nums">
-              R${" "}
-              {(request.amount - request.delta).toLocaleString("pt-BR", {
-                minimumFractionDigits: 2,
-              })}
-            </p>
-          </div>
-          <div>
-            <p className="text-[10px] text-neutral-500">Agora</p>
-            <p
-              className="font-ui font-bold tabular-nums"
-              style={{
-                color: request.delta > 0 ? "#d97706" : "#16a34a",
-              }}
-            >
-              R${" "}
-              {request.amount.toLocaleString("pt-BR", {
-                minimumFractionDigits: 2,
-              })}
-            </p>
-          </div>
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto px-5 py-4">
+        {/* Amount diff cards */}
+        <div className="grid grid-cols-3 gap-2">
+          <MiniStat
+            label="Valor"
+            value={`R$ ${request.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+            tone="#020788"
+            bold
+          />
+          <MiniStat
+            label="Variação"
+            value={
+              request.delta === 0
+                ? "Sem variação"
+                : `${request.delta > 0 ? "+" : "−"} R$ ${Math.abs(
+                    request.delta,
+                  ).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+            }
+            tone={request.delta > 0 ? "#d97706" : "#16a34a"}
+            Icon={request.delta > 0 ? TrendingUp : TrendingDown}
+          />
+          <MiniStat
+            label="Anexos"
+            value={`${request.attachments}`}
+            tone="#020788"
+            Icon={Paperclip}
+          />
         </div>
-      </div>
 
-      {/* Comment chips */}
-      <div className="px-5 pb-4">
-        <p
-          data-tour="ap-comment"
-          className="font-ui text-[11px] font-bold uppercase tracking-wider text-brand"
-        >
-          Comentário (opcional)
-        </p>
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {presetComments.map((c) => {
-            const active = comment === c;
-            return (
-              <motion.button
-                key={c}
-                type="button"
-                whileTap={{ scale: 0.96 }}
-                onClick={() => setComment(active ? "" : c)}
-                className={cn(
-                  "rounded-full border-2 px-3 py-1 font-ui text-[11px] font-medium transition-colors",
-                  active
-                    ? "border-brand bg-brand text-white"
-                    : "border-neutral-200 bg-white text-neutral-600 hover:border-brand/30",
-                )}
+        {/* Descrição (matching reference) */}
+        <section className="mt-4">
+          <p className="font-ui text-[11px] font-bold uppercase tracking-wider text-brand">
+            Descrição
+          </p>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-700">
+            {request.description}
+          </p>
+        </section>
+
+        {/* Diff */}
+        <section className="mt-4 rounded-2xl border border-brand/8 bg-brand-ghost/40 p-3.5">
+          <p className="font-ui text-[11px] font-bold uppercase tracking-wider text-brand">
+            Diff vs. baseline
+          </p>
+          <div className="mt-2 grid grid-cols-2 gap-3 text-[12px]">
+            <div>
+              <p className="text-[10px] text-neutral-500">Antes</p>
+              <p className="font-ui font-bold text-neutral-700 tabular-nums">
+                R${" "}
+                {(request.amount - request.delta).toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                })}
+              </p>
+            </div>
+            <div>
+              <p className="text-[10px] text-neutral-500">Agora</p>
+              <p
+                className="font-ui font-bold tabular-nums"
+                style={{
+                  color: request.delta > 0 ? "#d97706" : "#16a34a",
+                }}
               >
-                {c}
-              </motion.button>
-            );
-          })}
-        </div>
-        {comment && (
-          <motion.div
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-2 flex items-start gap-2 rounded-md bg-brand-ghost px-3 py-2 text-[11px] text-brand"
+                R${" "}
+                {request.amount.toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                })}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Comment chips */}
+        <section className="mt-4">
+          <p
+            data-tour="ap-comment"
+            className="font-ui text-[11px] font-bold uppercase tracking-wider text-brand"
           >
-            <MessageSquare size={12} strokeWidth={2.25} className="mt-0.5" />
-            {comment}
-          </motion.div>
-        )}
+            Comentário (opcional)
+          </p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {presetComments.map((c) => {
+              const active = comment === c;
+              return (
+                <motion.button
+                  key={c}
+                  type="button"
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => setComment(active ? "" : c)}
+                  className={cn(
+                    "rounded-full border-2 px-2.5 py-1 font-ui text-[11px] font-medium transition-colors",
+                    active
+                      ? "border-brand bg-brand text-white"
+                      : "border-neutral-200 bg-white text-neutral-600",
+                  )}
+                >
+                  {c}
+                </motion.button>
+              );
+            })}
+          </div>
+          {comment && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-2 flex items-start gap-2 rounded-md bg-brand-ghost px-3 py-2 text-[11px] text-brand"
+            >
+              <MessageSquare size={12} strokeWidth={2.25} className="mt-0.5" />
+              {comment}
+            </motion.div>
+          )}
+        </section>
       </div>
 
-      {/* Action bar */}
-      <div
-        data-tour="ap-actions"
-        className="mt-auto flex items-center justify-between border-t border-neutral-100 bg-white px-5 py-4"
-      >
-        <div className="flex items-center gap-2 text-[11px] text-neutral-500">
-          <Paperclip size={12} strokeWidth={2.25} className="text-neutral-400" />
-          {request.attachments} anexos
+      {/* Sticky action bar */}
+      {request.status === "pendente" ? (
+        <div
+          data-tour="ap-actions"
+          className="flex items-center gap-2 border-t border-neutral-100 bg-white px-4 py-3.5"
+        >
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.97 }}
+            onClick={() => onDecide("reprovada")}
+            className="flex-1 rounded-xl border-2 border-danger py-3 font-ui text-[13px] font-bold text-danger"
+          >
+            <X size={14} strokeWidth={2.5} className="mr-1 inline" />
+            Reprovar
+          </motion.button>
+          <motion.button
+            type="button"
+            data-tour="ap-approve-button"
+            whileTap={{ scale: 0.97 }}
+            onClick={() => onDecide("aprovada")}
+            className="flex-[1.4] rounded-xl bg-success py-3 font-ui text-[13px] font-bold text-white shadow-brand"
+          >
+            <Check size={14} strokeWidth={2.5} className="mr-1 inline" />
+            Aprovar
+          </motion.button>
         </div>
-        {request.status === "pendente" ? (
-          <div className="flex items-center gap-2">
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.97 }}
-              onClick={() => onDecide(request.id, "reprovada")}
-              className="inline-flex items-center gap-1.5 rounded-md border-2 border-danger px-4 py-2.5 font-ui text-[12px] font-bold text-danger hover:bg-danger/5"
-            >
-              <X size={13} strokeWidth={2.5} />
-              Reprovar
-            </motion.button>
-            <motion.button
-              type="button"
-              data-tour="ap-approve-button"
-              whileTap={{ scale: 0.97 }}
-              onClick={() => onDecide(request.id, "aprovada")}
-              className="inline-flex items-center gap-1.5 rounded-md bg-success px-4 py-2.5 font-ui text-[12px] font-bold text-white shadow-brand hover:bg-success/90"
-            >
-              <Check size={13} strokeWidth={2.5} />
-              Aprovar
-            </motion.button>
-          </div>
-        ) : (
-          <div data-tour="ap-notified" className="inline-flex items-center gap-2 rounded-md bg-success/10 px-3 py-2 text-[11px] font-bold text-success">
-            <CheckCircle2 size={13} strokeWidth={2.5} />
-            Solicitante notificado por push + e-mail
-          </div>
-        )}
-      </div>
+      ) : (
+        <div
+          data-tour="ap-notified"
+          className="flex items-center gap-2 border-t border-neutral-100 bg-success/5 px-4 py-3 text-[12px] font-bold text-success"
+        >
+          <CheckCircle2 size={14} strokeWidth={2.5} />
+          Solicitante notificado por push e e-mail
+        </div>
+      )}
     </motion.div>
   );
 }
 
-function Stat({
+function MiniStat({
   label,
   value,
-  accent,
   tone,
+  bold,
   Icon,
 }: {
   label: string;
   value: string;
-  accent?: boolean;
-  tone?: string;
+  tone: string;
+  bold?: boolean;
   Icon?: typeof TrendingUp;
 }) {
   return (
-    <div>
-      <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
+    <div className="rounded-xl border border-neutral-200 bg-white p-2.5 text-center">
+      <p className="text-[9px] font-bold uppercase tracking-wider text-neutral-500">
         {label}
       </p>
       <p
         className={cn(
-          "mt-1 flex items-center gap-1 font-ui text-[14px] font-bold tabular-nums",
-          accent && "text-brand",
+          "mt-1 flex items-center justify-center gap-1 font-ui tabular-nums",
+          bold ? "text-[14px] font-bold" : "text-[12px] font-bold",
         )}
-        style={tone ? { color: tone } : undefined}
+        style={{ color: tone }}
       >
-        {Icon && <Icon size={13} strokeWidth={2.25} />}
+        {Icon && <Icon size={11} strokeWidth={2.25} />}
         {value}
       </p>
     </div>
-  );
-}
-
-function EmptyDetail() {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="flex flex-1 flex-col items-center justify-center gap-2 bg-neutral-50 text-center"
-    >
-      <BadgeCheck size={36} strokeWidth={1.5} className="text-neutral-300" />
-      <p className="font-ui text-[12px] text-neutral-400">
-        Selecione uma solicitação ao lado para revisar.
-      </p>
-    </motion.div>
   );
 }

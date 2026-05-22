@@ -124,3 +124,12 @@ body.presentation-mode * {
     text-wrap: balance;
   }
 }
+
+/* TV touch readability: zoom up the mockup content so text designed at
+   phone-screen scale (10-14px) renders large enough on a 55-75" TV at
+   2m of viewing distance. zoom keeps the layout intact (no clipping)
+   and getBoundingClientRect reports the zoomed bounds, which keeps the
+   tour spotlight and tooltip positioning correct. */
+.mockup-zoom {
+  zoom: 1.2;
+}

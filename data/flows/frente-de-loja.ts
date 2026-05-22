@@ -16,77 +16,76 @@ const fmtItemList = (items?: unknown): string => {
 };
 
 // ===== Retail Intelligence (IA · Tendência 2026) ========================
+// Narrativa em 7 telas: detectar → explicar → recomendar → simular → agir →
+// monitorar. Cada step abre a próxima tela.
 export const retailIntelligenceFlow: TourStep[] = [
   {
-    id: "executive",
-    targetSelector: '[data-tour="ri-executive"]',
+    id: "alerta",
+    targetSelector: '[data-tour="ri-insight-banner"]',
     placement: "bottom",
-    title: "Resumo executivo da unidade",
+    title: "Insight detectado",
     description:
-      "A IA lê 24 indicadores em tempo real e devolve um resumo do que está acontecendo na unidade hoje, com contagem de oportunidades, riscos e alertas.",
-    actionLabel: "Continuar",
-    companions: ["MiniDashboard"],
-  },
-  {
-    id: "kpis",
-    targetSelector: '[data-tour="ri-kpis"]',
-    placement: "bottom",
-    title: "KPIs com semáforo automático",
-    description:
-      "CMV, margem, giro, ticket, vendas e contas vencidas. Cada cartão acende verde, amarelo ou vermelho conforme o desvio em relação à meta.",
-    actionLabel: "Continuar",
-    companions: ["MiniDashboard"],
-  },
-  {
-    id: "priorities",
-    targetSelector: '[data-tour="ri-priorities"]',
-    placement: "top",
-    title: (live) =>
-      typeof live.riUrgenteCount === "number"
-        ? `${live.riUrgenteCount} urgentes · ${live.riOportunidadeCount ?? 0} oportunidades`
-        : "Prioridades de hoje",
-    description:
-      "Cards organizados por prioridade: Urgente, Oportunidade, Atenção, Estratégico. Toque em um card para ver causa, impacto, ação recomendada e simular.",
+      "O Retail Intelligence acompanha o dashboard em tempo real. Identificou que o CMV está acima do ideal e existem oportunidades no mix para recuperar margem. Toque em Analisar oportunidade para abrir o diagnóstico.",
     requiresInteraction: true,
     companions: ["MiniDashboard"],
   },
   {
-    id: "simular",
-    targetSelector: '[data-tour="ri-sim-button"]',
-    placement: "top",
-    title: "Simulação de impacto",
+    id: "diagnostico",
+    targetSelector: '[data-tour="ri-priority-opportunity"]',
+    placement: "right",
+    title: "Diagnóstico priorizado pela IA",
     description:
-      "Toque em Simular impacto para ver o que acontece com margem, volume e receita se você aceitar a recomendação da IA. Tudo calculado nos dados reais.",
-    actionLabel: "Continuar",
-    companions: ["MiniDashboard"],
-  },
-  {
-    id: "tab-eng",
-    targetSelector: '[data-tour="ri-tab-eng"]',
-    placement: "bottom",
-    title: "Engenharia de cardápio",
-    description:
-      "Toque na aba Engenharia de cardápio para abrir a matriz Popularidade × Margem com as 4 estratégias: Estrela, Burro de carga, Quebra-cabeça, Cachorro.",
+      "3 cards organizados por impacto: alto, oportunidade e baixo. Em vez de mostrar só números, o sistema classifica o que exige ação agora. Toque no card em foco para abrir a engenharia de cardápio.",
     requiresInteraction: true,
     companions: ["MiniDashboard"],
   },
   {
-    id: "tab-copilot",
-    targetSelector: '[data-tour="ri-tab-copilot"]',
-    placement: "bottom",
-    title: "Copiloto analítico",
+    id: "matriz",
+    targetSelector: '[data-tour="ri-matrix-focus"]',
+    placement: "right",
+    title: "Oportunidade encontrada no mix",
     description:
-      "Toque em Copiloto. Em vez de digitar, escolha perguntas pré-prontas como “Por que meu CMV subiu?” e a IA responde com insights e ação recomendada.",
+      "Matriz Popularidade × Margem com 4 quadrantes. O Filé Parmegiana caiu no Quebra-cabeça (alta margem + médio giro). Toque no produto destacado para ver o detalhe e as recomendações da IA.",
     requiresInteraction: true,
     companions: ["MiniDashboard"],
   },
   {
-    id: "quick-q",
-    targetSelector: '[data-tour="ri-quick-questions"]',
-    placement: "top",
-    title: "Pergunte com um toque",
+    id: "produto",
+    targetSelector: '[data-tour="ri-simular-impacto"]',
+    placement: "left",
+    title: "5 recomendações acionáveis",
     description:
-      "4 perguntas comerciais comuns. Toque em uma para ver a IA cruzando dados ao vivo e respondendo com headline, métricas e ação recomendada.",
+      "A IA não para no diagnóstico. Ela sugere o que fazer: destacar no cardápio, melhorar foto e descrição, criar combo, treinar equipe, acompanhar conversão. Toque em Simular impacto.",
+    requiresInteraction: true,
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "simulacao",
+    targetSelector: '[data-tour="ri-sim-compare"]',
+    placement: "top",
+    title: "Decisão com previsão de impacto",
+    description:
+      "Cenário atual × cenário recomendado lado a lado. Se as vendas crescerem 12% mantendo 66% de margem, a contribuição do mix aumenta. Antes de aplicar, o gestor já vê o ganho estimado.",
+    actionLabel: "Aplicar recomendação",
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "plano",
+    targetSelector: '[data-tour="ri-acompanhar"]',
+    placement: "left",
+    title: "Plano de ação gerado pela IA",
+    description:
+      "5 passos sequenciais para os próximos 7 dias: destaque no cardápio, foto, combo, monitoramento diário e reavaliação. Toque em Acompanhar resultado para iniciar o monitoramento.",
+    requiresInteraction: true,
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "monitor",
+    targetSelector: '[data-tour="ri-monitor-grid"]',
+    placement: "top",
+    title: "Acompanhamento contínuo",
+    description:
+      "A IA monitora venda, margem, popularidade e contribuição no mix para indicar se a recomendação está trazendo resultado. Do insight à decisão, sem análise manual.",
     actionLabel: "Concluir",
     companions: ["MiniDashboard"],
   },

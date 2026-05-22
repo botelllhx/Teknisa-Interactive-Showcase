@@ -686,6 +686,7 @@ export function TAAMockup({ step }: TAAProps) {
               key="payment"
               skin={skin}
               total={subtotal || 0}
+              cartCount={cartCount}
               selected={payment}
               onPick={setPayment}
             />
@@ -1312,14 +1313,18 @@ function Stepper({
 function PaymentModal({
   skin,
   total,
+  cartCount,
   selected,
   onPick,
 }: {
   skin: Skin;
   total: number;
+  cartCount: number;
   selected: "credito" | "debito" | "pix" | null;
   onPick: (m: "credito" | "debito" | "pix") => void;
 }) {
+  // Guard: payment with empty cart should not be allowed (R$ 0,00 paymant bug)
+  const canPay = cartCount > 0 && total > 0;
   const methods: {
     id: "credito" | "debito" | "pix";
     label: string;
@@ -1456,10 +1461,11 @@ function PaymentModal({
           </button>
           <button
             type="button"
-            className="rounded-md bg-white px-2.5 py-2 font-ui text-[10px] font-bold"
+            disabled={!canPay}
+            className="rounded-md bg-white px-2.5 py-2 font-ui text-[10px] font-bold disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ color: skin.brand }}
           >
-            Finalizar Compra
+            {canPay ? "Finalizar Compra" : "Carrinho vazio"}
           </button>
         </div>
       </div>

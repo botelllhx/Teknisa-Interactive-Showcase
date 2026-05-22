@@ -744,13 +744,13 @@ function FeedbackView({
             }
             disabled={!feedback.type || feedback.rating === 0}
             className={cn(
-              "mt-4 flex w-full items-center justify-center gap-1.5 rounded-md py-3 font-ui text-[12px] font-bold text-white",
+              "mt-4 flex w-full items-center justify-center gap-1.5 rounded-lg py-3 font-ui text-[13px] font-bold text-white transition-all active:scale-[0.98]",
               feedback.type && feedback.rating > 0
-                ? "bg-brand shadow-brand"
+                ? "bg-brand shadow-brand hover:-translate-y-[1px]"
                 : "bg-neutral-300",
             )}
           >
-            <Send size={13} strokeWidth={2.5} />
+            <Send size={14} strokeWidth={2.5} />
             Enviar opinião
           </motion.button>
         ) : (

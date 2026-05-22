@@ -10,6 +10,7 @@ import {
   Download,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { Badge } from "@/components/ui/shadcn";
 
 interface PortalFuncionarioProps {
   step: number;
@@ -17,41 +18,49 @@ interface PortalFuncionarioProps {
 
 export function PortalFuncionarioMockup({ step }: PortalFuncionarioProps) {
   return (
-    <div className="flex h-full w-full flex-col bg-white text-neutral-800">
-      <header className="px-3 pt-2 pb-1">
-        <p className="font-display text-[9px] font-bold uppercase tracking-widest text-brand">
+    <div className="flex h-full w-full flex-col overflow-hidden bg-white font-ui text-neutral-800">
+      <header className="border-b border-brand/8 px-4 pb-2 pt-3">
+        <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
           Portal Funcionário
         </p>
-        <p className="text-[8px] text-neutral-500">Teknisa · Mobile</p>
+        <p className="font-ui text-[10px] text-neutral-500">
+          Teknisa · Mobile
+        </p>
       </header>
 
-      {step === 0 && <LoginView />}
-      {step === 1 && <PunchSheetView />}
-      {step === 2 && <RequestVacationView />}
-      {step === 3 && <StatusView />}
-      {step >= 4 && <PayslipView />}
+      <main className="flex flex-1 flex-col overflow-hidden">
+        {step === 0 && <LoginView />}
+        {step === 1 && <PunchSheetView />}
+        {step === 2 && <RequestVacationView />}
+        {step === 3 && <StatusView />}
+        {step >= 4 && <PayslipView />}
+      </main>
     </div>
   );
 }
 
 function LoginView() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-3 px-3">
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-subtle text-brand">
-        <Fingerprint size={32} strokeWidth={2} />
-      </div>
+    <div className="flex flex-1 flex-col items-center justify-center gap-4 px-5">
+      <motion.div
+        animate={{ scale: [1, 1.05, 1] }}
+        transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+        className="flex h-20 w-20 items-center justify-center rounded-2xl bg-brand-subtle text-brand"
+      >
+        <Fingerprint size={36} strokeWidth={2} />
+      </motion.div>
       <div className="text-center">
-        <p className="font-display text-[12px] font-bold text-neutral-900">
+        <p className="font-ui text-[16px] font-bold text-neutral-900">
           Bem-vinda, Mariana
         </p>
-        <p className="mt-0.5 text-[8px] text-neutral-500">
+        <p className="mt-1 font-ui text-[11px] text-neutral-500">
           Acesse com sua biometria
         </p>
       </div>
       <button
         type="button"
         data-tour="pf-login"
-        className="w-full rounded-md bg-brand py-2 text-center font-display text-[10px] font-bold text-white shadow-brand"
+        className="w-full max-w-[220px] rounded-xl bg-brand py-3 text-center font-ui text-[13px] font-bold text-white shadow-brand transition-all hover:-translate-y-[1px] active:scale-[0.98]"
       >
         Entrar
       </button>
@@ -64,7 +73,7 @@ function PunchSheetView() {
     { day: "21", clock: "07:58 → 16:02", ot: 0, ok: true },
     { day: "20", clock: "07:55 → 17:32", ot: 1.5, ok: true },
     { day: "19", clock: "08:02 → 16:00", ot: 0, ok: true },
-    { day: "18", clock: "—", ot: 0, ok: false, label: "Folga" },
+    { day: "18", clock: "Folga", ot: 0, ok: false, label: "Sem expediente" },
     { day: "17", clock: "07:50 → 16:05", ot: 0, ok: true },
   ];
 
@@ -72,50 +81,53 @@ function PunchSheetView() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-1 flex-col px-3 py-1"
+      transition={{ duration: 0.22 }}
+      className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-3"
     >
-      <div className="flex items-center justify-between rounded-md bg-surface-raised p-2">
+      <div className="flex items-center justify-between rounded-xl bg-brand-ghost px-3 py-2.5">
         <div>
-          <p className="text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
+          <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-brand">
             Saldo do mês
           </p>
-          <p className="font-display text-[12px] font-bold text-success tabular-nums">
-            + 6h 30min
+          <p className="mt-0.5 font-ui text-[18px] font-bold tabular-nums leading-none text-success">
+            +6h 30min
           </p>
         </div>
-        <Clock size={20} strokeWidth={1.75} className="text-brand" />
+        <Clock size={22} strokeWidth={1.75} className="text-brand" />
       </div>
 
-      <p className="mt-3 text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
+      <p className="mt-2 font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
         Últimas marcações
       </p>
-      <div data-tour="pf-punch-sheet" className="mt-1 flex-1 space-y-1">
+      <div data-tour="pf-punch-sheet" className="space-y-1.5">
         {days.map((d, i) => (
           <motion.div
             key={d.day}
             initial={{ x: 6, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.04 * i }}
-            className="flex items-center gap-2 rounded-md border border-brand/10 bg-white p-1.5"
+            transition={{ delay: 0.04 * i, duration: 0.22 }}
+            className="flex items-center gap-2.5 rounded-xl border border-brand/10 bg-white p-2.5 shadow-card"
           >
-            <span className="flex h-7 w-7 flex-none flex-col items-center justify-center rounded-md bg-brand-subtle">
-              <span className="text-[10px] font-bold leading-none text-brand">
+            <span className="flex h-10 w-10 flex-none flex-col items-center justify-center rounded-lg bg-brand-subtle">
+              <span className="font-ui text-[13px] font-bold leading-none text-brand">
                 {d.day}
               </span>
-              <span className="text-[6px] uppercase text-brand">Mai</span>
+              <span className="font-ui text-[8px] font-bold uppercase tracking-[1px] text-brand">
+                Mai
+              </span>
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-[9px] font-semibold text-neutral-900">
+              <p className="font-ui text-[12px] font-bold text-neutral-900">
                 {d.clock}
               </p>
               {d.label && (
-                <p className="text-[8px] text-neutral-500">{d.label}</p>
+                <p className="font-ui text-[10px] text-neutral-500">
+                  {d.label}
+                </p>
               )}
             </div>
             {d.ot > 0 && (
-              <span className="rounded bg-warning/10 px-1.5 py-0.5 text-[7px] font-bold text-warning">
-                +{d.ot}h
-              </span>
+              <Badge variant="warning">+{d.ot}h</Badge>
             )}
           </motion.div>
         ))}
@@ -129,19 +141,20 @@ function RequestVacationView() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-1 flex-col px-3 py-1"
+      transition={{ duration: 0.22 }}
+      className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-3"
     >
-      <div className="rounded-md bg-brand-subtle p-2">
-        <p className="flex items-center gap-1 text-[8px] font-semibold uppercase tracking-wider text-brand">
-          <Plane size={10} strokeWidth={2} />
+      <div className="rounded-xl bg-brand-ghost px-3 py-2.5">
+        <p className="flex items-center gap-1.5 font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-brand">
+          <Plane size={11} strokeWidth={2.25} />
           Solicitação de férias
         </p>
-        <p className="mt-1 text-[8px] text-neutral-600">
+        <p className="mt-1 font-ui text-[11px] text-neutral-600">
           Você tem 30 dias disponíveis
         </p>
       </div>
 
-      <div className="mt-2 space-y-1.5">
+      <div className="space-y-2">
         <Field label="Início" value="10/06/2026" />
         <Field label="Fim" value="24/06/2026" />
         <Field label="Dias" value="14 dias úteis" />
@@ -151,7 +164,7 @@ function RequestVacationView() {
       <button
         type="button"
         data-tour="pf-vacation-button"
-        className="mt-auto w-full rounded-md bg-brand py-2 text-center font-display text-[10px] font-bold text-white shadow-brand"
+        className="mt-auto w-full rounded-xl bg-brand py-3 text-center font-ui text-[13px] font-bold text-white shadow-brand transition-all hover:-translate-y-[1px] active:scale-[0.98]"
       >
         Enviar solicitação
       </button>
@@ -164,18 +177,26 @@ function StatusView() {
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="flex flex-1 flex-col items-center justify-center gap-3 px-4"
+      transition={{ duration: 0.22 }}
+      className="flex flex-1 flex-col items-center gap-3 overflow-y-auto px-5 py-5"
     >
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-warning/15 text-warning">
-        <Clock size={28} strokeWidth={2} />
-      </div>
-      <p className="font-display text-[11px] font-bold text-neutral-900">
+      <motion.div
+        animate={{ rotate: [0, 360] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+        className="flex h-16 w-16 items-center justify-center rounded-full bg-warning/15 text-warning"
+      >
+        <Clock size={32} strokeWidth={2} />
+      </motion.div>
+      <p className="font-ui text-[15px] font-bold text-neutral-900">
         Aguardando aprovação
       </p>
-      <p className="text-center text-[9px] text-neutral-500">
+      <p className="text-center font-ui text-[11px] text-neutral-500">
         Sua solicitação está com o gestor João Costa
       </p>
-      <div data-tour="pf-status" className="w-full rounded-md bg-surface-raised p-2">
+      <div
+        data-tour="pf-status"
+        className="w-full rounded-xl bg-neutral-50 p-3"
+      >
         <Step Icon={CheckCircle2} label="Enviada" done time="há 2 min" />
         <Step Icon={Clock} label="Em análise pelo gestor" active />
         <Step Icon={CheckCircle2} label="Aprovação RH" />
@@ -189,37 +210,41 @@ function PayslipView() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-1 flex-col px-3 py-2"
+      transition={{ duration: 0.22 }}
+      className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-3"
     >
-      <div data-tour="pf-payslip" className="rounded-md bg-brand p-3 text-white shadow-brand">
-        <p className="text-[8px] font-medium uppercase tracking-wider opacity-80">
+      <div
+        data-tour="pf-payslip"
+        className="rounded-2xl bg-gradient-to-br from-brand via-brand-light to-[#3b42c4] p-4 text-white shadow-brand"
+      >
+        <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] opacity-85">
           Holerite · Maio 2026
         </p>
-        <p className="mt-1 font-display text-[18px] font-bold tabular-nums">
+        <p className="mt-1 font-ui text-[28px] font-bold tabular-nums leading-none">
           R$ 4.840,12
         </p>
-        <div className="mt-2 flex items-center justify-between border-t border-white/20 pt-2 text-[8px] opacity-90">
+        <div className="mt-3 flex items-center justify-between border-t border-white/20 pt-2 font-ui text-[10px] opacity-90">
           <span>Disponível</span>
-          <span className="font-semibold">Há instantes</span>
+          <span className="font-bold">Há instantes</span>
         </div>
       </div>
 
-      <div className="mt-2 space-y-1">
+      <div className="space-y-1.5">
         {[
           { label: "Salário base", value: "R$ 5.400,00", positive: true },
           { label: "Hora extra", value: "+ R$ 312,50", positive: true },
-          { label: "INSS", value: "- R$ 542,16", positive: false },
-          { label: "IRRF", value: "- R$ 330,22", positive: false },
+          { label: "INSS", value: "− R$ 542,16", positive: false },
+          { label: "IRRF", value: "− R$ 330,22", positive: false },
         ].map((l) => (
           <div
             key={l.label}
-            className="flex items-center justify-between text-[9px]"
+            className="flex items-center justify-between font-ui text-[11px]"
           >
             <span className="text-neutral-600">{l.label}</span>
             <span
               className={cn(
                 "tabular-nums",
-                l.positive ? "font-semibold text-neutral-900" : "text-danger",
+                l.positive ? "font-bold text-neutral-900" : "text-danger",
               )}
             >
               {l.value}
@@ -230,9 +255,9 @@ function PayslipView() {
 
       <button
         type="button"
-        className="mt-auto flex items-center justify-center gap-1 rounded-md border border-brand bg-white py-2 text-[10px] font-bold text-brand"
+        className="mt-auto flex items-center justify-center gap-1.5 rounded-xl border border-brand bg-white py-3 font-ui text-[13px] font-bold text-brand transition-colors hover:bg-brand-ghost"
       >
-        <Download size={12} strokeWidth={2.25} />
+        <Download size={14} strokeWidth={2.25} />
         Baixar PDF
       </button>
     </motion.div>
@@ -241,12 +266,16 @@ function PayslipView() {
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between rounded border border-brand/10 bg-white px-2 py-1.5">
-      <div className="flex items-center gap-1.5">
-        <Calendar size={10} strokeWidth={2} className="text-brand" />
-        <span className="text-[8px] text-neutral-500">{label}</span>
+    <div className="flex items-center justify-between rounded-lg border border-brand/10 bg-white px-3 py-2.5">
+      <div className="flex items-center gap-2">
+        <Calendar size={12} strokeWidth={2} className="text-brand" />
+        <span className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+          {label}
+        </span>
       </div>
-      <span className="text-[9px] font-semibold text-neutral-900">{value}</span>
+      <span className="font-ui text-[12px] font-bold text-neutral-900">
+        {value}
+      </span>
     </div>
   );
 }
@@ -265,21 +294,23 @@ function Step({
   time?: string;
 }) {
   return (
-    <div className="flex items-center gap-2 py-1">
+    <div className="flex items-center gap-2.5 py-1.5">
       <span
         className={cn(
-          "flex h-5 w-5 items-center justify-center rounded-full",
+          "flex h-6 w-6 items-center justify-center rounded-full",
           done && "bg-success text-white",
           active && "bg-brand text-white shadow-brand",
           !done && !active && "bg-neutral-200 text-neutral-400",
         )}
       >
-        <Icon size={10} strokeWidth={2.5} />
+        <Icon size={12} strokeWidth={2.5} />
       </span>
-      <span className="flex-1 text-[8px] font-semibold text-neutral-700">
+      <span className="flex-1 font-ui text-[11px] font-bold text-neutral-700">
         {label}
       </span>
-      {time && <span className="text-[7px] text-neutral-400">{time}</span>}
+      {time && (
+        <span className="font-ui text-[10px] text-neutral-400">{time}</span>
+      )}
     </div>
   );
 }

@@ -214,7 +214,12 @@ export function SmartPOSMockup({ step }: SmartPOSProps) {
           total={cartTotal}
         />
       )}
-      {step >= 4 && <SuccessScreen />}
+      {step >= 4 && (
+        <SuccessScreen
+          total={cartTotal}
+          paymentLabel={PAYMENT_LABELS[payment]}
+        />
+      )}
       {step !== 4 && <BottomNav step={step} />}
     </div>
   );
@@ -534,13 +539,19 @@ function CartView({
           </div>
           <div className="flex-1">
             <p className="text-[11px] font-medium text-brand">Total da compra</p>
-            <p className="font-ui text-[16px] font-bold text-brand tabular-nums">
+            <p className="font-ui text-[18px] font-bold text-brand tabular-nums">
               R$ {total.toFixed(2).replace(".", ",")}
             </p>
           </div>
           <button
             type="button"
-            className="rounded-md bg-brand px-7 py-3 font-ui text-[13px] font-bold text-white shadow-brand hover:bg-brand-light"
+            disabled={count === 0 || total === 0}
+            className={cn(
+              "rounded-md px-7 py-3 font-ui text-[13px] font-bold text-white shadow-brand transition-colors",
+              count === 0 || total === 0
+                ? "bg-neutral-300 cursor-not-allowed"
+                : "bg-brand hover:bg-brand-light",
+            )}
           >
             Pagar
           </button>
@@ -581,10 +592,17 @@ function PaymentSelectView({
       </div>
 
       <div className="border-b border-neutral-100 bg-white px-4 py-3">
-        <p className="text-[11px] text-neutral-500">Total a pagar</p>
-        <p className="font-ui text-[24px] font-bold text-brand tabular-nums">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
+          Total a pagar
+        </p>
+        <p className="font-ui text-[28px] font-bold text-brand tabular-nums leading-tight">
           R$ {total.toFixed(2).replace(".", ",")}
         </p>
+        {total === 0 && (
+          <p className="mt-1 text-[10px] font-medium text-warning">
+            Volte ao catálogo e adicione um item para finalizar.
+          </p>
+        )}
       </div>
 
       <div className="flex-1 space-y-2 overflow-y-auto p-3">
@@ -632,7 +650,13 @@ function PaymentSelectView({
   );
 }
 
-function SuccessScreen() {
+function SuccessScreen({
+  total,
+  paymentLabel,
+}: {
+  total: number;
+  paymentLabel: string;
+}) {
   return (
     <motion.div
       data-tour="smartpos-approved"
@@ -640,16 +664,23 @@ function SuccessScreen() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="flex h-full items-center justify-center bg-[#16a34a]"
+      className="flex h-full flex-col items-center justify-center gap-4 bg-[#16a34a] px-4 text-white"
     >
       <motion.div
         initial={{ scale: 0.5 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 240, damping: 14 }}
-        className="flex h-36 w-36 items-center justify-center rounded-full bg-white"
+        className="flex h-28 w-28 items-center justify-center rounded-full bg-white"
       >
-        <Check size={88} strokeWidth={3} className="text-[#16a34a]" />
+        <Check size={64} strokeWidth={3} className="text-[#16a34a]" />
       </motion.div>
+      <div className="text-center">
+        <p className="font-ui text-[18px] font-bold">Pagamento aprovado</p>
+        <p className="mt-1 text-[12px] opacity-90">{paymentLabel} · 1x sem juros</p>
+        <p className="mt-3 font-ui text-[32px] font-bold tabular-nums">
+          R$ {total.toFixed(2).replace(".", ",")}
+        </p>
+      </div>
     </motion.div>
   );
 }

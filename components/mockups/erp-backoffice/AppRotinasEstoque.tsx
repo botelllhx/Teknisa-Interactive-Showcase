@@ -11,6 +11,7 @@ import {
   Cloud,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { Badge } from "@/components/ui/shadcn";
 
 interface AppRotinasEstoqueProps {
   step: number;
@@ -24,53 +25,57 @@ const TASKS = [
 
 export function AppRotinasEstoqueMockup({ step }: AppRotinasEstoqueProps) {
   return (
-    <div className="flex h-full w-full flex-col bg-white text-neutral-800">
-      <header className="px-3 pt-2 pb-1">
-        <p className="font-display text-[9px] font-bold uppercase tracking-widest text-brand">
+    <div className="flex h-full w-full flex-col overflow-hidden bg-white font-ui text-neutral-800">
+      <header className="border-b border-brand/8 px-4 pb-2 pt-3">
+        <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
           Rotinas · Estoque
         </p>
-        <p className="text-[8px] text-neutral-500">Quinta-feira · 21/05</p>
+        <p className="font-ui text-[10px] text-neutral-500">
+          Quinta-feira · 21/05
+        </p>
       </header>
 
-      {step === 0 && <TaskListView />}
-      {step === 1 && <CountingView />}
-      {step === 2 && <DivergenceView />}
-      {step === 3 && <JustificationView />}
-      {step >= 4 && <SyncedView />}
+      <main className="flex flex-1 flex-col overflow-hidden">
+        {step === 0 && <TaskListView />}
+        {step === 1 && <CountingView />}
+        {step === 2 && <DivergenceView />}
+        {step === 3 && <JustificationView />}
+        {step >= 4 && <SyncedView />}
+      </main>
     </div>
   );
 }
 
 function TaskListView() {
   return (
-    <div className="flex-1 px-3 py-1">
-      <div className="rounded-md bg-surface-raised p-2">
-        <p className="text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
+    <div className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-3">
+      <div className="rounded-xl bg-brand-ghost px-3 py-2">
+        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-brand">
           Hoje
         </p>
-        <p className="font-display text-[10px] font-bold text-neutral-900">
+        <p className="font-ui text-[13px] font-bold text-neutral-900">
           {TASKS.length} tarefas atribuídas
         </p>
       </div>
 
-      <div data-tour="ae-task-list" className="mt-2 space-y-1.5">
+      <div data-tour="ae-task-list" className="mt-1 space-y-2">
         {TASKS.map((task, i) => (
           <motion.button
             key={task.label}
             initial={{ x: 6, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.06 * i }}
+            transition={{ delay: 0.06 * i, duration: 0.22 }}
             type="button"
             className={cn(
-              "flex w-full items-center gap-2 rounded-md p-2 text-left shadow-card",
+              "flex w-full items-center gap-2.5 rounded-xl p-3 text-left transition-colors",
               task.active
-                ? "border-2 border-brand bg-brand-ghost"
-                : "border border-brand/10 bg-white",
+                ? "border-2 border-brand bg-brand-ghost shadow-card"
+                : "border border-brand/10 bg-white shadow-card",
             )}
           >
             <span
               className={cn(
-                "flex h-8 w-8 flex-none items-center justify-center rounded-lg",
+                "flex h-10 w-10 flex-none items-center justify-center rounded-xl",
                 task.done
                   ? "bg-success/15 text-success"
                   : task.active
@@ -79,21 +84,21 @@ function TaskListView() {
               )}
             >
               {task.done ? (
-                <CheckCircle2 size={14} strokeWidth={2.25} />
+                <CheckCircle2 size={16} strokeWidth={2.25} />
               ) : (
-                <PackageSearch size={14} strokeWidth={2} />
+                <PackageSearch size={16} strokeWidth={2} />
               )}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-[9px] font-semibold text-neutral-900">
+              <p className="font-ui text-[12px] font-bold text-neutral-900">
                 {task.label}
               </p>
-              <p className="text-[8px] text-neutral-500">{task.count}</p>
+              <p className="font-ui text-[10px] text-neutral-500">
+                {task.count}
+              </p>
             </div>
             {task.active && (
-              <span className="rounded-full bg-warning/15 px-2 py-0.5 text-[7px] font-bold uppercase text-warning">
-                Agora
-              </span>
+              <Badge variant="warning">Agora</Badge>
             )}
           </motion.button>
         ))}
@@ -107,45 +112,51 @@ function CountingView() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-1 flex-col px-3 py-1"
+      transition={{ duration: 0.22 }}
+      className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-3"
     >
-      <div className="rounded-md bg-surface-raised p-2">
-        <p className="text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
+      <div className="rounded-xl bg-brand-ghost px-3 py-2.5">
+        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-brand">
           Contando item 4 de 12
         </p>
-        <p className="font-display text-[11px] font-bold text-neutral-900">
+        <p className="font-ui text-[15px] font-bold text-neutral-900">
           Patinho moído kg
         </p>
-        <p className="text-[8px] text-neutral-500">SKU 28471 · Açougue</p>
+        <p className="font-ui text-[10px] text-neutral-500">
+          SKU 28471 · Açougue
+        </p>
       </div>
 
-      <p className="mt-3 text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
+      <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
         Quantidade contada
       </p>
-      <div data-tour="ae-counter" className="mt-1 flex items-center justify-between rounded-md border-2 border-brand bg-white p-2 shadow-brand">
+      <div
+        data-tour="ae-counter"
+        className="flex items-center justify-between rounded-xl border-2 border-brand bg-white p-3 shadow-brand"
+      >
         <button
           type="button"
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-raised text-neutral-600"
+          className="flex h-12 w-12 items-center justify-center rounded-lg bg-neutral-100 text-neutral-700 transition-colors hover:bg-neutral-200 active:scale-95"
         >
-          <Minus size={14} strokeWidth={2.5} />
+          <Minus size={18} strokeWidth={2.5} />
         </button>
         <motion.span
           key="qty"
           initial={{ scale: 0.85 }}
           animate={{ scale: 1 }}
-          className="font-display text-[22px] font-bold text-neutral-900 tabular-nums"
+          className="font-ui text-[34px] font-bold tabular-nums leading-none text-neutral-900"
         >
           18,4
         </motion.span>
         <button
           type="button"
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-brand text-white shadow-brand"
+          className="flex h-12 w-12 items-center justify-center rounded-lg bg-brand text-white shadow-brand transition-all hover:-translate-y-[1px] active:scale-95"
         >
-          <Plus size={14} strokeWidth={2.5} />
+          <Plus size={18} strokeWidth={2.5} />
         </button>
       </div>
 
-      <div className="mt-2 rounded bg-brand-ghost px-2 py-1 text-center text-[8px] text-brand">
+      <div className="rounded-lg bg-brand-ghost px-3 py-2 text-center font-ui text-[11px] font-medium text-brand">
         Sistema esperava 22,0 kg
       </div>
     </motion.div>
@@ -158,34 +169,39 @@ function DivergenceView() {
       data-tour="ae-divergence"
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="flex flex-1 flex-col items-center justify-center gap-3 px-4"
+      transition={{ duration: 0.22 }}
+      className="flex flex-1 flex-col items-center justify-center gap-3 px-5"
     >
       <motion.div
         animate={{ rotate: [-6, 6, -6] }}
         transition={{ duration: 0.5, repeat: 3, ease: "easeInOut" }}
-        className="flex h-16 w-16 items-center justify-center rounded-full bg-warning/15 text-warning"
+        className="flex h-20 w-20 items-center justify-center rounded-full bg-warning/15 text-warning"
       >
-        <AlertTriangle size={32} strokeWidth={2} />
+        <AlertTriangle size={36} strokeWidth={2} />
       </motion.div>
-      <p className="font-display text-[11px] font-bold text-neutral-900">
+      <p className="font-ui text-[15px] font-bold text-neutral-900">
         Divergência detectada
       </p>
-      <div className="grid w-full grid-cols-2 gap-1.5">
-        <div className="rounded bg-surface-raised p-2 text-center">
-          <p className="text-[7px] uppercase text-neutral-500">Sistema</p>
-          <p className="font-display text-[12px] font-bold text-neutral-900 tabular-nums">
+      <div className="grid w-full grid-cols-2 gap-2">
+        <div className="rounded-xl bg-neutral-50 px-3 py-3 text-center">
+          <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+            Sistema
+          </p>
+          <p className="mt-1 font-ui text-[20px] font-bold tabular-nums leading-none text-neutral-900">
             22,0 kg
           </p>
         </div>
-        <div className="rounded border-2 border-warning/40 bg-warning/5 p-2 text-center">
-          <p className="text-[7px] uppercase text-warning">Contado</p>
-          <p className="font-display text-[12px] font-bold text-warning tabular-nums">
+        <div className="rounded-xl border-2 border-warning/40 bg-warning/5 px-3 py-3 text-center">
+          <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-warning">
+            Contado
+          </p>
+          <p className="mt-1 font-ui text-[20px] font-bold tabular-nums leading-none text-warning">
             18,4 kg
           </p>
         </div>
       </div>
-      <p className="text-[8px] font-bold text-warning">
-        – 3,6 kg (-16,4%)
+      <p className="font-ui text-[12px] font-bold text-warning tabular-nums">
+        −3,6 kg (−16,4%)
       </p>
     </motion.div>
   );
@@ -196,12 +212,13 @@ function JustificationView() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-1 flex-col px-3 py-1"
+      transition={{ duration: 0.22 }}
+      className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-3"
     >
-      <p className="text-[9px] font-semibold uppercase tracking-wider text-neutral-500">
+      <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
         Justificativa
       </p>
-      <div className="mt-1 space-y-1">
+      <div className="space-y-1.5">
         {[
           { label: "Quebra / perda", active: true },
           { label: "Erro de etiquetagem" },
@@ -212,22 +229,27 @@ function JustificationView() {
             key={opt.label}
             type="button"
             className={cn(
-              "flex w-full items-center justify-between rounded-md p-1.5",
+              "flex w-full items-center justify-between rounded-lg p-2.5 transition-colors active:scale-[0.99]",
               opt.active
                 ? "bg-brand text-white shadow-brand"
                 : "border border-brand/10 bg-white text-neutral-700",
             )}
           >
-            <span className="text-[9px] font-semibold">{opt.label}</span>
+            <span className="font-ui text-[12px] font-bold">{opt.label}</span>
             {opt.active && (
-              <CheckCircle2 size={12} strokeWidth={2.5} className="text-white" />
+              <CheckCircle2 size={14} strokeWidth={2.5} className="text-white" />
             )}
           </button>
         ))}
       </div>
-      <div data-tour="ae-justification" className="mt-2 rounded-md border border-dashed border-brand/30 bg-surface-raised p-2">
-        <p className="text-[8px] text-neutral-500">Observação</p>
-        <p className="mt-0.5 text-[9px] text-neutral-700">
+      <div
+        data-tour="ae-justification"
+        className="mt-2 rounded-xl border border-dashed border-brand/30 bg-brand-ghost/50 px-3 py-2.5"
+      >
+        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+          Observação
+        </p>
+        <p className="mt-0.5 font-ui text-[11px] text-neutral-700">
           &ldquo;Perda durante porcionamento, registrada em RP-2847&rdquo;
         </p>
       </div>
@@ -240,24 +262,25 @@ function SyncedView() {
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="flex flex-1 flex-col items-center justify-center gap-2 px-4"
+      transition={{ duration: 0.22 }}
+      className="flex flex-1 flex-col items-center justify-center gap-3 px-5"
     >
       <motion.div
         data-tour="ae-sync"
         animate={{ rotate: 360 }}
         transition={{ duration: 1.4, ease: "easeInOut" }}
-        className="flex h-16 w-16 items-center justify-center rounded-full bg-brand text-white shadow-brand"
+        className="flex h-20 w-20 items-center justify-center rounded-full bg-brand text-white shadow-brand"
       >
-        <Cloud size={28} strokeWidth={2} />
+        <Cloud size={32} strokeWidth={2} />
       </motion.div>
-      <p className="font-display text-[11px] font-bold text-neutral-900">
+      <p className="font-ui text-[15px] font-bold text-neutral-900">
         Sincronizado
       </p>
-      <p className="text-center text-[9px] text-neutral-500">
+      <p className="text-center font-ui text-[11px] text-neutral-500">
         Contagem do açougue enviada ao ERP
       </p>
-      <div className="mt-1 flex items-center gap-1 text-[8px] text-success">
-        <RefreshCw size={9} strokeWidth={2.5} />
+      <div className="flex items-center gap-1.5 rounded-full bg-success/15 px-3 py-1 font-ui text-[10px] font-bold text-success">
+        <RefreshCw size={11} strokeWidth={2.5} />
         12 itens · há instantes
       </div>
     </motion.div>

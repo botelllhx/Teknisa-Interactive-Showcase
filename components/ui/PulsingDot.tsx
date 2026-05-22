@@ -22,7 +22,7 @@ export function PulsingDot({ size = 48, className }: PulsingDotProps) {
           key={delay}
           animate={{
             scale: [center / size, 1, center / size],
-            opacity: [0.6, 0, 0.6],
+            opacity: [0.55, 0, 0.55],
           }}
           transition={{
             duration: 1.6,
@@ -34,7 +34,7 @@ export function PulsingDot({ size = 48, className }: PulsingDotProps) {
         />
       ))}
       <span
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand shadow-brand"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-brand-light to-brand shadow-[0_0_12px_rgba(2,7,136,0.55)]"
         style={{ width: center, height: center }}
       />
     </div>

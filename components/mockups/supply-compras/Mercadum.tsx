@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
+import { Button } from "@/components/ui/shadcn";
 
 interface MercadumProps {
   step: number;
@@ -735,15 +736,16 @@ function CotacaoDetailView({
       </div>
 
       <div className="mt-3 flex items-center justify-end gap-2">
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="default"
           onClick={onOpenChat}
           data-tour="mc-open-chat"
-          className="inline-flex items-center gap-1.5 rounded-md border border-brand bg-white px-4 py-2 font-ui text-[12px] font-bold text-brand hover:bg-brand-ghost"
         >
-          <MessageSquare size={13} strokeWidth={2.25} />
+          <MessageSquare size={14} strokeWidth={2.25} />
           Abrir negociação
-        </button>
+        </Button>
       </div>
     </motion.div>
   );

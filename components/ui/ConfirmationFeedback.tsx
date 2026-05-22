@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Check, RotateCcw, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { Card, Button } from "@/components/ui/shadcn";
 
 interface ConfirmationFeedbackProps {
   title?: string;
@@ -28,76 +29,134 @@ export function ConfirmationFeedback({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className={cn(
-        "flex flex-col items-center justify-center gap-6 p-10 text-center",
-        className,
-      )}
+      className={cn("flex items-center justify-center p-6", className)}
     >
-      <motion.div
-        initial={{ scale: 0.4, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{
-          type: "spring",
-          stiffness: 240,
-          damping: 14,
-          delay: 0.1,
-        }}
-        className="relative flex h-28 w-28 items-center justify-center rounded-full bg-brand text-white shadow-brand"
-      >
-        <motion.span
-          animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 rounded-full ring-2 ring-brand/40"
+      <Card className="relative w-full max-w-[560px] overflow-hidden p-10 text-center shadow-[0_24px_72px_rgba(2,7,136,0.12),0_4px_16px_rgba(0,0,0,0.06)]">
+        {/* Decorative top accent */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-brand via-brand-light to-brand"
         />
-        <Check size={56} strokeWidth={3} />
-      </motion.div>
+        {/* Soft halo behind the check */}
+        <motion.div
+          aria-hidden
+          initial={{ opacity: 0, scale: 0.6 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.05 }}
+          className="pointer-events-none absolute left-1/2 top-12 h-44 w-44 -translate-x-1/2 rounded-full bg-brand/8 blur-3xl"
+        />
 
-      <div>
-        <motion.h3
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.25, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="font-display text-display-lg leading-tight text-neutral-900"
-        >
-          {title}
-        </motion.h3>
-        <motion.p
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.35, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-2 max-w-[40ch] text-body-lg text-neutral-600"
-        >
-          {description}
-        </motion.p>
-      </div>
+        <div className="relative flex flex-col items-center gap-6">
+          {/* Animated success check */}
+          <motion.div
+            initial={{ scale: 0.4, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{
+              type: "spring",
+              stiffness: 240,
+              damping: 14,
+              delay: 0.1,
+            }}
+            className="relative flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-b from-brand-light to-brand text-white shadow-[0_12px_40px_rgba(2,7,136,0.30)]"
+          >
+            {/* Inner pulsing ring */}
+            <motion.span
+              animate={{ scale: [1, 1.55, 1], opacity: [0.45, 0, 0.45] }}
+              transition={{
+                duration: 2.2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute inset-0 rounded-full ring-2 ring-brand/35"
+            />
+            {/* Outer ambient ring */}
+            <motion.span
+              animate={{ scale: [1, 1.8, 1], opacity: [0.25, 0, 0.25] }}
+              transition={{
+                duration: 2.6,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.4,
+              }}
+              className="absolute inset-0 rounded-full ring-2 ring-brand/25"
+            />
+            <motion.div
+              initial={{ scale: 0, rotate: -20 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 16,
+                delay: 0.32,
+              }}
+            >
+              <Check size={58} strokeWidth={3} />
+            </motion.div>
+          </motion.div>
 
-      <motion.div
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.45, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="mt-2 flex items-center gap-3"
-      >
-        {onSecondary && (
-          <button
-            type="button"
-            onClick={onSecondary}
-            className="inline-flex h-14 items-center gap-2 rounded-full border border-brand/20 bg-white px-6 font-ui text-body-md font-medium text-brand transition-colors hover:bg-brand-ghost"
+          <div>
+            <motion.h3
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{
+                delay: 0.28,
+                duration: 0.4,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="font-display text-[34px] font-bold leading-tight text-neutral-900"
+            >
+              {title}
+            </motion.h3>
+            <motion.p
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{
+                delay: 0.38,
+                duration: 0.4,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="mt-2 max-w-[42ch] font-ui text-[17px] leading-relaxed text-neutral-600"
+            >
+              {description}
+            </motion.p>
+          </div>
+
+          <motion.div
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{
+              delay: 0.48,
+              duration: 0.4,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className="mt-1 flex flex-wrap items-center justify-center gap-3"
           >
-            <RotateCcw size={18} strokeWidth={2} />
-            {secondaryLabel}
-          </button>
-        )}
-        {onPrimary && (
-          <button
-            type="button"
-            onClick={onPrimary}
-            className="inline-flex h-14 items-center gap-2 rounded-full bg-brand px-7 font-ui text-body-md font-semibold text-white shadow-brand transition-colors hover:bg-brand-light"
-          >
-            {primaryLabel}
-            <ArrowRight size={18} strokeWidth={2.25} />
-          </button>
-        )}
-      </motion.div>
+            {onSecondary && (
+              <Button
+                type="button"
+                variant="outline"
+                size="xl"
+                onClick={onSecondary}
+                className="rounded-full"
+              >
+                <RotateCcw size={18} strokeWidth={2} />
+                {secondaryLabel}
+              </Button>
+            )}
+            {onPrimary && (
+              <Button
+                type="button"
+                size="xl"
+                onClick={onPrimary}
+                className="rounded-full"
+              >
+                {primaryLabel}
+                <ArrowRight size={18} strokeWidth={2.25} />
+              </Button>
+            )}
+          </motion.div>
+        </div>
+      </Card>
     </motion.div>
   );
 }

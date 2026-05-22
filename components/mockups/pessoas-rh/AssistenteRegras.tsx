@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import {
   Sparkles,
   Plus,
@@ -11,41 +12,49 @@ import {
   Zap,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { Badge, Button, Card } from "@/components/ui/shadcn";
 
 interface AssistenteRegrasProps {
   step: number;
 }
 
 const EXISTING_RULES = [
-  { name: "Hora extra acima de 2h", on: true },
-  { name: "Adicional noturno > 22h", on: true },
-  { name: "Sobreaviso final de semana", on: false },
+  { name: "Hora extra acima de 2h", category: "Ponto", on: true },
+  { name: "Adicional noturno > 22h", category: "Folha", on: true },
+  { name: "Sobreaviso final de semana", category: "Escala", on: false },
 ];
 
 export function AssistenteRegrasMockup({ step }: AssistenteRegrasProps) {
   return (
-    <div className="flex h-full w-full flex-col bg-surface-raised text-neutral-800">
-      <header className="flex items-center justify-between bg-white px-4 py-2 shadow-card">
-        <div className="flex items-center gap-2">
-          <div className="flex h-6 w-6 items-center justify-center rounded bg-brand text-white">
-            <Wand2 size={12} strokeWidth={2} />
-          </div>
-          <div>
-            <p className="font-display text-[10px] font-bold text-neutral-900">
-              Assistente de Regras
-            </p>
-            <p className="text-[8px] text-neutral-500">
-              Configuração inteligente · sem código
-            </p>
+    <div className="flex h-full w-full flex-col overflow-hidden bg-surface-raised font-ui text-neutral-800">
+      <header className="flex h-14 items-center justify-between border-b border-brand/8 bg-white px-5">
+        <div className="flex items-center gap-3">
+          <Image src="/logo-teknisa.svg" alt="Teknisa" width={86} height={16} />
+          <span className="h-5 w-px bg-neutral-200" />
+          <div className="flex items-center gap-2">
+            <span
+              className="flex h-7 w-7 items-center justify-center rounded-md text-white"
+              style={{ background: "#020788" }}
+            >
+              <Wand2 size={14} strokeWidth={2} />
+            </span>
+            <div className="leading-tight">
+              <p className="font-ui text-[13px] font-bold text-neutral-900">
+                Assistente de Regras
+              </p>
+              <p className="font-ui text-[11px] text-neutral-500">
+                Configuração inteligente, sem código
+              </p>
+            </div>
           </div>
         </div>
-        <span className="flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-white shadow-brand">
-          <Sparkles size={9} strokeWidth={2.5} />
+        <Badge variant="ai">
+          <Sparkles size={10} strokeWidth={2.5} />
           IA
-        </span>
+        </Badge>
       </header>
 
-      <main className="flex-1 p-3">
+      <main className="flex flex-1 flex-col overflow-hidden p-4">
         {step === 0 && <ExistingRulesView />}
         {step === 1 && <WizardView />}
         {step === 2 && <ConditionsView />}
@@ -61,49 +70,59 @@ function ExistingRulesView() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex h-full flex-col"
+      transition={{ duration: 0.22 }}
+      className="flex h-full flex-col gap-3 overflow-hidden"
     >
       <div className="flex items-center justify-between">
-        <p className="text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
+        <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
           Regras configuradas
         </p>
-        <button
+        <Button
           type="button"
           data-tour="ar-new-rule"
-          className="flex items-center gap-1 rounded-full bg-brand px-3 py-1 text-[9px] font-bold text-white shadow-brand"
+          variant="ai"
+          size="default"
         >
-          <Plus size={11} strokeWidth={2.5} />
+          <Plus size={14} strokeWidth={2.5} />
           Nova regra
-        </button>
+        </Button>
       </div>
-      <div className="mt-2 space-y-1.5">
+      <div className="flex-1 space-y-2 overflow-y-auto">
         {EXISTING_RULES.map((r, i) => (
           <motion.div
             key={r.name}
             initial={{ x: 6, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.05 * i }}
-            className="flex items-center justify-between rounded-md border border-brand/10 bg-white p-2 shadow-card"
+            transition={{ delay: 0.05 * i, duration: 0.22 }}
           >
-            <div className="flex items-center gap-2">
-              <Settings2 size={12} strokeWidth={2} className="text-brand" />
-              <span className="text-[9px] font-semibold text-neutral-900">
-                {r.name}
-              </span>
-            </div>
-            <span
-              className={cn(
-                "flex h-4 w-7 items-center rounded-full px-0.5",
-                r.on ? "bg-brand" : "bg-neutral-300",
-              )}
-            >
+            <Card className="flex items-center justify-between p-3.5">
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-brand-subtle text-brand">
+                  <Settings2 size={15} strokeWidth={2} />
+                </span>
+                <div>
+                  <p className="font-ui text-[12px] font-bold text-neutral-900">
+                    {r.name}
+                  </p>
+                  <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+                    {r.category}
+                  </p>
+                </div>
+              </div>
               <span
                 className={cn(
-                  "h-3 w-3 rounded-full bg-white transition-transform",
-                  r.on ? "translate-x-3" : "translate-x-0",
+                  "flex h-6 w-10 items-center rounded-full px-0.5 transition-colors",
+                  r.on ? "bg-brand" : "bg-neutral-300",
                 )}
-              />
-            </span>
+              >
+                <span
+                  className={cn(
+                    "h-5 w-5 rounded-full bg-white shadow transition-transform",
+                    r.on ? "translate-x-4" : "translate-x-0",
+                  )}
+                />
+              </span>
+            </Card>
           </motion.div>
         ))}
       </div>
@@ -116,26 +135,30 @@ function WizardView() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex h-full flex-col"
+      transition={{ duration: 0.22 }}
+      className="flex h-full flex-col gap-3 overflow-y-auto"
     >
-      <div data-tour="ar-wizard" className="rounded-md border border-brand/30 bg-gradient-to-br from-brand-ghost via-white to-brand-subtle p-3">
-        <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-white shadow-brand">
-            <Sparkles size={16} strokeWidth={2} />
+      <div
+        data-tour="ar-wizard"
+        className="rounded-2xl border border-brand/30 bg-gradient-to-br from-brand-ghost via-white to-brand-subtle p-4"
+      >
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand text-white shadow-brand">
+            <Sparkles size={18} strokeWidth={2} />
           </div>
           <div>
-            <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
-              Wizard · descreva o que precisa
+            <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
+              Wizard, descreva o que precisa
             </p>
-            <p className="font-display text-[10px] font-bold text-neutral-900">
+            <p className="font-ui text-[14px] font-bold text-neutral-900">
               Como deseja configurar a regra?
             </p>
           </div>
         </div>
-        <div className="mt-3 rounded border-2 border-brand/30 bg-white p-2">
-          <p className="text-[9px] font-medium text-neutral-700">
+        <div className="mt-3 rounded-xl border-2 border-brand/30 bg-white p-3">
+          <p className="font-ui text-[12px] font-medium leading-relaxed text-neutral-700">
             <motion.span
-              animate={{ opacity: [0.4, 1, 0.4] }}
+              animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ duration: 2, repeat: Infinity }}
               className="inline-block"
             >
@@ -146,8 +169,8 @@ function WizardView() {
         </div>
       </div>
 
-      <div className="mt-3 space-y-1">
-        <p className="text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
+      <div className="space-y-1.5">
+        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
           Sugestões da IA
         </p>
         {[
@@ -159,11 +182,11 @@ function WizardView() {
             key={s}
             initial={{ x: 4, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.05 * i }}
+            transition={{ delay: 0.05 * i, duration: 0.22 }}
             type="button"
-            className="flex w-full items-center gap-2 rounded border border-brand/10 bg-white px-2 py-1.5 text-left text-[9px] text-neutral-700"
+            className="flex w-full items-center gap-2 rounded-lg border border-brand/10 bg-white px-3 py-2.5 text-left font-ui text-[12px] text-neutral-700 transition-all hover:-translate-y-[1px] hover:shadow-card"
           >
-            <Sparkles size={10} strokeWidth={2} className="text-brand" />
+            <Sparkles size={12} strokeWidth={2.25} className="text-brand" />
             {s}
           </motion.button>
         ))}
@@ -177,12 +200,13 @@ function ConditionsView() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex h-full flex-col"
+      transition={{ duration: 0.22 }}
+      className="flex h-full flex-col gap-2 overflow-y-auto"
     >
-      <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
+      <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
         Configuração detectada
       </p>
-      <div data-tour="ar-conditions" className="mt-2 space-y-1.5">
+      <div data-tour="ar-conditions" className="space-y-2">
         <Block
           label="Quando"
           value="Hora extra realizada"
@@ -217,35 +241,36 @@ function PreviewView() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex h-full flex-col"
+      transition={{ duration: 0.22 }}
+      className="flex h-full flex-col gap-2 overflow-hidden"
     >
       <div className="flex items-center justify-between">
-        <p className="flex items-center gap-1 text-[8px] font-semibold uppercase tracking-wider text-brand">
-          <Eye size={10} strokeWidth={2.25} />
+        <p className="flex items-center gap-1.5 font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
+          <Eye size={12} strokeWidth={2.25} />
           Preview da regra
         </p>
-        <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[8px] font-semibold text-warning">
-          Rascunho
-        </span>
+        <Badge variant="warning">Rascunho</Badge>
       </div>
-      <div data-tour="ar-preview" className="mt-2 flex-1 rounded-md border border-brand/30 bg-white p-3 shadow-card">
-        <p className="font-display text-[11px] font-bold text-neutral-900">
-          Hora extra sábado · adicional 80%
-        </p>
-        <p className="mt-1 text-[8px] text-neutral-500">
-          Aplicar quando colaborador realizar hora extra aos sábados
-        </p>
+      <div data-tour="ar-preview" className="flex-1 overflow-hidden">
+        <Card className="flex h-full flex-col border-brand/30 p-4">
+          <p className="font-ui text-[15px] font-bold text-neutral-900">
+            Hora extra sábado · adicional 80%
+          </p>
+          <p className="mt-1 font-ui text-[11px] text-neutral-500">
+            Aplicar quando colaborador realizar hora extra aos sábados
+          </p>
 
-        <div className="mt-3 space-y-1.5 border-t border-dashed border-neutral-200 pt-2">
-          <PreviewLine label="Trigger" value="Hora extra registrada" />
-          <PreviewLine label="Condição" value="weekday === 'sat'" mono />
-          <PreviewLine label="Cálculo" value="valor_hora × 1,80" mono />
-          <PreviewLine label="Notificação" value="gestor.direto via push" />
-        </div>
+          <div className="mt-4 space-y-2 border-t border-dashed border-neutral-200 pt-3">
+            <PreviewLine label="Trigger" value="Hora extra registrada" />
+            <PreviewLine label="Condição" value="weekday === 'sat'" mono />
+            <PreviewLine label="Cálculo" value="valor_hora × 1,80" mono />
+            <PreviewLine label="Notificação" value="gestor.direto via push" />
+          </div>
 
-        <div className="mt-3 rounded bg-brand-ghost p-2 text-[8px] text-brand">
-          Impacto estimado: 12 colaboradores · custo médio R$ 320/mês
-        </div>
+          <div className="mt-auto rounded-xl bg-brand-ghost px-3 py-2.5 font-ui text-[11px] text-brand">
+            Impacto estimado: 12 colaboradores · custo médio R$ 320/mês
+          </div>
+        </Card>
       </div>
     </motion.div>
   );
@@ -257,31 +282,32 @@ function ActivatedView() {
       data-tour="ar-activated"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="flex h-full flex-col items-center justify-center gap-3"
+      transition={{ duration: 0.22 }}
+      className="flex h-full flex-col items-center justify-center gap-4"
     >
       <motion.div
         initial={{ scale: 0.4 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 240, damping: 14 }}
-        className="relative flex h-16 w-16 items-center justify-center rounded-full bg-success text-white shadow-brand"
+        className="relative flex h-20 w-20 items-center justify-center rounded-full bg-success text-white shadow-[0_8px_30px_rgba(22,163,74,0.35)]"
       >
         <motion.span
           animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0, 0.4] }}
-          transition={{ duration: 1.8, repeat: Infinity }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
           className="absolute inset-0 rounded-full ring-2 ring-success/40"
         />
-        <Zap size={28} strokeWidth={2} />
+        <Zap size={32} strokeWidth={2} />
       </motion.div>
-      <p className="font-display text-[12px] font-bold text-neutral-900">
+      <p className="font-ui text-[16px] font-bold text-neutral-900">
         Regra ativada
       </p>
-      <p className="text-center text-[9px] text-neutral-500">
+      <p className="text-center font-ui text-[11px] text-neutral-500">
         Vai começar a valer no próximo sábado
       </p>
-      <div className="flex items-center gap-1 rounded bg-success/10 px-3 py-1 text-[8px] font-semibold text-success">
-        <CheckCircle2 size={10} strokeWidth={2.5} />
+      <Badge variant="success">
+        <CheckCircle2 size={11} strokeWidth={2.5} />
         Folha de pagamento sincronizada
-      </div>
+      </Badge>
     </motion.div>
   );
 }
@@ -300,19 +326,19 @@ function Block({
   return (
     <div
       className={cn(
-        "rounded-md border bg-white p-2 shadow-card",
+        "rounded-xl border bg-white p-3 shadow-card",
         tone === "brand" && "border-brand/20",
         tone === "neutral" && "border-neutral-200",
         tone === "success" && "border-success/30",
       )}
     >
       <div className="flex items-center justify-between">
-        <p className="text-[7px] uppercase tracking-wider text-neutral-500">
+        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
           {label}
         </p>
         <span
           className={cn(
-            "rounded-full px-1.5 py-0.5 text-[7px] font-bold uppercase",
+            "rounded-full px-2 py-0.5 font-ui text-[9px] font-bold uppercase tracking-wider",
             tone === "brand" && "bg-brand-subtle text-brand",
             tone === "neutral" && "bg-neutral-100 text-neutral-600",
             tone === "success" && "bg-success/10 text-success",
@@ -321,7 +347,9 @@ function Block({
           {chip}
         </span>
       </div>
-      <p className="mt-0.5 text-[9px] font-semibold text-neutral-900">{value}</p>
+      <p className="mt-1 font-ui text-[13px] font-bold text-neutral-900">
+        {value}
+      </p>
     </div>
   );
 }
@@ -336,11 +364,11 @@ function PreviewLine({
   mono?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between text-[8px]">
+    <div className="flex items-center justify-between font-ui text-[11px]">
       <span className="text-neutral-500">{label}</span>
       <span
         className={cn(
-          "font-semibold text-neutral-900",
+          "font-bold text-neutral-900",
           mono && "font-mono text-brand",
         )}
       >

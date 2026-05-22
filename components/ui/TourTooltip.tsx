@@ -5,6 +5,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { ArrowRight, MousePointer2, X } from "lucide-react";
 import { resolveText, type TourStep } from "@/data/solutions";
 import { useTourLive } from "@/lib/tourState";
+import { Badge } from "@/components/ui/shadcn";
 
 export interface TourTooltipProps {
   step: TourStep;
@@ -192,56 +193,78 @@ export function TourTooltip({
         left: pos.left,
         width: TOOLTIP_WIDTH,
       }}
-      className="pointer-events-auto z-[10000] rounded-2xl bg-white p-5 shadow-[0_16px_48px_rgba(0,0,0,0.18),0_2px_12px_rgba(0,0,0,0.08)] font-ui"
+      className="pointer-events-auto z-[10000] overflow-hidden rounded-2xl border border-brand/8 bg-white shadow-[0_18px_56px_rgba(0,0,0,0.18),0_2px_12px_rgba(0,0,0,0.08)] font-ui"
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-2 w-2 rounded-full bg-brand" />
-          <span className="font-ui text-[13px] font-semibold uppercase tracking-wider text-brand">
-            Passo {stepIndex + 1} de {totalSteps}
-          </span>
-        </div>
-        <button
-          type="button"
-          onClick={onSkip}
-          aria-label="Pular tour"
-          className="-mr-1 -mt-1 flex h-7 w-7 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
-        >
-          <X size={14} strokeWidth={2.25} />
-        </button>
-      </div>
+      {/* Top brand gradient accent strip */}
+      <div
+        aria-hidden
+        className="h-[3px] w-full bg-gradient-to-r from-brand via-brand-light to-brand"
+      />
 
-      <h3 className="mt-3 font-ui text-[19px] font-bold leading-snug text-neutral-900">
-        {title}
-      </h3>
-      <p className="mt-1.5 font-ui text-[15px] leading-relaxed text-neutral-600">
-        {description}
-      </p>
-
-      <div className="mt-4 flex items-center justify-between gap-2">
-        {requiresInteraction && !isLast ? (
-          <motion.span
-            animate={{ x: [0, 2, 0] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-            className="inline-flex items-center gap-1.5 font-ui text-[13px] font-semibold uppercase tracking-wider text-brand"
-          >
-            <MousePointer2 size={15} strokeWidth={2.25} />
-            Toque no destacado
-          </motion.span>
-        ) : (
-          <span />
-        )}
-
-        {showNextButton && (
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-2">
+          <Badge variant="secondary" className="text-[10px]">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand" />
+            Passo {stepIndex + 1} / {totalSteps}
+          </Badge>
           <button
             type="button"
-            onClick={onNext}
-            className="inline-flex h-11 items-center gap-1.5 rounded-full bg-brand px-5 font-ui text-[14px] font-semibold text-white shadow-brand transition-colors hover:bg-brand-light"
+            onClick={onSkip}
+            aria-label="Pular tour"
+            className="-mr-1 -mt-1 flex h-7 w-7 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
           >
-            {actionLabel}
-            <ArrowRight size={15} strokeWidth={2.5} />
+            <X size={14} strokeWidth={2.25} />
           </button>
-        )}
+        </div>
+
+        <motion.h3
+          key={`${step.id}-title`}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, delay: 0.05 }}
+          className="mt-3 font-display text-[19px] font-bold leading-snug text-neutral-900"
+        >
+          {title}
+        </motion.h3>
+        <motion.p
+          key={`${step.id}-desc`}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, delay: 0.1 }}
+          className="mt-1.5 font-ui text-[15px] leading-relaxed text-neutral-600"
+        >
+          {description}
+        </motion.p>
+
+        <div className="mt-4 flex items-center justify-between gap-2">
+          {requiresInteraction && !isLast ? (
+            <motion.span
+              animate={{ x: [0, 2, 0] }}
+              transition={{
+                duration: 1.6,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="inline-flex items-center gap-1.5 font-ui text-[12.5px] font-semibold uppercase tracking-wider text-brand"
+            >
+              <MousePointer2 size={14} strokeWidth={2.25} />
+              Toque no destacado
+            </motion.span>
+          ) : (
+            <span />
+          )}
+
+          {showNextButton && (
+            <button
+              type="button"
+              onClick={onNext}
+              className="inline-flex h-11 items-center gap-1.5 rounded-full bg-gradient-to-b from-brand-light to-brand px-5 font-ui text-[14px] font-semibold text-white shadow-brand transition-all hover:-translate-y-[1px] hover:shadow-[0_8px_22px_rgba(2,7,136,0.32)] active:scale-[0.98]"
+            >
+              {actionLabel}
+              <ArrowRight size={15} strokeWidth={2.5} />
+            </button>
+          )}
+        </div>
       </div>
     </motion.div>
   );

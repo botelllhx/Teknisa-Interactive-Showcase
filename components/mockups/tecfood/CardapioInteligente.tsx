@@ -10,7 +10,6 @@ import {
   Plus,
   Check,
   X,
-  RefreshCw,
   Flame,
   Leaf,
   Wheat,
@@ -23,10 +22,10 @@ import {
   Brain,
   Database,
   SlidersHorizontal,
-  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
+import { Badge, Button, Card } from "@/components/ui/shadcn";
 
 interface CardapioInteligenteProps {
   step: number;
@@ -325,44 +324,34 @@ function Header({
             }}
           />
         </motion.button>
-        <motion.button
+        <Button
           type="button"
-          whileTap={{ scale: 0.97 }}
+          variant={approved ? "success" : "outline"}
+          size="default"
           data-tour="ci-approve"
           onClick={onApprove}
           disabled={approved}
-          className={cn(
-            "inline-flex items-center gap-1.5 rounded-md px-3 py-2.5 font-ui text-[12px] font-bold transition-colors",
-            approved
-              ? "bg-success/15 text-success"
-              : "border border-brand bg-white text-brand hover:bg-brand-ghost",
-          )}
+          className="h-11 px-4 text-[13px]"
         >
-          <Check size={13} strokeWidth={2.5} />
+          <Check size={14} strokeWidth={2.5} />
           {approved ? "Aprovado" : "Aprovar"}
-        </motion.button>
-        <motion.button
+        </Button>
+        <Button
           type="button"
-          whileTap={{ scale: 0.97 }}
+          variant={published ? "success" : "default"}
+          size="default"
           data-tour="ci-publish"
           onClick={onPublish}
           disabled={!approved || published}
-          className={cn(
-            "inline-flex items-center gap-1.5 rounded-md px-3 py-2.5 font-ui text-[12px] font-bold text-white shadow-brand transition-colors",
-            published
-              ? "bg-success"
-              : approved
-                ? "bg-brand hover:bg-brand-light"
-                : "bg-neutral-300",
-          )}
+          className="h-11 px-4 text-[13px]"
         >
           {published ? (
-            <CheckCircle2 size={13} strokeWidth={2.5} />
+            <CheckCircle2 size={14} strokeWidth={2.5} />
           ) : (
-            <Share2 size={13} strokeWidth={2.5} />
+            <Share2 size={14} strokeWidth={2.5} />
           )}
           {published ? "Publicado" : "Publicar"}
-        </motion.button>
+        </Button>
       </div>
     </header>
   );
@@ -972,39 +961,39 @@ function NutritionPanel({
     { label: "Fibras", value: totals.fiber, target: TARGETS.fiber, unit: "g", Icon: Leaf },
   ];
   return (
-    <div
+    <Card
       data-tour="ci-nutrition"
-      className="rounded-2xl border border-brand/8 bg-white p-3.5 shadow-card"
+      className="p-3.5"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <span className="flex h-6 w-6 items-center justify-center rounded-md bg-brand text-white">
             <TrendingUp size={12} strokeWidth={2.25} />
           </span>
-          <p className="font-ui text-[12px] font-bold uppercase tracking-wider text-brand">
+          <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
             Análise nutricional
           </p>
         </div>
         <AnimatePresence mode="wait">
           {balanced ? (
-            <motion.span
+            <motion.div
               key="ok"
               initial={{ scale: 0.5 }}
               animate={{ scale: 1 }}
-              className="inline-flex items-center gap-1 rounded-full bg-success/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-success"
             >
-              <Check size={10} strokeWidth={2.5} />
-              Balanceado
-            </motion.span>
+              <Badge variant="success">
+                <Check size={10} strokeWidth={2.5} />
+                Balanceado
+              </Badge>
+            </motion.div>
           ) : (
-            <motion.span
+            <motion.div
               key="off"
               initial={{ scale: 0.5 }}
               animate={{ scale: 1 }}
-              className="inline-flex items-center gap-1 rounded-full bg-warning/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-warning"
             >
-              Ajustar
-            </motion.span>
+              <Badge variant="warning">Ajustar</Badge>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
@@ -1046,7 +1035,7 @@ function NutritionPanel({
           );
         })}
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -1054,12 +1043,12 @@ function CostPanel({ totals }: { totals: { cost: number } }) {
   const meals = 1840;
   const totalDay = totals.cost * meals;
   return (
-    <div className="rounded-2xl border border-brand/8 bg-white p-3.5 shadow-card">
+    <Card className="p-3.5">
       <div className="flex items-center gap-1.5">
         <span className="flex h-6 w-6 items-center justify-center rounded-md bg-brand text-white">
           <Users size={12} strokeWidth={2.25} />
         </span>
-        <p className="font-ui text-[12px] font-bold uppercase tracking-wider text-brand">
+        <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
           Custo do dia
         </p>
       </div>
@@ -1069,16 +1058,13 @@ function CostPanel({ totals }: { totals: { cost: number } }) {
       <div className="mt-2 flex items-end justify-between">
         <div>
           <p className="text-[11px] text-neutral-500">Por refeição</p>
-          <p
-            className="font-ui text-[20px] font-bold tabular-nums"
-            style={{ color: "#020788" }}
-          >
+          <p className="font-ui text-[26px] font-bold leading-none text-brand tabular-nums">
             R$ {totals.cost.toFixed(2).replace(".", ",")}
           </p>
         </div>
         <div className="text-right">
           <p className="text-[11px] text-neutral-500">Total dia</p>
-          <p className="font-ui text-[15px] font-bold text-neutral-700 tabular-nums">
+          <p className="font-ui text-[16px] font-bold text-neutral-700 tabular-nums">
             R${" "}
             {totalDay.toLocaleString("pt-BR", {
               minimumFractionDigits: 2,
@@ -1087,7 +1073,7 @@ function CostPanel({ totals }: { totals: { cost: number } }) {
           </p>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -1104,12 +1090,12 @@ function WorkflowPanel({
     { label: "Publicado", done: published, active: approved && !published },
   ];
   return (
-    <div className="rounded-2xl border border-brand/8 bg-white p-3.5 shadow-card">
+    <Card className="p-3.5">
       <div className="flex items-center gap-1.5">
         <span className="flex h-6 w-6 items-center justify-center rounded-md bg-brand text-white">
           <Check size={12} strokeWidth={2.25} />
         </span>
-        <p className="font-ui text-[12px] font-bold uppercase tracking-wider text-brand">
+        <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
           Workflow
         </p>
       </div>
@@ -1146,7 +1132,7 @@ function WorkflowPanel({
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -1235,5 +1221,3 @@ function DishPickerModal({
   );
 }
 
-// Reference exports for unused icons to keep tree-shaking honest
-export { Zap, RefreshCw };

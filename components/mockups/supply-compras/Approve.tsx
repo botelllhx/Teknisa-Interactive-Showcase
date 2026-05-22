@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
+import { Button } from "@/components/ui/shadcn";
 
 interface ApproveProps {
   step: number;
@@ -682,25 +683,27 @@ function DetailScreen({
           data-tour="ap-actions"
           className="flex items-center gap-2 border-t border-neutral-100 bg-white px-4 py-3.5"
         >
-          <motion.button
+          <Button
             type="button"
-            whileTap={{ scale: 0.97 }}
+            variant="outline"
+            size="lg"
             onClick={() => onDecide("reprovada")}
-            className="flex-1 rounded-xl border-2 border-danger py-3 font-ui text-[13px] font-bold text-danger"
+            className="flex-1 border-2 border-danger bg-white text-danger hover:bg-danger/5"
           >
-            <X size={14} strokeWidth={2.5} className="mr-1 inline" />
+            <X size={15} strokeWidth={2.5} />
             Reprovar
-          </motion.button>
-          <motion.button
+          </Button>
+          <Button
             type="button"
+            variant="success"
+            size="lg"
             data-tour="ap-approve-button"
-            whileTap={{ scale: 0.97 }}
             onClick={() => onDecide("aprovada")}
-            className="flex-[1.4] rounded-xl bg-success py-3 font-ui text-[13px] font-bold text-white shadow-brand"
+            className="flex-[1.4]"
           >
-            <Check size={14} strokeWidth={2.5} className="mr-1 inline" />
+            <Check size={15} strokeWidth={2.5} />
             Aprovar
-          </motion.button>
+          </Button>
         </div>
       ) : (
         <div

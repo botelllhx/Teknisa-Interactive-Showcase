@@ -1,7 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUp, ArrowDown, Activity } from "lucide-react";
+import { ArrowUp, ArrowDown } from "lucide-react";
+import { CompanionShell } from "./CompanionShell";
+import { Card } from "@/components/ui/shadcn";
 
 interface Metric {
   label: string;
@@ -38,136 +40,86 @@ const DEFAULT_METRICS: Metric[] = [
 ];
 
 export function MiniDashboard({
-  title = "Visão geral · hoje",
+  title = "Visão geral",
   metrics = DEFAULT_METRICS,
 }: MiniDashboardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.94 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.96 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      style={{
-        background: "white",
-        borderRadius: 16,
-        padding: 20,
-        boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-        width: 264,
-        fontFamily: "var(--font-ui)",
-      }}
+    <CompanionShell
+      label={title}
+      sublabel="Atualização em tempo real"
+      live
+      pulse
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 16,
-        }}
-      >
-        <span
-          style={{
-            fontSize: 12,
-            fontWeight: 700,
-            letterSpacing: 0.5,
-            textTransform: "uppercase",
-            color: "#020788",
-          }}
-        >
-          {title}
-        </span>
-        <span
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 4,
-            background: "rgba(22,163,74,0.10)",
-            color: "#16a34a",
-            fontSize: 10,
-            fontWeight: 700,
-            padding: "3px 8px",
-            borderRadius: 999,
-          }}
-        >
-          <Activity size={10} strokeWidth={2.5} />
-          ao vivo
-        </span>
-      </div>
-
-      {metrics.map((m, i) => {
-        const max = Math.max(...m.sparkline);
-        const lastIdx = m.sparkline.length - 1;
-        const positive = m.trend >= 0;
-        return (
-          <div key={m.label} style={{ marginBottom: i === metrics.length - 1 ? 0 : 14 }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 4,
-              }}
-            >
-              <span style={{ fontSize: 12, color: "#495057" }}>{m.label}</span>
-              <span
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 3,
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: positive ? "#16a34a" : "#dc2626",
-                }}
+      <Card className="w-[268px] overflow-hidden p-4">
+        <div className="space-y-3.5">
+          {metrics.map((m, i) => {
+            const max = Math.max(...m.sparkline);
+            const lastIdx = m.sparkline.length - 1;
+            const positive = m.trend >= 0;
+            return (
+              <motion.div
+                key={m.label}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 + i * 0.06, duration: 0.3 }}
               >
-                {positive ? (
-                  <ArrowUp size={11} strokeWidth={2.5} />
-                ) : (
-                  <ArrowDown size={11} strokeWidth={2.5} />
-                )}
-                {Math.abs(m.trend).toFixed(1)}%
-              </span>
-            </div>
-            <div
-              style={{
-                fontSize: 22,
-                fontWeight: 700,
-                color: "#020788",
-                fontFamily: "var(--font-display)",
-                fontVariantNumeric: "tabular-nums",
-                lineHeight: 1.1,
-              }}
-            >
-              {m.value}
-            </div>
-            <div
-              style={{
-                display: "flex",
-                gap: 2,
-                alignItems: "flex-end",
-                height: 28,
-                marginTop: 6,
-              }}
-            >
-              {m.sparkline.map((v, j) => (
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-neutral-500">
+                    {m.label}
+                  </span>
+                  <span
+                    className="inline-flex items-center gap-0.5 text-[10px] font-bold tabular-nums"
+                    style={{ color: positive ? "#16a34a" : "#dc2626" }}
+                  >
+                    {positive ? (
+                      <ArrowUp size={10} strokeWidth={2.75} />
+                    ) : (
+                      <ArrowDown size={10} strokeWidth={2.75} />
+                    )}
+                    {Math.abs(m.trend).toFixed(1)}%
+                  </span>
+                </div>
                 <motion.div
-                  key={j}
-                  initial={{ height: 0 }}
-                  animate={{ height: `${(v / max) * 100}%` }}
-                  transition={{
-                    delay: 0.2 + i * 0.08 + j * 0.015,
-                    duration: 0.4,
-                    ease: "easeOut",
-                  }}
-                  style={{
-                    flex: 1,
-                    background: j === lastIdx ? "#020788" : "#e8e9f8",
-                    borderRadius: 2,
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        );
-      })}
-    </motion.div>
+                  key={m.value}
+                  initial={{ scale: 0.94, opacity: 0.7 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-0.5 font-display text-[20px] font-bold leading-none tabular-nums text-brand"
+                >
+                  {m.value}
+                </motion.div>
+                <div
+                  className="mt-1.5 flex items-end gap-[2px]"
+                  style={{ height: 26 }}
+                >
+                  {m.sparkline.map((v, j) => (
+                    <motion.div
+                      key={j}
+                      initial={{ height: 0 }}
+                      animate={{ height: `${(v / max) * 100}%` }}
+                      transition={{
+                        delay: 0.15 + i * 0.06 + j * 0.012,
+                        duration: 0.35,
+                        ease: "easeOut",
+                      }}
+                      style={{
+                        flex: 1,
+                        background:
+                          j === lastIdx
+                            ? "#020788"
+                            : j > lastIdx - 3
+                              ? "#3b42c4"
+                              : "#e8e9f8",
+                        borderRadius: 2,
+                      }}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </Card>
+    </CompanionShell>
   );
 }

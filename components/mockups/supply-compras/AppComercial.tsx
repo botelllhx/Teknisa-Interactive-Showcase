@@ -9,8 +9,10 @@ import {
   CheckCircle2,
   Building2,
   Send,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { Badge } from "@/components/ui/shadcn";
 
 interface AppComercialProps {
   step: number;
@@ -30,21 +32,23 @@ const PRODUCTS = [
 
 export function AppComercialMockup({ step }: AppComercialProps) {
   return (
-    <div className="flex h-full w-full flex-col bg-white text-neutral-800">
-      <header className="px-3 pt-2 pb-1">
-        <p className="font-display text-[9px] font-bold uppercase tracking-widest text-brand">
+    <div className="flex h-full w-full flex-col overflow-hidden bg-white font-ui text-neutral-800">
+      <header className="border-b border-brand/8 px-4 pb-2 pt-3">
+        <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
           App Comercial
         </p>
-        <p className="text-[8px] text-neutral-500">
+        <p className="font-ui text-[10px] text-neutral-500">
           Lucas P. · Representante Sul
         </p>
       </header>
 
-      {step === 0 && <DashboardView />}
-      {step === 1 && <ClientView />}
-      {step === 2 && <ProductsView />}
-      {step === 3 && <SummaryView />}
-      {step >= 4 && <SentView />}
+      <main className="flex flex-1 flex-col overflow-hidden">
+        {step === 0 && <DashboardView />}
+        {step === 1 && <ClientView />}
+        {step === 2 && <ProductsView />}
+        {step === 3 && <SummaryView />}
+        {step >= 4 && <SentView />}
+      </main>
     </div>
   );
 }
@@ -54,19 +58,23 @@ function DashboardView() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-1 flex-col px-3 py-1"
+      transition={{ duration: 0.22 }}
+      className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-3"
     >
-      <div data-tour="ac-goal" className="rounded-md bg-brand p-3 text-white shadow-brand">
-        <p className="text-[8px] font-medium uppercase tracking-wider opacity-80">
+      <div
+        data-tour="ac-goal"
+        className="rounded-2xl bg-gradient-to-br from-brand via-brand-light to-[#3b42c4] p-4 text-white shadow-brand"
+      >
+        <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] opacity-85">
           Meta do mês
         </p>
-        <div className="mt-1 flex items-baseline justify-between">
-          <p className="font-display text-[16px] font-bold tabular-nums">
+        <div className="mt-1.5 flex items-baseline justify-between">
+          <p className="font-ui text-[28px] font-bold leading-none tabular-nums">
             R$ 142k
           </p>
-          <span className="text-[8px] opacity-90">/ R$ 180k</span>
+          <span className="font-ui text-[11px] opacity-90">/ R$ 180k</span>
         </div>
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/20">
+        <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/20">
           <motion.span
             initial={{ width: 0 }}
             animate={{ width: "79%" }}
@@ -74,25 +82,27 @@ function DashboardView() {
             className="block h-full rounded-full bg-white"
           />
         </div>
-        <p className="mt-1 text-[7px] opacity-90">79% atingido · 10 dias restantes</p>
+        <p className="mt-1.5 font-ui text-[10px] opacity-90">
+          79% atingido · 10 dias restantes
+        </p>
       </div>
 
-      <div className="mt-2 grid grid-cols-2 gap-1.5">
+      <div className="grid grid-cols-2 gap-2">
         {[
           { Icon: TrendingUp, label: "Vendas hoje", value: "R$ 8,2k" },
           { Icon: Target, label: "Pedidos", value: "12" },
         ].map(({ Icon, label, value }) => (
           <div
             key={label}
-            className="rounded-md border border-brand/10 bg-white p-2 shadow-card"
+            className="rounded-xl border border-brand/8 bg-white p-3 shadow-card"
           >
-            <div className="flex items-center gap-1">
-              <Icon size={10} strokeWidth={2} className="text-brand" />
-              <span className="text-[7px] uppercase text-neutral-500">
+            <div className="flex items-center gap-1.5">
+              <Icon size={11} strokeWidth={2.25} className="text-brand" />
+              <span className="font-ui text-[9px] font-bold uppercase tracking-[1.5px] text-neutral-500">
                 {label}
               </span>
             </div>
-            <p className="mt-0.5 font-display text-[11px] font-bold text-neutral-900">
+            <p className="mt-1 font-ui text-[18px] font-bold tabular-nums text-neutral-900">
               {value}
             </p>
           </div>
@@ -101,9 +111,9 @@ function DashboardView() {
 
       <button
         type="button"
-        className="mt-auto flex items-center justify-center gap-1 rounded-md bg-brand py-2 text-[10px] font-bold text-white shadow-brand"
+        className="mt-auto flex items-center justify-center gap-1.5 rounded-xl bg-brand py-3 font-ui text-[13px] font-bold text-white shadow-brand transition-all hover:-translate-y-[1px] active:scale-[0.98]"
       >
-        <Plus size={12} strokeWidth={2.5} />
+        <Plus size={14} strokeWidth={2.5} />
         Novo pedido
       </button>
     </motion.div>
@@ -115,23 +125,26 @@ function ClientView() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-1 flex-col px-3 py-1"
+      transition={{ duration: 0.22 }}
+      className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-3"
     >
-      <div className="flex items-center gap-2 rounded-md bg-surface-raised px-2 py-1.5">
-        <Search size={10} strokeWidth={2} className="text-neutral-400" />
-        <span className="text-[9px] text-neutral-500">Buscar cliente</span>
+      <div className="flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2.5">
+        <Search size={13} strokeWidth={2} className="text-neutral-400" />
+        <span className="font-ui text-[11px] text-neutral-400">
+          Buscar cliente
+        </span>
       </div>
-      <div className="mt-2 space-y-1.5">
+      <div className="mt-1 space-y-2">
         {CLIENTS.map((c, i) => (
           <motion.button
             key={c.cnpj}
             data-tour={c.active ? "ac-client" : undefined}
             initial={{ x: 6, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.05 * i }}
+            transition={{ delay: 0.05 * i, duration: 0.22 }}
             type="button"
             className={cn(
-              "flex w-full items-center gap-2 rounded-md p-2 text-left",
+              "flex w-full items-center gap-2.5 rounded-xl p-2.5 text-left transition-colors",
               c.active
                 ? "border-2 border-brand bg-brand-ghost shadow-card"
                 : "border border-brand/10 bg-white",
@@ -139,19 +152,21 @@ function ClientView() {
           >
             <span
               className={cn(
-                "flex h-8 w-8 flex-none items-center justify-center rounded-lg",
+                "flex h-10 w-10 flex-none items-center justify-center rounded-xl",
                 c.active
                   ? "bg-brand text-white shadow-brand"
                   : "bg-brand-subtle text-brand",
               )}
             >
-              <Building2 size={14} strokeWidth={2} />
+              <Building2 size={16} strokeWidth={2} />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[9px] font-semibold text-neutral-900">
+              <p className="truncate font-ui text-[12px] font-bold text-neutral-900">
                 {c.name}
               </p>
-              <p className="text-[7px] text-neutral-500">{c.cnpj}</p>
+              <p className="font-ui text-[10px] tabular-nums text-neutral-500">
+                {c.cnpj}
+              </p>
             </div>
           </motion.button>
         ))}
@@ -165,50 +180,59 @@ function ProductsView() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-1 flex-col px-3 py-1"
+      transition={{ duration: 0.22 }}
+      className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-3"
     >
-      <div className="rounded-md bg-surface-raised p-1.5">
-        <p className="text-[7px] uppercase text-neutral-500">Cliente</p>
-        <p className="text-[9px] font-semibold text-neutral-900">
+      <div className="rounded-xl bg-brand-ghost px-3 py-2">
+        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-brand">
+          Cliente
+        </p>
+        <p className="font-ui text-[12px] font-bold text-neutral-900">
           Restaurante Bella Mesa
         </p>
       </div>
 
-      <p className="mt-2 text-[8px] font-semibold uppercase tracking-wider text-neutral-500">
-        Produtos sugeridos
-      </p>
-      <div className="mt-1 space-y-1">
+      <div className="mt-1 flex items-center justify-between">
+        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+          Produtos sugeridos
+        </p>
+        <Badge variant="ai">
+          <Sparkles size={9} strokeWidth={2.5} />
+          IA
+        </Badge>
+      </div>
+      <div className="space-y-2">
         {PRODUCTS.map((p, i) => (
           <motion.div
             key={p.name}
             data-tour={i === 0 ? "ac-product-suggested" : undefined}
             initial={{ x: 6, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.05 * i }}
-            className="flex items-center gap-2 rounded-md border border-brand/10 bg-white p-1.5 shadow-card"
+            transition={{ delay: 0.05 * i, duration: 0.22 }}
+            className="flex items-center gap-2.5 rounded-xl border border-brand/8 bg-white p-2.5 shadow-card"
           >
-            <div className="h-7 w-7 flex-none rounded bg-brand-subtle" />
+            <div className="h-10 w-10 flex-none rounded-lg bg-gradient-to-br from-brand-ghost to-brand-subtle" />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[9px] font-semibold text-neutral-900">
+              <p className="truncate font-ui text-[12px] font-bold text-neutral-900">
                 {p.name}
               </p>
-              <p className="text-[8px] font-bold text-brand">
-                R$ {p.price.toFixed(2)}
+              <p className="font-ui text-[11px] font-bold tabular-nums text-brand">
+                R$ {p.price.toFixed(2).replace(".", ",")}
               </p>
             </div>
             <button
               type="button"
               className={cn(
-                "flex h-6 w-6 flex-none items-center justify-center rounded-full",
+                "flex h-9 w-9 flex-none items-center justify-center rounded-full transition-transform active:scale-95",
                 i === 0
                   ? "bg-brand text-white shadow-brand"
-                  : "border border-brand/30 text-brand",
+                  : "border border-brand/30 text-brand hover:bg-brand-ghost",
               )}
             >
               {i === 0 ? (
-                <CheckCircle2 size={12} strokeWidth={2.5} />
+                <CheckCircle2 size={14} strokeWidth={2.5} />
               ) : (
-                <Plus size={12} strokeWidth={2.5} />
+                <Plus size={14} strokeWidth={2.5} />
               )}
             </button>
           </motion.div>
@@ -223,37 +247,43 @@ function SummaryView() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-1 flex-col px-3 py-1"
+      transition={{ duration: 0.22 }}
+      className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-3"
     >
-      <div className="rounded-md bg-surface-raised p-2">
-        <p className="text-[7px] uppercase text-neutral-500">Cliente</p>
-        <p className="text-[10px] font-semibold text-neutral-900">
+      <div className="rounded-xl bg-brand-ghost px-3 py-2">
+        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-brand">
+          Cliente
+        </p>
+        <p className="font-ui text-[12px] font-bold text-neutral-900">
           Restaurante Bella Mesa
         </p>
       </div>
 
-      <div data-tour="ac-summary" className="mt-2 rounded-md bg-white p-2 shadow-card">
-        <p className="text-[8px] font-semibold uppercase tracking-wider text-brand">
+      <div
+        data-tour="ac-summary"
+        className="rounded-2xl border border-brand/8 bg-white p-3 shadow-card"
+      >
+        <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
           Resumo do pedido
         </p>
-        <div className="mt-2 space-y-1 text-[8px]">
+        <div className="mt-2.5 space-y-1.5 font-ui text-[11px]">
           {[
             { name: "Mix de massas frescas", value: 184.0 },
             { name: "Linha premium azeites", value: 320.5 },
           ].map((p) => (
             <div key={p.name} className="flex items-center justify-between">
               <span className="text-neutral-700">{p.name}</span>
-              <span className="font-semibold tabular-nums text-neutral-900">
-                R$ {p.value.toFixed(2)}
+              <span className="font-bold tabular-nums text-neutral-900">
+                R$ {p.value.toFixed(2).replace(".", ",")}
               </span>
             </div>
           ))}
         </div>
-        <div className="mt-2 flex items-baseline justify-between border-t border-dashed border-neutral-200 pt-1">
-          <span className="text-[7px] font-bold uppercase tracking-wider text-neutral-500">
+        <div className="mt-3 flex items-baseline justify-between border-t border-dashed border-neutral-200 pt-2">
+          <span className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
             Total
           </span>
-          <span className="font-display text-[14px] font-bold text-brand tabular-nums">
+          <span className="font-ui text-[20px] font-bold tabular-nums text-brand">
             R$ 504,50
           </span>
         </div>
@@ -261,9 +291,9 @@ function SummaryView() {
 
       <button
         type="button"
-        className="mt-auto flex items-center justify-center gap-1 rounded-md bg-brand py-2 text-[10px] font-bold text-white shadow-brand"
+        className="mt-auto flex items-center justify-center gap-1.5 rounded-xl bg-brand py-3 font-ui text-[13px] font-bold text-white shadow-brand transition-all hover:-translate-y-[1px] active:scale-[0.98]"
       >
-        <Send size={12} strokeWidth={2} />
+        <Send size={14} strokeWidth={2.25} />
         Confirmar pedido
       </button>
     </motion.div>
@@ -276,22 +306,37 @@ function SentView() {
       data-tour="ac-sent"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="flex flex-1 flex-col items-center justify-center gap-3 px-4"
+      transition={{ duration: 0.22 }}
+      className="flex flex-1 flex-col items-center justify-center gap-4 px-5 py-6"
     >
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success text-white shadow-brand">
-        <CheckCircle2 size={32} strokeWidth={2} />
-      </div>
-      <p className="font-display text-[12px] font-bold text-neutral-900">
+      <motion.div
+        initial={{ scale: 0.5 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 240, damping: 14 }}
+        className="relative flex h-20 w-20 items-center justify-center rounded-full bg-success text-white shadow-[0_8px_30px_rgba(22,163,74,0.35)]"
+      >
+        <motion.span
+          animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0, 0.4] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 rounded-full ring-2 ring-success/40"
+        />
+        <CheckCircle2 size={40} strokeWidth={2} />
+      </motion.div>
+      <p className="font-ui text-[15px] font-bold text-neutral-900">
         Pedido enviado
       </p>
-      <div className="rounded-md border border-dashed border-success/30 bg-success/5 px-3 py-1.5 text-center">
-        <p className="text-[8px] text-neutral-500">Pedido</p>
-        <p className="font-display text-[12px] font-bold text-success">
+      <div className="rounded-xl border-2 border-dashed border-success/30 bg-success/5 px-4 py-2 text-center">
+        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+          Pedido
+        </p>
+        <p className="font-ui text-[16px] font-bold tabular-nums text-success">
           #PED-2026-08471
         </p>
       </div>
-      <p className="text-center text-[8px] text-neutral-500">
-        Pedido transmitido ao ERP · Confirmação por e-mail
+      <p className="text-center font-ui text-[11px] leading-snug text-neutral-500">
+        Pedido transmitido ao ERP
+        <br />
+        Confirmação por e-mail
       </p>
     </motion.div>
   );

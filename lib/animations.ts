@@ -1,4 +1,4 @@
-import type { Variants } from "framer-motion";
+import type { Variants, Transition } from "framer-motion";
 
 const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -74,4 +74,92 @@ export const cardPress = {
   whileTap: { scale: 0.96 },
   whileHover: { scale: 1.02 },
   transition: { type: "spring" as const, stiffness: 320, damping: 22 },
+};
+
+// ============================================================
+// V7 additions — soft, fast, premium variants reusable across
+// the whole app (frames, companions, tour UI, mockups, etc.)
+// ============================================================
+
+/**
+ * Quick, lightweight entrance for any element. Smaller travel than
+ * fadeInUp, faster than fadeIn. Use for inline content reveals where
+ * you want presence without much animation.
+ */
+export const softFadeIn: Variants = {
+  hidden: { opacity: 0, y: 6 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.25, ease: "easeOut" },
+  },
+};
+
+/**
+ * Stagger container with tighter timing — great for short rows or
+ * groups of 2–6 items where the standard stagger feels too slow.
+ */
+export const staggerFast: Variants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.06 },
+  },
+};
+
+/**
+ * Stagger container tuned for card grids. Slightly longer per-child
+ * gap and a small delay so the first card lands AFTER its parent
+ * settles.
+ */
+export const staggerCards: Variants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.08, delayChildren: 0.05 },
+  },
+};
+
+/**
+ * Soft spring transition — premium, slightly bouncy but not playful.
+ * Spread into a `transition` prop or use as `transition={softSpring}`.
+ */
+export const softSpring: Transition = {
+  type: "spring",
+  stiffness: 220,
+  damping: 24,
+  mass: 0.6,
+};
+
+/**
+ * Infinite halo pulse for highlight rings, status dots, and
+ * "alive" indicators. Animates the boxShadow keyframes around the
+ * brand color so it can be applied to a wrapping div without
+ * affecting layout.
+ */
+export const glowPulse = {
+  animate: {
+    boxShadow: [
+      "0 0 0 0 rgba(2,7,136,0.0), 0 0 0 0 rgba(2,7,136,0.0)",
+      "0 0 0 6px rgba(2,7,136,0.18), 0 0 24px 8px rgba(2,7,136,0.28)",
+      "0 0 0 0 rgba(2,7,136,0.0), 0 0 0 0 rgba(2,7,136,0.0)",
+    ],
+    transition: {
+      duration: 1.8,
+      repeat: Infinity,
+      ease: "easeInOut" as const,
+    },
+  },
+};
+
+/**
+ * Count-up entrance for numeric values that change. Pair with a
+ * `key={value}` on the element so the animation replays whenever the
+ * displayed number changes.
+ */
+export const countUp: Variants = {
+  hidden: { opacity: 0, scale: 0.92 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
+  },
 };

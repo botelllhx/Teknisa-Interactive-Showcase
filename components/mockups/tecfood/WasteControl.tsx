@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
+import { Badge, Button, Card } from "@/components/ui/shadcn";
 
 interface WasteControlProps {
   step: number;
@@ -253,10 +254,10 @@ function Header() {
           </div>
         </div>
       </div>
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-success">
+      <Badge variant="success">
         <span className="h-1.5 w-1.5 rounded-full bg-success" />
         Sincronizado
-      </span>
+      </Badge>
     </header>
   );
 }
@@ -370,10 +371,8 @@ function RegistrosView({
         })}
       </div>
 
-      <motion.div
-        layout
-        className="rounded-2xl border border-brand/8 bg-white p-4 shadow-card"
-      >
+      <motion.div layout>
+      <Card className="p-4">
         <div className="flex items-start gap-2">
           <span
             className="flex h-9 w-9 flex-none items-center justify-center rounded-md text-white"
@@ -457,22 +456,17 @@ function RegistrosView({
         )}
 
         <div className="mt-4 flex items-center justify-end gap-2">
-          <motion.button
+          <Button
             type="button"
+            variant="default"
+            size="lg"
             data-tour="wc-submit"
-            whileTap={{ scale: 0.97 }}
             onClick={onRegistrar}
             disabled={!prato || quantidade <= 0}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-md px-4 py-2.5 font-ui text-[12px] font-bold text-white",
-              prato && quantidade > 0
-                ? "bg-brand shadow-brand hover:bg-brand-light"
-                : "bg-neutral-300",
-            )}
           >
-            <Save size={13} strokeWidth={2.5} />
+            <Save size={14} strokeWidth={2.5} />
             Registrar {meta.label.toLowerCase()}
-          </motion.button>
+          </Button>
         </div>
 
         <AnimatePresence>
@@ -488,6 +482,7 @@ function RegistrosView({
             </motion.div>
           )}
         </AnimatePresence>
+      </Card>
       </motion.div>
     </div>
   );
@@ -518,13 +513,13 @@ function HistoricoView({
         />
       </div>
 
-      <div className="rounded-2xl border border-brand/8 bg-white p-4 shadow-card">
+      <Card className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <span className="flex h-6 w-6 items-center justify-center rounded-md bg-brand text-white">
               <History size={12} strokeWidth={2.25} />
             </span>
-            <p className="font-ui text-[11px] font-bold uppercase tracking-wider text-brand">
+            <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
               Histórico de registros
             </p>
           </div>
@@ -586,7 +581,7 @@ function HistoricoView({
             )}
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
@@ -776,22 +771,22 @@ function StatCard({
   Icon?: typeof Leaf;
 }) {
   return (
-    <div className="rounded-2xl border border-brand/8 bg-white p-3 shadow-card">
+    <Card className="p-3">
       <div className="flex items-center justify-between">
-        <p className="font-ui text-[10px] font-bold uppercase tracking-wider text-brand">
+        <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
           {label}
         </p>
         {Icon && <Icon size={12} strokeWidth={2.25} className="text-success" />}
       </div>
       <p
         className={cn(
-          "mt-1 font-ui text-[18px] font-bold tabular-nums",
+          "mt-1 font-ui text-[22px] font-bold tabular-nums leading-tight",
           good ? "text-success" : "text-neutral-900",
         )}
       >
         {value}
       </p>
-      <p className="text-[9px] text-neutral-500">{hint}</p>
-    </div>
+      <p className="text-[10px] text-neutral-500">{hint}</p>
+    </Card>
   );
 }

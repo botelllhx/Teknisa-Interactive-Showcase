@@ -717,16 +717,24 @@ function CartView({
           <span className="font-display text-[13px] font-bold text-neutral-800">
             Total
           </span>
-          <span className="font-display text-[16px] font-bold text-brand tabular-nums">
+          <span className="font-display text-[18px] font-bold text-brand tabular-nums">
             R$ {subtotal.toFixed(2).replace(".", ",")}
           </span>
         </div>
         <motion.button
           type="button"
-          whileTap={{ scale: 0.98 }}
-          className="mt-2 w-full rounded-md bg-brand py-2.5 text-center font-display text-[12px] font-bold text-white shadow-brand"
+          whileTap={entries.length > 0 ? { scale: 0.98 } : undefined}
+          disabled={entries.length === 0 || subtotal === 0}
+          className={cn(
+            "mt-2 w-full rounded-md py-2.5 text-center font-display text-[12px] font-bold transition-colors",
+            entries.length === 0 || subtotal === 0
+              ? "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+              : "bg-brand text-white shadow-brand hover:bg-brand-light",
+          )}
         >
-          Enviar para a cozinha
+          {entries.length === 0
+            ? "Adicione itens primeiro"
+            : "Enviar para a cozinha"}
         </motion.button>
         <button
           type="button"

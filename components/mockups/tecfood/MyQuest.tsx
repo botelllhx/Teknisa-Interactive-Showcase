@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
+import { Badge } from "@/components/ui/shadcn";
 
 interface MyQuestProps {
   step: number;
@@ -195,10 +196,10 @@ function Header() {
           </p>
         </div>
       </div>
-      <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-success">
+      <Badge variant="success">
         <span className="h-1.5 w-1.5 rounded-full bg-success" />
         Aberto
-      </span>
+      </Badge>
     </div>
   );
 }

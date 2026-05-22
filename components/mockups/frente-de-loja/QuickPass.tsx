@@ -631,7 +631,7 @@ function CartView({
             <span className="font-ui text-[13px] font-bold text-neutral-800">
               Total
             </span>
-            <span className="font-ui text-[18px] font-bold text-brand tabular-nums">
+            <span className="font-ui text-[20px] font-bold text-brand tabular-nums">
               R$ {total.toFixed(2).replace(".", ",")}
             </span>
           </div>
@@ -639,10 +639,16 @@ function CartView({
         <motion.button
           type="button"
           data-tour="qp-checkout"
-          whileTap={{ scale: 0.98 }}
-          className="mt-2 w-full rounded-md bg-brand py-3 text-center font-ui text-[13px] font-bold text-white shadow-brand"
+          whileTap={entries.length > 0 ? { scale: 0.98 } : undefined}
+          disabled={entries.length === 0 || total === 0}
+          className={cn(
+            "mt-2 w-full rounded-md py-3 text-center font-ui text-[13px] font-bold transition-colors",
+            entries.length === 0 || total === 0
+              ? "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+              : "bg-brand text-white shadow-brand hover:bg-brand-light",
+          )}
         >
-          Ir para pagamento
+          {entries.length === 0 ? "Adicione um item ao carrinho" : "Ir para pagamento"}
         </motion.button>
       </div>
     </motion.div>
@@ -754,10 +760,18 @@ function PaymentView({
 
               <motion.button
                 type="button"
-                whileTap={{ scale: 0.98 }}
-                className="mt-4 w-full rounded-md bg-brand py-3 text-center font-ui text-[13px] font-bold text-white shadow-brand"
+                whileTap={total > 0 ? { scale: 0.98 } : undefined}
+                disabled={total === 0}
+                className={cn(
+                  "mt-4 w-full rounded-md py-3 text-center font-ui text-[13px] font-bold transition-colors",
+                  total === 0
+                    ? "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+                    : "bg-brand text-white shadow-brand hover:bg-brand-light",
+                )}
               >
-                Pagar R$ {total.toFixed(2).replace(".", ",")}
+                {total > 0
+                  ? `Pagar R$ ${total.toFixed(2).replace(".", ",")}`
+                  : "Sem itens para pagar"}
               </motion.button>
             </motion.div>
           ) : (
@@ -788,10 +802,16 @@ function PaymentView({
               </motion.button>
               <motion.button
                 type="button"
-                whileTap={{ scale: 0.98 }}
-                className="mt-1.5 w-full rounded-md bg-brand py-3 text-center font-ui text-[13px] font-bold text-white shadow-brand"
+                whileTap={total > 0 ? { scale: 0.98 } : undefined}
+                disabled={total === 0}
+                className={cn(
+                  "mt-1.5 w-full rounded-md py-3 text-center font-ui text-[13px] font-bold transition-colors",
+                  total === 0
+                    ? "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+                    : "bg-brand text-white shadow-brand hover:bg-brand-light",
+                )}
               >
-                Já paguei
+                {total > 0 ? "Já paguei" : "Sem itens para pagar"}
               </motion.button>
             </motion.div>
           )}

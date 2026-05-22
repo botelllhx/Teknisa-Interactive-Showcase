@@ -240,7 +240,14 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
       <StatusBar />
 
       <AnimatePresence>
-        {completed && <SuccessOverlay total={total} />}
+        {completed && (
+          <SuccessOverlay
+            total={total}
+            paymentLabel={
+              selectedPayment ? PAYMENT_LABEL[selectedPayment] : "PIX"
+            }
+          />
+        )}
       </AnimatePresence>
     </div>
   );
@@ -330,7 +337,7 @@ function ComandaPanel({
     <aside className="flex flex-col border-r border-neutral-200 bg-white">
       <div className="border-b border-neutral-200 bg-[#eef0f7] px-2.5 py-1">
         <p className="font-mono text-[10px] tabular-nums text-neutral-600">
-          📅 01/01/2025 — 17:32:00
+          01/01/2025 · 17:32:00
         </p>
       </div>
 
@@ -682,7 +689,13 @@ function StatusBar() {
   );
 }
 
-function SuccessOverlay({ total }: { total: number }) {
+function SuccessOverlay({
+  total,
+  paymentLabel,
+}: {
+  total: number;
+  paymentLabel: string;
+}) {
   return (
     <motion.div
       data-tour="pdv-receipt"
@@ -709,11 +722,11 @@ function SuccessOverlay({ total }: { total: number }) {
           <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
             Total pago
           </p>
-          <p className="font-display text-[26px] font-bold text-success tabular-nums">
+          <p className="font-display text-[28px] font-bold text-success tabular-nums">
             R$ {total.toFixed(2).replace(".", ",")}
           </p>
           <p className="mt-1 text-[10px] text-neutral-500">
-            PIX · aprovado em 2s
+            {paymentLabel} · aprovado em 2s
           </p>
         </div>
       </motion.div>

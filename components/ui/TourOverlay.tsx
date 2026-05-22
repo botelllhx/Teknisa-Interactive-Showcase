@@ -135,9 +135,9 @@ function SpotlightRing({ geometry }: { geometry: TargetGeometry }) {
 }
 
 /**
- * Draws a soft S-curve connector from the tooltip edge to the spotlight
- * ring on the target. Uses an SVG with a quadratic Bézier path so the line
- * reaches the element even when the tooltip is parked outside the device.
+ * Draws a straight line from the tooltip edge toward the spotlight ring on
+ * the target, with a small dot at the target end. Stays outside the ring so
+ * it never covers the highlighted element.
  */
 function Connector({ geometry }: { geometry: TargetGeometry }) {
   if (typeof window === "undefined") return null;
@@ -150,27 +150,19 @@ function Connector({ geometry }: { geometry: TargetGeometry }) {
   const pos = computePosition(geometry.rect, geometry.frameRect);
   const start = tooltipEdgePoint(pos, targetCx, targetCy);
 
-  // Aim for a point just outside the spotlight ring edge instead of dead center
   const dx = targetCx - start.x;
   const dy = targetCy - start.y;
   const distance = Math.hypot(dx, dy);
   if (distance < 24) return null;
+
+  // Stop just outside the spotlight ring so the line doesn't enter the target
   const ringRadius =
-    Math.max(geometry.rect.width, geometry.rect.height) / 2 + SPOTLIGHT_PADDING + 4;
+    Math.max(geometry.rect.width, geometry.rect.height) / 2 +
+    SPOTLIGHT_PADDING +
+    6;
   const t = Math.max(0, 1 - ringRadius / distance);
   const endX = start.x + dx * t;
   const endY = start.y + dy * t;
-
-  // Control point: nudged perpendicular to add a gentle curve
-  const midX = (start.x + endX) / 2;
-  const midY = (start.y + endY) / 2;
-  const perpX = -dy / (distance || 1);
-  const perpY = dx / (distance || 1);
-  const curveOffset = Math.min(40, distance * 0.12);
-  const ctrlX = midX + perpX * curveOffset;
-  const ctrlY = midY + perpY * curveOffset;
-
-  const path = `M ${start.x} ${start.y} Q ${ctrlX} ${ctrlY} ${endX} ${endY}`;
 
   return (
     <svg
@@ -180,22 +172,11 @@ function Connector({ geometry }: { geometry: TargetGeometry }) {
       style={{ zIndex: 9999 }}
       aria-hidden
     >
-      <defs>
-        <marker
-          id="tour-arrow"
-          viewBox="0 0 10 10"
-          refX="8"
-          refY="5"
-          markerWidth="6"
-          markerHeight="6"
-          orient="auto-start-reverse"
-        >
-          <path d="M 0 0 L 10 5 L 0 10 z" fill="#020788" />
-        </marker>
-      </defs>
-      <motion.path
-        d={path}
-        fill="none"
+      <motion.line
+        x1={start.x}
+        y1={start.y}
+        x2={endX}
+        y2={endY}
         stroke="#020788"
         strokeWidth={2.5}
         strokeLinecap="round"
@@ -203,7 +184,31 @@ function Connector({ geometry }: { geometry: TargetGeometry }) {
         initial={{ pathLength: 0, opacity: 0 }}
         animate={{ pathLength: 1, opacity: 0.85 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        markerEnd="url(#tour-arrow)"
+      />
+      <motion.circle
+        cx={endX}
+        cy={endY}
+        r={6}
+        fill="#020788"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.25, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        style={{ transformOrigin: `${endX}px ${endY}px` }}
+      />
+      <motion.circle
+        cx={endX}
+        cy={endY}
+        r={6}
+        fill="#020788"
+        initial={{ scale: 1, opacity: 0.6 }}
+        animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }}
+        transition={{
+          duration: 1.6,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 0.3,
+        }}
+        style={{ transformOrigin: `${endX}px ${endY}px` }}
       />
     </svg>
   );

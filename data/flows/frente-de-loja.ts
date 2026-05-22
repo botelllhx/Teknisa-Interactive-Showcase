@@ -15,6 +15,83 @@ const fmtItemList = (items?: unknown): string => {
   return `${list.length} itens (${list.reduce((s, i) => s + i.qty, 0)} unidades)`;
 };
 
+// ===== Retail Intelligence (IA · Tendência 2026) ========================
+export const retailIntelligenceFlow: TourStep[] = [
+  {
+    id: "executive",
+    targetSelector: '[data-tour="ri-executive"]',
+    placement: "bottom",
+    title: "Resumo executivo da unidade",
+    description:
+      "A IA lê 24 indicadores em tempo real e devolve um resumo do que está acontecendo na unidade hoje, com contagem de oportunidades, riscos e alertas.",
+    actionLabel: "Continuar",
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "kpis",
+    targetSelector: '[data-tour="ri-kpis"]',
+    placement: "bottom",
+    title: "KPIs com semáforo automático",
+    description:
+      "CMV, margem, giro, ticket, vendas e contas vencidas. Cada cartão acende verde, amarelo ou vermelho conforme o desvio em relação à meta.",
+    actionLabel: "Continuar",
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "priorities",
+    targetSelector: '[data-tour="ri-priorities"]',
+    placement: "top",
+    title: (live) =>
+      typeof live.riUrgenteCount === "number"
+        ? `${live.riUrgenteCount} urgentes · ${live.riOportunidadeCount ?? 0} oportunidades`
+        : "Prioridades de hoje",
+    description:
+      "Cards organizados por prioridade: Urgente, Oportunidade, Atenção, Estratégico. Toque em um card para ver causa, impacto, ação recomendada e simular.",
+    requiresInteraction: true,
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "simular",
+    targetSelector: '[data-tour="ri-sim-button"]',
+    placement: "top",
+    title: "Simulação de impacto",
+    description:
+      "Toque em Simular impacto para ver o que acontece com margem, volume e receita se você aceitar a recomendação da IA. Tudo calculado nos dados reais.",
+    actionLabel: "Continuar",
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "tab-eng",
+    targetSelector: '[data-tour="ri-tab-eng"]',
+    placement: "bottom",
+    title: "Engenharia de cardápio",
+    description:
+      "Toque na aba Engenharia de cardápio para abrir a matriz Popularidade × Margem com as 4 estratégias: Estrela, Burro de carga, Quebra-cabeça, Cachorro.",
+    requiresInteraction: true,
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "tab-copilot",
+    targetSelector: '[data-tour="ri-tab-copilot"]',
+    placement: "bottom",
+    title: "Copiloto analítico",
+    description:
+      "Toque em Copiloto. Em vez de digitar, escolha perguntas pré-prontas como “Por que meu CMV subiu?” e a IA responde com insights e ação recomendada.",
+    requiresInteraction: true,
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "quick-q",
+    targetSelector: '[data-tour="ri-quick-questions"]',
+    placement: "top",
+    title: "Pergunte com um toque",
+    description:
+      "4 perguntas comerciais comuns. Toque em uma para ver a IA cruzando dados ao vivo e respondendo com headline, métricas e ação recomendada.",
+    actionLabel: "Concluir",
+    companions: ["MiniDashboard"],
+  },
+];
+
 // ===== TAA ==============================================================
 // O TAA tem dois temas no topo (Restaurante Central e Astrobox) que demonstram
 // como o mesmo totem se adapta visualmente ao comércio do cliente. O tour

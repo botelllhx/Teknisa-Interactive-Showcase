@@ -23,6 +23,11 @@ function lazy(loader: () => Promise<{ default: ComponentType<MockupProps> }>) {
 }
 
 const MOCKUPS: Record<string, ComponentType<MockupProps>> = {
+  "retail-intelligence": lazy(() =>
+    import("./frente-de-loja/RetailIntelligence").then((m) => ({
+      default: m.RetailIntelligenceMockup,
+    })),
+  ),
   "pdv-novo": lazy(() =>
     import("./frente-de-loja/PDVNovo").then((m) => ({ default: m.PDVNovoMockup })),
   ),

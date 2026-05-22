@@ -28,7 +28,11 @@ export type CompanionType =
   | "CustomerReceiptPhone"
   | "RestaurantQueueBoard";
 
-export type SolutionBadge = "IA" | "Em breve" | "Reforma Tributária";
+export type SolutionBadge =
+  | "IA"
+  | "Em breve"
+  | "Reforma Tributária"
+  | "Tendência 2026";
 
 export type TourPlacement =
   | "top"
@@ -99,7 +103,14 @@ export const segments: Segment[] = [
     tagline: "Vendas e atendimento em qualquer ponto de contato",
     icon: "Monitor",
     color: "#020788",
-    solutions: ["taa", "pdv-novo", "smart-pos", "cardapio-digital", "quickpass"],
+    solutions: [
+      "retail-intelligence",
+      "taa",
+      "pdv-novo",
+      "smart-pos",
+      "cardapio-digital",
+      "quickpass",
+    ],
   },
   {
     id: "tecfood",
@@ -185,6 +196,20 @@ export const segments: Segment[] = [
 
 export const solutions: Solution[] = [
   // Frente de Loja
+  {
+    id: "retail-intelligence",
+    segment: "frente-de-loja",
+    name: "Retail Intelligence",
+    tagline: "IA que vira dados em decisão",
+    description:
+      "Camada de inteligência que cruza vendas, margem, CMV, estoque, contas e mix para transformar indicadores em ações práticas: o que reajustar, o que destacar, onde há risco e o que priorizar agora.",
+    device: "desktop",
+    icon: "BrainCircuit",
+    tags: ["IA", "Recomendações", "Margem"],
+    badges: ["IA", "Tendência 2026"],
+    companions: ["MiniDashboard"],
+    status: "ready",
+  },
   {
     id: "taa",
     segment: "frente-de-loja",

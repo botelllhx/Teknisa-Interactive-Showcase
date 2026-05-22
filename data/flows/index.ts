@@ -1,5 +1,6 @@
 import type { TourStep } from "../solutions";
 import {
+  retailIntelligenceFlow,
   taaFlow,
   pdvNovoFlow,
   smartPosFlow,
@@ -32,6 +33,7 @@ import {
 import { crmPremiumFlow } from "./crm";
 
 export const flows: Record<string, TourStep[]> = {
+  "retail-intelligence": retailIntelligenceFlow,
   taa: taaFlow,
   "pdv-novo": pdvNovoFlow,
   "smart-pos": smartPosFlow,

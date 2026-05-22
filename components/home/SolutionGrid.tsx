@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, FileText } from "lucide-react";
+import { ArrowRight, Sparkles, FileText, Rocket } from "lucide-react";
 import {
   getSolutionsBySegment,
   segmentsById,
@@ -141,6 +141,20 @@ function SolutionBadge({ label }: { label: string }) {
       <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2.5 py-1 text-caption font-semibold uppercase tracking-wider text-warning">
         <FileText size={12} strokeWidth={2.5} />
         Reforma 2026
+      </span>
+    );
+  }
+  if (label === "Tendência 2026") {
+    return (
+      <span
+        className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-caption font-semibold uppercase tracking-wider text-white"
+        style={{
+          background:
+            "linear-gradient(135deg, #020788 0%, #6b21a8 60%, #d946ef 100%)",
+        }}
+      >
+        <Rocket size={12} strokeWidth={2.5} />
+        Tendência 2026
       </span>
     );
   }

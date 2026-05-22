@@ -27,6 +27,7 @@ import {
   TrendingUp,
   ShoppingBasket,
   Briefcase,
+  BrainCircuit,
   type LucideIcon,
 } from "lucide-react";
 
@@ -57,6 +58,7 @@ const ICONS: Record<string, LucideIcon> = {
   TrendingUp,
   ShoppingBasket,
   Briefcase,
+  BrainCircuit,
 };
 
 interface IconProps {

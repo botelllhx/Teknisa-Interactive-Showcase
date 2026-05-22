@@ -175,8 +175,12 @@ export function CRMPremiumMockup({ step }: CRMPremiumProps) {
   const [history, setHistory] = useState<CashbackEntry[]>(HISTORY_INITIAL);
   const [notificationVisible, setNotificationVisible] = useState(false);
 
-  // Tour-driven screen transitions (auto-open store at step 1, etc.)
-  // Only triggers on step entry, doesn't fight user back actions.
+  // Tour-driven screen transitions. Only triggers on step entry, doesn't
+  // fight user back actions (the effect ignores other state changes).
+  //
+  // Step 5 is "push": SuccessOverlay is still celebrating + the toast
+  // slides in. We must NOT close the store/checkout here — that would kill
+  // the celebration. Only at step 6 (histórico) do we navigate to Saldo.
   useEffect(() => {
     if (step === 1) {
       setOpenStore(null);
@@ -184,8 +188,7 @@ export function CRMPremiumMockup({ step }: CRMPremiumProps) {
     } else if (step === 2) {
       setOpenStore(STORES[0]);
       setCheckoutStage("idle");
-    } else if (step >= 5) {
-      // After success step, navigate to history tab
+    } else if (step >= 6) {
       setTab("saldo");
       setOpenStore(null);
       setCheckoutStage("idle");
@@ -1138,7 +1141,7 @@ function PushNotification({
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: -80, opacity: 0 }}
       transition={{ type: "spring", stiffness: 220, damping: 22 }}
-      className="absolute inset-x-4 top-4 z-60 flex items-start gap-2.5 overflow-hidden rounded-xl p-3 backdrop-blur"
+      className="absolute inset-x-4 top-4 z-[60] flex items-start gap-2.5 overflow-hidden rounded-xl p-3 backdrop-blur"
       style={{
         background: "rgba(26,29,41,0.95)",
         border: `1px solid ${COLORS.amber}40`,

@@ -168,13 +168,17 @@ export function ApproveMockup({ step }: ApproveProps) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [items, setItems] = useState<Request[]>(REQUESTS);
 
-  // Sync screen with tour step: step 2 onwards = detail screen open
+  // Open the detail screen automatically when the tour ENTERS the detail
+  // step (step === 2). We only react to step changes — not to openId —
+  // so the user can still close the detail manually with the back arrow
+  // without the effect immediately reopening it.
   useEffect(() => {
-    if (step >= 2 && !openId) {
+    if (step === 2) {
       const firstPending = items.find((r) => r.status === "pendente");
       if (firstPending) setOpenId(firstPending.id);
     }
-  }, [step, openId, items]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
 
   const list = useMemo(
     () => items.filter((r) => r.status === tab),

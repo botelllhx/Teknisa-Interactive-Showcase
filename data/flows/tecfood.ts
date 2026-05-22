@@ -27,9 +27,8 @@ export const cardapioInteligenteFlow: TourStep[] = [
     placement: "right",
     title: "Sugestão de prato pela IA",
     description:
-      "Toque em Sugerir com IA para a IA cruzar 240 pratos, custo e perfil nutricional do dia. O loader pulsante mostra que ela está raciocinando.",
-    requiresInteraction: true,
-    actionLabel: "Sugerir com IA",
+      "Toque em Sugerir com IA na guarnição. O loader pulsante mostra a IA cruzando 240 pratos, custo e perfil nutricional do dia. Aplique uma sugestão e toque em Continuar.",
+    actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },
   {

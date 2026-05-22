@@ -62,8 +62,8 @@ const COMPANION_LAYOUT: Record<
   mercadum: { right: ["MiniDashboard"] },
   "app-comercial": { right: ["MiniDashboard"] },
   "crm-premium": { right: ["MiniDashboard"] },
-  myquest: {},
-  mymenu: { right: ["OrderTicket"] },
+  myquest: { right: ["RestaurantQueueBoard"] },
+  mymenu: { right: ["MiniDashboard"] },
 };
 
 function distributeCompanions(

@@ -125,11 +125,18 @@ body.presentation-mode * {
   }
 }
 
-/* TV touch readability: zoom up the mockup content so text designed at
-   phone-screen scale (10-14px) renders large enough on a 55-75" TV at
-   2m of viewing distance. zoom keeps the layout intact (no clipping)
-   and getBoundingClientRect reports the zoomed bounds, which keeps the
-   tour spotlight and tooltip positioning correct. */
+/* TV touch readability: scale the mockup content up by 1.2 so text
+   designed at phone-screen scale (10-14px) renders large enough on a
+   55-75" TV at 2m of viewing distance.
+   We use `transform: scale` with a compensating width/height (1/1.2 =
+   83.333%) instead of `zoom`. This way:
+   - the wrapper's layout box stays inside the device bezel (no
+     clipping at the edges)
+   - getBoundingClientRect reports the scaled bounds (correct for the
+     tour spotlight positioning) */
 .mockup-zoom {
-  zoom: 1.2;
+  transform: scale(1.2);
+  transform-origin: top left;
+  width: 83.3333%;
+  height: 83.3333%;
 }

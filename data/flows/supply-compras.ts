@@ -36,7 +36,7 @@ export const mercadumFlow: TourStep[] = [
         : "Tabela comparativa por produto",
     description:
       "Cada linha mostra Qntd, Valor objetivo, Última cotação, Valor cotação atual, Posição na disputa, Variação e a Menor cotação do marketplace. Selecione produtos para ações em massa.",
-    actionLabel: "Abrir negociação",
+    actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },
   {

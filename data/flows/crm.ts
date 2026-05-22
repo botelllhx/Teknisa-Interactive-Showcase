@@ -37,8 +37,8 @@ export const crmPremiumFlow: TourStep[] = [
     placement: "right",
     title: "Toque para abrir o parceiro",
     description:
-      "Cada parceiro tem foto, avaliação, distância e o cashback ativo. Toque no card do Kharina para ver as promoções.",
-    requiresInteraction: true,
+      "Toque no card do Kharina. O cliente vê promoções com o Premium Club, abas Cashback/Promoções/Sobre e banner do mês. Toque em Continuar quando terminar.",
+    actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },
   {
@@ -57,7 +57,7 @@ export const crmPremiumFlow: TourStep[] = [
     placement: "right",
     title: "Detalhamento do cashback",
     description:
-      "Toque em uma movimentação para ver o estabelecimento, valor da compra, cashback recebido e validade. Bottom sheet com tudo o que o cliente precisa.",
+      "Toque em uma movimentação para abrir o bottom sheet com estabelecimento, valor da compra, cashback recebido e validade. Toque em Concluir quando terminar.",
     actionLabel: "Concluir",
     companions: ["MiniDashboard"],
   },

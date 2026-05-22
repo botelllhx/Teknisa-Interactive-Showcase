@@ -25,6 +25,8 @@ export interface TourLiveState {
   couponCode?: string;
   couponApplied?: boolean;
   discountValue?: number;
+  // White-label / branding (used by TAA's commerce skin toggle)
+  skinName?: string;
   // Any other ad-hoc keys
   [key: string]: unknown;
 }

@@ -10,7 +10,6 @@ import {
   cardapioInteligenteFlow,
   myQuestFlow,
   myMenuFlow,
-  approveFlow,
   wasteControlFlow,
 } from "./tecfood";
 import {
@@ -25,7 +24,11 @@ import {
   analisePreditivaFlow,
   assistenteRegrasFlow,
 } from "./pessoas-rh";
-import { mercadumFlow, appComercialFlow } from "./supply-compras";
+import {
+  mercadumFlow,
+  appComercialFlow,
+  approveFlow,
+} from "./supply-compras";
 import { crmPremiumFlow } from "./crm";
 
 export const flows: Record<string, TourStep[]> = {
@@ -38,7 +41,6 @@ export const flows: Record<string, TourStep[]> = {
   "cardapio-inteligente": cardapioInteligenteFlow,
   myquest: myQuestFlow,
   mymenu: myMenuFlow,
-  approve: approveFlow,
   "waste-control": wasteControlFlow,
 
   "rotina-fiscal": rotinaFiscalFlow,
@@ -53,6 +55,7 @@ export const flows: Record<string, TourStep[]> = {
 
   mercadum: mercadumFlow,
   "app-comercial": appComercialFlow,
+  approve: approveFlow,
 
   "crm-premium": crmPremiumFlow,
 };

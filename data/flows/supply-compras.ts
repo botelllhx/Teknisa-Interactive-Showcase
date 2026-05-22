@@ -49,6 +49,56 @@ export const mercadumFlow: TourStep[] = [
   },
 ];
 
+export const approveFlow: TourStep[] = [
+  {
+    id: "pendentes",
+    targetSelector: '[data-tour="ap-pending-list"]',
+    placement: "right",
+    title: "Pendências centralizadas",
+    description:
+      "Cotações, contratos, pedidos de compra, todas as solicitações de aprovação em um único lugar, com prioridade automática.",
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "detalhe",
+    targetSelector: '[data-tour="ap-detail"]',
+    placement: "right",
+    title: "Detalhe com diff de alterações",
+    description:
+      "O que mudou, custo estimado, impacto operacional, gestor decide com contexto completo, não no escuro.",
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "comentar",
+    targetSelector: '[data-tour="ap-comment"]',
+    placement: "top",
+    title: "Comentário no histórico",
+    description:
+      "Justificativa de aprovação fica registrada para auditoria. Solicitante recebe contexto, não apenas 'aprovado'.",
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "aprovar",
+    targetSelector: '[data-tour="ap-approve-button"]',
+    placement: "top",
+    title: "Aprovação em um toque",
+    description:
+      "Decisão entra em vigor imediatamente. Aprovação assíncrona, gestor não precisa estar online em horário comercial.",
+    requiresInteraction: true,
+    actionLabel: "Aprovar",
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "notificado",
+    targetSelector: '[data-tour="ap-notified"]',
+    placement: "top",
+    title: "Solicitante notificado",
+    description:
+      "Push, e-mail e dashboard atualizam em tempo real. Operação destrava sem follow-up manual.",
+    companions: ["MiniDashboard", "SimulatedNotification"],
+  },
+];
+
 export const appComercialFlow: TourStep[] = [
   {
     id: "dashboard",

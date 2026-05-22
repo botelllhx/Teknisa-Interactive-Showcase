@@ -50,9 +50,6 @@ const MOCKUPS: Record<string, ComponentType<MockupProps>> = {
   mymenu: lazy(() =>
     import("./tecfood/MyMenu").then((m) => ({ default: m.MyMenuMockup })),
   ),
-  approve: lazy(() =>
-    import("./tecfood/Approve").then((m) => ({ default: m.ApproveMockup })),
-  ),
   "waste-control": lazy(() =>
     import("./tecfood/WasteControl").then((m) => ({ default: m.WasteControlMockup })),
   ),
@@ -102,6 +99,9 @@ const MOCKUPS: Record<string, ComponentType<MockupProps>> = {
     import("./supply-compras/AppComercial").then((m) => ({
       default: m.AppComercialMockup,
     })),
+  ),
+  approve: lazy(() =>
+    import("./supply-compras/Approve").then((m) => ({ default: m.ApproveMockup })),
   ),
 
   "crm-premium": lazy(() =>

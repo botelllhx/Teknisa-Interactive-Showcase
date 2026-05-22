@@ -49,7 +49,7 @@ const COMPANION_LAYOUT: Record<
   },
   // Other groups (kept as-is until their V6 pass)
   approve: { right: ["MiniDashboard"] },
-  "cardapio-inteligente": { right: ["KitchenDisplay"] },
+  "cardapio-inteligente": { right: ["MiniDashboard"] },
   "waste-control": { right: ["StockIndicator"] },
   "rotina-fiscal": { right: ["FiscalBadge"] },
   "rotina-rastreabilidade": { right: ["StockIndicator"] },

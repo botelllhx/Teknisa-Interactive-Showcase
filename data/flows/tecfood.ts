@@ -1,241 +1,258 @@
 import type { TourStep } from "../solutions";
+import { brl } from "../../lib/tourState";
 
+const fmtMoney = (v?: number) =>
+  typeof v === "number" ? brl(v) : "R$ 0,00";
+
+// ===== Cardápio Inteligente ==============================================
+// Refeito com badge IA e loader pulsante. Tooltips referenciam o dia ativo
+// e o estado do workflow (aprovação / publicação).
 export const cardapioInteligenteFlow: TourStep[] = [
   {
-    id: "planejamento",
+    id: "semana",
     targetSelector: '[data-tour="ci-week-grid"]',
-    placement: "right",
-    title: "Planejamento semanal centralizado",
+    placement: "bottom",
+    title: (live) =>
+      live.activeDayLabel
+        ? `Planejando ${live.activeDayLabel}`
+        : "Planejamento semanal",
     description:
-      "Cardápio de toda a semana em uma única visão. Edite por dia, copie semanas anteriores, padronize por unidade.",
+      "Cada aba é um dia da semana com a barra de pratos preenchidos. Toque em qualquer dia para alternar o cardápio sem perder o que já foi montado.",
+    actionLabel: "Continuar",
+    companions: ["MiniDashboard"],
   },
   {
-    id: "adicionar-prato",
+    id: "ia",
     targetSelector: '[data-tour="ci-add-dish"]',
     placement: "right",
-    title: "Adicionar prato em um toque",
+    title: "Sugestão de prato pela IA",
     description:
-      "Banco de pratos já cadastrados, selecione, ajuste porção e o cardápio é atualizado em tempo real.",
+      "Toque em Sugerir com IA para a IA cruzar 240 pratos, custo e perfil nutricional do dia. O loader pulsante mostra que ela está raciocinando.",
     requiresInteraction: true,
-    actionLabel: "Adicione um prato",
+    actionLabel: "Sugerir com IA",
+    companions: ["MiniDashboard"],
   },
   {
     id: "nutricional",
     targetSelector: '[data-tour="ci-nutrition"]',
     placement: "left",
-    title: "Análise nutricional automática",
-    description:
-      "Calorias, carboidratos, fibras, calculados em tempo real. Cardápio sai do planejamento já dentro das metas nutricionais.",
-    companions: ["KitchenDisplay"],
+    title: (live) =>
+      live.dayBalanced
+        ? "Cardápio balanceado"
+        : "Análise nutricional automática",
+    description: (live) =>
+      live.dayBalanced
+        ? `Calorias, proteína, carboidratos e fibras dentro das metas. Custo médio por refeição: ${fmtMoney(live.dayTotalsCost as number)}.`
+        : `Calorias atuais ${(live.dayTotalsCalories as number) ?? 0} kcal. Os indicadores acendem em verde quando o dia fica dentro das metas. Adicione/troque pratos para chegar lá.`,
+    actionLabel: "Continuar",
+    companions: ["MiniDashboard"],
   },
   {
     id: "aprovacao",
     targetSelector: '[data-tour="ci-approve"]',
-    placement: "left",
-    title: "Workflow de aprovação integrado",
+    placement: "bottom",
+    title: "Aprovação da nutricionista",
     description:
-      "Nutricionista valida, gestor aprova, unidades recebem. O fluxo todo dentro da plataforma, sem planilhas paralelas.",
-    companions: ["KitchenDisplay"],
+      "Toque em Aprovar nutricionista para mandar o cardápio para o workflow oficial. O passo de publicação só destrava depois disso.",
+    requiresInteraction: true,
+    companions: ["MiniDashboard"],
   },
   {
     id: "publicado",
     targetSelector: '[data-tour="ci-publish"]',
-    placement: "left",
-    title: "Publicado para todas as unidades",
+    placement: "bottom",
+    title: "Publicar para as unidades",
     description:
-      "Cardápio aprovado já chega no MyMenu de cada funcionário. Operação alinhada, sem atraso.",
-    companions: ["KitchenDisplay", "SimulatedNotification"],
+      "Toque em Publicar nas unidades. O cardápio aprovado vai direto para o MyMenu de cada funcionário e para o painel das cozinhas. Sem planilha paralela.",
+    requiresInteraction: true,
+    companions: ["MiniDashboard"],
   },
 ];
 
+// ===== MyQuest (TAA de reservas corporativas) ============================
 export const myQuestFlow: TourStep[] = [
   {
-    id: "check-in",
+    id: "identifica",
     targetSelector: '[data-tour="mq-checkin"]',
-    placement: "top",
-    title: "Entre na fila virtual",
+    placement: "right",
+    title: "Identifique-se no totem",
     description:
-      "Sem precisar estar no local: o funcionário entra na fila pelo celular e recebe o tempo estimado real.",
+      "MyQuest é o totem de autoatendimento dos refeitórios corporativos. Toque para começar como Mariana Costa (matrícula 28471).",
     requiresInteraction: true,
-    actionLabel: "Toque em entrar na fila",
+    companions: ["RestaurantQueueBoard"],
   },
   {
-    id: "posicao",
-    targetSelector: '[data-tour="mq-position"]',
-    placement: "bottom",
-    title: "Posição em tempo real",
+    id: "monta",
+    targetSelector: '[data-tour="mq-pick"]',
+    placement: "right",
+    title: "Monte seu prato",
     description:
-      "Anel central animado mostra a posição. Tempo estimado atualiza a cada chamada, sem ansiedade.",
+      "Cardápio do dia separado por prato principal, guarnição, salada e sobremesa. Toque nas opções para escolher.",
+    actionLabel: "Continuar",
+    companions: ["RestaurantQueueBoard"],
   },
   {
-    id: "chamada",
-    targetSelector: '[data-tour="mq-call"]',
-    placement: "bottom",
-    title: "Push quando for a vez",
-    description:
-      "Notificação no celular avisa quando chegar a hora, funcionário não perde tempo na fila física.",
-    companions: ["SimulatedNotification"],
+    id: "horario",
+    targetSelector: '[data-tour="mq-schedule"]',
+    placement: "left",
+    title: (live) =>
+      live.mqSelectedSlot
+        ? `Horário ${live.mqSelectedSlot} reservado`
+        : "Escolha o horário",
+    description: (live) =>
+      `As reservas mostram a lotação em tempo real. O sistema sugere ${live.mqSelectedSlot ?? "o horário com pico baixo"} para evitar a fila. Pode trocar quantas vezes quiser.`,
+    actionLabel: "Confirmar reserva",
+    companions: ["RestaurantQueueBoard"],
   },
   {
-    id: "confirmar",
+    id: "confirma",
     targetSelector: '[data-tour="mq-confirm"]',
     placement: "top",
-    title: "Confirme presença",
+    title: "Confirmar reserva",
     description:
-      "Ao chegar ao refeitório, um toque confirma. Quem não confirma libera a vaga para o próximo automaticamente.",
+      "Toque em Confirmar reserva. A senha é gerada na hora e o QR de acesso fica pronto para o refeitório.",
+    requiresInteraction: true,
+    companions: ["RestaurantQueueBoard"],
   },
   {
-    id: "avaliacao",
-    targetSelector: '[data-tour="mq-rating"]',
-    placement: "top",
-    title: "Avaliação rápida da refeição",
-    description:
-      "Comida, atendimento, higiene. Dados agregados viram input direto para o Cardápio Inteligente.",
+    id: "senha",
+    targetSelector: '[data-tour="mq-result"]',
+    placement: "left",
+    title: "Senha emitida",
+    description: (live) =>
+      `Senha ${live.mqPassword ?? "B247"} para o horário ${live.mqSelectedSlot ?? "12:30"}. Apresentar no totem do refeitório para liberar o acesso.`,
+    actionLabel: "Concluir",
+    companions: ["RestaurantQueueBoard"],
   },
 ];
 
+// ===== MyMenu (cardápio + reserva + opinião) ============================
 export const myMenuFlow: TourStep[] = [
   {
-    id: "cardapio-dia",
-    targetSelector: '[data-tour="mm-menu-list"]',
+    id: "abas",
+    targetSelector: '[data-tour="mm-tabs"]',
     placement: "bottom",
-    title: "Cardápio do dia no celular",
+    title: "Três pilares do MyMenu",
     description:
-      "Funcionário vê o cardápio antes de sair de casa. Filtra por restaurante e horário disponível.",
+      "Cardápio para ver o que vai ser servido em qualquer data, Reservar para garantir lugar, Opinião para feedback. Use as abas para alternar.",
+    actionLabel: "Continuar",
+    companions: ["MiniDashboard"],
   },
   {
-    id: "detalhe-prato",
-    targetSelector: '[data-tour="mm-dish-detail"]',
-    placement: "right",
-    title: "Composição nutricional transparente",
-    description:
-      "Foto, descrição, valores nutricionais e compatibilidade com restrições alimentares declaradas.",
+    id: "data",
+    targetSelector: '[data-tour="mm-date-picker"]',
+    placement: "bottom",
+    title: (live) =>
+      live.mmDate
+        ? `Cardápio de ${live.mmWeekday ?? "hoje"} ${live.mmDate}`
+        : "Cardápio por data",
+    description: (live) =>
+      `Use as setas ou as pílulas para navegar entre os dias. Destaque do dia: ${live.mmHighlight ?? "prato principal"}.`,
+    actionLabel: "Continuar",
+    companions: ["MiniDashboard"],
   },
   {
     id: "reservar",
     targetSelector: '[data-tour="mm-reserve"]',
+    placement: "left",
+    title: (live) =>
+      live.mmReservedSlot
+        ? `Reservado para ${live.mmReservedSlot}`
+        : "Reservar refeição",
+    description: (live) =>
+      live.mmReservedSlot
+        ? "Reserva confirmada e QR de acesso gerado. Apresente no totem do refeitório."
+        : "Cada horário mostra o pico esperado. O sistema sugere o slot mais tranquilo. Toque em um horário para reservar.",
+    actionLabel: "Ir para opinião",
+    companions: ["MiniDashboard"],
+  },
+  {
+    id: "feedback-tab",
+    targetSelector: '[data-tour="mm-tab-feedback"]',
     placement: "top",
-    title: "Reserva por horário",
+    title: "Sua opinião conta",
     description:
-      "Escolha do horário evita pico no refeitório. Capacidade gerenciada automaticamente.",
+      "A aba Opinião concentra elogios, reclamações e sugestões. Toque para entrar.",
     requiresInteraction: true,
-    actionLabel: "Confirme a reserva",
-    companions: ["OrderTicket"],
+    companions: ["MiniDashboard"],
   },
   {
-    id: "confirmar",
-    targetSelector: '[data-tour="mm-confirmed"]',
+    id: "enviar",
+    targetSelector: '[data-tour="mm-send-feedback"]',
     placement: "top",
-    title: "Reserva confirmada",
-    description:
-      "Lembrete automático antes do horário. Refeição garantida, refeitório não corre risco de sobrecarga.",
-    companions: ["OrderTicket", "SimulatedNotification"],
-  },
-  {
-    id: "qr",
-    targetSelector: '[data-tour="mm-qr"]',
-    placement: "top",
-    title: "QR de acesso ao refeitório",
-    description:
-      "Apresente no balcão e a refeição é registrada. Integração nativa com QuickPass para acesso liberado.",
-    companions: ["OrderTicket"],
+    title: (live) =>
+      live.mmFeedbackSent ? "Feedback enviado" : "Avalie + escolha tipo",
+    description: (live) =>
+      live.mmFeedbackSent
+        ? "Pronto. Sua opinião agora alimenta o Cardápio Inteligente para os próximos planejamentos."
+        : `Toque nas estrelas (${live.mmRating ?? 0}/5), escolha entre elogio, reclamação ou sugestão e selecione uma opção pré-pronta. Sem teclado.`,
+    actionLabel: "Concluir",
+    companions: ["MiniDashboard"],
   },
 ];
 
-export const approveFlow: TourStep[] = [
-  {
-    id: "pendentes",
-    targetSelector: '[data-tour="ap-pending-list"]',
-    placement: "right",
-    title: "Pendências centralizadas",
-    description:
-      "Cardápio, compra, escala extra, todas as solicitações de aprovação em um único lugar, com prioridade automática.",
-    companions: ["MiniDashboard"],
-  },
-  {
-    id: "detalhe",
-    targetSelector: '[data-tour="ap-detail"]',
-    placement: "right",
-    title: "Detalhe com diff de alterações",
-    description:
-      "O que mudou, custo estimado, impacto operacional, gestor decide com contexto completo, não no escuro.",
-    companions: ["MiniDashboard"],
-  },
-  {
-    id: "comentar",
-    targetSelector: '[data-tour="ap-comment"]',
-    placement: "top",
-    title: "Comentário no histórico",
-    description:
-      "Justificativa de aprovação fica registrada para auditoria. Solicitante recebe contexto, não apenas 'aprovado'.",
-    companions: ["MiniDashboard"],
-  },
-  {
-    id: "aprovar",
-    targetSelector: '[data-tour="ap-approve-button"]',
-    placement: "top",
-    title: "Aprovação em um toque",
-    description:
-      "Decisão entra em vigor imediatamente. Aprovação assíncrona, gestor não precisa estar online em horário comercial.",
-    requiresInteraction: true,
-    actionLabel: "Aprovar",
-    companions: ["MiniDashboard"],
-  },
-  {
-    id: "notificado",
-    targetSelector: '[data-tour="ap-notified"]',
-    placement: "top",
-    title: "Solicitante notificado",
-    description:
-      "Push, e-mail e dashboard atualizam em tempo real. Operação destrava sem follow-up manual.",
-    companions: ["MiniDashboard", "SimulatedNotification"],
-  },
-];
-
+// ===== WasteControl ======================================================
 export const wasteControlFlow: TourStep[] = [
   {
-    id: "registro",
-    targetSelector: '[data-tour="wc-item-list"]',
+    id: "tabs",
+    targetSelector: '[data-tour="wc-top-tabs"]',
+    placement: "bottom",
+    title: "Registrar e ver histórico",
+    description:
+      "Duas abas: Registros para criar uma medição agora, Histórico para auditar tudo o que já foi registrado e exportar para a supervisão.",
+    actionLabel: "Continuar",
+    companions: ["StockIndicator"],
+  },
+  {
+    id: "categoria",
+    targetSelector: '[data-tour="wc-kind-tabs"]',
+    placement: "bottom",
+    title: (live) =>
+      live.wcKindLabel
+        ? `Categoria ativa: ${live.wcKindLabel}`
+        : "Tipo de desperdício",
+    description:
+      "Sobra limpa (cuba), Resto ingesto (servido e não consumido), Produção (total) e Excesso (produzido além da meta). Cada categoria tem sua meta.",
+    actionLabel: "Continuar",
+    companions: ["StockIndicator"],
+  },
+  {
+    id: "prato",
+    targetSelector: '[data-tour="wc-form-prato"]',
     placement: "right",
-    title: "Sobras separadas por categoria",
+    title: (live) =>
+      live.wcPrato
+        ? `Registrando ${live.wcPrato}`
+        : "Escolha o prato",
     description:
-      "Selecione o item e abra a tela de pesagem. Operação simples para o copeiro registrar no fim do almoço.",
+      "Lista de pratos comuns como chips. Toca pra escolher, sem teclado. Quantidade ajusta com stepper + presets.",
+    actionLabel: "Continuar",
     companions: ["StockIndicator"],
   },
   {
-    id: "pesagem",
-    targetSelector: '[data-tour="wc-weighing"]',
-    placement: "right",
-    title: "Pesagem direto do tablet",
-    description:
-      "Display grande, leitura de balança integrada. Categorize entre sobra limpa e resto consumido.",
+    id: "registrar",
+    targetSelector: '[data-tour="wc-submit"]',
+    placement: "top",
+    title: (live) =>
+      live.wcAboveGoal
+        ? "Atenção: acima da meta"
+        : "Registrar agora",
+    description: (live) =>
+      live.wcAboveGoal
+        ? `Você está prestes a registrar ${live.wcQuantidade ?? 0} kg, acima da meta de ${live.wcKindLabel ?? "categoria"}. Um alerta será disparado ao gestor.`
+        : `Toque em Registrar ${(live.wcKindLabel as string)?.toLowerCase() ?? "agora"} para gravar a medição. Entra no histórico imediatamente.`,
+    requiresInteraction: true,
     companions: ["StockIndicator"],
   },
   {
-    id: "comparativo",
-    targetSelector: '[data-tour="wc-chart"]',
-    placement: "top",
-    title: "Comparativo com a meta",
-    description:
-      "Gráfico semanal mostra evolução. Meta diária visível para o gestor agir antes do problema escalar.",
-    companions: ["StockIndicator"],
-  },
-  {
-    id: "alerta",
-    targetSelector: '[data-tour="wc-alert"]',
-    placement: "top",
-    title: "Alerta de desvio",
-    description:
-      "Quando o desperdício passa da meta, alerta dispara. Gestor recebe push e o cardápio do dia seguinte é revisado.",
-    companions: ["StockIndicator", "SimulatedNotification"],
-  },
-  {
-    id: "relatorio",
-    targetSelector: '[data-tour="wc-report"]',
-    placement: "top",
-    title: "Relatório enviado à supervisão",
-    description:
-      "Dados consolidados, prontos para auditoria de sustentabilidade. Sem planilha, sem retrabalho.",
+    id: "historico",
+    targetSelector: '[data-tour="wc-top-tabs"]',
+    placement: "bottom",
+    title: (live) =>
+      `${live.wcHistoricoCount ?? 0} registros no histórico`,
+    description: (live) =>
+      `Total já medido: ${typeof live.wcTotalKg === "number" ? (live.wcTotalKg as number).toFixed(1) : "0"} kg na semana. Toque em Histórico para ver tudo, filtrar por tipo/serviço/data e exportar.`,
+    actionLabel: "Concluir",
     companions: ["StockIndicator"],
   },
 ];

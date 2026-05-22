@@ -214,7 +214,7 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
       <WindowBar />
       <Toolbar />
 
-      <main className="grid flex-1 grid-cols-[260px_1fr_240px] overflow-hidden">
+      <main className="grid flex-1 grid-cols-[260px_1fr_320px] overflow-hidden">
         <ComandaPanel
           cart={cart}
           totalQty={totalQty}
@@ -544,14 +544,14 @@ function CenterColumn({
 
 function FunctionKeysColumn() {
   return (
-    <aside className="flex flex-col gap-1 overflow-y-auto border-l border-neutral-200 bg-white p-1.5">
+    <aside className="grid grid-cols-2 gap-1 overflow-y-auto border-l border-neutral-200 bg-white p-1.5 content-start">
       {FUNCTION_KEYS.map((k) => {
         const style = KEY_STYLES[k.tone];
         return (
           <button
             key={k.label}
             type="button"
-            className="flex flex-col items-center justify-center rounded-md py-2 text-center font-display"
+            className="flex flex-col items-center justify-center rounded-md px-1 py-2 text-center font-display min-h-[44px]"
             style={{ background: style.bg }}
           >
             <span
@@ -561,7 +561,7 @@ function FunctionKeysColumn() {
               {k.label}
             </span>
             <span
-              className="text-[8px] font-medium opacity-70"
+              className="mt-0.5 text-[8px] font-medium opacity-70"
               style={{ color: style.text }}
             >
               {k.shortcut}

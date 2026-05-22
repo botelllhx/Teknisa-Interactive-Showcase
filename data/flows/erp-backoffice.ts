@@ -57,7 +57,7 @@ export const rotinaRastreabilidadeFlow: TourStep[] = [
     placement: "bottom",
     title: "Busca por lote",
     description:
-      "Digite o número do lote ou escaneie o código. O sistema entrega o histórico completo em segundos.",
+      "Toque na busca para localizar um lote pelo código. O sistema entrega o histórico completo em segundos.",
   },
   {
     id: "timeline",

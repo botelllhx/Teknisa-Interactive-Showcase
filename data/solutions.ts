@@ -207,7 +207,6 @@ export const solutions: Solution[] = [
     icon: "BrainCircuit",
     tags: ["IA", "Recomendações", "Margem"],
     badges: ["IA", "Tendência 2026"],
-    companions: ["MiniDashboard"],
     status: "ready",
   },
   {

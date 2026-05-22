@@ -214,7 +214,7 @@ export const assistenteRegrasFlow: TourStep[] = [
     placement: "bottom",
     title: "Descreva em linguagem natural",
     description:
-      "Diga em português o que precisa: 'quando funcionário fizer hora extra aos sábados, pagar 80% a mais'. A IA estrutura a regra.",
+      "A IA recebe um pedido em português, como 'quando funcionário fizer hora extra aos sábados, pagar 80% a mais', e estrutura a regra automaticamente.",
   },
   {
     id: "condicoes",

@@ -27,7 +27,6 @@ export const retailIntelligenceFlow: TourStep[] = [
     description:
       "O Retail Intelligence acompanha o dashboard em tempo real. Identificou que o CMV está acima do ideal e existem oportunidades no mix para recuperar margem. Toque em Analisar oportunidade para abrir o diagnóstico.",
     requiresInteraction: true,
-    companions: ["MiniDashboard"],
   },
   {
     id: "diagnostico",
@@ -37,7 +36,6 @@ export const retailIntelligenceFlow: TourStep[] = [
     description:
       "3 cards organizados por impacto: alto, oportunidade e baixo. Em vez de mostrar só números, o sistema classifica o que exige ação agora. Toque no card em foco para abrir a engenharia de cardápio.",
     requiresInteraction: true,
-    companions: ["MiniDashboard"],
   },
   {
     id: "matriz",
@@ -47,7 +45,6 @@ export const retailIntelligenceFlow: TourStep[] = [
     description:
       "Matriz Popularidade × Margem com 4 quadrantes. O Filé Parmegiana caiu no Quebra-cabeça (alta margem + médio giro). Toque no produto destacado para ver o detalhe e as recomendações da IA.",
     requiresInteraction: true,
-    companions: ["MiniDashboard"],
   },
   {
     id: "produto",
@@ -57,7 +54,6 @@ export const retailIntelligenceFlow: TourStep[] = [
     description:
       "A IA não para no diagnóstico. Ela sugere o que fazer: destacar no cardápio, melhorar foto e descrição, criar combo, treinar equipe, acompanhar conversão. Toque em Simular impacto.",
     requiresInteraction: true,
-    companions: ["MiniDashboard"],
   },
   {
     id: "simulacao",
@@ -67,7 +63,6 @@ export const retailIntelligenceFlow: TourStep[] = [
     description:
       "Cenário atual × cenário recomendado lado a lado. Se as vendas crescerem 12% mantendo 66% de margem, a contribuição do mix aumenta. Antes de aplicar, o gestor já vê o ganho estimado.",
     actionLabel: "Aplicar recomendação",
-    companions: ["MiniDashboard"],
   },
   {
     id: "plano",
@@ -77,7 +72,6 @@ export const retailIntelligenceFlow: TourStep[] = [
     description:
       "5 passos sequenciais para os próximos 7 dias: destaque no cardápio, foto, combo, monitoramento diário e reavaliação. Toque em Acompanhar resultado para iniciar o monitoramento.",
     requiresInteraction: true,
-    companions: ["MiniDashboard"],
   },
   {
     id: "monitor",
@@ -87,7 +81,6 @@ export const retailIntelligenceFlow: TourStep[] = [
     description:
       "A IA monitora venda, margem, popularidade e contribuição no mix para indicar se a recomendação está trazendo resultado. Do insight à decisão, sem análise manual.",
     actionLabel: "Concluir",
-    companions: ["MiniDashboard"],
   },
 ];
 

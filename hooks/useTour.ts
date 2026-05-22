@@ -5,6 +5,7 @@ import type { TourStep } from "@/data/solutions";
 
 export interface TargetGeometry {
   rect: DOMRect;
+  frameRect: DOMRect | null;
   borderRadius: number;
 }
 
@@ -81,7 +82,11 @@ export function useTour({
       const rect = el.getBoundingClientRect();
       const computed = window.getComputedStyle(el);
       const radius = parseFloat(computed.borderRadius) || 12;
-      setGeometry({ rect, borderRadius: radius });
+      const frameEl = document.querySelector(
+        "[data-tour-frame]",
+      ) as HTMLElement | null;
+      const frameRect = frameEl ? frameEl.getBoundingClientRect() : null;
+      setGeometry({ rect, frameRect, borderRadius: radius });
     };
 
     const scheduleMeasure = () => {

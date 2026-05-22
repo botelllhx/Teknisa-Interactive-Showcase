@@ -33,6 +33,17 @@ interface QuickPassProps {
   step: number;
 }
 
+interface Coupon {
+  code: string;
+  label: string;
+  pct: number;
+}
+
+const COUPONS: Coupon[] = [
+  { code: "FAN10", label: "Fã clube", pct: 0.1 },
+  { code: "EVENTO20", label: "Promo do dia", pct: 0.2 },
+];
+
 // QuickPass = fast-service web app for events / stadiums.
 // 4 views, 4 tour steps:
 //   step 0  catalog       (add items from vendor's menu)
@@ -87,8 +98,7 @@ const PRODUCT_BY_ID: Record<string, Product> = Object.fromEntries(
 
 export function QuickPassMockup({ step }: QuickPassProps) {
   const [cart, setCart] = useState<Record<string, number>>({});
-  const [coupon, setCoupon] = useState("");
-  const [couponApplied, setCouponApplied] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<"cartao" | "pix">("cartao");
 
   const subtotal = useMemo(
@@ -99,7 +109,7 @@ export function QuickPassMockup({ step }: QuickPassProps) {
       ),
     [cart],
   );
-  const discount = couponApplied ? subtotal * 0.1 : 0;
+  const discount = appliedCoupon ? subtotal * appliedCoupon.pct : 0;
   const total = subtotal - discount;
   const cartCount = Object.values(cart).reduce((s, q) => s + q, 0);
 
@@ -119,8 +129,8 @@ export function QuickPassMockup({ step }: QuickPassProps) {
       cartTotal: total,
       cartSubtotal: subtotal,
       discountValue: discount,
-      couponApplied,
-      couponCode: coupon,
+      couponApplied: appliedCoupon !== null,
+      couponCode: appliedCoupon?.code,
       paymentMethod,
       selectedItemName: lastName,
     });
@@ -130,8 +140,7 @@ export function QuickPassMockup({ step }: QuickPassProps) {
     total,
     subtotal,
     discount,
-    couponApplied,
-    coupon,
+    appliedCoupon,
     paymentMethod,
     patchLive,
   ]);
@@ -171,12 +180,10 @@ export function QuickPassMockup({ step }: QuickPassProps) {
               subtotal={subtotal}
               discount={discount}
               total={total}
-              coupon={coupon}
-              couponApplied={couponApplied}
+              appliedCoupon={appliedCoupon}
               onUpdateQty={updateQty}
               onRemove={removeItem}
-              onCouponChange={setCoupon}
-              onApplyCoupon={() => setCouponApplied(true)}
+              onApplyCoupon={setAppliedCoupon}
             />
           )}
           {step === 2 && (
@@ -433,23 +440,19 @@ function CartView({
   subtotal,
   discount,
   total,
-  coupon,
-  couponApplied,
+  appliedCoupon,
   onUpdateQty,
   onRemove,
-  onCouponChange,
   onApplyCoupon,
 }: {
   cart: Record<string, number>;
   subtotal: number;
   discount: number;
   total: number;
-  coupon: string;
-  couponApplied: boolean;
+  appliedCoupon: Coupon | null;
   onUpdateQty: (id: string, delta: number) => void;
   onRemove: (id: string) => void;
-  onCouponChange: (v: string) => void;
-  onApplyCoupon: () => void;
+  onApplyCoupon: (c: Coupon | null) => void;
 }) {
   const entries = Object.entries(cart);
 
@@ -545,41 +548,64 @@ function CartView({
           data-tour="qp-coupon"
           className="mx-3 mt-2 rounded-lg border border-dashed border-brand/30 bg-brand-ghost p-2.5"
         >
-          <div className="flex items-center gap-1.5 text-[11px] font-bold text-brand">
-            <Tag size={12} strokeWidth={2.25} />
-            CUPOM DE DESCONTO
+          <div className="flex items-center justify-between gap-1.5 text-[11px] font-bold text-brand">
+            <span className="flex items-center gap-1.5">
+              <Tag size={12} strokeWidth={2.25} />
+              CUPONS DISPONÍVEIS
+            </span>
+            {appliedCoupon && (
+              <button
+                type="button"
+                onClick={() => onApplyCoupon(null)}
+                className="text-[10px] font-medium text-neutral-500 underline hover:text-brand"
+              >
+                Remover
+              </button>
+            )}
           </div>
-          <div className="mt-1.5 flex items-center gap-1.5">
-            <input
-              value={coupon}
-              onChange={(e) => onCouponChange(e.target.value.toUpperCase())}
-              placeholder="Ex.: FAN10"
-              disabled={couponApplied}
-              className={cn(
-                "flex-1 rounded-md border border-neutral-200 bg-white px-2.5 py-2 font-ui text-[12px] font-bold tracking-wider text-neutral-900 placeholder:text-neutral-400 focus:border-brand focus:outline-none",
-                couponApplied && "border-success/40 bg-success/5 text-success",
-              )}
-            />
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.96 }}
-              onClick={onApplyCoupon}
-              disabled={couponApplied || coupon.length === 0}
-              className={cn(
-                "rounded-md px-3 py-2 font-ui text-[11px] font-bold",
-                couponApplied
-                  ? "bg-success text-white"
-                  : coupon.length === 0
-                    ? "bg-neutral-200 text-neutral-400"
-                    : "bg-brand text-white shadow-brand",
-              )}
-            >
-              {couponApplied ? "Aplicado" : "Aplicar"}
-            </motion.button>
+          <div className="mt-1.5 grid grid-cols-2 gap-1.5">
+            {COUPONS.map((c) => {
+              const active = appliedCoupon?.code === c.code;
+              return (
+                <motion.button
+                  key={c.code}
+                  type="button"
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => onApplyCoupon(active ? null : c)}
+                  className={cn(
+                    "flex flex-col items-start rounded-md border-2 px-2.5 py-2 text-left transition-all",
+                    active
+                      ? "border-success bg-success/10"
+                      : "border-neutral-200 bg-white hover:border-brand/40",
+                  )}
+                >
+                  <span className="flex w-full items-center justify-between">
+                    <span
+                      className={cn(
+                        "font-ui text-[12px] font-bold tracking-wider tabular-nums",
+                        active ? "text-success" : "text-brand",
+                      )}
+                    >
+                      {c.code}
+                    </span>
+                    {active && (
+                      <CheckCircle2
+                        size={13}
+                        strokeWidth={2.5}
+                        className="text-success"
+                      />
+                    )}
+                  </span>
+                  <span className="mt-0.5 text-[10px] text-neutral-500">
+                    {c.label} · {Math.round(c.pct * 100)}% off
+                  </span>
+                </motion.button>
+              );
+            })}
           </div>
-          {couponApplied && (
-            <p className="mt-1 text-[10px] font-medium text-success">
-              ✓ 10% de desconto aplicado
+          {appliedCoupon && (
+            <p className="mt-1.5 text-[10px] font-medium text-success">
+              ✓ {Math.round(appliedCoupon.pct * 100)}% de desconto aplicado
             </p>
           )}
         </div>
@@ -593,9 +619,9 @@ function CartView({
               R$ {subtotal.toFixed(2).replace(".", ",")}
             </span>
           </div>
-          {discount > 0 && (
+          {discount > 0 && appliedCoupon && (
             <div className="flex items-center justify-between text-[11px] text-success">
-              <span>Desconto FAN10</span>
+              <span>Desconto {appliedCoupon.code}</span>
               <span className="tabular-nums">
                 − R$ {discount.toFixed(2).replace(".", ",")}
               </span>

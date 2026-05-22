@@ -10,6 +10,7 @@ export interface TourTooltipProps {
   stepIndex: number;
   totalSteps: number;
   targetRect: DOMRect | null;
+  frameRect: DOMRect | null;
   onNext: () => void;
   onPrev: () => void;
   onSkip: () => void;
@@ -19,151 +20,108 @@ export interface TourTooltipProps {
 
 const TOOLTIP_WIDTH = 320;
 const TOOLTIP_HEIGHT_ESTIMATE = 168;
-const TOOLTIP_GAP = 28;
+const FRAME_GAP = 28;
 const VIEWPORT_MARGIN = 20;
 
-type ArrowDirection = "top" | "bottom" | "left" | "right" | "none";
+export type Anchor = "right" | "left" | "below" | "above" | "center";
 
-interface Position {
+export interface TooltipPosition {
   top: number;
   left: number;
-  arrowDirection: ArrowDirection;
-  arrowOffset: number;
+  anchor: Anchor;
 }
 
-function computePosition(rect: DOMRect | null): Position {
-  if (!rect || typeof window === "undefined") {
-    const w = typeof window !== "undefined" ? window.innerWidth : 1920;
-    const h = typeof window !== "undefined" ? window.innerHeight : 1080;
-    return {
-      top: h / 2 - TOOLTIP_HEIGHT_ESTIMATE / 2,
-      left: w / 2 - TOOLTIP_WIDTH / 2,
-      arrowDirection: "none",
-      arrowOffset: TOOLTIP_WIDTH / 2,
-    };
+/**
+ * Pick a tooltip position that lives OUTSIDE the device frame so the tooltip
+ * never covers the mockup. Falls back to alongside the target when there is
+ * no frame info (early renders).
+ */
+function computePosition(
+  targetRect: DOMRect | null,
+  frameRect: DOMRect | null,
+): TooltipPosition {
+  if (typeof window === "undefined") {
+    return { top: 80, left: 80, anchor: "center" };
   }
-
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  const targetCenterX = rect.left + rect.width / 2;
-  const targetCenterY = rect.top + rect.height / 2;
+  // No frame yet → center fallback
+  if (!frameRect) {
+    return {
+      top: vh / 2 - TOOLTIP_HEIGHT_ESTIMATE / 2,
+      left: vw / 2 - TOOLTIP_WIDTH / 2,
+      anchor: "center",
+    };
+  }
 
-  const spaceRight = vw - rect.right;
-  const spaceLeft = rect.left;
-  const spaceBelow = vh - rect.bottom;
-  const spaceAbove = rect.top;
+  const targetCenterX = targetRect
+    ? targetRect.left + targetRect.width / 2
+    : frameRect.left + frameRect.width / 2;
+  const targetCenterY = targetRect
+    ? targetRect.top + targetRect.height / 2
+    : frameRect.top + frameRect.height / 2;
 
-  const centerRatio = targetCenterX / vw;
-  const isInCenterZone = centerRatio > 0.3 && centerRatio < 0.7;
+  // Space available in each side of the frame
+  const spaceRight = vw - frameRect.right - FRAME_GAP - VIEWPORT_MARGIN;
+  const spaceLeft = frameRect.left - FRAME_GAP - VIEWPORT_MARGIN;
+  const spaceBelow = vh - frameRect.bottom - FRAME_GAP - VIEWPORT_MARGIN;
+  const spaceAbove = frameRect.top - FRAME_GAP - VIEWPORT_MARGIN;
+
+  // Candidate placements, ordered by preference based on space and target proximity
+  const candidates: Array<{ anchor: Anchor; fits: boolean; space: number }> = [
+    { anchor: "right", fits: spaceRight >= TOOLTIP_WIDTH, space: spaceRight },
+    { anchor: "left", fits: spaceLeft >= TOOLTIP_WIDTH, space: spaceLeft },
+    {
+      anchor: "below",
+      fits: spaceBelow >= TOOLTIP_HEIGHT_ESTIMATE,
+      space: spaceBelow,
+    },
+    {
+      anchor: "above",
+      fits: spaceAbove >= TOOLTIP_HEIGHT_ESTIMATE,
+      space: spaceAbove,
+    },
+  ];
+
+  // Prefer sides over vertical (companions live in side columns but they are
+  // narrower than the tooltip will overlap, and side placement keeps the
+  // arrow horizontal which reads better on a wide TV).
+  const fitting = candidates.filter((c) => c.fits);
+  let chosen: Anchor;
+  if (fitting.length === 0) {
+    // Pick the one with most room, even if it overflows slightly
+    chosen = candidates.sort((a, b) => b.space - a.space)[0].anchor;
+  } else {
+    chosen = fitting[0].anchor;
+  }
 
   let top = 0;
   let left = 0;
-  let arrowDirection: ArrowDirection = "none";
-  let arrowOffset = TOOLTIP_WIDTH / 2;
-
-  const tryRight = () =>
-    spaceRight >= TOOLTIP_WIDTH + TOOLTIP_GAP + VIEWPORT_MARGIN;
-  const tryLeft = () =>
-    spaceLeft >= TOOLTIP_WIDTH + TOOLTIP_GAP + VIEWPORT_MARGIN;
-  const tryBelow = () =>
-    spaceBelow >= TOOLTIP_HEIGHT_ESTIMATE + TOOLTIP_GAP + VIEWPORT_MARGIN;
-  const tryAbove = () =>
-    spaceAbove >= TOOLTIP_HEIGHT_ESTIMATE + TOOLTIP_GAP + VIEWPORT_MARGIN;
-
-  const placeRight = () => {
-    left = rect.right + TOOLTIP_GAP;
-    top = targetCenterY - TOOLTIP_HEIGHT_ESTIMATE / 2;
-    arrowDirection = "left";
-    arrowOffset = Math.max(
-      16,
-      Math.min(targetCenterY - top, TOOLTIP_HEIGHT_ESTIMATE - 32),
-    );
-  };
-  const placeLeft = () => {
-    left = rect.left - TOOLTIP_WIDTH - TOOLTIP_GAP;
-    top = targetCenterY - TOOLTIP_HEIGHT_ESTIMATE / 2;
-    arrowDirection = "right";
-    arrowOffset = Math.max(
-      16,
-      Math.min(targetCenterY - top, TOOLTIP_HEIGHT_ESTIMATE - 32),
-    );
-  };
-  const placeBelow = () => {
-    top = rect.bottom + TOOLTIP_GAP;
-    left = targetCenterX - TOOLTIP_WIDTH / 2;
-    arrowDirection = "top";
-    arrowOffset = Math.max(
-      16,
-      Math.min(targetCenterX - left, TOOLTIP_WIDTH - 32),
-    );
-  };
-  const placeAbove = () => {
-    top = rect.top - TOOLTIP_HEIGHT_ESTIMATE - TOOLTIP_GAP;
-    left = targetCenterX - TOOLTIP_WIDTH / 2;
-    arrowDirection = "bottom";
-    arrowOffset = Math.max(
-      16,
-      Math.min(targetCenterX - left, TOOLTIP_WIDTH - 32),
-    );
-  };
-
-  let placed = false;
-
-  if (isInCenterZone) {
-    if (tryBelow()) {
-      placeBelow();
-      placed = true;
-    } else if (tryAbove()) {
-      placeAbove();
-      placed = true;
-    } else if (tryRight()) {
-      placeRight();
-      placed = true;
-    } else if (tryLeft()) {
-      placeLeft();
-      placed = true;
-    }
-  } else {
-    if (centerRatio <= 0.3) {
-      if (tryRight()) {
-        placeRight();
-        placed = true;
-      } else if (tryBelow()) {
-        placeBelow();
-        placed = true;
-      } else if (tryAbove()) {
-        placeAbove();
-        placed = true;
-      } else if (tryLeft()) {
-        placeLeft();
-        placed = true;
-      }
-    } else {
-      if (tryLeft()) {
-        placeLeft();
-        placed = true;
-      } else if (tryBelow()) {
-        placeBelow();
-        placed = true;
-      } else if (tryAbove()) {
-        placeAbove();
-        placed = true;
-      } else if (tryRight()) {
-        placeRight();
-        placed = true;
-      }
-    }
+  switch (chosen) {
+    case "right":
+      left = frameRect.right + FRAME_GAP;
+      top = targetCenterY - TOOLTIP_HEIGHT_ESTIMATE / 2;
+      break;
+    case "left":
+      left = frameRect.left - FRAME_GAP - TOOLTIP_WIDTH;
+      top = targetCenterY - TOOLTIP_HEIGHT_ESTIMATE / 2;
+      break;
+    case "below":
+      top = frameRect.bottom + FRAME_GAP;
+      left = targetCenterX - TOOLTIP_WIDTH / 2;
+      break;
+    case "above":
+      top = frameRect.top - FRAME_GAP - TOOLTIP_HEIGHT_ESTIMATE;
+      left = targetCenterX - TOOLTIP_WIDTH / 2;
+      break;
+    case "center":
+    default:
+      top = vh / 2 - TOOLTIP_HEIGHT_ESTIMATE / 2;
+      left = vw / 2 - TOOLTIP_WIDTH / 2;
   }
 
-  if (!placed) {
-    if (spaceBelow > spaceAbove) {
-      placeBelow();
-    } else {
-      placeAbove();
-    }
-  }
-
+  // Clamp to viewport
   left = Math.max(
     VIEWPORT_MARGIN,
     Math.min(left, vw - TOOLTIP_WIDTH - VIEWPORT_MARGIN),
@@ -173,7 +131,7 @@ function computePosition(rect: DOMRect | null): Position {
     Math.min(top, vh - TOOLTIP_HEIGHT_ESTIMATE - VIEWPORT_MARGIN),
   );
 
-  return { top, left, arrowDirection, arrowOffset };
+  return { top, left, anchor: chosen };
 }
 
 export function TourTooltip({
@@ -181,12 +139,13 @@ export function TourTooltip({
   stepIndex,
   totalSteps,
   targetRect,
+  frameRect,
   onNext,
   onSkip,
   isLast,
 }: TourTooltipProps) {
   const live = useTourLive((s) => s.live);
-  const pos = computePosition(targetRect);
+  const pos = computePosition(targetRect, frameRect);
   const requiresInteraction = step.requiresInteraction === true;
   const showNextButton = !requiresInteraction || isLast;
 
@@ -215,8 +174,6 @@ export function TourTooltip({
       }}
       className="pointer-events-auto z-[10000] rounded-2xl bg-white p-5 shadow-[0_16px_48px_rgba(0,0,0,0.18),0_2px_12px_rgba(0,0,0,0.08)] font-ui"
     >
-      <TooltipArrow direction={pos.arrowDirection} offset={pos.arrowOffset} />
-
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="inline-block h-2 w-2 rounded-full bg-brand" />
@@ -249,7 +206,7 @@ export function TourTooltip({
             className="inline-flex items-center gap-1.5 font-ui text-[12px] font-semibold uppercase tracking-wider text-brand"
           >
             <MousePointer2 size={14} strokeWidth={2.25} />
-            Toque para continuar
+            Toque no destacado
           </motion.span>
         ) : (
           <span />
@@ -270,74 +227,36 @@ export function TourTooltip({
   );
 }
 
-function TooltipArrow({
-  direction,
-  offset,
-}: {
-  direction: ArrowDirection;
-  offset: number;
-}) {
-  if (direction === "none") return null;
-  const size = 12;
-
-  const baseStyle: React.CSSProperties = {
-    position: "absolute",
-    width: size,
-    height: size,
-    background: "white",
-    transform: "rotate(45deg)",
-  };
-
-  switch (direction) {
-    case "top":
-      return (
-        <span
-          aria-hidden
-          style={{
-            ...baseStyle,
-            top: -size / 2,
-            left: offset - size / 2,
-            boxShadow: "-1px -1px 2px rgba(0,0,0,0.04)",
-          }}
-        />
-      );
-    case "bottom":
-      return (
-        <span
-          aria-hidden
-          style={{
-            ...baseStyle,
-            bottom: -size / 2,
-            left: offset - size / 2,
-            boxShadow: "1px 1px 2px rgba(0,0,0,0.04)",
-          }}
-        />
-      );
-    case "left":
-      return (
-        <span
-          aria-hidden
-          style={{
-            ...baseStyle,
-            left: -size / 2,
-            top: offset - size / 2,
-            boxShadow: "-1px 1px 2px rgba(0,0,0,0.04)",
-          }}
-        />
-      );
+/**
+ * Compute the start point on the tooltip rectangle closest to the target,
+ * so the connector line emerges from the tooltip's edge facing the target.
+ */
+export function tooltipEdgePoint(
+  pos: TooltipPosition,
+  targetCx: number,
+  targetCy: number,
+): { x: number; y: number } {
+  const left = pos.left;
+  const right = pos.left + TOOLTIP_WIDTH;
+  const top = pos.top;
+  const bottom = pos.top + TOOLTIP_HEIGHT_ESTIMATE;
+  switch (pos.anchor) {
     case "right":
-      return (
-        <span
-          aria-hidden
-          style={{
-            ...baseStyle,
-            right: -size / 2,
-            top: offset - size / 2,
-            boxShadow: "1px -1px 2px rgba(0,0,0,0.04)",
-          }}
-        />
-      );
+      return { x: left, y: clamp(targetCy, top + 16, bottom - 16) };
+    case "left":
+      return { x: right, y: clamp(targetCy, top + 16, bottom - 16) };
+    case "above":
+      return { x: clamp(targetCx, left + 16, right - 16), y: bottom };
+    case "below":
+      return { x: clamp(targetCx, left + 16, right - 16), y: top };
+    case "center":
+    default:
+      return { x: left + TOOLTIP_WIDTH / 2, y: top + TOOLTIP_HEIGHT_ESTIMATE / 2 };
   }
 }
 
-export { TOOLTIP_WIDTH };
+function clamp(v: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, v));
+}
+
+export { TOOLTIP_WIDTH, TOOLTIP_HEIGHT_ESTIMATE, computePosition };

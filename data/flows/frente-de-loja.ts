@@ -291,13 +291,13 @@ export const quickPassFlow: TourStep[] = [
     placement: "top",
     title: (live) =>
       live.couponApplied
-        ? "Cupom FAN10 aplicado"
-        : "Aplique um cupom de desconto",
+        ? `Cupom ${live.couponCode ?? ""} aplicado`
+        : "Toque para aplicar um cupom",
     description: (live) => {
       if (live.couponApplied) {
-        return `10% off já aplicado. Subtotal ${fmtMoney(live.cartSubtotal as number)}, desconto ${fmtMoney(live.discountValue as number)}, total ${fmtMoney(live.cartTotal as number)}.`;
+        return `Subtotal ${fmtMoney(live.cartSubtotal as number)}, desconto ${fmtMoney(live.discountValue as number)}, total ${fmtMoney(live.cartTotal as number)}.`;
       }
-      return `Carrinho atual: ${fmtMoney(live.cartTotal as number)}. Digite FAN10 e toque em Aplicar para ganhar 10%.`;
+      return `Toque em FAN10 (10% off) ou EVENTO20 (20% off) para aplicar o desconto direto. Sem digitar nada.`;
     },
     actionLabel: "Ir para pagamento",
     companions: ["RestaurantQueueBoard"],

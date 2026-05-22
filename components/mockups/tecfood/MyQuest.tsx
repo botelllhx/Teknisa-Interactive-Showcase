@@ -8,7 +8,6 @@ import {
   Salad,
   Clock,
   CheckCircle2,
-  ChevronRight,
   Wifi,
   UserRound,
   Apple,
@@ -79,16 +78,24 @@ type Course = "principal" | "guarnicao" | "salada" | "sobremesa";
 // ============================================================================
 
 export function MyQuestMockup({ step }: MyQuestProps) {
-  void step;
   const [selection, setSelection] = useState<Partial<Record<Course, string>>>({
     principal: "frango",
     guarnicao: "arroz",
     salada: "mix",
   });
   const [slotId, setSlotId] = useState<string>("1230");
-  const [stage, setStage] = useState<"identify" | "pick" | "schedule" | "confirmed">(
-    "identify",
-  );
+
+  // Stage derived from tour step: each step of the tour maps to a stage
+  // of the kiosk flow. Click-driven advance (stopPropagation removed) keeps
+  // both the React state and the tour in sync.
+  const stage: "identify" | "pick" | "schedule" | "confirmed" =
+    step <= 0
+      ? "identify"
+      : step === 1
+        ? "pick"
+        : step <= 3
+          ? "schedule"
+          : "confirmed";
 
   const slot = SLOTS.find((s) => s.id === slotId);
   const completion = Object.values(selection).filter(Boolean).length;
@@ -118,9 +125,7 @@ export function MyQuestMockup({ step }: MyQuestProps) {
 
       <main className="relative flex flex-1 flex-col overflow-hidden">
         <AnimatePresence mode="wait">
-          {stage === "identify" && (
-            <IdentifyView key="id" onAdvance={() => setStage("pick")} />
-          )}
+          {stage === "identify" && <IdentifyView key="id" />}
           {stage === "pick" && (
             <PickView
               key="pick"
@@ -128,7 +133,6 @@ export function MyQuestMockup({ step }: MyQuestProps) {
               setSelection={(c, id) =>
                 setSelection((p) => ({ ...p, [c]: id }))
               }
-              onAdvance={() => setStage("schedule")}
             />
           )}
           {stage === "schedule" && (
@@ -136,7 +140,6 @@ export function MyQuestMockup({ step }: MyQuestProps) {
               key="sched"
               slotId={slotId}
               onPick={setSlotId}
-              onConfirm={() => setStage("confirmed")}
             />
           )}
           {stage === "confirmed" && <ConfirmedView key="ok" slotLabel={slot?.label} />}
@@ -204,7 +207,7 @@ function Header() {
 // Identify stage (CPF or matrícula)
 // ============================================================================
 
-function IdentifyView({ onAdvance }: { onAdvance: () => void }) {
+function IdentifyView() {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -237,7 +240,6 @@ function IdentifyView({ onAdvance }: { onAdvance: () => void }) {
         type="button"
         data-tour="mq-checkin"
         whileTap={{ scale: 0.96 }}
-        onClick={onAdvance}
         className="w-full max-w-[240px] rounded-xl bg-brand py-3 font-ui text-[13px] font-bold text-white shadow-brand"
       >
         Tocar para iniciar
@@ -262,11 +264,9 @@ function IdentifyView({ onAdvance }: { onAdvance: () => void }) {
 function PickView({
   selection,
   setSelection,
-  onAdvance,
 }: {
   selection: Partial<Record<Course, string>>;
   setSelection: (c: Course, id: string) => void;
-  onAdvance: () => void;
 }) {
   const COURSES: { id: Course; label: string }[] = [
     { id: "principal", label: "Prato principal" },
@@ -363,21 +363,8 @@ function PickView({
         </div>
       </div>
 
-      <div className="border-t border-brand/8 bg-white px-3 py-2.5">
-        <motion.button
-          type="button"
-          whileTap={{ scale: 0.97 }}
-          onClick={onAdvance}
-          disabled={completion === 0}
-          data-tour="mq-advance"
-          className={cn(
-            "flex w-full items-center justify-center gap-1.5 rounded-md py-2.5 font-ui text-[12px] font-bold text-white",
-            completion === 0 ? "bg-neutral-300" : "bg-brand shadow-brand",
-          )}
-        >
-          Escolher horário
-          <ChevronRight size={14} strokeWidth={2.5} />
-        </motion.button>
+      <div className="border-t border-brand/8 bg-white px-3 py-2.5 text-center text-[10px] text-neutral-500">
+        Toque nas opções acima e toque em Continuar no tooltip
       </div>
     </motion.div>
   );
@@ -390,11 +377,9 @@ function PickView({
 function ScheduleView({
   slotId,
   onPick,
-  onConfirm,
 }: {
   slotId: string;
   onPick: (id: string) => void;
-  onConfirm: () => void;
 }) {
   return (
     <motion.div
@@ -500,7 +485,6 @@ function ScheduleView({
         <motion.button
           type="button"
           whileTap={{ scale: 0.97 }}
-          onClick={onConfirm}
           data-tour="mq-confirm"
           className="flex w-full items-center justify-center gap-1.5 rounded-md bg-brand py-2.5 font-ui text-[12px] font-bold text-white shadow-brand"
         >

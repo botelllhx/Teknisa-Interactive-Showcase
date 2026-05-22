@@ -124,16 +124,26 @@ const TIME_SLOTS = [
 type Tab = "cardapio" | "reserva" | "feedback";
 
 export function MyMenuMockup({ step }: MyMenuProps) {
-  void step;
   const [tab, setTab] = useState<Tab>("cardapio");
   const [activeDate, setActiveDate] = useState(DATE_LIST[3]); // start on 29/05 (Quinta)
   const [reservedSlot, setReservedSlot] = useState<string | null>(null);
+  // Pre-fill rating + type so the "Enviar opinião" button is already
+  // enabled when the tour reaches the feedback step. User can still
+  // change everything; this just keeps the demo unblocked.
   const [feedback, setFeedback] = useState<{
     rating: number;
     type: "elogio" | "reclamacao" | "sugestao" | null;
     comment: string;
     sent: boolean;
-  }>({ rating: 0, type: null, comment: "", sent: false });
+  }>({ rating: 5, type: "elogio", comment: "", sent: false });
+
+  // Tour drives the tab when crossing pillars. User taps still override
+  // freely within the same step.
+  useEffect(() => {
+    if (step === 2) setTab("reserva");
+    else if (step >= 3) setTab("feedback");
+    else setTab("cardapio");
+  }, [step]);
 
   const menu = MENU_BY_DATE[activeDate];
 

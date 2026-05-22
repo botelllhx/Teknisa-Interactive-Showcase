@@ -131,8 +131,9 @@ export function WasteControlMockup({ step }: WasteControlProps) {
   const [tab, setTab] = useState<"registros" | "historico">("registros");
   const [kind, setKind] = useState<WasteKind>("sobra-limpa");
   const [servico, setServico] = useState<string>(SERVICOS[0]);
-  const [prato, setPrato] = useState<string>("");
-  const [quantidade, setQuantidade] = useState<number>(0);
+  // Pre-fill so the submit button is enabled. User can change freely.
+  const [prato, setPrato] = useState<string>("Arroz integral");
+  const [quantidade, setQuantidade] = useState<number>(3.0);
   const [unidade, setUnidade] = useState<string>(UNIDADES[0]);
   const [historico, setHistorico] = useState<Registro[]>(HISTORICO_INICIAL);
   const [feedback, setFeedback] = useState<string | null>(null);

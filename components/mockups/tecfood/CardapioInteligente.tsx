@@ -89,8 +89,11 @@ const COURSE_LABELS: Record<Course, string> = {
   sobremesa: "Sobremesa",
 };
 
+// Segunda começa com guarnição vazia de propósito: é o slot onde o tour
+// destaca o botão "Sugerir com IA" (data-tour="ci-add-dish") para
+// demonstrar a sugestão inteligente.
 const INITIAL_MENU: Record<DayKey, Partial<Record<Course, string>>> = {
-  seg: { principal: "frango-grelhado", guarnicao: "arroz-branco", salada: "salada-alface", sobremesa: "fruta-dia" },
+  seg: { principal: "frango-grelhado", salada: "salada-alface", sobremesa: "fruta-dia" },
   ter: { principal: "carne-panela", guarnicao: "feijao-carioca", salada: "salada-alface" },
   qua: { principal: "estrogonofe", guarnicao: "arroz-branco" },
   qui: { principal: "lasanha-integral", salada: "salada-grao" },

@@ -27,6 +27,41 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
+import { food, pexels } from "@/lib/photos";
+
+// Per-product Pexels photo IDs. Lookup by product id — products without a
+// match fall back to the legacy emoji + gradient block (no photo regression).
+const PRODUCT_PHOTO: Record<string, number> = {
+  // Restaurante Central — Brazilian dishes
+  "carne-boi": food.costela.id,
+  "frango-aceb": food.frango.id,
+  costela: food.costela.id,
+  "file-mignon": food.costela.id,
+  "frango-grelhado": food.frango.id,
+  "combo-15": food.salmao.id,
+  "salmao-sashimi": food.salmao.id,
+  "salmao-grelhado": food.salmao.id,
+  tilapia: food.salmao.id,
+  "penne-funghi": food.pasta.id,
+  spaghetti: food.pastaCarbonara.id,
+  petit: food.chocolateCake.id,
+  pudim: food.chocolateCake.id,
+  "suco-laranja": food.smoothie.id,
+  agua: food.soda.id,
+  coca: food.soda.id,
+  // Astrobox — pizza themed
+  "combo-basico": food.pizzaMargherita.id,
+  "combo-astrobox": food.burgerCombo.id,
+  calabresa: food.pizzaMargherita.id,
+  "frango-estelar": food.pizzaMargherita.id,
+  marguerita: food.pizzaMargherita.id,
+  "pizza-japa": food.pizzaMargherita.id,
+  atum: food.pizzaMargherita.id,
+  lasanha: food.pasta.id,
+  brownie: food.chocolateCake.id,
+  "coca-600": food.soda.id,
+  guarana: food.soda.id,
+};
 
 interface TAAProps {
   step: number;
@@ -900,49 +935,75 @@ function HomeView({
               {products.map((p, i) => {
                 const inCart = cart[p.id]?.qty ?? 0;
                 const isFirst = i === 0;
+                const photoId = PRODUCT_PHOTO[p.id];
                 return (
                   <motion.button
                     key={p.id}
                     type="button"
                     whileTap={{ scale: 0.97 }}
+                    whileHover={{ y: -2 }}
                     onClick={() => onPickProduct(p)}
                     data-tour={isFirst ? "taa-product-first" : undefined}
-                    className="group relative overflow-hidden rounded-xl bg-white text-left shadow-card transition-shadow hover:shadow-card-hover"
-                    style={{ border: "1px solid #e5e7eb" }}
+                    className="group relative flex flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white text-left shadow-card transition-shadow hover:shadow-card-hover"
                   >
-                    <div
-                      className="relative flex h-16 items-center justify-center text-[22px]"
-                      style={{ background: p.bg }}
-                    >
-                      <span aria-hidden>{p.emoji}</span>
+                    <div className="relative h-20 w-full overflow-hidden">
+                      {photoId ? (
+                        <Image
+                          src={pexels(photoId, { w: 320, h: 240, fit: "crop" })}
+                          alt={p.name}
+                          fill
+                          unoptimized
+                          sizes="160px"
+                          className="object-cover transition-transform duration-500 group-hover:scale-[1.06]"
+                        />
+                      ) : (
+                        <div
+                          aria-hidden
+                          className="flex h-full w-full items-center justify-center text-[22px]"
+                          style={{ background: p.bg }}
+                        >
+                          <span>{p.emoji}</span>
+                        </div>
+                      )}
+                      {/* Subtle bottom gradient for legibility if any badge sits on photo */}
+                      <div
+                        aria-hidden
+                        className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/30 to-transparent"
+                      />
+                      {p.oldPrice > p.price && (
+                        <span className="absolute left-1.5 top-1.5 inline-flex items-center rounded-full bg-white/95 px-1.5 py-0.5 font-ui text-[8px] font-bold uppercase tracking-wider text-success shadow-card backdrop-blur">
+                          {Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100)}% off
+                        </span>
+                      )}
                       {inCart > 0 && (
                         <motion.span
                           key={inCart}
                           initial={{ scale: 0.5 }}
                           animate={{ scale: 1 }}
-                          className="absolute right-1 top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold shadow"
+                          className="absolute right-1.5 top-1.5 flex h-6 min-w-[24px] items-center justify-center rounded-full bg-white px-1.5 font-ui text-[11px] font-bold shadow-brand"
                           style={{ color: skin.brand }}
                         >
                           ×{inCart}
                         </motion.span>
                       )}
                     </div>
-                    <div className="p-1.5">
-                      <p className="font-ui text-[10px] font-bold leading-tight text-neutral-900 line-clamp-1">
+                    <div className="flex flex-1 flex-col gap-0.5 p-2">
+                      <p className="font-ui text-[11px] font-bold leading-tight text-neutral-900 line-clamp-1">
                         {p.name}
                       </p>
-                      <p className="mt-0.5 text-[8px] leading-tight text-neutral-500 line-clamp-2">
+                      <p className="text-[9px] leading-tight text-neutral-500 line-clamp-2">
                         {p.desc}
                       </p>
-                      <p className="mt-1 text-[9px] text-neutral-400 line-through tabular-nums">
-                        R$ {p.oldPrice.toFixed(2).replace(".", ",")}
-                      </p>
-                      <p
-                        className="font-ui text-[11px] font-bold tabular-nums"
-                        style={{ color: "#16a34a" }}
-                      >
-                        R$ {p.price.toFixed(2).replace(".", ",")}
-                      </p>
+                      <div className="mt-1 flex items-baseline gap-1.5">
+                        <span className="font-ui text-[12px] font-bold tabular-nums text-success">
+                          R$ {p.price.toFixed(2).replace(".", ",")}
+                        </span>
+                        {p.oldPrice > p.price && (
+                          <span className="text-[9px] text-neutral-400 line-through tabular-nums">
+                            R$ {p.oldPrice.toFixed(2).replace(".", ",")}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </motion.button>
                 );
@@ -1055,23 +1116,41 @@ function ItemDetailModal({
       transition={{ duration: 0.2 }}
       className="absolute inset-0 z-30 flex flex-col bg-white"
     >
-      <div className="flex-1 overflow-y-auto px-3 py-3">
-        <div className="flex items-start gap-3">
+      <div className="flex-1 overflow-y-auto">
+        {/* Hero photo */}
+        <div className="relative h-32 w-full overflow-hidden">
+          {PRODUCT_PHOTO[product.id] ? (
+            <Image
+              src={pexels(PRODUCT_PHOTO[product.id], { w: 800, h: 400, fit: "crop" })}
+              alt={product.name}
+              fill
+              unoptimized
+              sizes="400px"
+              className="object-cover"
+            />
+          ) : (
+            <div
+              aria-hidden
+              className="flex h-full w-full items-center justify-center text-[44px]"
+              style={{ background: product.bg }}
+            >
+              <span>{product.emoji}</span>
+            </div>
+          )}
           <div
-            className="flex h-20 w-20 flex-none items-center justify-center rounded-2xl text-[28px]"
-            style={{ background: product.bg }}
-          >
-            <span aria-hidden>{product.emoji}</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-ui text-[15px] font-bold leading-tight text-neutral-900">
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/70 via-black/25 to-transparent"
+          />
+          <div className="absolute inset-x-0 bottom-0 px-3 pb-2.5 text-white">
+            <p className="font-ui text-[15px] font-bold leading-tight drop-shadow">
               {product.name}
             </p>
-            <p className="mt-1 text-[10px] leading-snug text-neutral-500">
+            <p className="mt-0.5 text-[10px] leading-snug text-white/85 line-clamp-2">
               {product.desc}
             </p>
           </div>
         </div>
+        <div className="px-3 py-3">
 
         {product.customSections.length === 0 && (
           <p className="mt-4 rounded-md bg-neutral-50 px-3 py-2 text-[11px] text-neutral-500">
@@ -1191,6 +1270,7 @@ function ItemDetailModal({
             skin={skin}
             compact
           />
+        </div>
         </div>
       </div>
 

@@ -16,8 +16,21 @@ import {
   Smartphone,
   Banknote,
 } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
+import { food, pexels } from "@/lib/photos";
+
+const PRODUCT_PHOTO_BY_CAT: Record<string, number> = {
+  pizzas: food.pizzaMargherita.id,
+  ref: food.soda.id,
+  sucos: food.smoothie.id,
+  combos: food.burgerCombo.id,
+  hamb: food.burgerArtesanal.id,
+  sobre: food.chocolateCake.id,
+  kg: food.saladBowl.id,
+  g9: food.frango.id,
+};
 
 interface SmartPOSProps {
   step: number;
@@ -188,6 +201,7 @@ export function SmartPOSMockup({ step }: SmartPOSProps) {
       {step === 1 && (
         <ProductDetailView
           product={product}
+          categoryId={selectedCategory}
           obs={obs}
           addons={addons}
           qty={detailQty}
@@ -286,6 +300,7 @@ function CategoryGrid({
 
 function ProductDetailView({
   product,
+  categoryId,
   obs,
   addons,
   qty,
@@ -296,6 +311,7 @@ function ProductDetailView({
   onAddToCart,
 }: {
   product: ProductOption;
+  categoryId: string;
   obs: string;
   addons: Set<string>;
   qty: number;
@@ -305,6 +321,7 @@ function ProductDetailView({
   onSetQty: (v: number) => void;
   onAddToCart: () => void;
 }) {
+  const photoId = PRODUCT_PHOTO_BY_CAT[categoryId];
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -313,10 +330,29 @@ function ProductDetailView({
       transition={{ duration: 0.2 }}
       className="flex flex-1 flex-col overflow-hidden"
     >
-      <div className="flex h-11 items-center justify-center bg-brand">
-        <p className="font-ui text-[14px] font-bold tracking-wider text-white">
-          {product.name.toUpperCase()}
-        </p>
+      <div className="relative h-24 w-full overflow-hidden">
+        {photoId && (
+          <Image
+            src={pexels(photoId, { w: 600, h: 240, fit: "crop" })}
+            alt={product.name}
+            fill
+            unoptimized
+            sizes="300px"
+            className="object-cover"
+          />
+        )}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand/95 via-brand/55 to-brand/15"
+        />
+        <div className="absolute inset-x-0 bottom-0 px-3 pb-2 text-white">
+          <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-white/70">
+            Produto selecionado
+          </p>
+          <p className="font-ui text-[15px] font-bold leading-tight">
+            {product.name}
+          </p>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-3">

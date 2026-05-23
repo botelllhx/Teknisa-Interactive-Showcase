@@ -3,6 +3,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTourLive } from "@/lib/tourState";
+import { people } from "@/lib/photos";
+import { PersonAvatar } from "@/components/ui/PersonAvatar";
 import {
   Search,
   ArrowLeft,
@@ -599,22 +601,33 @@ function FooterBar({
   return (
     <div className="flex items-stretch border-t border-neutral-200 bg-white">
       <div className="flex flex-1 items-center gap-4 px-3 py-1.5 text-[9px]">
+        <div className="flex items-center gap-2">
+          <PersonAvatar photo={people.carlos} name="Carlos Mello" size={28} />
+          <div className="flex flex-col leading-tight">
+            <span className="text-[8px] font-bold uppercase tracking-wider text-neutral-400">
+              Operador
+            </span>
+            <span className="font-ui text-[10px] font-bold text-neutral-800">
+              Carlos Mello
+            </span>
+          </div>
+        </div>
+        <span className="h-7 w-px bg-neutral-200" />
         <FooterField label="FILIAL" value="002 - Filial Teknisa Services" />
         <FooterField label="LOJA" value="002 - Loja Integrada Retail PDV" />
         <FooterField label="CAIXA" value="002 - Caixa/Balcão 001" />
-        <FooterField label="OPERADOR" value="002 - Operador" />
         <FooterField label="COMANDA" value="000001 / Jorge" />
         <div className="ml-auto flex flex-col items-end gap-0.5">
           <div className="flex items-center gap-2">
             <span className="text-neutral-500">Ticket Médio dia por Loja</span>
             <span className="font-display font-bold text-neutral-700 tabular-nums">
-              R$ 6,00
+              R$ 38,90
             </span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-neutral-500">Cupons Concluídos</span>
             <span className="font-display font-bold text-neutral-700 tabular-nums">
-              R$ 6,00
+              47
             </span>
           </div>
         </div>

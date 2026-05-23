@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Badge, Button, Card } from "@/components/ui/shadcn";
+import { people, type Photo } from "@/lib/photos";
+import { PersonAvatar } from "@/components/ui/PersonAvatar";
+import { StackedAvatars } from "@/components/ui/StackedAvatars";
 
 interface PortalGestorProps {
   step: number;
@@ -33,21 +36,54 @@ const SHIFT_DATA = [
   { who: "Diego Lima", days: [0, 1, 1, 1, 1, 0] },
 ];
 
-const PUNCH_LIST = [
-  { who: "Ana Costa", clock: "07:58 / 16:02", ot: "+0h", status: "ok" as const },
+const PUNCH_LIST: Array<{
+  who: string;
+  photo: Photo;
+  clock: string;
+  ot: string;
+  status: "ok" | "warn" | "danger";
+}> = [
+  {
+    who: "Ana Costa",
+    photo: people.ana,
+    clock: "07:58 / 16:02",
+    ot: "+0h",
+    status: "ok",
+  },
   {
     who: "Carlos Mello",
+    photo: people.carlos,
     clock: "08:12 / 17:30",
     ot: "+1h30",
-    status: "warn" as const,
+    status: "warn",
   },
-  { who: "Diego Lima", clock: "Ausente", ot: "—", status: "danger" as const },
+  {
+    who: "Diego Lima",
+    photo: people.diego,
+    clock: "Ausente",
+    ot: "—",
+    status: "danger",
+  },
 ];
 
-const REQUESTS = [
-  { type: "Férias", who: "Mariana C.", when: "10–24 Jun" },
-  { type: "Folga", who: "Lucas P.", when: "27/05" },
-  { type: "Troca de turno", who: "Sofia A.", when: "23/05" },
+const REQUESTS: Array<{
+  type: string;
+  who: string;
+  photo: Photo;
+  when: string;
+}> = [
+  { type: "Férias", who: "Mariana Costa", photo: people.mariana, when: "10 a 24 Jun" },
+  { type: "Folga", who: "Sofia Almeida", photo: people.sofia, when: "27/05" },
+  { type: "Troca de turno", who: "Beatriz Silva", photo: people.beatriz, when: "23/05" },
+];
+
+const TEAM_AVATARS = [
+  { name: "Ana Costa", photo: people.ana },
+  { name: "Carlos Mello", photo: people.carlos },
+  { name: "Mariana Costa", photo: people.mariana },
+  { name: "Sofia Almeida", photo: people.sofia },
+  { name: "Beatriz Silva", photo: people.beatriz },
+  { name: "Diego Lima", photo: people.diego },
 ];
 
 const PRESENCE_WEEK = [88, 92, 90, 95, 91, 94, 94];
@@ -76,7 +112,26 @@ export function PortalGestorMockup({ step }: PortalGestorProps) {
             </div>
           </div>
         </div>
-        <Badge variant="secondary">Gestor: João Costa</Badge>
+        <div className="flex items-center gap-3">
+          <StackedAvatars
+            people={TEAM_AVATARS}
+            size={28}
+            max={4}
+            extraLabel="+44"
+          />
+          <span className="h-7 w-px bg-neutral-200" />
+          <div className="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-2 py-1 shadow-card">
+            <PersonAvatar photo={people.joao} name="João Costa" size={26} />
+            <div className="leading-tight">
+              <span className="block font-ui text-[11px] font-bold text-brand">
+                João Costa
+              </span>
+              <span className="block text-[9px] text-neutral-500">
+                Gestor · Filial Centro
+              </span>
+            </div>
+          </div>
+        </div>
       </header>
 
       <main className="flex flex-1 flex-col overflow-hidden p-4">
@@ -245,9 +300,15 @@ function PunchView() {
               initial={{ x: 6, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.05 * i, duration: 0.22 }}
-              className="flex items-center justify-between border-b border-neutral-100 py-3 last:border-0"
+              className="flex items-center gap-3 border-b border-neutral-100 py-3 last:border-0"
             >
-              <div>
+              <PersonAvatar
+                photo={p.photo}
+                name={p.who}
+                size={36}
+                status={p.status === "ok" ? "online" : p.status === "warn" ? "busy" : "offline"}
+              />
+              <div className="min-w-0 flex-1">
                 <p className="font-ui text-[13px] font-bold text-neutral-900">
                   {p.who}
                 </p>
@@ -255,19 +316,17 @@ function PunchView() {
                   {p.clock}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="font-ui text-[12px] font-bold tabular-nums text-neutral-700">
-                  {p.ot}
-                </span>
-                <span
-                  className={cn(
-                    "h-2.5 w-2.5 rounded-full",
-                    p.status === "ok" && "bg-success",
-                    p.status === "warn" && "bg-warning",
-                    p.status === "danger" && "bg-danger",
-                  )}
-                />
-              </div>
+              <span className="font-ui text-[12px] font-bold tabular-nums text-neutral-700">
+                {p.ot}
+              </span>
+              <span
+                className={cn(
+                  "h-2.5 w-2.5 rounded-full",
+                  p.status === "ok" && "bg-success",
+                  p.status === "warn" && "bg-warning",
+                  p.status === "danger" && "bg-danger",
+                )}
+              />
             </motion.div>
           ))}
         </Card>
@@ -296,18 +355,30 @@ function RequestsView() {
             transition={{ delay: 0.05 * i, duration: 0.22 }}
           >
             <Card className="flex items-center gap-3 p-3.5">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-brand-subtle text-brand">
-                {r.type === "Férias" && <Calendar size={16} strokeWidth={2} />}
-                {r.type === "Folga" && <Clock size={16} strokeWidth={2} />}
-                {r.type === "Troca de turno" && (
-                  <AlertCircle size={16} strokeWidth={2} />
-                )}
-              </span>
+              <PersonAvatar photo={r.photo} name={r.who} size={40} />
               <div className="min-w-0 flex-1">
-                <p className="font-ui text-[12px] font-bold text-neutral-900">
-                  {r.type} · {r.who}
-                </p>
-                <p className="font-ui text-[11px] text-neutral-500">
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant={
+                      r.type === "Férias"
+                        ? "secondary"
+                        : r.type === "Folga"
+                          ? "warning"
+                          : "default"
+                    }
+                  >
+                    {r.type === "Férias" && <Calendar size={10} strokeWidth={2.5} />}
+                    {r.type === "Folga" && <Clock size={10} strokeWidth={2.5} />}
+                    {r.type === "Troca de turno" && (
+                      <AlertCircle size={10} strokeWidth={2.5} />
+                    )}
+                    {r.type}
+                  </Badge>
+                  <p className="font-ui text-[12px] font-bold text-neutral-900">
+                    {r.who}
+                  </p>
+                </div>
+                <p className="mt-0.5 font-ui text-[11px] text-neutral-500">
                   {r.when}
                 </p>
               </div>

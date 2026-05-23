@@ -33,6 +33,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
+import { food, people, pexels } from "@/lib/photos";
+import { StackedAvatars } from "@/components/ui/StackedAvatars";
 import {
   Badge,
   Button,
@@ -1153,30 +1155,22 @@ function ProdutoScreen() {
     >
       {/* Product card */}
       <Card className="overflow-hidden p-0">
-        <div
-          className="relative flex h-44 items-center justify-center overflow-hidden"
-          style={{
-            background:
-              "linear-gradient(135deg, #fef3c7 0%, #fcd9b6 45%, #d6a55a 100%)",
-          }}
-        >
-          {/* Soft vignette */}
+        <div className="relative h-44 w-full overflow-hidden">
+          <Image
+            src={pexels(food.fileParmegiana.id, { w: 720, h: 480, fit: "crop" })}
+            alt="Filé Parmegiana 150g"
+            fill
+            unoptimized
+            sizes="360px"
+            className="object-cover"
+          />
           <div
             aria-hidden
-            className="absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(ellipse at center, rgba(255,255,255,0.35) 0%, transparent 60%), radial-gradient(ellipse at bottom right, rgba(146,64,14,0.25) 0%, transparent 60%)",
-            }}
-          />
-          <Utensils
-            size={64}
-            strokeWidth={1.25}
-            className="relative text-white/70 drop-shadow-md"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent"
           />
           <Badge
             variant="secondary"
-            className="absolute left-4 top-4 gap-1 bg-white/95 px-2.5 py-1 text-brand backdrop-blur"
+            className="absolute left-4 top-4 gap-1 bg-white/95 px-2.5 py-1 text-brand shadow-card backdrop-blur"
           >
             <Sparkles size={11} strokeWidth={2.5} />
             Quebra-cabeça
@@ -1754,10 +1748,29 @@ function MonitorScreen() {
         })}
       </div>
 
-      <p className="max-w-[520px] text-center font-ui text-[14px] italic text-neutral-600">
-        “Retail Intelligence ajuda o gestor a sair do dado bruto e chegar na
-        melhor decisão operacional.”
-      </p>
+      <div className="flex w-full max-w-[640px] flex-col items-center gap-3 rounded-2xl border border-brand/10 bg-gradient-to-br from-brand-ghost via-white to-brand-subtle/30 px-5 py-4">
+        <p className="text-[10px] font-bold uppercase tracking-[2px] text-brand">
+          Equipe acompanhando este plano
+        </p>
+        <StackedAvatars
+          size={40}
+          overlap={0.35}
+          people={[
+            { name: "João Costa", photo: people.joao },
+            { name: "Mariana Costa", photo: people.mariana },
+            { name: "Carlos Mello", photo: people.carlos },
+            { name: "Ana Costa", photo: people.ana },
+            { name: "Bruna Cardoso", photo: people.bruna },
+            { name: "Rafael Souza", photo: people.rafael },
+          ]}
+          max={4}
+          extraLabel="+8"
+        />
+        <p className="max-w-[420px] text-center font-ui text-[13px] italic leading-snug text-neutral-600">
+          “Retail Intelligence ajuda o gestor a sair do dado bruto e chegar
+          na melhor decisão operacional.”
+        </p>
+      </div>
     </motion.section>
   );
 }

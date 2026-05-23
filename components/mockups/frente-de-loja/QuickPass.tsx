@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
+import { food, pexels } from "@/lib/photos";
 
 interface QuickPassProps {
   step: number;
@@ -58,6 +59,7 @@ interface Product {
   price: number;
   tag?: string;
   gradient: string;
+  photoId?: number;
 }
 
 const PRODUCTS: Product[] = [
@@ -68,6 +70,7 @@ const PRODUCTS: Product[] = [
     price: 32.0,
     tag: "Mais vendido",
     gradient: "linear-gradient(135deg, #d97706 0%, #c2410c 50%, #7c2d12 100%)",
+    photoId: food.burgerArtesanal.id,
   },
   {
     id: "burger-bacon",
@@ -75,6 +78,7 @@ const PRODUCTS: Product[] = [
     desc: "Blend duplo, bacon crocante, cheddar fundido",
     price: 38.0,
     gradient: "linear-gradient(135deg, #f59e0b 0%, #b45309 60%, #78350f 100%)",
+    photoId: food.burgerSimples.id,
   },
   {
     id: "coca",
@@ -82,6 +86,7 @@ const PRODUCTS: Product[] = [
     desc: "Lata gelada",
     price: 7.0,
     gradient: "linear-gradient(135deg, #ef4444 0%, #b91c1c 60%, #7f1d1d 100%)",
+    photoId: food.soda.id,
   },
   {
     id: "fritas",
@@ -89,6 +94,7 @@ const PRODUCTS: Product[] = [
     desc: "Porção grande, cheddar e bacon",
     price: 22.0,
     gradient: "linear-gradient(135deg, #fbbf24 0%, #ca8a04 60%, #854d0e 100%)",
+    photoId: food.burgerCombo.id,
   },
 ];
 
@@ -361,12 +367,29 @@ function CatalogView({
                 className="group relative overflow-hidden rounded-xl bg-white text-left shadow-card transition-shadow hover:shadow-card-hover"
                 style={{ border: "1px solid #e5e7eb" }}
               >
-                <div
-                  className="relative h-24 w-full"
-                  style={{ background: p.gradient }}
-                >
+                <div className="relative h-24 w-full overflow-hidden">
+                  {p.photoId ? (
+                    <Image
+                      src={pexels(p.photoId, { w: 320, h: 240, fit: "crop" })}
+                      alt={p.name}
+                      fill
+                      unoptimized
+                      sizes="160px"
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                    />
+                  ) : (
+                    <div
+                      aria-hidden
+                      className="absolute inset-0"
+                      style={{ background: p.gradient }}
+                    />
+                  )}
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/40 to-transparent"
+                  />
                   {p.tag && (
-                    <span className="absolute left-1.5 top-1.5 rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-bold text-brand">
+                    <span className="absolute left-1.5 top-1.5 rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-bold text-brand shadow-card backdrop-blur">
                       {p.tag}
                     </span>
                   )}
@@ -375,7 +398,7 @@ function CatalogView({
                       key={inCart}
                       initial={{ scale: 0.6 }}
                       animate={{ scale: 1 }}
-                      className="absolute right-1.5 top-1.5 flex h-6 min-w-[24px] items-center justify-center rounded-full bg-white px-1.5 text-[11px] font-bold text-brand shadow"
+                      className="absolute right-1.5 top-1.5 flex h-6 min-w-[24px] items-center justify-center rounded-full bg-brand px-1.5 text-[11px] font-bold text-white shadow-brand"
                     >
                       ×{inCart}
                     </motion.span>
@@ -491,10 +514,24 @@ function CartView({
                 exit={{ opacity: 0, scale: 0.96 }}
                 className="flex items-start gap-2.5 rounded-lg border border-neutral-100 bg-white p-2.5"
               >
-                <div
-                  className="h-14 w-14 flex-none rounded-md"
-                  style={{ background: p.gradient }}
-                />
+                <div className="relative h-14 w-14 flex-none overflow-hidden rounded-md">
+                  {p.photoId ? (
+                    <Image
+                      src={pexels(p.photoId, { w: 112, h: 112, fit: "crop" })}
+                      alt={p.name}
+                      fill
+                      unoptimized
+                      sizes="56px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div
+                      aria-hidden
+                      className="absolute inset-0"
+                      style={{ background: p.gradient }}
+                    />
+                  )}
+                </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-ui text-[12px] font-bold text-neutral-900 leading-tight">
                     {p.name}

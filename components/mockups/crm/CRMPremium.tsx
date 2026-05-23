@@ -21,6 +21,9 @@ import {
   MapPin,
 } from "lucide-react";
 import { useTourLive } from "@/lib/tourState";
+import { food, venues, people, pexels } from "@/lib/photos";
+import { PersonAvatar } from "@/components/ui/PersonAvatar";
+import { StackedAvatars } from "@/components/ui/StackedAvatars";
 
 interface CRMPremiumProps {
   step: number;
@@ -55,6 +58,7 @@ interface Establishment {
   initial: string;
   cashbackPct: number;
   banner?: string;
+  photoId?: number;
 }
 
 const STORES: Establishment[] = [
@@ -68,6 +72,7 @@ const STORES: Establishment[] = [
     initial: "K",
     cashbackPct: 10,
     banner: "Dia das Mães · 10% de cashback",
+    photoId: food.costela.id,
   },
   {
     id: "madero",
@@ -78,6 +83,7 @@ const STORES: Establishment[] = [
     bg: "linear-gradient(135deg, #c2410c 0%, #7c2d12 60%, #431407 100%)",
     initial: "M",
     cashbackPct: 8,
+    photoId: food.burgerArtesanal.id,
   },
   {
     id: "baked",
@@ -88,6 +94,7 @@ const STORES: Establishment[] = [
     bg: "linear-gradient(135deg, #020788 0%, #1a1fa8 60%, #3b42c4 100%)",
     initial: "B",
     cashbackPct: 12,
+    photoId: venues.restaurantModern.id,
   },
   {
     id: "publico",
@@ -98,6 +105,7 @@ const STORES: Establishment[] = [
     bg: "linear-gradient(135deg, #92400e 0%, #422006 60%, #1c1207 100%)",
     initial: "P",
     cashbackPct: 5,
+    photoId: venues.coffeeShop.id,
   },
 ];
 
@@ -529,8 +537,24 @@ function StoreCard({
       className="relative overflow-hidden rounded-xl text-left"
       style={{ background: COLORS.bgLayer }}
     >
-      <div className="relative h-20 w-full" style={{ background: store.bg }}>
-        <div className="absolute left-2 top-2 flex h-8 w-8 items-center justify-center rounded-md bg-black/30 text-white">
+      <div className="relative h-20 w-full overflow-hidden">
+        {store.photoId ? (
+          <Image
+            src={pexels(store.photoId, { w: 320, h: 200, fit: "crop" })}
+            alt={store.name}
+            fill
+            unoptimized
+            sizes="160px"
+            className="object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0" style={{ background: store.bg }} />
+        )}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent"
+        />
+        <div className="absolute left-2 top-2 flex h-8 w-8 items-center justify-center rounded-md bg-white/90 text-brand shadow-card backdrop-blur">
           <span className="font-ui text-[14px] font-bold">{store.initial}</span>
         </div>
         {target && (
@@ -608,19 +632,36 @@ function StoreScreen({
       className="flex h-full flex-col overflow-hidden"
     >
       {/* Hero photo */}
-      <div className="relative h-32 w-full flex-none" style={{ background: store.bg }}>
+      <div className="relative h-32 w-full flex-none overflow-hidden">
+        {store.photoId ? (
+          <Image
+            src={pexels(store.photoId, { w: 600, h: 400, fit: "crop" })}
+            alt={store.name}
+            fill
+            unoptimized
+            sizes="320px"
+            className="object-cover"
+            priority
+          />
+        ) : (
+          <div className="absolute inset-0" style={{ background: store.bg }} />
+        )}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50"
+        />
         <button
           type="button"
           onClick={onBack}
           aria-label="Voltar"
-          className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur"
+          className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur"
         >
           <ChevronLeft size={16} strokeWidth={2.5} />
         </button>
         <button
           type="button"
           aria-label="Favoritar"
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur"
+          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/45 backdrop-blur"
         >
           <Heart size={14} strokeWidth={2.25} className="fill-red-500 text-red-500" />
         </button>

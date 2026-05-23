@@ -4,6 +4,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import { useTourLive } from "@/lib/tourState";
+import { food, venues, pexels } from "@/lib/photos";
+
+const DISH_PHOTO_ID: Record<string, number> = {
+  marguerita: food.pizzaMargherita.id,
+  frango: food.frango.id,
+  sobremesa: food.chocolateCake.id,
+};
 import {
   Home,
   BookOpen,
@@ -268,33 +275,38 @@ function HomeView({
       transition={{ duration: 0.2 }}
       className="flex h-full flex-col overflow-y-auto"
     >
-      {/* Restaurant cover — refined deep navy with subtle warmth */}
-      <div className="relative h-28 w-full overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(135deg, #1a1410 0%, #2d2620 45%, #1f1815 100%)",
-          }}
+      {/* Restaurant cover — real photo with brand-tint overlay */}
+      <div className="relative h-32 w-full overflow-hidden">
+        <Image
+          src={pexels(venues.restaurantInterior.id, { w: 600, h: 320, fit: "crop" })}
+          alt="Restaurante Mundo Animal"
+          fill
+          unoptimized
+          sizes="320px"
+          className="object-cover"
+          priority
         />
         <div
           aria-hidden
-          className="absolute inset-0"
+          className="pointer-events-none absolute inset-0"
           style={{
             background:
-              "radial-gradient(circle at 70% 30%, rgba(217,119,6,0.25), transparent 55%)",
+              "linear-gradient(135deg, rgba(2,7,136,0.55) 0%, rgba(2,7,136,0.18) 55%, rgba(0,0,0,0.45) 100%)",
           }}
         />
-        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/40 to-transparent" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <p className="font-display text-[20px] font-bold uppercase tracking-[6px] text-white">
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 to-transparent" />
+        <div className="absolute inset-x-3 bottom-2.5 flex items-end justify-between">
+          <div>
+            <p className="font-display text-[20px] font-bold uppercase tracking-[5px] text-white drop-shadow">
               Mundo
             </p>
-            <p className="font-display text-[10px] font-bold tracking-[8px] text-white/70">
+            <p className="font-display text-[10px] font-bold tracking-[7px] text-white/85">
               ANIMAL
             </p>
           </div>
+          <span className="rounded-full bg-white/95 px-2 py-1 font-ui text-[10px] font-bold uppercase tracking-wider text-brand shadow-card backdrop-blur">
+            Mesa 10
+          </span>
         </div>
       </div>
 
@@ -382,15 +394,25 @@ function HomeView({
                 whileTap={{ scale: 0.99 }}
                 className="flex items-center gap-3 rounded-lg border border-neutral-100 bg-white p-2"
               >
-                <div
-                  className="relative h-14 w-14 flex-none overflow-hidden rounded-lg"
-                  style={p.imageStyle}
-                >
-                  <p.Icon
-                    size={28}
-                    strokeWidth={1.5}
-                    className="absolute inset-0 m-auto text-white/40"
-                  />
+                <div className="relative h-14 w-14 flex-none overflow-hidden rounded-lg">
+                  {DISH_PHOTO_ID[p.id] ? (
+                    <Image
+                      src={pexels(DISH_PHOTO_ID[p.id], { w: 112, h: 112, fit: "crop" })}
+                      alt={p.name}
+                      fill
+                      unoptimized
+                      sizes="56px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0" style={p.imageStyle}>
+                      <p.Icon
+                        size={28}
+                        strokeWidth={1.5}
+                        className="absolute inset-0 m-auto text-white/40"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="flex-1">
                   <p className="font-display text-[12px] font-bold text-neutral-900 leading-tight">
@@ -479,11 +501,25 @@ function DetailView({
         </div>
       </div>
 
-      <div
-        className="mx-4 mt-3 flex h-28 items-center justify-center overflow-hidden rounded-2xl"
-        style={item.imageStyle}
-      >
-        <Pizza size={56} strokeWidth={1} className="text-white/50" />
+      <div className="relative mx-4 mt-3 h-32 overflow-hidden rounded-2xl">
+        {DISH_PHOTO_ID[item.id] ? (
+          <Image
+            src={pexels(DISH_PHOTO_ID[item.id], { w: 600, h: 400, fit: "crop" })}
+            alt={item.name}
+            fill
+            unoptimized
+            sizes="280px"
+            className="object-cover"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center" style={item.imageStyle}>
+            <Pizza size={56} strokeWidth={1} className="text-white/50" />
+          </div>
+        )}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/40 to-transparent"
+        />
       </div>
 
       <p className="mt-3 px-4 text-[11px] leading-relaxed text-neutral-600">

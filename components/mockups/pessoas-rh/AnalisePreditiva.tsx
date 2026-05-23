@@ -11,16 +11,24 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Badge, Card } from "@/components/ui/shadcn";
+import { people, type Photo } from "@/lib/photos";
+import { PersonAvatar } from "@/components/ui/PersonAvatar";
 
 interface AnalisePreditivaProps {
   step: number;
 }
 
-const RISK_PEOPLE = [
-  { initials: "RA", name: "Ricardo Almeida", unit: "Filial Centro", risk: 87, tenure: "2,4 anos" },
-  { initials: "JM", name: "Juliana Mendes", unit: "Ala B", risk: 74, tenure: "1,8 anos" },
-  { initials: "PS", name: "Pedro Souza", unit: "Unidade Norte", risk: 62, tenure: "3,2 anos" },
-  { initials: "CL", name: "Camila Lopes", unit: "Filial Centro", risk: 41, tenure: "4,5 anos" },
+const RISK_PEOPLE: Array<{
+  name: string;
+  unit: string;
+  risk: number;
+  tenure: string;
+  photo: Photo;
+}> = [
+  { name: "Ricardo Almeida", unit: "Filial Centro", risk: 87, tenure: "2,4 anos", photo: people.ricardo },
+  { name: "Juliana Mendes", unit: "Ala B", risk: 74, tenure: "1,8 anos", photo: people.juliana },
+  { name: "Pedro Souza", unit: "Unidade Norte", risk: 62, tenure: "3,2 anos", photo: people.pedro },
+  { name: "Camila Lopes", unit: "Filial Centro", risk: 41, tenure: "4,5 anos", photo: people.camila },
 ];
 
 const RISK_SERIES = [
@@ -170,16 +178,13 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
                             : "border border-brand/10 bg-white hover:-translate-y-[1px] hover:shadow-card-hover",
                         )}
                       >
-                        <span
-                          className={cn(
-                            "flex h-10 w-10 flex-none items-center justify-center rounded-full font-ui text-[12px] font-bold",
-                            selected
-                              ? "bg-brand text-white shadow-brand"
-                              : "bg-brand-subtle text-brand",
-                          )}
-                        >
-                          {p.initials}
-                        </span>
+                        <PersonAvatar
+                          photo={p.photo}
+                          name={p.name}
+                          size={40}
+                          ring={selected}
+                          status={p.risk >= 70 ? "busy" : "online"}
+                        />
                         <div className="min-w-0 flex-1">
                           <p className="font-ui text-[12px] font-bold text-neutral-900">
                             {p.name}

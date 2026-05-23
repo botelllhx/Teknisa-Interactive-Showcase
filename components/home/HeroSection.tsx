@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useInView, useMotionValue, useTransform, animate } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { useEffect } from "react";
 
 interface Stat {
   value: number;
@@ -74,26 +74,22 @@ export function HeroSection() {
 }
 
 function CountUpStat({ stat, delay }: { stat: Stat; delay: number }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-20%" });
   const motionValue = useMotionValue(0);
   const rounded = useTransform(motionValue, (latest) => stat.format(latest));
 
   useEffect(() => {
-    if (!inView) return;
     const controls = animate(motionValue, stat.value, {
-      duration: 1.8,
+      duration: 1.4,
       delay,
       ease: [0.16, 1, 0.3, 1],
     });
     return () => controls.stop();
-  }, [inView, motionValue, stat.value, delay]);
+  }, [motionValue, stat.value, delay]);
 
   return (
     <div className="flex flex-col items-end">
       <div className="flex items-baseline">
         <motion.span
-          ref={ref}
           className="font-display text-[64px] font-bold leading-none text-brand tabular-nums"
         >
           {rounded}

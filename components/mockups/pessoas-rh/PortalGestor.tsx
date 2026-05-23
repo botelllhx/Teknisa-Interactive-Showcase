@@ -140,30 +140,29 @@ function DashboardView() {
               return (
                 <div
                   key={i}
-                  className="flex flex-1 flex-col items-center gap-1.5"
+                  className="flex h-full flex-1 flex-col items-center justify-end gap-1.5"
                 >
                   <span className="font-ui text-[10px] font-bold tabular-nums text-neutral-500">
                     {v}%
                   </span>
-                  <motion.span
-                    initial={{ scaleY: 0 }}
-                    animate={{ scaleY: 1 }}
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: `${h}%` }}
                     transition={{
                       delay: 0.05 * i,
-                      duration: 0.4,
-                      ease: "easeOut",
-                    }}
-                    style={{
-                      height: `${h}%`,
-                      transformOrigin: "bottom",
+                      duration: 0.5,
+                      ease: [0.16, 1, 0.3, 1],
                     }}
                     className={cn(
                       "w-full rounded-t-md",
                       isToday
-                        ? "bg-gradient-to-t from-brand to-brand-light"
-                        : "bg-gradient-to-t from-brand/40 to-brand/20",
+                        ? "bg-gradient-to-t from-brand to-brand-light shadow-brand"
+                        : "bg-gradient-to-t from-brand/45 to-brand/20",
                     )}
                   />
+                  <span className="font-ui text-[10px] font-medium text-neutral-400">
+                    {WEEK_DAYS[i] ?? "Hoje"}
+                  </span>
                 </div>
               );
             })}

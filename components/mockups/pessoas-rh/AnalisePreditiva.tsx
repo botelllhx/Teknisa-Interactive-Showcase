@@ -103,31 +103,30 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
               <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
                 Tendência · últimos 8 meses
               </p>
-              <div className="mt-2 flex h-24 items-end gap-1.5">
+              <div className="mt-2 flex h-32 items-end gap-1.5">
                 {RISK_SERIES.map((s, i) => {
                   const h = (s.v / max) * 100;
                   const critical = i >= 6;
                   return (
                     <div
                       key={s.m}
-                      className="flex flex-1 flex-col items-center gap-1"
+                      className="flex h-full flex-1 flex-col items-center justify-end gap-1"
                     >
-                      <motion.span
-                        initial={{ scaleY: 0 }}
-                        animate={{ scaleY: 1 }}
+                      <span className="font-ui text-[10px] font-bold tabular-nums text-neutral-500">
+                        {s.v}
+                      </span>
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: `${h}%` }}
                         transition={{
                           delay: 0.04 * i,
-                          duration: 0.4,
-                          ease: "easeOut",
-                        }}
-                        style={{
-                          height: `${h}%`,
-                          transformOrigin: "bottom",
+                          duration: 0.5,
+                          ease: [0.16, 1, 0.3, 1],
                         }}
                         className={cn(
                           "w-full rounded-t-md",
                           critical
-                            ? "bg-gradient-to-t from-danger to-danger/60"
+                            ? "bg-gradient-to-t from-danger to-danger/55 shadow-[0_2px_8px_rgba(220,38,38,0.25)]"
                             : "bg-gradient-to-t from-brand to-brand/40",
                         )}
                       />

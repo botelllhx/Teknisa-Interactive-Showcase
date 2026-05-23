@@ -670,7 +670,7 @@ export function TAAMockup({ step }: TAAProps) {
 
         <AnimatePresence mode="wait">
           {step === 0 && <OrderTypeModal key="order-type" skin={skin} />}
-          {step === 2 && openProduct && (
+          {openProduct && step !== 3 && step < 4 && (
             <ItemDetailModal
               key={`detail-${openProduct.id}`}
               skin={skin}

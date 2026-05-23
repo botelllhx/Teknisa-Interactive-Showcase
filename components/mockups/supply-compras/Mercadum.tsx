@@ -30,6 +30,8 @@ import {
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
 import { Button } from "@/components/ui/shadcn";
+import { GradientIcon } from "@/components/ui/GradientIcon";
+import { AreaChart } from "@/components/ui/charts";
 
 interface MercadumProps {
   step: number;
@@ -399,6 +401,53 @@ function TopBar({ view, cotacao }: { view: View; cotacao: Cotacao }) {
 // Cotações list
 // ============================================================================
 
+function KPITile({
+  icon,
+  tone,
+  label,
+  value,
+  delta,
+}: {
+  icon: React.ReactElement;
+  tone: "brand" | "success" | "teal" | "warning";
+  label: string;
+  value: string;
+  delta: string;
+}) {
+  return (
+    <div
+      className="flex items-center gap-2.5 rounded-xl bg-white/85 px-3 py-2 backdrop-blur"
+      style={{ border: "1px solid rgba(0,0,0,0.04)" }}
+    >
+      <GradientIcon icon={icon} tone={tone} size={32} />
+      <div className="min-w-0">
+        <p
+          className="font-ui text-[9px] font-bold uppercase text-neutral-500"
+          style={{ letterSpacing: "0.14em" }}
+        >
+          {label}
+        </p>
+        <div className="flex items-baseline gap-1.5">
+          <span
+            className="font-ui text-[18px] font-bold tabular-nums leading-none text-neutral-900"
+            style={{ letterSpacing: "-0.02em" }}
+          >
+            {value}
+          </span>
+          <span
+            className={cn(
+              "font-ui text-[10px] font-bold tabular-nums",
+              delta.startsWith("+") ? "text-success" : "text-danger",
+            )}
+          >
+            {delta}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CotacoesListView({ onOpen }: { onOpen: (c: Cotacao) => void }) {
   return (
     <motion.div
@@ -408,6 +457,64 @@ function CotacoesListView({ onOpen }: { onOpen: (c: Cotacao) => void }) {
       transition={{ duration: 0.18 }}
     >
       <Breadcrumb path={["Dashboard", "Cotações"]} />
+
+      {/* KPI hero — economia, cotações abertas, fornecedores ativos */}
+      <div
+        className="mt-3 grid grid-cols-[1fr_1fr_1fr_1.4fr] gap-3 rounded-2xl bg-ai-soft p-3.5"
+        style={{ border: "1px solid rgba(2,7,136,0.08)" }}
+      >
+        <KPITile
+          icon={<Briefcase />}
+          tone="brand"
+          label="Cotações abertas"
+          value="47"
+          delta="+8,6%"
+        />
+        <KPITile
+          icon={<DollarSign />}
+          tone="success"
+          label="Economia do mês"
+          value="R$ 84,2k"
+          delta="+22,7%"
+        />
+        <KPITile
+          icon={<Users />}
+          tone="teal"
+          label="Fornecedores ativos"
+          value="128"
+          delta="+4,4%"
+        />
+        <div
+          className="rounded-xl bg-white/80 px-3 py-2 backdrop-blur"
+          style={{ border: "1px solid rgba(0,0,0,0.04)" }}
+        >
+          <p
+            className="font-ui text-[9px] font-bold uppercase text-brand"
+            style={{ letterSpacing: "0.16em" }}
+          >
+            Economia 7d
+          </p>
+          <div className="mt-0.5 -mb-2">
+            <AreaChart
+              data={[
+                { x: "S", y: 42 },
+                { x: "T", y: 48 },
+                { x: "Q", y: 54 },
+                { x: "Q", y: 60 },
+                { x: "S", y: 68 },
+                { x: "S", y: 76 },
+                { x: "D", y: 84 },
+              ]}
+              color="#16a34a"
+              showXLabels={false}
+              highlightLast={true}
+              grid={false}
+              aspectRatio="16/4"
+              formatY={(v) => `R$ ${v.toFixed(0)}k`}
+            />
+          </div>
+        </div>
+      </div>
 
       <div className="mt-3 flex items-center justify-between gap-2">
         <div className="flex flex-1 items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 py-2">

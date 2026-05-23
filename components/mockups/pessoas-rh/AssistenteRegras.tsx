@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Badge, Button, Card } from "@/components/ui/shadcn";
+import { GradientIcon } from "@/components/ui/GradientIcon";
+import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
+import { ChipRemovable } from "@/components/ui/ChipRemovable";
 
 interface AssistenteRegrasProps {
   step: number;
@@ -95,33 +98,38 @@ function ExistingRulesView() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.05 * i, duration: 0.22 }}
           >
-            <Card className="flex items-center justify-between p-3.5">
+            <Card
+              className="flex items-center justify-between p-3.5 shadow-subtle"
+              style={{ borderColor: "rgba(2,7,136,0.06)" }}
+            >
               <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-brand-subtle text-brand">
-                  <Settings2 size={15} strokeWidth={2} />
-                </span>
+                <GradientIcon
+                  icon={<Settings2 />}
+                  tone={r.on ? "brand" : "ai"}
+                  size={36}
+                  variant={r.on ? "solid" : "soft"}
+                />
                 <div>
-                  <p className="font-ui text-[12px] font-bold text-neutral-900">
+                  <p
+                    className="font-ui text-[12px] font-bold text-neutral-900"
+                    style={{ letterSpacing: "-0.005em" }}
+                  >
                     {r.name}
                   </p>
-                  <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+                  <p
+                    className="font-ui text-[9px] font-bold uppercase text-neutral-500"
+                    style={{ letterSpacing: "0.16em" }}
+                  >
                     {r.category}
                   </p>
                 </div>
               </div>
-              <span
-                className={cn(
-                  "flex h-6 w-10 items-center rounded-full px-0.5 transition-colors",
-                  r.on ? "bg-brand" : "bg-neutral-300",
-                )}
-              >
-                <span
-                  className={cn(
-                    "h-5 w-5 rounded-full bg-white shadow transition-transform",
-                    r.on ? "translate-x-4" : "translate-x-0",
-                  )}
-                />
-              </span>
+              <ToggleSwitch
+                checked={r.on}
+                variant="labeled"
+                size="md"
+                tone="brand"
+              />
             </Card>
           </motion.div>
         ))}
@@ -201,12 +209,48 @@ function ConditionsView() {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22 }}
-      className="flex h-full flex-col gap-2 overflow-y-auto"
+      className="flex h-full flex-col gap-3 overflow-y-auto"
     >
-      <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
-        Configuração detectada
-      </p>
-      <div data-tour="ar-conditions" className="space-y-2">
+      <div className="flex items-center justify-between">
+        <p
+          className="font-ui text-[10px] font-bold uppercase text-brand"
+          style={{ letterSpacing: "0.18em" }}
+        >
+          Configuração detectada
+        </p>
+        <Badge variant="ai">
+          <Sparkles size={9} strokeWidth={2.5} />
+          IA estruturou
+        </Badge>
+      </div>
+
+      {/* Chips removíveis representam tokens da regra detectada — usuário pode
+          tirar o que não faz sentido. Padrão Roles & Permissions. */}
+      <div data-tour="ar-conditions" className="flex flex-wrap gap-1.5">
+        <ChipRemovable
+          label="Hora extra"
+          tone="brand"
+          leading={<Sparkles size={10} strokeWidth={2.5} />}
+          onRemove={() => {}}
+        />
+        <ChipRemovable
+          label="Sábado"
+          tone="neutral"
+          onRemove={() => {}}
+        />
+        <ChipRemovable
+          label="Adicional 80%"
+          tone="success"
+          onRemove={() => {}}
+        />
+        <ChipRemovable
+          label="Notifica gestor"
+          tone="brand"
+          onRemove={() => {}}
+        />
+      </div>
+
+      <div className="space-y-2">
         <Block
           label="Quando"
           value="Hora extra realizada"

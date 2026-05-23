@@ -95,21 +95,90 @@ function PunchSheetView() {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22 }}
-      className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-3"
+      className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-3"
     >
-      <div className="flex items-center justify-between rounded-xl bg-brand-ghost px-3 py-2.5">
-        <div>
-          <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-brand">
-            Saldo do mês
+      {/* Greeting hero — avatar + name + quick status */}
+      <div
+        className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-brand-ghost via-white to-brand-subtle/40 p-3"
+        style={{ border: "1px solid rgba(2,7,136,0.10)" }}
+      >
+        <PersonAvatar
+          photo={people.mariana}
+          name="Mariana Costa"
+          size={48}
+          ring
+          status="online"
+        />
+        <div className="min-w-0 flex-1">
+          <p
+            className="font-ui text-[9px] font-bold uppercase text-brand"
+            style={{ letterSpacing: "0.18em" }}
+          >
+            Bem-vinda
           </p>
-          <p className="mt-0.5 font-ui text-[18px] font-bold tabular-nums leading-none text-success">
-            +6h 30min
+          <p
+            className="font-ui text-[15px] font-bold leading-tight text-neutral-900"
+            style={{ letterSpacing: "-0.01em" }}
+          >
+            Mariana Costa
+          </p>
+          <p className="font-ui text-[10px] text-neutral-500">
+            Restaurante Central · Mat. 28471
           </p>
         </div>
-        <Clock size={22} strokeWidth={1.75} className="text-brand" />
+        <button
+          type="button"
+          aria-label="Notificações"
+          className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-white text-brand shadow-subtle"
+        >
+          <span className="relative">
+            <Clock size={14} strokeWidth={2.25} />
+            <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-danger" />
+          </span>
+        </button>
       </div>
 
-      <p className="mt-2 font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+      {/* Quick stats — 4 mini KPIs */}
+      <div className="grid grid-cols-4 gap-1.5">
+        {[
+          { l: "Saldo BH", v: "+6h30", tone: "success" as const },
+          { l: "Hoje", v: "07:58", tone: "neutral" as const },
+          { l: "Férias", v: "12d", tone: "brand" as const },
+          { l: "Holerite", v: "OK", tone: "success" as const },
+        ].map((k, i) => (
+          <motion.div
+            key={k.l}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 * i, duration: 0.22 }}
+            className="rounded-xl bg-white p-2"
+            style={{ border: "1px solid rgba(0,0,0,0.05)" }}
+          >
+            <p
+              className="font-ui text-[8px] font-bold uppercase text-neutral-400"
+              style={{ letterSpacing: "0.14em" }}
+            >
+              {k.l}
+            </p>
+            <p
+              className={cn(
+                "mt-0.5 font-ui text-[13px] font-bold leading-none tabular-nums",
+                k.tone === "success" && "text-success",
+                k.tone === "brand" && "text-brand",
+                k.tone === "neutral" && "text-neutral-900",
+              )}
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              {k.v}
+            </p>
+          </motion.div>
+        ))}
+      </div>
+
+      <p
+        className="mt-1 font-ui text-[9px] font-bold uppercase text-neutral-500"
+        style={{ letterSpacing: "0.16em" }}
+      >
         Últimas marcações
       </p>
       <div data-tour="pf-punch-sheet" className="space-y-1.5">
@@ -119,7 +188,8 @@ function PunchSheetView() {
             initial={{ x: 6, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.04 * i, duration: 0.22 }}
-            className="flex items-center gap-2.5 rounded-xl border border-brand/10 bg-white p-2.5 shadow-card"
+            className="flex items-center gap-2.5 rounded-xl bg-white p-2.5 shadow-subtle"
+            style={{ border: "1px solid rgba(0,0,0,0.04)" }}
           >
             <span className="flex h-10 w-10 flex-none flex-col items-center justify-center rounded-lg bg-brand-subtle">
               <span className="font-ui text-[13px] font-bold leading-none text-brand">
@@ -130,7 +200,10 @@ function PunchSheetView() {
               </span>
             </span>
             <div className="min-w-0 flex-1">
-              <p className="font-ui text-[12px] font-bold text-neutral-900">
+              <p
+                className="font-ui text-[12px] font-bold text-neutral-900"
+                style={{ letterSpacing: "-0.005em" }}
+              >
                 {d.clock}
               </p>
               {d.label && (

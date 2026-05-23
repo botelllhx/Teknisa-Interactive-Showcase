@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Sparkles,
@@ -25,7 +25,6 @@ import {
   Layers,
   Check,
   Crown,
-  Utensils,
   Package,
   DollarSign,
   Bell,
@@ -35,6 +34,7 @@ import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
 import { food, people, pexels } from "@/lib/photos";
 import { StackedAvatars } from "@/components/ui/StackedAvatars";
+import { DonutChart, DonutLegend, AreaChart } from "@/components/ui/charts";
 import {
   Badge,
   Button,
@@ -475,40 +475,54 @@ function DashboardScreen() {
       </div>
 
       {/* Charts + alerts */}
-      <div className="grid min-h-0 grid-cols-[2fr_1fr] gap-3">
+      <div className="grid min-h-0 grid-cols-[1.4fr_1fr] gap-3">
         <Card className="flex min-h-0 flex-col p-4">
-          <div className="mb-2 flex items-center justify-between">
-            <p className="font-ui text-[12px] font-bold uppercase tracking-wider text-brand">
-              CMV últimos 14 dias
-            </p>
+          <div className="mb-3 flex items-center justify-between">
+            <div>
+              <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
+                CMV últimos 14 dias
+              </p>
+              <p className="mt-0.5 font-ui text-[13px] font-bold text-neutral-700">
+                Acompanhamento contra meta de 28%
+              </p>
+            </div>
             <Badge variant="danger" className="px-2 py-0.5 text-[10px]">
               Desvio crescente
             </Badge>
           </div>
-          <CMVChart />
+          <div className="min-h-0 flex-1">
+            <AreaChart
+              data={CMV_SERIES}
+              color="#020788"
+              referenceY={28}
+              referenceLabel="Ideal 28%"
+              yMin={26}
+              yMax={34}
+              showXLabels={true}
+              formatY={(v) => `${v.toFixed(2).replace(".", ",")}%`}
+              aspectRatio="16/7"
+            />
+          </div>
         </Card>
-        <div className="flex min-h-0 flex-col gap-2">
-          <Card className="p-3.5">
-            <p className="font-ui text-[12px] font-bold uppercase tracking-wider text-brand">
-              Top desvios
-            </p>
-            <ul className="mt-2 space-y-1.5 text-[12px]">
-              {[
-                { label: "X-Burguer", value: "+1,4pp" },
-                { label: "Coca-Cola 2L", value: "+0,8pp" },
-                { label: "Combo Madero", value: "+0,6pp" },
-              ].map((d) => (
-                <li
-                  key={d.label}
-                  className="flex items-center justify-between border-b border-neutral-100 pb-1.5 last:border-0"
-                >
-                  <span className="text-neutral-700">{d.label}</span>
-                  <span className="font-ui font-bold tabular-nums text-danger">
-                    {d.value}
-                  </span>
-                </li>
-              ))}
-            </ul>
+        <div className="flex min-h-0 flex-col gap-2.5">
+          <Card className="flex items-center gap-3 p-3.5">
+            <DonutChart
+              slices={TOP_DESVIOS_DONUT}
+              size={88}
+              thickness={0.55}
+              centerLabel="3,8pp"
+              centerSublabel="Top 3"
+            />
+            <div className="min-w-0 flex-1">
+              <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
+                Top desvios
+              </p>
+              <DonutLegend
+                slices={TOP_DESVIOS_DONUT}
+                formatValue={(v) => `+${v.toFixed(1).replace(".", ",")}pp`}
+                className="mt-1"
+              />
+            </div>
           </Card>
           <div className="rounded-2xl bg-gradient-to-br from-brand-ghost via-white to-brand-subtle/40 p-3.5">
             <p className="flex items-center gap-1.5 font-ui text-[11px] font-bold uppercase tracking-wider text-brand">
@@ -524,6 +538,27 @@ function DashboardScreen() {
     </motion.section>
   );
 }
+
+// Data for the new charts (kept right next to where they render so they
+// stay obvious during future tweaks).
+const CMV_SERIES = (() => {
+  const dates: string[] = [];
+  for (let i = 14; i >= 1; i--) dates.push(`D-${i}`);
+  // Drift from 28.0 up to 31.74 with a touch of noise — same narrative as
+  // the previous chart but parameterized for the new AreaChart primitive.
+  return dates.map((label, i) => {
+    const base = 28 + (i / 13) * 3.74;
+    const wiggle = Math.sin(i * 1.7) * 0.4;
+    return { x: label, y: Number((base + wiggle).toFixed(2)) };
+  });
+})();
+
+const TOP_DESVIOS_DONUT = [
+  { label: "X-Burguer", value: 1.4, color: "#dc2626" },
+  { label: "Coca-Cola 2L", value: 0.8, color: "#020788" },
+  { label: "Combo Madero", value: 0.6, color: "#3b42c4" },
+  { label: "Outros", value: 1.0, color: "#cbd5e1" },
+];
 
 function DashKPI({
   label,
@@ -597,117 +632,6 @@ function DashKPI({
         </p>
       </Card>
     </motion.div>
-  );
-}
-
-function CMVChart() {
-  // 14 days, simulating CMV rising from 28 to 31.74
-  const points = useMemo(() => {
-    const arr: number[] = [];
-    for (let i = 0; i < 14; i++) {
-      const base = 28 + (i / 13) * 3.74;
-      const wiggle = Math.sin(i * 1.7) * 0.4;
-      arr.push(base + wiggle);
-    }
-    return arr;
-  }, []);
-  const max = 34;
-  const min = 26;
-  const W = 100;
-  const H = 100;
-  const x = (i: number) => (i / (points.length - 1)) * W;
-  const y = (v: number) => H - ((v - min) / (max - min)) * H;
-
-  const path = points
-    .map((v, i) => `${i === 0 ? "M" : "L"} ${x(i)} ${y(v)}`)
-    .join(" ");
-  const area = `${path} L ${W} ${H} L 0 ${H} Z`;
-
-  // Horizontal grid lines (subtle, 4 levels)
-  const gridLevels = [27, 29, 31, 33];
-
-  return (
-    <div className="relative min-h-0 flex-1" style={{ aspectRatio: "16/6" }}>
-      <svg
-        viewBox={`0 0 ${W} ${H}`}
-        preserveAspectRatio="none"
-        className="absolute inset-0 h-full w-full"
-      >
-        <defs>
-          <linearGradient id="cmv-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#020788" stopOpacity="0.35" />
-            <stop offset="60%" stopColor="#020788" stopOpacity="0.12" />
-            <stop offset="100%" stopColor="#020788" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        {/* Subtle horizontal grid */}
-        {gridLevels.map((g) => (
-          <line
-            key={g}
-            x1="0"
-            x2={W}
-            y1={y(g)}
-            y2={y(g)}
-            stroke="#e5e7eb"
-            strokeWidth="0.25"
-          />
-        ))}
-        {/* Ideal line at 28% */}
-        <line
-          x1="0"
-          x2={W}
-          y1={y(28)}
-          y2={y(28)}
-          stroke="#16a34a"
-          strokeWidth="0.4"
-          strokeDasharray="2 1.5"
-        />
-        <motion.path
-          d={area}
-          fill="url(#cmv-fill)"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        />
-        <motion.path
-          d={path}
-          fill="none"
-          stroke="#020788"
-          strokeWidth="1.1"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-        />
-        {/* Halo on last point */}
-        <motion.circle
-          cx={x(points.length - 1)}
-          cy={y(points[points.length - 1])}
-          r="3"
-          fill="#dc2626"
-          fillOpacity="0.18"
-          initial={{ scale: 0 }}
-          animate={{ scale: [0, 1.4, 1] }}
-          transition={{ duration: 0.8, delay: 0.9 }}
-        />
-        <motion.circle
-          cx={x(points.length - 1)}
-          cy={y(points[points.length - 1])}
-          r="1.6"
-          fill="#dc2626"
-          initial={{ scale: 0 }}
-          animate={{ scale: [0, 1.5, 1] }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-        />
-      </svg>
-      <p className="absolute right-2 top-1 text-[10px] font-bold text-success">
-        Ideal 28%
-      </p>
-      <p className="absolute bottom-1 right-2 text-[10px] font-bold text-danger">
-        Hoje 31,74%
-      </p>
-    </div>
   );
 }
 

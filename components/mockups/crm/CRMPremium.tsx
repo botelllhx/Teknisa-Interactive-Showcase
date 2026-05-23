@@ -21,9 +21,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { useTourLive } from "@/lib/tourState";
-import { food, venues, people, pexels } from "@/lib/photos";
-import { PersonAvatar } from "@/components/ui/PersonAvatar";
-import { StackedAvatars } from "@/components/ui/StackedAvatars";
+import { food, venues, pexels } from "@/lib/photos";
 
 interface CRMPremiumProps {
   step: number;

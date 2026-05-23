@@ -7,8 +7,16 @@ import { MobileFrame } from "./MobileFrame";
 import { TabletFrame } from "./TabletFrame";
 import { POSTerminalFrame } from "./POSTerminalFrame";
 import { KioskFrame } from "./KioskFrame";
+import { SmartPOSDeviceFrame } from "./SmartPOSDeviceFrame";
 
-export { DesktopFrame, MobileFrame, TabletFrame, POSTerminalFrame, KioskFrame };
+export {
+  DesktopFrame,
+  MobileFrame,
+  TabletFrame,
+  POSTerminalFrame,
+  KioskFrame,
+  SmartPOSDeviceFrame,
+};
 
 interface SolutionFrameProps {
   device: SolutionDevice;
@@ -41,6 +49,24 @@ export function SolutionFrame({
   );
 
   switch (device) {
+    case "smartpos": {
+      // SmartPOS device: chunkier than a phone (NFC reader + nav bar add ~108px
+      // to vertical chrome). Size by height like the other portrait devices.
+      const aspect = 9 / 17;
+      const heightLimit = containerHeight;
+      // The screen part of the device. Width derives from screen area;
+      // the frame adds its own chrome on top of that.
+      const screenHeight = heightLimit - 28 - 64 - 44; // padding + nfc bay + nav bar
+      const widthLimit = containerWidth;
+      const screenWidth = Math.min(screenHeight * aspect, widthLimit - 24);
+      // We pass the TOTAL height; the frame internally computes its own screen.
+      const finalHeight = Math.min(heightLimit, screenWidth / aspect + 136);
+      return (
+        <SmartPOSDeviceFrame height={finalHeight}>
+          {ZoomedChildren}
+        </SmartPOSDeviceFrame>
+      );
+    }
     case "kiosk": {
       const aspect = 9 / 16;
       const heightLimit = containerHeight;

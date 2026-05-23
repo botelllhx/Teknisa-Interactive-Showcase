@@ -3,7 +3,8 @@ export type SolutionDevice =
   | "mobile"
   | "tablet"
   | "pos-terminal"
-  | "kiosk";
+  | "kiosk"
+  | "smartpos";
 
 export type SolutionSegment =
   | "frente-de-loja"
@@ -239,10 +240,10 @@ export const solutions: Solution[] = [
     id: "smart-pos",
     segment: "frente-de-loja",
     name: "SmartPOS",
-    tagline: "PDV portátil na palma da mão",
+    tagline: "Maquininha inteligente Teknisa Retail POS",
     description:
-      "Maquininha inteligente que une venda, pagamento e cupom em um único dispositivo móvel.",
-    device: "mobile",
+      "Terminal portátil com leitor contactless integrado: vende, recebe pagamento, imprime cupom e sincroniza com o ERP em um só dispositivo.",
+    device: "smartpos",
     icon: "Smartphone",
     tags: ["Mobile", "POS", "Pagamento"],
     companions: ["POSCardReader"],

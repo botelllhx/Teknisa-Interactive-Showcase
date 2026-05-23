@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Badge } from "@/components/ui/shadcn";
-import { people, venues, food, pexels } from "@/lib/photos";
+import { people } from "@/lib/photos";
 import { PersonAvatar } from "@/components/ui/PersonAvatar";
 
 interface AppComercialProps {

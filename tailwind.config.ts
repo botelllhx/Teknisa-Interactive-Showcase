@@ -64,6 +64,21 @@ const config: Config = {
         card: "0 2px 12px rgba(0,0,0,0.06)",
         "card-hover": "0 8px 28px rgba(2,7,136,0.12)",
         brand: "0 4px 20px rgba(2,7,136,0.25)",
+        // Linear/Notion 2026: nearly-invisible elevation
+        subtle: "0 1px 2px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.04)",
+        elevated:
+          "0 8px 24px -8px rgba(2,7,136,0.10), 0 2px 6px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.04)",
+        // Refined inset for inputs/surfaces
+        "inset-soft": "inset 0 0 0 1px rgba(0,0,0,0.04)",
+      },
+      backgroundImage: {
+        // 2026 brand accents
+        "brand-orb":
+          "radial-gradient(circle at 30% 25%, rgba(124,58,237,0.45), rgba(2,7,136,0.85) 65%, rgba(2,7,136,1))",
+        "ai-gradient":
+          "linear-gradient(135deg, #020788 0%, #1a1fa8 45%, #7c3aed 100%)",
+        "ai-soft":
+          "radial-gradient(ellipse at top, rgba(124,58,237,0.10), transparent 55%), radial-gradient(ellipse at bottom right, rgba(2,7,136,0.08), transparent 55%)",
       },
       borderRadius: {
         frame: "20px",

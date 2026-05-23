@@ -21,6 +21,8 @@ import {
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
 import { Badge, Button, Card } from "@/components/ui/shadcn";
+import { DonutChart, DonutLegend } from "@/components/ui/charts";
+import { GradientIcon } from "@/components/ui/GradientIcon";
 
 interface WasteControlProps {
   step: number;
@@ -343,6 +345,12 @@ function RegistrosView({
     "producao",
     "excesso",
   ];
+  const KIND_TONE: Record<WasteKind, "success" | "amber" | "teal" | "danger"> = {
+    "sobra-limpa": "success",
+    "resto-ingesto": "amber",
+    producao: "teal",
+    excesso: "danger",
+  };
   return (
     <div className="mt-3 space-y-3">
       <div data-tour="wc-kind-tabs" className="grid grid-cols-4 gap-1.5">
@@ -354,18 +362,40 @@ function RegistrosView({
               key={k}
               type="button"
               whileTap={{ scale: 0.97 }}
+              whileHover={{ y: -1 }}
               onClick={() => onKindChange(k)}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 rounded-xl px-1.5 py-2.5 transition-colors",
+                "group relative flex flex-col items-center justify-center gap-1.5 rounded-xl px-1.5 py-3 transition-all",
                 active
-                  ? "bg-brand text-white shadow-brand"
-                  : "bg-white text-neutral-600 hover:bg-brand-ghost",
+                  ? "bg-white shadow-elevated"
+                  : "bg-white/60 hover:bg-white",
               )}
+              style={{
+                border: active
+                  ? "1px solid rgba(2,7,136,0.18)"
+                  : "1px solid rgba(0,0,0,0.04)",
+              }}
             >
-              <m.Icon size={16} strokeWidth={2} />
-              <span className="font-ui text-[10px] font-bold leading-tight">
+              <GradientIcon
+                icon={<m.Icon />}
+                tone={KIND_TONE[k]}
+                size={32}
+                variant={active ? "solid" : "soft"}
+              />
+              <span
+                className={cn(
+                  "font-ui text-[10px] font-bold leading-tight tracking-tight",
+                  active ? "text-neutral-900" : "text-neutral-500",
+                )}
+              >
                 {m.label}
               </span>
+              {active && (
+                <motion.span
+                  layoutId="wc-kind-active"
+                  className="absolute -bottom-0.5 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-brand"
+                />
+              )}
             </motion.button>
           );
         })}
@@ -499,6 +529,25 @@ function HistoricoView({
   historico: Registro[];
   totalKg: number;
 }) {
+  // Aggregate by kind for the donut breakdown
+  const byKind: Record<WasteKind, number> = {
+    "sobra-limpa": 0,
+    "resto-ingesto": 0,
+    producao: 0,
+    excesso: 0,
+  };
+  for (const r of historico) {
+    byKind[r.kind] += r.quantidade;
+  }
+  const donutSlices = [
+    { label: "Sobra limpa", value: byKind["sobra-limpa"], color: "#16a34a" },
+    { label: "Resto ingesto", value: byKind["resto-ingesto"], color: "#f59e0b" },
+    { label: "Produção", value: byKind["producao"], color: "#0d9488" },
+    { label: "Excesso", value: byKind["excesso"], color: "#ef4444" },
+  ].filter((s) => s.value > 0);
+
+  const wasteTotal = byKind["sobra-limpa"] + byKind["resto-ingesto"] + byKind.excesso;
+
   return (
     <div className="mt-3 space-y-3">
       <div data-tour="wc-summary" className="grid grid-cols-3 gap-2">
@@ -512,6 +561,37 @@ function HistoricoView({
           Icon={Leaf}
         />
       </div>
+
+      {donutSlices.length > 0 && (
+        <Card
+          data-tour="wc-breakdown"
+          className="flex items-center gap-4 p-4 shadow-elevated"
+          style={{ borderColor: "rgba(2,7,136,0.06)" }}
+        >
+          <DonutChart
+            slices={donutSlices}
+            size={104}
+            thickness={0.55}
+            centerLabel={`${wasteTotal.toFixed(1)}kg`}
+            centerSublabel="Desperdício"
+          />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
+                Composição por tipo
+              </p>
+              <Badge variant="success" className="px-1.5 py-0 text-[9px]">
+                7 dias
+              </Badge>
+            </div>
+            <DonutLegend
+              slices={donutSlices}
+              formatValue={(v) => `${v.toFixed(1)} kg`}
+              className="mt-1.5"
+            />
+          </div>
+        </Card>
+      )}
 
       <Card className="p-4">
         <div className="flex items-center justify-between">

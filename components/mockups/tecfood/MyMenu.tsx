@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
+import { GradientIcon } from "@/components/ui/GradientIcon";
 
 interface MyMenuProps {
   step: number;
@@ -368,54 +369,95 @@ function MenuView({
 
       {/* Dishes */}
       <div data-tour="mm-dishes" className="flex-1 overflow-y-auto px-3 pb-3">
-        <p className="mb-1.5 font-ui text-[10px] font-bold uppercase tracking-wider text-neutral-500">
-          Cardápio do dia
-        </p>
+        <div className="mb-2 flex items-center justify-between">
+          <p
+            className="font-ui text-[10px] font-bold uppercase text-neutral-500"
+            style={{ letterSpacing: "0.16em" }}
+          >
+            Cardápio do dia
+          </p>
+          <span
+            className="font-ui text-[9px] font-medium text-neutral-400 tabular-nums"
+          >
+            {menu.dishes.length} itens
+          </span>
+        </div>
         <div className="space-y-1.5">
-          {menu.dishes.map((d) => (
-            <motion.div
-              key={d.name}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.18 }}
-              className="flex items-start gap-2 rounded-xl border border-brand/8 bg-white p-2.5"
-            >
-              <div
-                className="flex h-10 w-10 flex-none items-center justify-center rounded-md"
-                style={{ background: "rgba(2,7,136,0.08)", color: "#020788" }}
+          {menu.dishes.map((d, i) => {
+            const courseTone: "amber" | "success" | "brand" | "teal" =
+              d.course === "principal"
+                ? "amber"
+                : d.course === "salada"
+                  ? "success"
+                  : d.course === "sobremesa"
+                    ? "brand"
+                    : "teal";
+            const courseLabel =
+              d.course === "principal"
+                ? "Principal"
+                : d.course === "guarnicao"
+                  ? "Guarnição"
+                  : d.course === "salada"
+                    ? "Salada"
+                    : "Sobremesa";
+            return (
+              <motion.div
+                key={d.name}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, delay: i * 0.04 }}
+                whileHover={{ y: -1 }}
+                className="group flex items-start gap-2.5 rounded-xl bg-white p-2.5 transition-shadow hover:shadow-subtle"
+                style={{ border: "1px solid rgba(2,7,136,0.06)" }}
               >
-                <d.Icon size={16} strokeWidth={1.75} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-1.5">
-                  <p className="font-ui text-[11px] font-bold leading-tight text-neutral-900">
-                    {d.name}
+                <GradientIcon icon={<d.Icon />} tone={courseTone} size={36} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <p
+                      className="font-ui text-[11.5px] font-bold leading-tight text-neutral-900"
+                      style={{ letterSpacing: "-0.005em" }}
+                    >
+                      {d.name}
+                    </p>
+                    <span className="flex flex-none items-center gap-0.5 font-ui text-[9px] font-bold text-neutral-600 tabular-nums">
+                      <Flame size={9} strokeWidth={2.25} className="text-warning" />
+                      {d.kcal}
+                    </span>
+                  </div>
+                  <p className="mt-0.5 line-clamp-2 text-[9.5px] leading-snug text-neutral-500">
+                    {d.desc}
                   </p>
-                  <span className="flex items-center gap-0.5 text-[9px] font-bold text-neutral-500 tabular-nums">
-                    <Flame size={9} strokeWidth={2.25} />
-                    {d.kcal}
-                  </span>
-                </div>
-                <p className="mt-0.5 text-[9px] leading-snug text-neutral-500">
-                  {d.desc}
-                </p>
-                {d.tag && (
-                  <span
-                    className={cn(
-                      "mt-1 inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider",
-                      d.tag === "vegetariano"
-                        ? "bg-success/15 text-success"
-                        : d.tag === "leve"
-                          ? "bg-brand-ghost text-brand"
-                          : "bg-warning/15 text-warning",
+                  <div className="mt-1.5 flex items-center gap-1">
+                    <span
+                      className="inline-flex items-center rounded-full px-1.5 py-0.5 font-ui text-[8px] font-bold uppercase"
+                      style={{
+                        letterSpacing: "0.12em",
+                        background: "rgba(2,7,136,0.06)",
+                        color: "#020788",
+                      }}
+                    >
+                      {courseLabel}
+                    </span>
+                    {d.tag && (
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 font-ui text-[8px] font-bold uppercase",
+                          d.tag === "vegetariano"
+                            ? "bg-success/12 text-success"
+                            : d.tag === "leve"
+                              ? "bg-teal-50 text-teal-700"
+                              : "bg-warning/12 text-warning",
+                        )}
+                        style={{ letterSpacing: "0.12em" }}
+                      >
+                        {d.tag}
+                      </span>
                     )}
-                  >
-                    {d.tag}
-                  </span>
-                )}
-              </div>
-            </motion.div>
-          ))}
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </motion.div>

@@ -24,6 +24,8 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { AreaChart } from "@/components/ui/charts";
+import { GradientIcon } from "@/components/ui/GradientIcon";
 import { useTourLive } from "@/lib/tourState";
 import { Badge, Button, Card } from "@/components/ui/shadcn";
 
@@ -1042,29 +1044,57 @@ function NutritionPanel({
 function CostPanel({ totals }: { totals: { cost: number } }) {
   const meals = 1840;
   const totalDay = totals.cost * meals;
+  // 7-day cost trend (target: keep within R$ 9-10 per meal)
+  const costSeries = [
+    { x: "Seg", y: 9.4 },
+    { x: "Ter", y: 9.1 },
+    { x: "Qua", y: 9.6 },
+    { x: "Qui", y: 9.3 },
+    { x: "Sex", y: 9.7 },
+    { x: "Sáb", y: 9.2 },
+    { x: "Dom", y: Math.max(8, totals.cost) },
+  ];
   return (
-    <Card className="p-3.5">
-      <div className="flex items-center gap-1.5">
-        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-brand text-white">
-          <Users size={12} strokeWidth={2.25} />
-        </span>
-        <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
-          Custo do dia
-        </p>
-      </div>
-      <p className="mt-2 font-ui text-[11px] text-neutral-500">
-        {meals.toLocaleString("pt-BR")} refeições previstas
-      </p>
-      <div className="mt-2 flex items-end justify-between">
-        <div>
-          <p className="text-[11px] text-neutral-500">Por refeição</p>
-          <p className="font-ui text-[26px] font-bold leading-none text-brand tabular-nums">
-            R$ {totals.cost.toFixed(2).replace(".", ",")}
+    <Card
+      className="overflow-hidden p-0 shadow-elevated"
+      style={{ borderColor: "rgba(2,7,136,0.06)" }}
+    >
+      <div className="flex items-start gap-2.5 px-3.5 pb-2 pt-3.5">
+        <GradientIcon icon={<Users />} tone="brand" size={32} />
+        <div className="min-w-0 flex-1">
+          <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
+            Custo do dia
+          </p>
+          <p className="mt-0.5 font-ui text-[11px] text-neutral-500">
+            {meals.toLocaleString("pt-BR")} refeições previstas
           </p>
         </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 px-3.5 pb-2">
+        <div>
+          <p className="font-ui text-[10px] font-medium uppercase tracking-wider text-neutral-400">
+            Por refeição
+          </p>
+          <motion.p
+            key={totals.cost}
+            initial={{ scale: 0.92, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="font-ui text-[24px] font-bold leading-none text-neutral-900 tabular-nums"
+            style={{ letterSpacing: "-0.02em" }}
+          >
+            R$ {totals.cost.toFixed(2).replace(".", ",")}
+          </motion.p>
+        </div>
         <div className="text-right">
-          <p className="text-[11px] text-neutral-500">Total dia</p>
-          <p className="font-ui text-[16px] font-bold text-neutral-700 tabular-nums">
+          <p className="font-ui text-[10px] font-medium uppercase tracking-wider text-neutral-400">
+            Total do dia
+          </p>
+          <p
+            className="font-ui text-[16px] font-bold leading-none text-neutral-700 tabular-nums"
+            style={{ letterSpacing: "-0.01em" }}
+          >
             R${" "}
             {totalDay.toLocaleString("pt-BR", {
               minimumFractionDigits: 2,
@@ -1072,6 +1102,20 @@ function CostPanel({ totals }: { totals: { cost: number } }) {
             })}
           </p>
         </div>
+      </div>
+
+      {/* 7-day trend area chart */}
+      <div className="px-1.5 pb-2 pt-1">
+        <AreaChart
+          data={costSeries}
+          color="#020788"
+          referenceY={9.5}
+          referenceLabel="Meta R$ 9,50"
+          yMin={8}
+          yMax={11}
+          aspectRatio="16/6"
+          formatY={(v) => `R$ ${v.toFixed(2).replace(".", ",")}`}
+        />
       </div>
     </Card>
   );

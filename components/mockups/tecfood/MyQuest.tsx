@@ -20,6 +20,7 @@ import {
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
 import { Badge } from "@/components/ui/shadcn";
+import { RadialGauge } from "@/components/ui/charts";
 
 interface MyQuestProps {
   step: number;
@@ -502,60 +503,169 @@ function ScheduleView({
 // ============================================================================
 
 function ConfirmedView({ slotLabel }: { slotLabel?: string }) {
+  // Position in queue + estimated wait — visualized as a RadialGauge
+  const positionInQueue = 47;
+  const queueCapacity = 120;
+  const positionPct = ((queueCapacity - positionInQueue) / queueCapacity) * 100;
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.22 }}
-      className="flex flex-1 flex-col items-center justify-center gap-3 px-5 py-5"
+      className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-4"
     >
+      {/* Hero confirmação compacta */}
       <motion.div
-        initial={{ scale: 0.5 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 240, damping: 14 }}
-        className="relative flex h-20 w-20 items-center justify-center rounded-full text-white"
-        style={{ background: "#16a34a" }}
+        initial={{ y: 6, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-success/8 via-white to-success/4 p-3.5"
+        style={{ border: "1px solid rgba(22,163,74,0.20)" }}
       >
-        <motion.span
-          animate={{ scale: [1, 1.6, 1], opacity: [0.4, 0, 0.4] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 rounded-full ring-2"
-          style={{ borderColor: "#16a34a" }}
-        />
-        <CheckCircle2 size={42} strokeWidth={2} />
+        <motion.div
+          initial={{ scale: 0.5 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 240, damping: 14 }}
+          className="relative flex h-12 w-12 flex-none items-center justify-center rounded-full bg-success text-white shadow-[0_4px_14px_rgba(22,163,74,0.30)]"
+        >
+          <motion.span
+            animate={{ scale: [1, 1.5, 1], opacity: [0.35, 0, 0.35] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-0 rounded-full ring-2 ring-success/40"
+          />
+          <CheckCircle2 size={22} strokeWidth={2.25} />
+        </motion.div>
+        <div className="min-w-0 flex-1">
+          <p
+            className="font-ui text-[10px] font-bold uppercase text-success"
+            style={{ letterSpacing: "0.16em" }}
+          >
+            Reserva confirmada
+          </p>
+          <p
+            className="mt-0.5 font-ui text-[15px] font-bold leading-tight text-neutral-900"
+            style={{ letterSpacing: "-0.01em" }}
+          >
+            Apresente o QR no acesso
+          </p>
+        </div>
       </motion.div>
 
-      <div className="text-center">
-        <p className="font-ui text-[16px] font-bold text-neutral-900">
-          Reserva confirmada
-        </p>
-        <p className="mt-1 text-[11px] text-neutral-500">
-          Apresente o QR no acesso do refeitório
-        </p>
-      </div>
-
+      {/* Senha + QR card */}
       <div
         data-tour="mq-result"
-        className="w-full max-w-[240px] rounded-2xl border-2 border-dashed border-brand/30 bg-brand-ghost px-5 py-4 text-center"
+        className="rounded-2xl bg-gradient-to-br from-brand-ghost via-white to-brand-subtle/50 p-4 shadow-elevated"
+        style={{ border: "1px solid rgba(2,7,136,0.10)" }}
       >
-        <p className="text-[10px] font-bold uppercase tracking-wider text-brand">
-          Sua senha
-        </p>
-        <p className="mt-1 font-ui text-[34px] font-bold leading-none text-brand tabular-nums">
-          B247
-        </p>
-        <p className="mt-2 flex items-center justify-center gap-1.5 text-[10px] text-neutral-500">
-          <Clock size={11} strokeWidth={2.25} />
-          Horário
-          <span className="font-bold text-neutral-700">{slotLabel ?? "12:30"}</span>
-        </p>
-        <div className="mx-auto mt-3 flex h-20 w-20 items-center justify-center rounded-lg bg-white p-2 ring-1 ring-brand/15">
-          <QrCode size={64} strokeWidth={0.5} className="text-neutral-900" />
+        <div className="flex items-center justify-between">
+          <div>
+            <p
+              className="font-ui text-[9px] font-bold uppercase text-brand"
+              style={{ letterSpacing: "0.20em" }}
+            >
+              Sua senha
+            </p>
+            <p
+              className="mt-0.5 font-ui text-[34px] font-bold leading-none text-brand tabular-nums"
+              style={{ letterSpacing: "-0.04em" }}
+            >
+              B247
+            </p>
+            <p className="mt-1.5 flex items-center gap-1 text-[10px] font-medium text-neutral-600">
+              <Clock size={10} strokeWidth={2.5} className="text-brand" />
+              Horário
+              <span className="font-bold text-neutral-900 tabular-nums">
+                {slotLabel ?? "12:30"}
+              </span>
+            </p>
+          </div>
+          <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-white p-1.5 ring-1 ring-brand/15 shadow-subtle">
+            <QrCode size={56} strokeWidth={0.5} className="text-neutral-900" />
+          </div>
         </div>
       </div>
 
-      <p className="flex items-center gap-1.5 text-center text-[10px] text-neutral-500">
+      {/* Posição na fila — radial gauge + timeline horizontal */}
+      <div
+        className="rounded-2xl bg-white p-3.5 shadow-subtle"
+        style={{ border: "1px solid rgba(0,0,0,0.05)" }}
+      >
+        <div className="flex items-start gap-3">
+          <RadialGauge
+            value={positionPct}
+            size={88}
+            label={`#${positionInQueue}`}
+            sublabel="Na fila"
+            colors={{ from: "#3b42c4", to: "#020788" }}
+          />
+          <div className="min-w-0 flex-1 pt-1">
+            <p
+              className="font-ui text-[10px] font-bold uppercase text-brand"
+              style={{ letterSpacing: "0.16em" }}
+            >
+              Sua vez em
+            </p>
+            <p
+              className="mt-0.5 font-ui text-[20px] font-bold leading-none text-neutral-900 tabular-nums"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              ~8 min
+            </p>
+            <p className="mt-1 font-ui text-[10px] leading-snug text-neutral-500">
+              Refeitório Principal · Capacidade hoje 120
+            </p>
+            <div className="mt-2 flex items-center gap-1.5">
+              <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-1.5 py-0.5 text-[9px] font-bold text-success">
+                <span className="h-1 w-1 rounded-full bg-success" />
+                Livre
+              </span>
+              <span className="font-ui text-[9px] text-neutral-400">
+                73 saíram nos últimos 10min
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Mini timeline horizontal: turnos do dia */}
+        <div
+          aria-hidden
+          className="mt-3 grid grid-cols-6 gap-0.5"
+        >
+          {[
+            { l: "11:30", pct: 100 },
+            { l: "12:00", pct: 100 },
+            { l: "12:30", pct: 70 },
+            { l: "13:00", pct: 30 },
+            { l: "13:30", pct: 10 },
+            { l: "14:00", pct: 0 },
+          ].map((s, i) => (
+            <div key={s.l} className="flex flex-col items-center">
+              <div className="h-7 w-full overflow-hidden rounded-md bg-neutral-100">
+                <motion.div
+                  initial={{ height: 0 }}
+                  animate={{ height: `${s.pct}%` }}
+                  transition={{ delay: 0.3 + 0.05 * i, duration: 0.5 }}
+                  className={cn(
+                    "w-full origin-bottom",
+                    s.pct >= 90
+                      ? "bg-danger/60"
+                      : s.pct >= 50
+                        ? "bg-warning/60"
+                        : "bg-success/60",
+                  )}
+                  style={{ marginTop: `${100 - s.pct}%` }}
+                />
+              </div>
+              <span className="mt-0.5 font-ui text-[8px] font-medium tabular-nums text-neutral-400">
+                {s.l}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <p className="flex items-center justify-center gap-1.5 pt-1 text-center text-[10px] text-neutral-500">
         <Utensils size={11} strokeWidth={2.25} className="text-neutral-400" />
         Bom apetite, Mariana!
       </p>

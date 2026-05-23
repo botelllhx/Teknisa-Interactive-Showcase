@@ -129,7 +129,7 @@ export const myQuestFlow: TourStep[] = [
     placement: "left",
     title: "Senha emitida",
     description: (live) =>
-      `Senha ${live.mqPassword ?? "B247"} para o horário ${live.mqSelectedSlot ?? "12:30"}. Apresentar no totem do refeitório para liberar o acesso.`,
+      `Senha ${live.mqPassword ?? "B247"} para o horário ${live.mqSelectedSlot ?? "12:30"}, QR de acesso pronto. Logo abaixo, o app mostra sua posição na fila do refeitório em tempo real (gauge) e a ocupação por turno (barras coloridas: livre, moderado, cheio).`,
     actionLabel: "Concluir",
     companions: ["RestaurantQueueBoard"],
   },
@@ -260,7 +260,7 @@ export const wasteControlFlow: TourStep[] = [
     title: (live) =>
       `${live.wcHistoricoCount ?? 0} registros no histórico`,
     description: (live) =>
-      `Total já medido: ${typeof live.wcTotalKg === "number" ? (live.wcTotalKg as number).toFixed(1) : "0"} kg na semana. Toque em Histórico para ver tudo, filtrar por tipo/serviço/data e exportar.`,
+      `Total já medido: ${typeof live.wcTotalKg === "number" ? (live.wcTotalKg as number).toFixed(1) : "0"} kg na semana. Toque em Histórico para ver o donut de composição por tipo (Sobra limpa, Resto ingesto, Produção, Excesso), filtrar por serviço/data e exportar para a supervisão.`,
     actionLabel: "Concluir",
     companions: ["StockIndicator"],
   },

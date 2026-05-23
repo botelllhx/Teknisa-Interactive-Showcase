@@ -12,7 +12,7 @@ export const mercadumFlow: TourStep[] = [
     placement: "right",
     title: "Cotações em tempo real",
     description:
-      "Lista de RFQ com cliente, status (Pendente, Negociando, Proposta aceita, Finalizada), prazo e produtos cotados. Toque em qualquer linha para abrir a cotação.",
+      "No topo, KPIs do mês: cotações abertas, economia acumulada e fornecedores ativos, com mini sparkline dos últimos 7 dias. Abaixo, a lista de RFQ com cliente, status (Pendente, Negociando, Proposta aceita, Finalizada), prazo e produtos cotados. Toque em qualquer linha para abrir.",
     actionLabel: "Abrir cotação",
     companions: ["MiniDashboard"],
   },
@@ -90,7 +90,7 @@ export const approveFlow: TourStep[] = [
     placement: "bottom",
     title: (live) => (live.apOpenTitle as string) ?? "Detalhamento",
     description:
-      "Valor, variação vs. baseline e descrição completa da solicitação. Diff Antes/Agora pra o gestor decidir com contexto.",
+      "Valor, variação vs. baseline e descrição completa, com diff Antes/Agora pra o gestor decidir com contexto. Mais abaixo, o histórico da solicitação aparece em estilo chat: foto e nome de quem solicitou, analisou e encaminhou, cada mensagem com timestamp.",
     actionLabel: "Continuar",
     companions: ["MiniDashboard"],
   },

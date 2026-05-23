@@ -65,7 +65,7 @@ export const portalFuncionarioFlow: TourStep[] = [
     placement: "right",
     title: "Espelho de ponto pessoal",
     description:
-      "Saldo do mês, marcações dos últimos dias, horas extras. Tudo transparente para o colaborador.",
+      "App reconhece a Mariana logo no topo (foto, matrícula, unidade) e resume o mês em 4 KPIs: saldo do banco de horas, registro de hoje, saldo de férias e status do holerite. Logo abaixo, as marcações dos últimos dias com horas extras destacadas.",
   },
   {
     id: "ferias",
@@ -222,7 +222,7 @@ export const assistenteRegrasFlow: TourStep[] = [
     placement: "right",
     title: "Condições estruturadas",
     description:
-      "WHEN / AND / THEN / ALSO, a IA traduz sua descrição em blocos editáveis. Revise e ajuste antes de ativar.",
+      "A IA extrai tokens da frase (Hora extra, Sábado, Adicional 80%, Notifica gestor) como chips removíveis no topo, e os blocos WHEN/AND/THEN/ALSO abaixo. Toque no X de qualquer chip para tirar um critério ou ajuste os blocos antes de ativar.",
   },
   {
     id: "preview",

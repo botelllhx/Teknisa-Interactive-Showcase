@@ -7,7 +7,7 @@ export const rotinaFiscalFlow: TourStep[] = [
     placement: "right",
     title: "Painel de obrigações fiscais",
     description:
-      "SPED Fiscal, EFD-Reinf, DCTFWeb, todas as obrigações do mês com status e vencimento. Zero dispersão.",
+      "Header mostra '1 de 4 entregue' com um gauge radial de progresso e próximo vencimento em destaque. Lista completa logo abaixo: SPED Fiscal, EFD-Reinf, DCTFWeb e SPED Contribuições, cada uma com status colorido e data. Zero dispersão.",
     companions: ["FiscalBadge"],
   },
   {
@@ -65,7 +65,7 @@ export const rotinaRastreabilidadeFlow: TourStep[] = [
     placement: "right",
     title: "Linha do tempo de movimentações",
     description:
-      "Cada passo do lote registrado com data, hora e responsável: recebimento, conferência, transferência, saída.",
+      "Trajeto completo do lote em milestones horizontais (recebimento → conferência → transferência → saída), cada etapa com ícone, data/hora, responsável e indicação visual de concluído, em andamento ou pendente. Sem inconsistências detectadas.",
     companions: ["StockIndicator"],
   },
   {
@@ -104,7 +104,7 @@ export const appRotinasEstoqueFlow: TourStep[] = [
     placement: "bottom",
     title: "Tarefas de estoque do dia",
     description:
-      "Contagem por setor, validade, conferência, distribuídas conforme escala. Mobile pensado para uso no chão de loja.",
+      "Hero do dia com 3 KPIs (pendentes, concluídas, itens a contar) e a lista de tarefas por setor logo abaixo: contagem, validade, conferência, distribuídas conforme escala. Mobile pensado para uso no chão de loja.",
     companions: ["StockIndicator"],
   },
   {

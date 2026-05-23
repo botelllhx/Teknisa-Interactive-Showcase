@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/cn";
 import { Badge, Button, Card } from "@/components/ui/shadcn";
 import { people } from "@/lib/photos";
+import { PersonAvatar } from "@/components/ui/PersonAvatar";
 import { StackedAvatars } from "@/components/ui/StackedAvatars";
 
 interface MesaOperacoesProps {
@@ -143,6 +144,96 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
               </div>
             </motion.div>
           )}
+
+          {/* Live alert feed — chat-style stream de eventos por unidade */}
+          <div
+            className="flex min-h-0 flex-1 flex-col rounded-2xl bg-white p-3 shadow-subtle"
+            style={{ border: "1px solid rgba(0,0,0,0.05)" }}
+          >
+            <div className="flex items-center justify-between">
+              <p
+                className="font-ui text-[10px] font-bold uppercase text-brand"
+                style={{ letterSpacing: "0.18em" }}
+              >
+                Feed ao vivo
+              </p>
+              <span className="flex items-center gap-1 font-ui text-[9px] font-bold text-success">
+                <motion.span
+                  animate={{ opacity: [1, 0.4, 1] }}
+                  transition={{ duration: 1.4, repeat: Infinity }}
+                  className="h-1.5 w-1.5 rounded-full bg-success"
+                />
+                4 eventos / 12min
+              </span>
+            </div>
+            <div className="mt-2 flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto pr-1">
+              {[
+                {
+                  who: "Unidade Norte",
+                  photo: people.diego,
+                  when: "agora",
+                  msg: "8 ausentes confirmadas no almoço",
+                  tone: "danger" as const,
+                },
+                {
+                  who: "Filial Centro",
+                  photo: people.ana,
+                  when: "3 min",
+                  msg: "+2 disponíveis para realocação",
+                  tone: "success" as const,
+                },
+                {
+                  who: "Unidade Sul",
+                  photo: people.sofia,
+                  when: "7 min",
+                  msg: "Presença normalizou em 96%",
+                  tone: "success" as const,
+                },
+                {
+                  who: "Café da Praça",
+                  photo: people.mariana,
+                  when: "12 min",
+                  msg: "Pico de demanda atendido",
+                  tone: "brand" as const,
+                },
+              ].map((m, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -4 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.04 * i, duration: 0.22 }}
+                  className={cn(
+                    "flex items-start gap-2 rounded-lg p-2",
+                    m.tone === "danger" && "bg-danger/5",
+                    m.tone === "success" && "bg-success/5",
+                    m.tone === "brand" && "bg-brand-ghost",
+                  )}
+                >
+                  <PersonAvatar photo={m.photo} name={m.who} size={24} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-baseline justify-between gap-1">
+                      <p className="font-ui text-[10px] font-bold text-neutral-900">
+                        {m.who}
+                      </p>
+                      <span className="font-ui text-[8px] tabular-nums text-neutral-400">
+                        {m.when}
+                      </span>
+                    </div>
+                    <p
+                      className={cn(
+                        "mt-0.5 font-ui text-[10px] leading-snug",
+                        m.tone === "danger" && "text-danger",
+                        m.tone === "success" && "text-success",
+                        m.tone === "brand" && "text-brand",
+                      )}
+                    >
+                      {m.msg}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
 
           {reallocating && !confirmed && (
             <motion.div

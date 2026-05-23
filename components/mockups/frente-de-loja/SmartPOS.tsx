@@ -21,15 +21,14 @@ import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
 import { food, pexels } from "@/lib/photos";
 
+// Only categories with verified photos. Sucos, refrigerantes, KG e G9
+// caem para o ícone genérico (não temos foto fiel verificada).
 const PRODUCT_PHOTO_BY_CAT: Record<string, number> = {
-  pizzas: food.pizzaMargherita.id,
-  ref: food.soda.id,
-  sucos: food.smoothie.id,
-  combos: food.burgerCombo.id,
-  hamb: food.burgerArtesanal.id,
+  pizzas: food.pizza.id,
+  combos: food.burgerCheese.id,
+  hamb: food.burgerCheese.id,
   sobre: food.chocolateCake.id,
   kg: food.saladBowl.id,
-  g9: food.frango.id,
 };
 
 interface SmartPOSProps {

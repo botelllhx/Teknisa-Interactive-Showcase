@@ -1999,6 +1999,218 @@ Quando o mockup já tem painel de jornada interno (§23.2), o `SolutionDemo` dev
 
 ---
 
+## 24. Padrão V9 — Bugs reais + foundation visual (fotos Pexels + avatares)
+
+V9 nasceu do feedback "tudo mudou de classe mas visualmente não mudou" e
+fechou 4 buracos concretos que escaparam dos agentes:
+
+### 24.1 Bugs críticos corrigidos
+
+- **TAA modal de produto preso ao tour step**: `ItemDetailModal` estava
+  gated em `step === 2`. Clicar em produto setava `openProductId` mas o
+  modal não renderizava. Corrigido para `openProduct && step !== 3 && step < 4`.
+- **Charts vazios em PortalGestor + AnálisePreditiva**: as colunas dos
+  bars não tinham `h-full`, então `height: %` resolvia 0. Coluna agora é
+  `flex h-full flex-col justify-end`, bar é `motion.div` animando
+  `height: 0 → pct%` em vez de `motion.span` com `scaleY`.
+- **Hero counters não animavam**: `useInView` com margin restritivo
+  `-20%` não disparava. Removido — animação roda do mount direto.
+
+### 24.2 Foundation: fotos reais + avatares stacked
+
+- **Pexels CDN** habilitado em `next.config.mjs` via `remotePatterns`.
+- `lib/photos.ts` com helper `pexels(id, opts)` e catálogo curado.
+- `components/ui/PersonAvatar.tsx`: avatar circular Image + fallback de
+  iniciais coloridas. Prop `status` (online/offline/busy) render bottom-right.
+- `components/ui/StackedAvatars.tsx`: pilha overlap configurável, "+N"
+  pill brand-ghost quando excede o `max`.
+
+### 24.3 ⚠️ REGRA OBRIGATÓRIA — Verificação de fotos
+
+Após o incidente da v9.2 onde múltiplas fotos foram atribuídas erradamente
+(Filé Parmegiana virou salada, frango virou peixe, pizza virou avocado
+toast), toda foto adicionada a `lib/photos.ts` PRECISA:
+
+1. Ser baixada e visualizada antes de entrar no catálogo
+   (`curl -L "https://images.pexels.com/photos/<id>/pexels-photo-<id>.jpeg"
+   -o tmp.jpg` + abrir o arquivo)
+2. Ser nomeada **pelo que a foto realmente mostra** — não pelo produto
+   que a gente queria que mostrasse
+3. Ter um comentário `// ✅ verified <data>: <descrição honesta>` ao lado
+   do entry
+
+Se uma solução precisa de uma foto que não temos verificada, **não force**:
+caia no ícone/gradient fallback que cada mockup já suporta. **Foto errada
+é pior que ícone correto.**
+
+Padrão de fallback (TAA / QuickPass / CRM / etc):
+```ts
+const PRODUCT_PHOTO: Record<string, number> = {
+  // só entries com foto verificada para aquele produto específico
+  marguerita: food.pizza.id, // pizza fatiada real (verified)
+};
+
+// No render:
+{PRODUCT_PHOTO[id] ? (
+  <Image src={pexels(PRODUCT_PHOTO[id], {w, h, fit: "crop"})} ... />
+) : (
+  <div style={{ background: gradient }}><Icon /></div>
+)}
+```
+
+---
+
+## 25. Padrão V10 — SaaS 2026 (Linear/Notion/Vercel/Arc level)
+
+V10 nasceu de "refino nível SaaS trending 2026, mas não se distancie das
+references em /public — refinar, não mudar". Princípio: **mesmo produto
+Teknisa, só mais polido**. Exceção: Retail Intelligence pode ser 100%
+criativo (não tem ref em /public limitando).
+
+### 25.1 SmartPOSDeviceFrame (device PDV portátil real)
+
+Arquivo: `components/mockups/frames/SmartPOSDeviceFrame.tsx`.
+Anatomia (referência /public/FrenteDeLoja/Smart POS/POS *.png):
+
+```
+┌───────────────────────┐
+│  ●  APROXIME O CARTÃO │  ← NFC reader bay (64px), wave icons + LED verde
+├───────────────────────┤
+│                       │
+│       SCREEN (9:17)   │
+│                       │
+├───────────────────────┤
+│ ◀  ⬤  ☰  TEKNISA POS │  ← Android nav bar (44px), label do device
+└───────────────────────┘
+```
+
+`SolutionDevice = "smartpos"` adicionado em `data/solutions.ts`.
+SmartPOS agora usa device "smartpos" — não mais "mobile" (parecia celular).
+
+### 25.2 Charts primitives — `components/ui/charts/`
+
+3 charts SaaS-2026 reutilizáveis. SEMPRE consumir essas primitivas em vez
+de escrever SVG custom:
+
+- **DonutChart** + **DonutLegend** (`DonutChart.tsx`)
+  - Anel animado via `stroke-dasharray` por slice
+  - Centro com big label tabular-nums + caps subtitle
+  - DonutLegend = lista lateral com color dot + label + valor + percent
+  - Referência visual: Panacea Patient Risk Analytics, Knowwio Weekly Activity
+
+- **AreaChart** (`AreaChart.tsx`)
+  - Gradient fill 3-stop, line animada via `pathLength`
+  - Grid horizontal sutil dashed
+  - Reference line opcional (`referenceY` + `referenceLabel`)
+  - **Tooltip vertical no hover** — line + dot + card branco com valor
+  - Halo pulsante no último ponto quando idle
+  - Props: `yMin`/`yMax` para amplificar pequenas variações
+  - Referência visual: Knowwio Progress Overview
+
+- **RadialGauge** (`RadialGauge.tsx`)
+  - Half-circle (speedometer), gradient brand→roxo
+  - Big value central
+  - Animação `strokeDashoffset` de cheia → preenchimento
+  - Referência visual: Knowwio Speed Optimization, DropInBlog gauge
+
+### 25.3 UI primitives — `components/ui/`
+
+- **ToggleSwitch** (`ToggleSwitch.tsx`): iOS-style com knob spring,
+  variant `"labeled"` mostra ✓ no knob quando ON. Tones brand/success.
+  Referência: Roles & Permissions ("Assign travel policies" ON).
+- **ChipRemovable** (`ChipRemovable.tsx`): pill com X clicável, 5 tones
+  (brand/neutral/success/warning/danger), `motion.span` scale-in.
+  Referência: Roles & Permissions ("Liam Carter ✕").
+- **GradientIcon** (`GradientIcon.tsx`): container de ícone Notion-style.
+  8 tones (brand/ai/success/warning/danger/amber/teal/rose), variant
+  `"soft"` (pastel bg + bold colored icon) ou `"solid"` (gradient fill +
+  white icon + inset highlight). Clona lucide icon mantendo estilo.
+  **Substitui** todos os blocos quadrados monocromáticos de ícone.
+
+### 25.4 Tokens novos em `tailwind.config.ts`
+
+Linear/Notion 2026 elevation system — sombras quase invisíveis:
+
+```ts
+boxShadow: {
+  subtle: "0 1px 2px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.04)",
+  elevated:
+    "0 8px 24px -8px rgba(2,7,136,0.10), 0 2px 6px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.04)",
+  "inset-soft": "inset 0 0 0 1px rgba(0,0,0,0.04)",
+}
+backgroundImage: {
+  "brand-orb":  "radial-gradient(circle at 30% 25%, rgba(124,58,237,0.45), rgba(2,7,136,0.85) 65%, rgba(2,7,136,1))",
+  "ai-gradient":"linear-gradient(135deg, #020788 0%, #1a1fa8 45%, #7c3aed 100%)",
+  "ai-soft":    "radial-gradient(ellipse at top, rgba(124,58,237,0.10), transparent 55%), radial-gradient(ellipse at bottom right, rgba(2,7,136,0.08), transparent 55%)",
+}
+```
+
+Uso:
+- `shadow-card` legado continua existindo (compat), mas `shadow-subtle` é
+  o default V10 para cards "calmos"
+- `shadow-elevated` para hero/destaque
+- `bg-ai-soft` em painéis de "hero KPI" (Mercadum hero, AppEstoque hero)
+- `bg-ai-gradient` só em CTAs IA críticos
+- `bg-brand-orb` em orbs de geração IA (Cardápio Inteligente)
+
+### 25.5 Tipografia trending 2026
+
+- Big numbers (≥18px): `font-ui font-bold tabular-nums`, `letter-spacing: -0.02em`
+- Labels grandes (13-16px): `letter-spacing: -0.01em` ou `-0.005em`
+- Eyebrow labels uppercase: `letter-spacing: 0.16-0.18em`, font-size 9-11px
+  (mais espaçado que `tracking-wider` padrão do Tailwind)
+- Sempre `tabular-nums` em valores numéricos para alinhamento
+
+### 25.6 Refatorações aplicadas em V10 (transversal)
+
+**TecFood:**
+- WasteControl 4-kind selector ganhou GradientIcon per tipo (Sobra=success,
+  Resto=amber, Produção=teal, Excesso=danger), active state com `layoutId`
+- WasteControl Histórico ganhou Card "Composição por tipo" com DonutChart
+  104px + DonutLegend
+- CardapioInteligente CostPanel ganhou AreaChart 7d com reference line
+  R$ 9,50 (meta)
+- MyMenu dish cards refinados: GradientIcon per course (principal=amber,
+  salada=success, sobremesa=brand, guarnição=teal)
+
+**ERP Backoffice:**
+- RotinaFiscal: header com RadialGauge 25% concluído + GradientIcons per
+  status nas obrigações
+- Rastreabilidade: **timeline VERTICAL → MILESTONE TIMELINE HORIZONTAL**
+  (PMO Golden Garden style) com 3 estados de nó (done/active/pending),
+  conector linear gradient, halo pulsante no active
+- AppRotinasEstoque: hero "Hoje" com bg-ai-soft + GradientIcon +
+  3-up KPIs com backdrop-blur
+
+**Supply + RH:**
+- Mercadum: KPI hero strip antes da tabela com 3 KPITiles (Cotações
+  abertas / Economia / Fornecedores) + AreaChart 7d compact
+- AssistenteRegras: regras com GradientIcon + ToggleSwitch primitive;
+  ConditionsView ganhou row de ChipRemovable IA tokens (Hora extra ×,
+  Sábado ×, Adicional 80% ×, Notifica gestor ×)
+
+**Frente de Loja:**
+- Retail Intelligence dashboard: Top desvios virou DonutChart + Legend;
+  CMV chart custom virou AreaChart primitive com tooltip vertical hover
+
+### 25.7 Checklist V10 — refatorando mockup existente
+
+- [ ] Cards usam `shadow-subtle` ou `shadow-elevated` (não `shadow-card`
+      heavy salvo casos específicos)
+- [ ] Ícones em blocos quadrados foram trocados por `GradientIcon`
+- [ ] Charts SVG custom foram trocados por primitives (`DonutChart`,
+      `AreaChart`, `RadialGauge`)
+- [ ] Toggles handmade foram trocados por `ToggleSwitch`
+- [ ] Chips com X foram trocados por `ChipRemovable`
+- [ ] Big numbers (≥18px) têm `letter-spacing: -0.02em` + `tabular-nums`
+- [ ] Eyebrow labels uppercase têm `letter-spacing: 0.16-0.18em`
+- [ ] Hero KPI areas usam `bg-ai-soft` quando faz sentido (refrear,
+      não em todo lugar)
+- [ ] Fotos novas obedeceram §24.3 (verificação manual + naming honesto)
+- [ ] Mockup sem foto fiel mantém fallback ícone/gradient — **NUNCA forçar**
+
+---
+
 *Este documento deve ser mantido atualizado conforme o projeto evolui. Qualquer decisão de arquitetura, visual ou de fluxo que desvie das diretrizes aqui definidas deve ser documentada com justificativa.*
 
-*Versão: 8.0 | Projeto: Teknisa Interactive Showcase*
+*Versão: 10.0 | Projeto: Teknisa Interactive Showcase*

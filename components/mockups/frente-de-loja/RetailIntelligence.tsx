@@ -1077,12 +1077,15 @@ function ProdutoScreen() {
       transition={{ duration: 0.3 }}
       className="grid h-full grid-cols-[360px_1fr] gap-5 px-8 py-6"
     >
-      {/* Product card */}
+      {/* Product card — uses beefSteak photo (sliced steak with vegetables),
+          the closest faithful match for a Filé Parmegiana hero shot. No
+          "parmegiana" photo verified in our library; using gradient fallback
+          would be uglier than this generic steak hero. */}
       <Card className="overflow-hidden p-0">
         <div className="relative h-44 w-full overflow-hidden">
           <Image
-            src={pexels(food.fileParmegiana.id, { w: 720, h: 480, fit: "crop" })}
-            alt="Filé Parmegiana 150g"
+            src={pexels(food.beefSteak.id, { w: 720, h: 480, fit: "crop" })}
+            alt="Prato principal"
             fill
             unoptimized
             sizes="360px"

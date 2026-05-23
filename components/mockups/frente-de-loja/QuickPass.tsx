@@ -70,7 +70,7 @@ const PRODUCTS: Product[] = [
     price: 32.0,
     tag: "Mais vendido",
     gradient: "linear-gradient(135deg, #d97706 0%, #c2410c 50%, #7c2d12 100%)",
-    photoId: food.burgerArtesanal.id,
+    photoId: food.burgerCheese.id, // burger com cheddar e bacon (verified)
   },
   {
     id: "burger-bacon",
@@ -78,7 +78,7 @@ const PRODUCTS: Product[] = [
     desc: "Blend duplo, bacon crocante, cheddar fundido",
     price: 38.0,
     gradient: "linear-gradient(135deg, #f59e0b 0%, #b45309 60%, #78350f 100%)",
-    photoId: food.burgerSimples.id,
+    photoId: food.burgerSimple.id, // burger artesanal alternativo (verified)
   },
   {
     id: "coca",
@@ -86,7 +86,7 @@ const PRODUCTS: Product[] = [
     desc: "Lata gelada",
     price: 7.0,
     gradient: "linear-gradient(135deg, #ef4444 0%, #b91c1c 60%, #7f1d1d 100%)",
-    photoId: food.soda.id,
+    // Sem photoId — não temos foto fiel de refrigerante. Cai no gradient.
   },
   {
     id: "fritas",
@@ -94,7 +94,7 @@ const PRODUCTS: Product[] = [
     desc: "Porção grande, cheddar e bacon",
     price: 22.0,
     gradient: "linear-gradient(135deg, #fbbf24 0%, #ca8a04 60%, #854d0e 100%)",
-    photoId: food.burgerCombo.id,
+    photoId: food.fries.id, // porção de batata frita real (verified)
   },
 ];
 

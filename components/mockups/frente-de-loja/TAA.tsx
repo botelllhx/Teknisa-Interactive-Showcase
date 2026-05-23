@@ -29,38 +29,36 @@ import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
 import { food, pexels } from "@/lib/photos";
 
-// Per-product Pexels photo IDs. Lookup by product id — products without a
-// match fall back to the legacy emoji + gradient block (no photo regression).
+// Per-product Pexels photo IDs. Only mapped when the photo TRULY matches
+// what the product is — never force a generic photo on a specific dish.
+// Products without an entry fall back to the legacy emoji + gradient block.
+// See lib/photos.ts for the verification rule.
 const PRODUCT_PHOTO: Record<string, number> = {
   // Restaurante Central — Brazilian dishes
-  "carne-boi": food.costela.id,
-  "frango-aceb": food.frango.id,
-  costela: food.costela.id,
-  "file-mignon": food.costela.id,
-  "frango-grelhado": food.frango.id,
-  "combo-15": food.salmao.id,
-  "salmao-sashimi": food.salmao.id,
-  "salmao-grelhado": food.salmao.id,
-  tilapia: food.salmao.id,
-  "penne-funghi": food.pasta.id,
-  spaghetti: food.pastaCarbonara.id,
+  "carne-boi": food.beefSteak.id, // bife fatiado, próximo de carne de boi
+  "frango-aceb": food.chickenRoasted.id, // frango assado com legumes
+  costela: food.beefSteak.id, // sliced steak ~ costela fatiada
+  "frango-grelhado": food.chickenRoasted.id,
+  "penne-funghi": food.pastaCream.id, // penne ao molho branco com cogumelos
+  spaghetti: food.pastaTomato.id, // penne ao tomate (closest pasta match)
   petit: food.chocolateCake.id,
-  pudim: food.chocolateCake.id,
-  "suco-laranja": food.smoothie.id,
-  agua: food.soda.id,
-  coca: food.soda.id,
   // Astrobox — pizza themed
-  "combo-basico": food.pizzaMargherita.id,
-  "combo-astrobox": food.burgerCombo.id,
-  calabresa: food.pizzaMargherita.id,
-  "frango-estelar": food.pizzaMargherita.id,
-  marguerita: food.pizzaMargherita.id,
-  "pizza-japa": food.pizzaMargherita.id,
-  atum: food.pizzaMargherita.id,
-  lasanha: food.pasta.id,
+  calabresa: food.pizza.id, // pizza de calabresa real (verified)
+  marguerita: food.pizza.id,
+  "pizza-japa": food.pizza.id,
+  atum: food.pizza.id,
+  "frango-estelar": food.pizza.id,
+  "combo-basico": food.pizza.id,
+  "combo-astrobox": food.burgerCheese.id, // o combo astrobox tem hambúrguer
+  lasanha: food.pastaTomato.id,
   brownie: food.chocolateCake.id,
-  "coca-600": food.soda.id,
-  guarana: food.soda.id,
+  // INTENTIONALLY OMITTED (no faithful photo → icon fallback used):
+  //   file-mignon (não temos foto fiel de filé mignon ao molho madeira)
+  //   combo-15, salmao-sashimi (sushi/sashimi — nenhuma foto fiel)
+  //   salmao-grelhado, tilapia (poderiam usar fishGrilled mas só temos
+  //     uma única foto de peixe, então deixamos para o emoji 🐟)
+  //   suco-laranja, agua, coca, coca-600, guarana, pudim (bebidas/sobremesas
+  //     sem foto fiel verificada)
 };
 
 interface TAAProps {

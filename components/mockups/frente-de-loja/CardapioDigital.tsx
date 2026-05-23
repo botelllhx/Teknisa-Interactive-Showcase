@@ -6,10 +6,12 @@ import Image from "next/image";
 import { useTourLive } from "@/lib/tourState";
 import { food, venues, pexels } from "@/lib/photos";
 
+// Only verified-match photos. Add new entries only after curl-viewing the
+// actual Pexels image. See lib/photos.ts §VERIFICATION RULE.
 const DISH_PHOTO_ID: Record<string, number> = {
-  marguerita: food.pizzaMargherita.id,
-  frango: food.frango.id,
-  sobremesa: food.chocolateCake.id,
+  marguerita: food.pizza.id, // pizza fatiada real (verified)
+  frango: food.chickenRoasted.id, // frango assado com legumes (verified)
+  sobremesa: food.chocolateCake.id, // bolo de chocolate (verified)
 };
 import {
   Home,

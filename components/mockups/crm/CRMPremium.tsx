@@ -70,7 +70,7 @@ const STORES: Establishment[] = [
     initial: "K",
     cashbackPct: 10,
     banner: "Dia das Mães · 10% de cashback",
-    photoId: food.costela.id,
+    photoId: food.beefSteak.id, // restaurante de carnes
   },
   {
     id: "madero",
@@ -81,7 +81,7 @@ const STORES: Establishment[] = [
     bg: "linear-gradient(135deg, #c2410c 0%, #7c2d12 60%, #431407 100%)",
     initial: "M",
     cashbackPct: 8,
-    photoId: food.burgerArtesanal.id,
+    photoId: food.burgerCheese.id, // Madero é hamburgueria
   },
   {
     id: "baked",
@@ -92,7 +92,7 @@ const STORES: Establishment[] = [
     bg: "linear-gradient(135deg, #020788 0%, #1a1fa8 60%, #3b42c4 100%)",
     initial: "B",
     cashbackPct: 12,
-    photoId: venues.restaurantModern.id,
+    photoId: venues.restaurantModern.id, // interior moderno (verified)
   },
   {
     id: "publico",
@@ -103,7 +103,7 @@ const STORES: Establishment[] = [
     bg: "linear-gradient(135deg, #92400e 0%, #422006 60%, #1c1207 100%)",
     initial: "P",
     cashbackPct: 5,
-    photoId: venues.coffeeShop.id,
+    photoId: venues.coffeeShop.id, // ambiente de café/bar (verified)
   },
 ];
 

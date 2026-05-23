@@ -114,6 +114,8 @@ interface Promo {
   desc: string;
   price: number;
   bg: string;
+  photoId?: number;
+  oldPrice?: number;
 }
 
 const PROMOS: Promo[] = [
@@ -123,7 +125,9 @@ const PROMOS: Promo[] = [
     name: "Combo Cheese Frango",
     desc: "Filé crocante, batata gourmet, suco natural",
     price: 48.0,
+    oldPrice: 56.0,
     bg: "linear-gradient(135deg, #fbbf24 0%, #b45309 60%, #451a03 100%)",
+    photoId: food.chickenRoasted.id,
   },
   {
     id: "p2",
@@ -131,7 +135,9 @@ const PROMOS: Promo[] = [
     name: "Combo Família",
     desc: "4 lanches + 4 bebidas + porção de fritas G",
     price: 89.0,
+    oldPrice: 104.0,
     bg: "linear-gradient(135deg, #f59e0b 0%, #92400e 60%, #422006 100%)",
+    photoId: food.burgerCheese.id,
   },
   {
     id: "p3",
@@ -140,6 +146,7 @@ const PROMOS: Promo[] = [
     desc: "Wrap de frango, salada quinoa, suco verde",
     price: 36.0,
     bg: "linear-gradient(135deg, #fde68a 0%, #ca8a04 60%, #713f12 100%)",
+    photoId: food.saladBowl.id,
   },
 ];
 
@@ -420,7 +427,7 @@ function HomeScreen({
         </div>
       </div>
 
-      <div className="mx-5 mt-4 pb-3" data-tour="crm-stores">
+      <div className="mx-5 mt-4 pb-2" data-tour="crm-stores">
         <div className="flex items-center justify-between">
           <p className="font-ui text-[14px] font-bold text-white">
             Próximos de você
@@ -438,6 +445,84 @@ function HomeScreen({
               delay={i * 0.06}
               target={s.id === "kharina"}
             />
+          ))}
+        </div>
+      </div>
+
+      {/* Promoções imperdíveis — food product cards (referência /public CRM Premium home) */}
+      <div className="mx-5 mt-3 pb-4">
+        <div className="flex items-center justify-between">
+          <p className="font-ui text-[14px] font-bold text-white">
+            Promoções imperdíveis
+          </p>
+          <button
+            type="button"
+            className="text-[10px] font-medium"
+            style={{ color: COLORS.amber }}
+          >
+            Ver todas →
+          </button>
+        </div>
+        <div className="mt-2 grid grid-cols-3 gap-2">
+          {PROMOS.map((p, i) => (
+            <motion.button
+              key={p.id}
+              type="button"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.05, duration: 0.22 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                const store = STORES.find((s) => s.id === p.storeId);
+                if (store) onOpen(store);
+              }}
+              className="overflow-hidden rounded-xl text-left"
+              style={{ background: COLORS.bgLayer }}
+            >
+              <div className="relative aspect-square w-full overflow-hidden">
+                {p.photoId ? (
+                  <Image
+                    src={pexels(p.photoId, { w: 200, h: 200, fit: "crop" })}
+                    alt={p.name}
+                    fill
+                    unoptimized
+                    sizes="108px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0" style={{ background: p.bg }} />
+                )}
+                {p.oldPrice && (
+                  <span
+                    className="absolute right-1 top-1 rounded-full px-1 py-px text-[7px] font-bold uppercase text-black shadow"
+                    style={{ background: COLORS.amber }}
+                  >
+                    {Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100)}%
+                  </span>
+                )}
+              </div>
+              <div className="p-1.5">
+                <p className="font-ui text-[9.5px] font-bold leading-tight text-white line-clamp-2">
+                  {p.name}
+                </p>
+                <div className="mt-0.5 flex items-baseline gap-1">
+                  {p.oldPrice && (
+                    <span
+                      className="text-[7px] tabular-nums line-through"
+                      style={{ color: COLORS.textMuted }}
+                    >
+                      R${p.oldPrice.toFixed(0)}
+                    </span>
+                  )}
+                  <span
+                    className="font-ui text-[10px] font-bold tabular-nums"
+                    style={{ color: COLORS.amber }}
+                  >
+                    R$ {p.price.toFixed(2).replace(".", ",")}
+                  </span>
+                </div>
+              </div>
+            </motion.button>
           ))}
         </div>
       </div>
@@ -764,26 +849,57 @@ function StoreScreen({
                     : "2px solid transparent",
                 }}
               >
-                <div
-                  className="h-14 w-14 flex-none rounded-md"
-                  style={{ background: p.bg }}
-                />
+                <div className="relative h-16 w-16 flex-none overflow-hidden rounded-lg">
+                  {p.photoId ? (
+                    <Image
+                      src={pexels(p.photoId, { w: 128, h: 128, fit: "crop" })}
+                      alt={p.name}
+                      fill
+                      unoptimized
+                      sizes="64px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0" style={{ background: p.bg }} />
+                  )}
+                  {p.oldPrice && (
+                    <span
+                      className="absolute left-1 top-1 rounded-full px-1 py-px text-[7px] font-bold uppercase tracking-wider text-black shadow"
+                      style={{ background: COLORS.amber }}
+                    >
+                      {Math.round(
+                        ((p.oldPrice - p.price) / p.oldPrice) * 100,
+                      )}
+                      % off
+                    </span>
+                  )}
+                </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-ui text-[12px] font-bold text-white">
+                  <p className="font-ui text-[12px] font-bold leading-tight text-white">
                     {p.name}
                   </p>
                   <p
-                    className="mt-0.5 text-[10px]"
+                    className="mt-0.5 line-clamp-2 text-[10px] leading-snug"
                     style={{ color: COLORS.textMuted }}
                   >
                     {p.desc}
                   </p>
-                  <p
-                    className="mt-1 font-ui text-[14px] font-bold tabular-nums"
-                    style={{ color: COLORS.amber }}
-                  >
-                    R$ {p.price.toFixed(2).replace(".", ",")}
-                  </p>
+                  <div className="mt-1 flex items-baseline gap-1.5">
+                    <span
+                      className="font-ui text-[14px] font-bold tabular-nums"
+                      style={{ color: COLORS.amber }}
+                    >
+                      R$ {p.price.toFixed(2).replace(".", ",")}
+                    </span>
+                    {p.oldPrice && (
+                      <span
+                        className="font-ui text-[10px] tabular-nums line-through"
+                        style={{ color: COLORS.textMuted }}
+                      >
+                        R$ {p.oldPrice.toFixed(2).replace(".", ",")}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex flex-col items-end text-right">
                   <p

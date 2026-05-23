@@ -25,6 +25,9 @@ import {
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
 import { Button } from "@/components/ui/shadcn";
+import { people } from "@/lib/photos";
+import { PersonAvatar } from "@/components/ui/PersonAvatar";
+import { StackedAvatars } from "@/components/ui/StackedAvatars";
 
 interface ApproveProps {
   step: number;
@@ -674,6 +677,77 @@ function DetailScreen({
               {comment}
             </motion.div>
           )}
+        </section>
+
+        {/* Histórico da solicitação — chat-style timeline (PMO Golden Garden ref) */}
+        <section className="mt-4">
+          <div className="flex items-center justify-between">
+            <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
+              Histórico
+            </p>
+            <StackedAvatars
+              size={20}
+              max={3}
+              people={[
+                { name: request.by, photo: people.mariana },
+                { name: "Carla Ribeiro", photo: people.juliana },
+                { name: "Bruno Sampaio", photo: people.carlos },
+              ]}
+              extraLabel="3"
+            />
+          </div>
+          <div className="mt-2 space-y-2">
+            {[
+              {
+                who: request.by,
+                photo: people.mariana,
+                when: "Há 2 dias",
+                msg: `Boa tarde, encaminhando ${request.title.toLowerCase()} para aprovação. Comparativo de cotações em anexo.`,
+              },
+              {
+                who: "Carla Ribeiro",
+                photo: people.juliana,
+                when: "Há 1 dia",
+                msg: `Analisei os 3 lances. Sugiro aprovar — desvio de ${request.delta > 0 ? "+" : ""}${request.delta}% está dentro da política do mês.`,
+                highlight: true,
+              },
+              {
+                who: "Bruno Sampaio",
+                photo: people.carlos,
+                when: "12 min",
+                msg: "Pode subir para o gestor agora. Prazo do fornecedor expira amanhã às 18h.",
+              },
+            ].map((m, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -6 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.05 * i, duration: 0.22 }}
+                className={cn(
+                  "flex items-start gap-2 rounded-xl p-2.5",
+                  m.highlight
+                    ? "bg-gradient-to-r from-brand-ghost via-white to-brand-subtle/40"
+                    : "bg-white",
+                )}
+                style={{ border: "1px solid rgba(2,7,136,0.06)" }}
+              >
+                <PersonAvatar photo={m.photo} name={m.who} size={28} />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="font-ui text-[11px] font-bold text-neutral-900">
+                      {m.who}
+                    </p>
+                    <span className="font-ui text-[9px] tabular-nums text-neutral-400">
+                      {m.when}
+                    </span>
+                  </div>
+                  <p className="mt-0.5 font-ui text-[11px] leading-snug text-neutral-700">
+                    {m.msg}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </section>
       </div>
 

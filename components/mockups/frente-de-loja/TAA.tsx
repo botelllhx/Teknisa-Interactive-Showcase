@@ -28,6 +28,7 @@ import {
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
 import { food, pexels } from "@/lib/photos";
+import { GradientIcon } from "@/components/ui/GradientIcon";
 
 // Per-product Pexels photo IDs. Only mapped when the photo TRULY matches
 // what the product is — never force a generic photo on a specific dish.
@@ -843,27 +844,55 @@ function HomeView({
         </motion.button>
         {CATEGORIES.map((c) => {
           const active = c.id === activeCategory;
+          // Map category to a gradient tone for the sidebar icon
+          const tone: "amber" | "success" | "teal" | "brand" | "rose" =
+            c.id === "promo"
+              ? "amber"
+              : c.id === "pratos" || c.id === "peixes"
+                ? "brand"
+                : c.id === "sushi"
+                  ? "teal"
+                  : c.id === "massas"
+                    ? "amber"
+                    : c.id === "sobremesas"
+                      ? "rose"
+                      : "success";
           return (
             <motion.button
               key={c.id}
               type="button"
               whileTap={{ scale: 0.95 }}
+              whileHover={{ x: 1 }}
               onClick={() => onPickCategory(c.id)}
               data-tour={c.id === "promo" ? "taa-cat-lanches" : undefined}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 py-3 transition-colors",
+                "relative flex flex-col items-center justify-center gap-1 py-2.5 transition-colors",
                 active ? "" : "hover:bg-neutral-50",
               )}
               style={{
                 background: active ? skin.brandSoft : undefined,
-                color: active ? skin.brand : "#6b7280",
-                borderLeft: active
-                  ? `3px solid ${skin.brand}`
-                  : "3px solid transparent",
               }}
             >
-              <c.Icon size={18} strokeWidth={1.75} />
-              <span className="font-ui text-[9px] font-medium leading-tight">
+              {active && (
+                <motion.span
+                  layoutId="taa-active-cat"
+                  className="absolute inset-y-0 left-0 w-[3px] rounded-r-full"
+                  style={{ background: skin.brand }}
+                />
+              )}
+              <GradientIcon
+                icon={<c.Icon />}
+                tone={tone}
+                size={28}
+                variant={active ? "solid" : "soft"}
+              />
+              <span
+                className="font-ui text-[9px] font-bold leading-tight"
+                style={{
+                  color: active ? skin.brand : "#6b7280",
+                  letterSpacing: "0.04em",
+                }}
+              >
                 {c.label}
               </span>
             </motion.button>

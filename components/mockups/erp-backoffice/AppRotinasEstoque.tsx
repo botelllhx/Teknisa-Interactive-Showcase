@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Badge } from "@/components/ui/shadcn";
+import { GradientIcon } from "@/components/ui/GradientIcon";
 
 interface AppRotinasEstoqueProps {
   step: number;
@@ -49,13 +50,60 @@ export function AppRotinasEstoqueMockup({ step }: AppRotinasEstoqueProps) {
 function TaskListView() {
   return (
     <div className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-3">
-      <div className="rounded-xl bg-brand-ghost px-3 py-2">
-        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-brand">
-          Hoje
-        </p>
-        <p className="font-ui text-[13px] font-bold text-neutral-900">
-          {TASKS.length} tarefas atribuídas
-        </p>
+      <div
+        className="overflow-hidden rounded-2xl bg-ai-soft p-3.5"
+        style={{
+          border: "1px solid rgba(2,7,136,0.08)",
+        }}
+      >
+        <div className="flex items-center gap-2.5">
+          <GradientIcon icon={<PackageSearch />} tone="brand" size={36} />
+          <div>
+            <p
+              className="font-ui text-[10px] font-bold uppercase text-brand"
+              style={{ letterSpacing: "0.18em" }}
+            >
+              Hoje · 21 mai
+            </p>
+            <p
+              className="mt-0.5 font-ui text-[17px] font-bold text-neutral-900"
+              style={{ letterSpacing: "-0.01em" }}
+            >
+              {TASKS.length} tarefas atribuídas
+            </p>
+          </div>
+        </div>
+        <div className="mt-2 grid grid-cols-3 gap-1.5">
+          {[
+            { l: "Pendentes", v: "2", tone: "warning" as const },
+            { l: "Concluídas", v: "1", tone: "success" as const },
+            { l: "Itens hoje", v: "54", tone: "brand" as const },
+          ].map((k) => (
+            <div
+              key={k.l}
+              className="rounded-lg bg-white/80 px-2 py-1.5 backdrop-blur"
+              style={{ border: "1px solid rgba(0,0,0,0.04)" }}
+            >
+              <p
+                className="font-ui text-[8px] font-bold uppercase text-neutral-400"
+                style={{ letterSpacing: "0.14em" }}
+              >
+                {k.l}
+              </p>
+              <p
+                className={cn(
+                  "mt-0.5 font-ui text-[15px] font-bold tabular-nums leading-none",
+                  k.tone === "warning" && "text-warning",
+                  k.tone === "success" && "text-success",
+                  k.tone === "brand" && "text-brand",
+                )}
+                style={{ letterSpacing: "-0.02em" }}
+              >
+                {k.v}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div data-tour="ae-task-list" className="mt-1 space-y-2">

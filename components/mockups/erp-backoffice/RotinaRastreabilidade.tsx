@@ -130,45 +130,118 @@ export function RotinaRastreabilidadeMockup({
               transition={{ duration: 0.25 }}
               className="flex-1"
             >
-              <Card className="p-4">
-                <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
-                  Linha do tempo
-                </p>
-                <ol className="relative mt-3 space-y-3 border-l-2 border-dashed border-neutral-200 pl-5">
-                  {TIMELINE.map((t, i) => (
-                    <motion.li
-                      key={t.label}
-                      initial={{ x: 4, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.06 * i, duration: 0.22 }}
-                      className="relative"
+              <Card
+                className="p-4 shadow-elevated"
+                style={{ borderColor: "rgba(2,7,136,0.06)" }}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p
+                      className="font-ui text-[10px] font-bold uppercase text-brand"
+                      style={{ letterSpacing: "0.18em" }}
                     >
-                      <span
-                        className={cn(
-                          "absolute -left-[26px] top-0.5 flex h-5 w-5 items-center justify-center rounded-full",
-                          t.tone === "active"
-                            ? "bg-brand text-white shadow-brand"
-                            : "bg-brand-subtle text-brand",
-                        )}
-                      >
-                        <t.Icon size={11} strokeWidth={2.25} />
-                      </span>
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="font-ui text-[12px] font-bold text-neutral-900">
+                      Linha do tempo · lote AP247
+                    </p>
+                    <p
+                      className="mt-0.5 font-ui text-[16px] font-bold text-neutral-900"
+                      style={{ letterSpacing: "-0.01em" }}
+                    >
+                      Trajeto completo em {TIMELINE.length} etapas
+                    </p>
+                  </div>
+                  <Badge variant="success" className="text-[10px]">
+                    Sem inconsistências
+                  </Badge>
+                </div>
+
+                {/* Horizontal milestone rail (PMO Golden Garden style) */}
+                <div className="relative mt-6 overflow-hidden pb-2 pt-1">
+                  {/* connector line behind nodes */}
+                  <div
+                    aria-hidden
+                    className="absolute left-4 right-4 top-[36px] h-px"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, rgba(2,7,136,0.18) 0%, rgba(2,7,136,0.45) 50%, rgba(2,7,136,0.18) 100%)",
+                    }}
+                  />
+                  <ol
+                    className="relative grid"
+                    style={{
+                      gridTemplateColumns: `repeat(${TIMELINE.length}, minmax(0, 1fr))`,
+                    }}
+                  >
+                    {TIMELINE.map((t, i) => {
+                      const isActive = t.tone === "active";
+                      const isPast = i < TIMELINE.findIndex((x) => x.tone === "active");
+                      const node = isActive ? "active" : isPast ? "done" : "pending";
+                      return (
+                        <motion.li
+                          key={t.label}
+                          initial={{ y: 6, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ delay: 0.06 * i, duration: 0.3 }}
+                          className="relative flex flex-col items-center text-center"
+                        >
+                          {/* Node */}
+                          <div className="relative flex h-[44px] w-[44px] items-center justify-center">
+                            {node === "active" && (
+                              <motion.span
+                                aria-hidden
+                                animate={{ scale: [1, 1.55, 1], opacity: [0.4, 0, 0.4] }}
+                                transition={{
+                                  duration: 1.8,
+                                  repeat: Infinity,
+                                  ease: "easeInOut",
+                                }}
+                                className="absolute inset-0 rounded-full bg-brand/30"
+                              />
+                            )}
+                            <span
+                              className={cn(
+                                "relative z-10 flex h-9 w-9 items-center justify-center rounded-full ring-4 ring-white",
+                                node === "active" &&
+                                  "bg-gradient-to-br from-brand to-[#1a1fa8] text-white shadow-brand",
+                                node === "done" &&
+                                  "bg-success text-white shadow-[0_4px_14px_rgba(22,163,74,0.30)]",
+                                node === "pending" &&
+                                  "bg-white text-neutral-400",
+                              )}
+                              style={{
+                                border:
+                                  node === "pending"
+                                    ? "1.5px solid rgba(0,0,0,0.10)"
+                                    : undefined,
+                              }}
+                            >
+                              <t.Icon size={15} strokeWidth={2.2} />
+                            </span>
+                          </div>
+                          {/* Label */}
+                          <p
+                            className={cn(
+                              "mt-2 font-ui text-[10.5px] font-bold leading-tight",
+                              node === "active"
+                                ? "text-brand"
+                                : node === "done"
+                                  ? "text-neutral-700"
+                                  : "text-neutral-400",
+                            )}
+                            style={{ letterSpacing: "-0.005em" }}
+                          >
                             {t.label}
                           </p>
-                          <p className="font-ui text-[11px] text-neutral-500">
+                          <p className="mt-0.5 px-1 font-ui text-[9px] leading-tight text-neutral-400 line-clamp-2">
                             {t.sub}
                           </p>
-                        </div>
-                        <span className="font-ui text-[10px] tabular-nums text-neutral-400">
-                          {t.when}
-                        </span>
-                      </div>
-                    </motion.li>
-                  ))}
-                </ol>
+                          <span className="mt-1 font-ui text-[9px] font-bold tabular-nums text-neutral-400">
+                            {t.when}
+                          </span>
+                        </motion.li>
+                      );
+                    })}
+                  </ol>
+                </div>
               </Card>
             </motion.div>
           )}

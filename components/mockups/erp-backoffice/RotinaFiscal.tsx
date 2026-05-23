@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Badge, Button, Card } from "@/components/ui/shadcn";
+import { RadialGauge } from "@/components/ui/charts";
+import { GradientIcon } from "@/components/ui/GradientIcon";
 
 interface RotinaFiscalProps {
   step: number;
@@ -70,48 +72,80 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
 
       <main className="grid flex-1 grid-cols-[1fr_360px] gap-4 overflow-hidden p-4">
         <section className="flex flex-col gap-3 overflow-hidden">
-          <Card data-tour="rf-obligations" className="p-4">
-            <div className="flex items-center justify-between">
-              <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
-                Obrigações do mês
-              </p>
-              <span className="font-ui text-[11px] text-neutral-500">
-                4 itens
-              </span>
-            </div>
-            <ul className="mt-2.5 space-y-1.5">
-              {OBLIGATIONS.map((o, i) => (
-                <motion.li
-                  key={o.code}
-                  initial={{ x: 6, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.04 * i, duration: 0.22 }}
-                  className="flex items-center justify-between rounded-lg bg-neutral-50 px-3 py-2"
+          <Card
+            data-tour="rf-obligations"
+            className="p-4 shadow-elevated"
+            style={{ borderColor: "rgba(2,7,136,0.06)" }}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <p
+                  className="font-ui text-[10px] font-bold uppercase text-brand"
+                  style={{ letterSpacing: "0.18em" }}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span
-                      className={cn(
-                        "h-2 w-2 rounded-full",
-                        o.status === "ok" && "bg-success",
-                        o.status === "pending" && "bg-warning",
-                        o.status === "next" && "bg-neutral-300",
-                      )}
-                    />
-                    <div>
-                      <p className="font-ui text-[12px] font-bold text-neutral-900">
-                        {o.code}
-                      </p>
-                      <p className="font-ui text-[10px] text-neutral-500">
-                        {o.desc}
-                      </p>
+                  Obrigações do mês
+                </p>
+                <p
+                  className="mt-1 font-ui text-[18px] font-bold text-neutral-900"
+                  style={{ letterSpacing: "-0.01em" }}
+                >
+                  1 de 4 entregue
+                </p>
+                <p className="mt-0.5 font-ui text-[11px] text-neutral-500">
+                  Próximo vencimento em 3 dias úteis
+                </p>
+              </div>
+              <RadialGauge
+                value={25}
+                size={120}
+                label="25%"
+                sublabel="Concluído"
+                colors={{ from: "#1a1fa8", to: "#020788" }}
+              />
+            </div>
+            <ul className="mt-3 space-y-1.5">
+              {OBLIGATIONS.map((o, i) => {
+                const tone =
+                  o.status === "ok"
+                    ? "success"
+                    : o.status === "pending"
+                      ? "warning"
+                      : "brand";
+                return (
+                  <motion.li
+                    key={o.code}
+                    initial={{ x: 6, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.04 * i, duration: 0.22 }}
+                    whileHover={{ y: -1 }}
+                    className="group flex items-center justify-between rounded-xl bg-white px-3 py-2 transition-shadow hover:shadow-subtle"
+                    style={{ border: "1px solid rgba(0,0,0,0.04)" }}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <GradientIcon
+                        icon={<FileText />}
+                        tone={tone as "success" | "warning" | "brand"}
+                        size={28}
+                      />
+                      <div>
+                        <p
+                          className="font-ui text-[12px] font-bold text-neutral-900"
+                          style={{ letterSpacing: "-0.005em" }}
+                        >
+                          {o.code}
+                        </p>
+                        <p className="font-ui text-[10px] text-neutral-500">
+                          {o.desc}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <span className="flex items-center gap-1.5 font-ui text-[11px] tabular-nums text-neutral-500">
-                    <Calendar size={11} strokeWidth={2} />
-                    {o.due}
-                  </span>
-                </motion.li>
-              ))}
+                    <span className="flex items-center gap-1.5 font-ui text-[11px] tabular-nums text-neutral-500">
+                      <Calendar size={11} strokeWidth={2} />
+                      {o.due}
+                    </span>
+                  </motion.li>
+                );
+              })}
             </ul>
           </Card>
 

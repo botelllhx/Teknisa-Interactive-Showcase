@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Badge, Button, Card } from "@/components/ui/shadcn";
+import { people } from "@/lib/photos";
+import { StackedAvatars } from "@/components/ui/StackedAvatars";
 
 interface MesaOperacoesProps {
   step: number;
@@ -158,6 +160,17 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
                     <p className="font-ui text-[10px] text-neutral-500">
                       +2 disponíveis
                     </p>
+                    <div className="mt-1.5">
+                      <StackedAvatars
+                        size={26}
+                        max={3}
+                        people={[
+                          { name: "Mariana Costa", photo: people.mariana },
+                          { name: "Ana Costa", photo: people.ana },
+                          { name: "Sofia Almeida", photo: people.sofia },
+                        ]}
+                      />
+                    </div>
                   </div>
                   <ArrowRight
                     size={18}
@@ -169,6 +182,16 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
                     <p className="font-ui text-[10px] text-neutral-500">
                       precisa cobrir
                     </p>
+                    <div className="mt-1.5">
+                      <StackedAvatars
+                        size={26}
+                        max={2}
+                        people={[
+                          { name: "Pedro Souza", photo: people.pedro },
+                          { name: "Diego Lima", photo: people.diego },
+                        ]}
+                      />
+                    </div>
                   </div>
                 </div>
                 <Button

@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Badge } from "@/components/ui/shadcn";
+import { people, venues, food, pexels } from "@/lib/photos";
+import { PersonAvatar } from "@/components/ui/PersonAvatar";
 
 interface AppComercialProps {
   step: number;
@@ -33,13 +35,25 @@ const PRODUCTS = [
 export function AppComercialMockup({ step }: AppComercialProps) {
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-white font-ui text-neutral-800">
-      <header className="border-b border-brand/8 px-4 pb-2 pt-3">
-        <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
-          App Comercial
-        </p>
-        <p className="font-ui text-[10px] text-neutral-500">
-          Lucas P. · Representante Sul
-        </p>
+      <header className="flex items-center gap-3 border-b border-brand/8 px-4 pb-2.5 pt-3">
+        <PersonAvatar
+          photo={people.rafael}
+          name="Lucas Pereira"
+          size={36}
+          status="online"
+        />
+        <div className="min-w-0 flex-1 leading-tight">
+          <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
+            App Comercial
+          </p>
+          <p className="font-ui text-[12px] font-bold text-neutral-900">
+            Lucas Pereira
+          </p>
+          <p className="font-ui text-[10px] text-neutral-500">
+            Representante Sul · Maio 2026
+          </p>
+        </div>
+        <Badge variant="success">Meta 78%</Badge>
       </header>
 
       <main className="flex flex-1 flex-col overflow-hidden">

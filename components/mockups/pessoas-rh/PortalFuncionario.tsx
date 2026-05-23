@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Badge } from "@/components/ui/shadcn";
+import { people } from "@/lib/photos";
+import { PersonAvatar } from "@/components/ui/PersonAvatar";
 
 interface PortalFuncionarioProps {
   step: number;
@@ -42,13 +44,24 @@ export function PortalFuncionarioMockup({ step }: PortalFuncionarioProps) {
 function LoginView() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 px-5">
-      <motion.div
-        animate={{ scale: [1, 1.05, 1] }}
-        transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-        className="flex h-20 w-20 items-center justify-center rounded-2xl bg-brand-subtle text-brand"
-      >
-        <Fingerprint size={36} strokeWidth={2} />
-      </motion.div>
+      <div className="relative">
+        <PersonAvatar
+          photo={people.mariana}
+          name="Mariana Costa"
+          size={96}
+          ring
+          className="shadow-card"
+        />
+        <motion.span
+          aria-hidden
+          animate={{ scale: [1, 1.18, 1], opacity: [0.55, 0, 0.55] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 rounded-full ring-2 ring-brand/45"
+        />
+        <span className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-brand text-white shadow-brand ring-2 ring-white">
+          <Fingerprint size={18} strokeWidth={2.25} />
+        </span>
+      </div>
       <div className="text-center">
         <p className="font-ui text-[16px] font-bold text-neutral-900">
           Bem-vinda, Mariana

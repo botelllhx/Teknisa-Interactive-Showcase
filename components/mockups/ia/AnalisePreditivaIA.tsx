@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
@@ -9,12 +9,19 @@ import {
   CheckCircle2,
   ArrowUpRight,
   Sun,
-  Moon,
   TrendingUp,
+  AlertTriangle,
+  Cloud,
+  Calendar,
+  History,
+  PartyPopper,
+  Zap,
+  RefreshCw,
+  Target,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
-import { AreaChart } from "@/components/ui/charts";
+import { AreaChart, RadialGauge } from "@/components/ui/charts";
 import { PersonAvatar } from "@/components/ui/PersonAvatar";
 import { StackedAvatars } from "@/components/ui/StackedAvatars";
 import { people } from "@/lib/photos";
@@ -24,18 +31,20 @@ interface APIAProps {
 }
 
 /**
- * Análise Preditiva — restaurant-focused ML.
+ * Forecast IA — restaurant demand/cost/waste prediction.
  *
- * v13.2 rewrite: stripped down to 4 sections following the Noteflow
- * reference (airy, generous spacing, very few cards per view). Previous
- * version was cramming 7+ panels into one screen; that's gone. Order:
+ * v13.24 — renomeado de "Análise Preditiva" para "Forecast IA" (conflito
+ * com Análise Preditiva de turnover em Pessoas e RH). Redesign focado em:
  *
- *   1. Greeting hero (similar to Noteflow "Good morning Sajibur")
- *   2. 3-up KPI strip (only 3 cards, big numbers, room to breathe)
- *   3. Forecast chart — one big card, dominant visually
- *   4. AI decisions feed — single card, clean list (no agent dashboard
- *      gradient block, no feature importance, no model gauge — the
- *      kitchen sink is gone)
+ * 1. Hero compacto (uma linha) — não mais bloco de 150px
+ * 2. KPI strip 3-up slim (apia-kpis preserved)
+ * 3. Grid 2-col: Forecast (1.45fr, taller chart) | XGBoost model (1fr)
+ *    - O selector apia-model agora finalmente existe no DOM com card visível
+ *    - Gauge 87,4% + métricas + feature importance bars + retrain button
+ * 4. Decisões inline ao invés de lista grande — só pending + slim history
+ *
+ * Resultado: menos cards, mais densidade útil, XGBoost visível e
+ * interativo, gráfico ganhou altura (~260px) e parou de parecer esticado.
  */
 export function AnalisePreditivaIAMockup({ step }: APIAProps) {
   const patchLive = useTourLive((s) => s.patch);
@@ -52,10 +61,13 @@ export function AnalisePreditivaIAMockup({ step }: APIAProps) {
       }}
     >
       <Header />
-      <main className="flex flex-1 flex-col gap-6 overflow-y-auto px-10 py-8">
+      <main className="flex flex-1 flex-col gap-4 overflow-y-auto px-8 py-6">
         <GreetingHero />
         <KPIRow />
-        <ForecastCard />
+        <div className="grid grid-cols-[1.45fr_1fr] gap-4">
+          <ForecastCard />
+          <XGBoostCard />
+        </div>
         <DecisionsCard />
       </main>
     </div>
@@ -63,12 +75,12 @@ export function AnalisePreditivaIAMockup({ step }: APIAProps) {
 }
 
 // ============================================================================
-// Header — slim, Noteflow-style with right-side avatar group
+// Header
 // ============================================================================
 
 function Header() {
   return (
-    <header className="flex h-14 items-center justify-between border-b border-neutral-200/70 bg-white/80 px-10 backdrop-blur">
+    <header className="flex h-14 items-center justify-between border-b border-neutral-200/70 bg-white/80 px-8 backdrop-blur">
       <div className="flex items-center gap-3">
         <Image src="/logo-teknisa.svg" alt="Teknisa" width={88} height={16} />
         <span className="h-5 w-px bg-neutral-200" />
@@ -85,10 +97,10 @@ function Header() {
             <Sparkles size={13} strokeWidth={2.25} />
           </span>
           <p
-            className="font-display text-[13.5px] font-bold text-neutral-900"
+            className="font-display text-[14px] font-bold text-neutral-900"
             style={{ letterSpacing: "-0.018em" }}
           >
-            Análise Preditiva
+            Forecast IA
           </p>
           <span
             className="ml-1 inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-success"
@@ -99,7 +111,7 @@ function Header() {
               transition={{ duration: 1.4, repeat: Infinity }}
               className="h-1.5 w-1.5 rounded-full bg-success"
             />
-            Modelo ativo
+            XGBoost v4.2.1
           </span>
         </div>
       </div>
@@ -126,24 +138,16 @@ function Header() {
 }
 
 // ============================================================================
-// Greeting hero
+// Greeting — compact single-line strip
 // ============================================================================
 
 function GreetingHero() {
   return (
-    <section className="flex items-start justify-between gap-6">
-      <div className="flex-1">
-        <div className="flex items-center gap-2">
-          <Sun size={14} strokeWidth={2.25} className="text-amber-500" />
-          <span
-            className="font-ui text-[11px] font-medium uppercase text-neutral-500"
-            style={{ letterSpacing: "0.08em" }}
-          >
-            Bom dia, João
-          </span>
-        </div>
-        <h1
-          className="mt-2 font-display text-[34px] font-bold leading-[1.05] text-neutral-900"
+    <section className="flex items-center justify-between gap-6">
+      <div className="flex items-center gap-3">
+        <Sun size={15} strokeWidth={2.25} className="text-amber-500" />
+        <p
+          className="font-display text-[24px] font-bold leading-tight text-neutral-900"
           style={{ letterSpacing: "-0.025em" }}
         >
           O modelo já tomou{" "}
@@ -158,31 +162,21 @@ function GreetingHero() {
             7 decisões
           </span>{" "}
           enquanto você dormia.
-        </h1>
-        <p
-          className="mt-2 max-w-[58ch] font-ui text-[13.5px] leading-relaxed text-neutral-500"
-          style={{ letterSpacing: "-0.005em" }}
-        >
-          Modelo XGBoost cruzando 24 meses de histórico, clima e calendário —
-          atualizado há 4 horas. Sua intervenção só é necessária quando aparece
-          algo vermelho.
         </p>
       </div>
-
       <div
-        className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-subtle"
-        style={{ border: "1px solid rgba(0,0,0,0.06)" }}
+        className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5"
+        style={{
+          border: "1px solid rgba(0,0,0,0.06)",
+          boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+        }}
       >
-        <motion.span
-          animate={{ opacity: [1, 0.4, 1] }}
-          transition={{ duration: 1.6, repeat: Infinity }}
-          className="h-1.5 w-1.5 rounded-full bg-success"
-        />
+        <RefreshCw size={11} strokeWidth={2.5} className="text-neutral-400" />
         <span
-          className="font-ui text-[11px] font-medium text-neutral-700"
+          className="font-ui text-[11px] font-medium text-neutral-600"
           style={{ letterSpacing: "-0.005em" }}
         >
-          Modelo ativo · 87,4%
+          Atualizado há 4h
         </span>
       </div>
     </section>
@@ -190,105 +184,130 @@ function GreetingHero() {
 }
 
 // ============================================================================
-// 3-up KPI row — big, breathing, Noteflow-style
+// KPI strip — slim 3-up
 // ============================================================================
 
+interface KPI {
+  id: string;
+  label: string;
+  value: string;
+  sub: string;
+  delta: string;
+  deltaTone: "up" | "warn";
+  icon: React.ReactNode;
+  accent: string;
+}
+
 function KPIRow() {
-  const kpis = [
+  const [activeKPI, setActiveKPI] = useState<string>("demanda");
+  const kpis: KPI[] = [
     {
+      id: "demanda",
       label: "Demanda prevista",
       value: "1.847",
       sub: "refeições · hoje",
       delta: "+8,2%",
-      deltaTone: "up" as const,
-      icon: <TrendingUp size={16} strokeWidth={2} />,
+      deltaTone: "up",
+      icon: <TrendingUp size={14} strokeWidth={2.25} />,
       accent: "linear-gradient(135deg, #020788, #7c3aed)",
     },
     {
+      id: "risco",
       label: "Risco de desperdício",
       value: "14,2",
       sub: "kg · acima da meta",
       delta: "Sexta · pico",
-      deltaTone: "warn" as const,
-      icon: <Brain size={16} strokeWidth={2} />,
+      deltaTone: "warn",
+      icon: <AlertTriangle size={14} strokeWidth={2.25} />,
       accent: "linear-gradient(135deg, #d97706, #f59e0b)",
     },
     {
+      id: "acuracia",
       label: "Acurácia do modelo",
       value: "87,4%",
       sub: "MAE ±42 refeições",
       delta: "+2,1pp",
-      deltaTone: "up" as const,
-      icon: <Sparkles size={16} strokeWidth={2} />,
+      deltaTone: "up",
+      icon: <Target size={14} strokeWidth={2.25} />,
       accent: "linear-gradient(135deg, #16a34a, #0d9488)",
     },
   ];
 
   return (
-    <section data-tour="apia-kpis" className="grid grid-cols-3 gap-4">
-      {kpis.map((k, i) => (
-        <motion.div
-          key={k.label}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 * i, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          className="rounded-2xl bg-white p-5"
-          style={{
-            border: "1px solid rgba(0,0,0,0.05)",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
-          }}
-        >
-          <div className="flex items-start justify-between">
+    <section data-tour="apia-kpis" className="grid grid-cols-3 gap-3">
+      {kpis.map((k, i) => {
+        const active = k.id === activeKPI;
+        return (
+          <motion.button
+            key={k.id}
+            type="button"
+            onClick={() => setActiveKPI(k.id)}
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.985 }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 * i, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className={cn(
+              "group relative flex items-center gap-4 rounded-2xl bg-white p-4 text-left transition-all",
+            )}
+            style={{
+              border: active
+                ? "1.5px solid rgba(2,7,136,0.45)"
+                : "1px solid rgba(0,0,0,0.05)",
+              boxShadow: active
+                ? "0 6px 18px rgba(2,7,136,0.12), 0 0 0 4px rgba(2,7,136,0.04)"
+                : "0 1px 2px rgba(0,0,0,0.03)",
+            }}
+          >
             <span
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-white"
+              className="flex h-10 w-10 flex-none items-center justify-center rounded-xl text-white"
               style={{ background: k.accent, boxShadow: "0 4px 12px rgba(2,7,136,0.10)" }}
             >
               {k.icon}
             </span>
-            <span
-              className={cn(
-                "font-ui text-[11px] font-medium tabular-nums",
-                k.deltaTone === "up"
-                  ? "text-success"
-                  : k.deltaTone === "warn"
-                    ? "text-warning"
-                    : "text-neutral-500",
-              )}
-              style={{ letterSpacing: "-0.005em" }}
-            >
-              {k.delta}
-            </span>
-          </div>
-          <p
-            className="mt-5 font-ui text-[12px] font-medium text-neutral-500"
-            style={{ letterSpacing: "-0.005em" }}
-          >
-            {k.label}
-          </p>
-          <p
-            className="mt-1 font-display text-[36px] font-bold leading-none tabular-nums text-neutral-900"
-            style={{ letterSpacing: "-0.03em" }}
-          >
-            {k.value}
-          </p>
-          <p
-            className="mt-1.5 font-ui text-[11.5px] text-neutral-400"
-            style={{ letterSpacing: "-0.005em" }}
-          >
-            {k.sub}
-          </p>
-        </motion.div>
-      ))}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-baseline justify-between gap-2">
+                <p
+                  className="font-display text-[26px] font-bold leading-none tabular-nums text-neutral-900"
+                  style={{ letterSpacing: "-0.03em" }}
+                >
+                  {k.value}
+                </p>
+                <span
+                  className={cn(
+                    "font-ui text-[10.5px] font-bold tabular-nums",
+                    k.deltaTone === "up" ? "text-success" : "text-warning",
+                  )}
+                  style={{ letterSpacing: "-0.005em" }}
+                >
+                  {k.delta}
+                </span>
+              </div>
+              <p
+                className="mt-1 font-ui text-[11.5px] font-medium text-neutral-500"
+                style={{ letterSpacing: "-0.005em" }}
+              >
+                {k.label}
+              </p>
+              <p
+                className="font-ui text-[10.5px] text-neutral-400"
+                style={{ letterSpacing: "-0.005em" }}
+              >
+                {k.sub}
+              </p>
+            </div>
+          </motion.button>
+        );
+      })}
     </section>
   );
 }
 
 // ============================================================================
-// Forecast card — single big card, dominant visually
+// Forecast card — taller, less stretched
 // ============================================================================
 
 function ForecastCard() {
-  // v13.11 — toggles 7d/14d/30d agora realmente filtram a série
   const [range, setRange] = useState<"7d" | "14d" | "30d">("14d");
 
   const series7 = [
@@ -300,7 +319,6 @@ function ForecastCard() {
     { x: "S+2", y: 1920 },
     { x: "S+3", y: 1980 },
   ];
-
   const series14 = [
     { x: "S-7", y: 1620 },
     { x: "S-6", y: 1710 },
@@ -317,8 +335,6 @@ function ForecastCard() {
     { x: "S+5", y: 2150 },
     { x: "S+6", y: 2200 },
   ];
-
-  // 30d series: weekly samples
   const series30 = [
     { x: "Sem-4", y: 1480 },
     { x: "Sem-3", y: 1620 },
@@ -337,7 +353,7 @@ function ForecastCard() {
   const tabs: { label: typeof range; subtitle: string }[] = [
     { label: "7d", subtitle: "última semana + próxima" },
     { label: "14d", subtitle: "2 semanas centradas em hoje" },
-    { label: "30d", subtitle: "4 semanas + 4 semanas projetadas" },
+    { label: "30d", subtitle: "4 semanas + 4 projetadas" },
   ];
   const activeTab = tabs.find((t) => t.label === range)!;
 
@@ -346,8 +362,8 @@ function ForecastCard() {
       data-tour="apia-forecast"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="rounded-2xl bg-white px-6 py-5"
+      transition={{ delay: 0.15, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      className="flex flex-col rounded-2xl bg-white p-5"
       style={{
         border: "1px solid rgba(0,0,0,0.05)",
         boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
@@ -355,28 +371,32 @@ function ForecastCard() {
     >
       <div className="flex items-start justify-between">
         <div>
+          <p
+            className="font-ui text-[10px] font-bold uppercase text-brand"
+            style={{ letterSpacing: "0.18em" }}
+          >
+            Demanda prevista · refeições
+          </p>
           <h2
-            className="font-display text-[18px] font-bold leading-tight text-neutral-900"
+            className="mt-1 font-display text-[20px] font-bold leading-tight text-neutral-900"
             style={{ letterSpacing: "-0.022em" }}
           >
-            Demanda prevista
+            Próximas 2 semanas
           </h2>
           <motion.p
             key={range}
             initial={{ opacity: 0, y: 2 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
-            className="mt-1 font-ui text-[12.5px] text-neutral-500"
+            className="mt-0.5 font-ui text-[11.5px] text-neutral-500"
             style={{ letterSpacing: "-0.005em" }}
           >
-            {activeTab.subtitle} · XGBoost v4.2
+            {activeTab.subtitle}
           </motion.p>
         </div>
         <div
           className="flex items-center gap-0.5 rounded-lg bg-neutral-100 p-1"
-          style={{
-            boxShadow: "inset 0 1px 2px rgba(0,0,0,0.03)",
-          }}
+          style={{ boxShadow: "inset 0 1px 2px rgba(0,0,0,0.03)" }}
         >
           {tabs.map((t) => {
             const active = t.label === range;
@@ -411,14 +431,14 @@ function ForecastCard() {
           })}
         </div>
       </div>
-      <div className="mt-4 h-[180px]">
+      <div className="mt-4 flex-1">
         <AreaChart
           key={range}
           data={data}
           color="#7c3aed"
           yMin={1400}
           yMax={2400}
-          aspectRatio="16/4"
+          aspectRatio="16/8"
           formatY={(v) => `${v.toFixed(0)} refeições`}
           showYLabels
         />
@@ -428,7 +448,312 @@ function ForecastCard() {
 }
 
 // ============================================================================
-// Decisions card — Noteflow-style clean list
+// XGBoost model card — finally visible (data-tour="apia-model")
+// ============================================================================
+
+interface ModelFeature {
+  id: string;
+  label: string;
+  weight: number;
+  icon: React.ReactNode;
+  color: string;
+}
+
+const FEATURES: ModelFeature[] = [
+  {
+    id: "historico",
+    label: "Histórico (24m)",
+    weight: 38,
+    icon: <History size={11} strokeWidth={2.5} />,
+    color: "#020788",
+  },
+  {
+    id: "calendario",
+    label: "Calendário & feriados",
+    weight: 24,
+    icon: <Calendar size={11} strokeWidth={2.5} />,
+    color: "#1a1fa8",
+  },
+  {
+    id: "clima",
+    label: "Clima previsto",
+    weight: 18,
+    icon: <Cloud size={11} strokeWidth={2.5} />,
+    color: "#3b42c4",
+  },
+  {
+    id: "eventos",
+    label: "Eventos locais",
+    weight: 12,
+    icon: <PartyPopper size={11} strokeWidth={2.5} />,
+    color: "#7c3aed",
+  },
+];
+
+function XGBoostCard() {
+  const [selected, setSelected] = useState<string>("historico");
+  const [retraining, setRetraining] = useState(false);
+
+  const handleRetrain = () => {
+    if (retraining) return;
+    setRetraining(true);
+    setTimeout(() => setRetraining(false), 2000);
+  };
+
+  return (
+    <motion.section
+      data-tour="apia-model"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      className="relative flex flex-col overflow-hidden rounded-2xl p-5 text-white"
+      style={{
+        background:
+          "linear-gradient(180deg, #0a0e3d 0%, #050829 60%, #020616 100%)",
+        boxShadow:
+          "0 12px 32px rgba(2,7,136,0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
+      }}
+    >
+      {/* Ambient glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at top right, rgba(124,58,237,0.20), transparent 55%), radial-gradient(ellipse at bottom left, rgba(2,7,136,0.18), transparent 55%)",
+        }}
+      />
+
+      <div className="relative flex flex-1 flex-col">
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div>
+            <p
+              className="flex items-center gap-1.5 font-ui text-[10px] font-bold uppercase"
+              style={{
+                letterSpacing: "0.20em",
+                color: "rgba(255,255,255,0.55)",
+              }}
+            >
+              <Brain size={11} strokeWidth={2.5} />
+              Modelo ativo
+            </p>
+            <h2
+              className="mt-1 font-display text-[20px] font-bold leading-tight"
+              style={{ letterSpacing: "-0.024em" }}
+            >
+              XGBoost <span style={{ color: "rgba(255,255,255,0.55)" }}>v4.2.1</span>
+            </h2>
+          </div>
+          <span
+            className="inline-flex items-center gap-1 rounded-full px-2 py-1 font-ui text-[9.5px] font-bold uppercase"
+            style={{
+              letterSpacing: "0.14em",
+              background: "rgba(22,163,74,0.18)",
+              color: "#4ade80",
+              border: "1px solid rgba(74,222,128,0.30)",
+            }}
+          >
+            <motion.span
+              animate={{ opacity: [1, 0.3, 1] }}
+              transition={{ duration: 1.4, repeat: Infinity }}
+              className="h-1.5 w-1.5 rounded-full bg-success"
+            />
+            Treinado
+          </span>
+        </div>
+
+        {/* Gauge + metrics */}
+        <div className="mt-3 flex items-center gap-4">
+          <RadialGaugeDark value={87.4} />
+          <div className="flex-1">
+            <div className="flex justify-between gap-2">
+              <Metric label="F1 Score" value="0,84" />
+              <Metric label="MAE" value="±42" />
+            </div>
+            <div className="mt-2 flex justify-between gap-2">
+              <Metric label="RMSE" value="56" />
+              <Metric label="Treino" value="4h" />
+            </div>
+          </div>
+        </div>
+
+        {/* Feature importance */}
+        <div className="mt-4">
+          <p
+            className="font-ui text-[10px] font-bold uppercase"
+            style={{
+              letterSpacing: "0.18em",
+              color: "rgba(255,255,255,0.50)",
+            }}
+          >
+            Pesos do modelo
+          </p>
+          <ul className="mt-2 space-y-1.5">
+            {FEATURES.map((f, i) => {
+              const isSelected = f.id === selected;
+              return (
+                <motion.li
+                  key={f.id}
+                  initial={{ opacity: 0, x: -4 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 + i * 0.05, duration: 0.25 }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setSelected(f.id)}
+                    className="group flex w-full items-center gap-2.5 rounded-md py-1 transition-all"
+                  >
+                    <span
+                      className="flex h-5 w-5 flex-none items-center justify-center rounded-md transition-colors"
+                      style={{
+                        background: isSelected
+                          ? f.color
+                          : "rgba(255,255,255,0.06)",
+                        color: isSelected ? "white" : "rgba(255,255,255,0.55)",
+                      }}
+                    >
+                      {f.icon}
+                    </span>
+                    <span
+                      className="flex-none font-ui text-[11.5px] font-medium"
+                      style={{
+                        letterSpacing: "-0.005em",
+                        color: isSelected
+                          ? "white"
+                          : "rgba(255,255,255,0.65)",
+                      }}
+                    >
+                      {f.label}
+                    </span>
+                    <div className="flex-1">
+                      <div
+                        className="relative h-1.5 overflow-hidden rounded-full"
+                        style={{ background: "rgba(255,255,255,0.06)" }}
+                      >
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${f.weight * 2.4}%` }}
+                          transition={{
+                            delay: 0.4 + i * 0.06,
+                            duration: 0.7,
+                            ease: [0.16, 1, 0.3, 1],
+                          }}
+                          className="absolute inset-y-0 left-0 rounded-full"
+                          style={{
+                            background: `linear-gradient(90deg, ${f.color}, ${f.color}dd)`,
+                            boxShadow: isSelected
+                              ? `0 0 12px ${f.color}88`
+                              : undefined,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <span
+                      className="w-9 flex-none text-right font-ui text-[11px] font-bold tabular-nums"
+                      style={{
+                        letterSpacing: "-0.005em",
+                        color: isSelected
+                          ? "white"
+                          : "rgba(255,255,255,0.65)",
+                      }}
+                    >
+                      {f.weight}%
+                    </span>
+                  </button>
+                </motion.li>
+              );
+            })}
+          </ul>
+        </div>
+
+        {/* Retrain button */}
+        <div className="mt-auto pt-4">
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.97 }}
+            onClick={handleRetrain}
+            className="group flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-ui text-[12px] font-bold transition-all disabled:cursor-default"
+            disabled={retraining}
+            style={{
+              background: retraining
+                ? "rgba(255,255,255,0.08)"
+                : "rgba(255,255,255,0.10)",
+              border: "1px solid rgba(255,255,255,0.14)",
+              letterSpacing: "-0.005em",
+              color: "white",
+            }}
+          >
+            <motion.span
+              animate={retraining ? { rotate: 360 } : { rotate: 0 }}
+              transition={
+                retraining
+                  ? { duration: 1, repeat: Infinity, ease: "linear" }
+                  : { duration: 0.3 }
+              }
+            >
+              {retraining ? (
+                <RefreshCw size={13} strokeWidth={2.5} />
+              ) : (
+                <Zap size={13} strokeWidth={2.5} />
+              )}
+            </motion.span>
+            {retraining ? "Retreinando..." : "Retreinar modelo"}
+          </motion.button>
+        </div>
+      </div>
+    </motion.section>
+  );
+}
+
+function RadialGaugeDark({ value }: { value: number }) {
+  return (
+    <div className="flex flex-none items-end justify-center" style={{ width: 130 }}>
+      <RadialGauge
+        value={value}
+        size={130}
+        thickness={9}
+        colors={{ from: "#a78bfa", to: "#7c3aed" }}
+        label={`${value.toFixed(1)}%`}
+        sublabel="Acurácia"
+        labelColor="#ffffff"
+        sublabelColor="rgba(255,255,255,0.50)"
+        trackColor="rgba(255,255,255,0.08)"
+      />
+    </div>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div
+      className="flex-1 rounded-lg px-2.5 py-1.5"
+      style={{
+        background: "rgba(255,255,255,0.05)",
+        border: "1px solid rgba(255,255,255,0.08)",
+      }}
+    >
+      <p
+        className="font-ui text-[9px] font-bold uppercase"
+        style={{
+          letterSpacing: "0.14em",
+          color: "rgba(255,255,255,0.45)",
+        }}
+      >
+        {label}
+      </p>
+      <p
+        className="font-ui text-[14px] font-bold tabular-nums"
+        style={{ letterSpacing: "-0.015em", color: "white" }}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+// ============================================================================
+// Decisions — focused, action-first
 // ============================================================================
 
 interface Decision {
@@ -437,12 +762,29 @@ interface Decision {
   detail: string;
   when: string;
   status: "applied" | "pending" | "alert";
+  impact?: string;
 }
 
 function DecisionsCard() {
   const [acknowledged, setAcknowledged] = useState<Set<string>>(new Set());
 
   const decisions: Decision[] = [
+    {
+      id: "d4",
+      what: "Aguarda sua aprovação",
+      detail: "Renegociar contrato de óleo com fornecedor preferencial.",
+      when: "Há 6h",
+      status: "pending",
+      impact: "Economia estimada: R$ 2.840/mês",
+    },
+    {
+      id: "d3",
+      what: "Alerta de pico enviado",
+      detail: "Feriado prolongado, +14% de demanda projetada para sexta.",
+      when: "Há 3h",
+      status: "alert",
+      impact: "3 unidades notificadas",
+    },
     {
       id: "d1",
       what: "Pedido de queijo aumentado",
@@ -457,20 +799,6 @@ function DecisionsCard() {
       when: "Há 1h",
       status: "applied",
     },
-    {
-      id: "d3",
-      what: "Alerta de pico enviado",
-      detail: "Feriado prolongado, +14% de demanda projetada.",
-      when: "Há 3h",
-      status: "alert",
-    },
-    {
-      id: "d4",
-      what: "Aguarda sua aprovação",
-      detail: "Renegociar contrato de óleo com fornecedor preferencial.",
-      when: "Há 6h",
-      status: "pending",
-    },
   ];
 
   return (
@@ -478,8 +806,8 @@ function DecisionsCard() {
       data-tour="apia-agent"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="rounded-2xl bg-white px-6 py-5"
+      transition={{ delay: 0.3, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      className="rounded-2xl bg-white p-5"
       style={{
         border: "1px solid rgba(0,0,0,0.05)",
         boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
@@ -487,18 +815,18 @@ function DecisionsCard() {
     >
       <div className="flex items-start justify-between">
         <div>
+          <p
+            className="font-ui text-[10px] font-bold uppercase text-brand"
+            style={{ letterSpacing: "0.18em" }}
+          >
+            Agente preditivo · 24h
+          </p>
           <h2
-            className="font-display text-[18px] font-bold leading-tight text-neutral-900"
+            className="mt-1 font-display text-[18px] font-bold leading-tight text-neutral-900"
             style={{ letterSpacing: "-0.02em" }}
           >
             Decisões do agente
           </h2>
-          <p
-            className="mt-1 font-ui text-[12px] text-neutral-500"
-            style={{ letterSpacing: "-0.005em" }}
-          >
-            Últimas 24h · 7 ações tomadas, 1 aguarda você
-          </p>
         </div>
         <button
           type="button"
@@ -512,7 +840,7 @@ function DecisionsCard() {
       <ul className="mt-3 divide-y divide-neutral-100">
         {decisions.map((d, i) => {
           const isAck = acknowledged.has(d.id);
-          const ack = isAck || d.status !== "pending";
+          const wasOriginallyPending = d.status === "pending";
           return (
             <motion.li
               key={d.id}
@@ -525,17 +853,17 @@ function DecisionsCard() {
                 className={cn(
                   "mt-0.5 flex h-7 w-7 flex-none items-center justify-center rounded-full",
                   d.status === "applied" && "bg-success/12 text-success",
-                  d.status === "pending" && "bg-warning/12 text-warning",
+                  wasOriginallyPending && !isAck && "bg-warning/15 text-warning",
+                  wasOriginallyPending && isAck && "bg-success/12 text-success",
                   d.status === "alert" && "bg-brand-ghost text-brand",
-                  isAck && d.status === "pending" && "bg-success/12 text-success",
                 )}
               >
-                {ack ? (
+                {d.status === "applied" || (wasOriginallyPending && isAck) ? (
                   <CheckCircle2 size={13} strokeWidth={2.5} />
                 ) : d.status === "alert" ? (
-                  <Sparkles size={12} strokeWidth={2.5} />
+                  <AlertTriangle size={12} strokeWidth={2.5} />
                 ) : (
-                  <Moon size={12} strokeWidth={2.5} />
+                  <Sparkles size={12} strokeWidth={2.5} />
                 )}
               </span>
               <div className="min-w-0 flex-1">
@@ -546,14 +874,40 @@ function DecisionsCard() {
                   {d.what}
                 </p>
                 <p
-                  className="mt-0.5 font-ui text-[12px] text-neutral-500"
+                  className="mt-0.5 font-ui text-[11.5px] text-neutral-500"
                   style={{ letterSpacing: "-0.005em" }}
                 >
                   {d.detail}
                 </p>
+                <AnimatePresence>
+                  {d.impact && (!wasOriginallyPending || isAck) && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="mt-1 inline-flex items-center gap-1 rounded-md bg-success/8 px-1.5 py-0.5 font-ui text-[10.5px] font-bold tabular-nums text-success"
+                      style={{ letterSpacing: "-0.005em" }}
+                    >
+                      <CheckCircle2 size={10} strokeWidth={2.5} />
+                      {d.impact}
+                    </motion.p>
+                  )}
+                  {d.impact && wasOriginallyPending && !isAck && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="mt-1 inline-flex items-center gap-1 rounded-md bg-warning/10 px-1.5 py-0.5 font-ui text-[10.5px] font-bold tabular-nums text-warning"
+                      style={{ letterSpacing: "-0.005em" }}
+                    >
+                      <Sparkles size={10} strokeWidth={2.5} />
+                      {d.impact}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
               </div>
               <div className="flex items-center gap-2">
-                {d.status === "pending" && !isAck ? (
+                {wasOriginallyPending && !isAck ? (
                   <button
                     type="button"
                     onClick={() =>
@@ -563,13 +917,19 @@ function DecisionsCard() {
                         return next;
                       })
                     }
-                    className="rounded-md bg-neutral-900 px-2.5 py-1 font-ui text-[11px] font-medium text-white transition-all hover:bg-neutral-800"
+                    className="rounded-md px-3 py-1.5 font-ui text-[11px] font-bold text-white transition-all hover:opacity-90"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
+                      boxShadow: "0 2px 6px rgba(2,7,136,0.30)",
+                      letterSpacing: "-0.005em",
+                    }}
                   >
                     Aprovar
                   </button>
                 ) : (
                   <span
-                    className="font-ui text-[11px] text-neutral-400 tabular-nums"
+                    className="font-ui text-[11px] tabular-nums text-neutral-400"
                     style={{ letterSpacing: "-0.005em" }}
                   >
                     {d.when}

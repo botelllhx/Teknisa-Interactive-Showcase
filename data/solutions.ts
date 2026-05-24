@@ -510,13 +510,13 @@ export const solutions: Solution[] = [
   {
     id: "analise-preditiva-ia",
     segment: "ia",
-    name: "Análise Preditiva",
-    tagline: "Modelo de ML que prevê demanda, custo e desperdício",
+    name: "Forecast IA",
+    tagline: "Predição de demanda, custo e desperdício",
     description:
-      "Predição de demanda por unidade, hora e prato; antecipação de pico de movimento; estimativa de desperdício antes do serviço; alerta de ruptura de estoque. O modelo aprende com 24 meses de histórico, eventos locais e clima — sem caixa-preta.",
+      "Modelo XGBoost que prevê demanda por unidade, hora e prato; antecipa picos de movimento; estima desperdício antes do serviço; alerta ruptura de estoque. Aprende com 24 meses de histórico, eventos locais e clima — sem caixa-preta.",
     device: "desktop",
     icon: "TrendingUp",
-    tags: ["ML", "Forecast", "Restaurantes"],
+    tags: ["XGBoost", "Forecast", "Restaurantes"],
     badges: ["IA", "Tendência 2026"],
     status: "ready",
   },

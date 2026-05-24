@@ -18,6 +18,12 @@ interface RadialGaugeProps {
   thickness?: number;
   /** Show tick marks on the arc. */
   showTicks?: boolean;
+  /** Override the big label color (default brand). */
+  labelColor?: string;
+  /** Override the sublabel color (default neutral-400). */
+  sublabelColor?: string;
+  /** Override the track color (default neutral-100). */
+  trackColor?: string;
   className?: string;
 }
 
@@ -39,6 +45,9 @@ export function RadialGauge({
   size = 180,
   thickness = 10,
   showTicks = false,
+  labelColor = "#020788",
+  sublabelColor = "#9ca3af",
+  trackColor = "#eef0f4",
   className,
 }: RadialGaugeProps) {
   const padding = thickness / 2 + 2;
@@ -109,7 +118,7 @@ export function RadialGauge({
         <path
           d={`M ${cx - radius},${cy} A ${radius},${radius} 0 0 1 ${cx + radius},${cy}`}
           fill="none"
-          stroke="#eef0f4"
+          stroke={trackColor}
           strokeWidth={thickness}
           strokeLinecap="round"
         />
@@ -166,7 +175,7 @@ export function RadialGauge({
             fontFamily: "var(--font-ui)",
             fontSize: size * 0.22,
             fontWeight: 700,
-            color: "#020788",
+            color: labelColor,
             lineHeight: 1,
             fontVariantNumeric: "tabular-nums",
             letterSpacing: "-0.030em",
@@ -186,7 +195,7 @@ export function RadialGauge({
               fontWeight: 700,
               textTransform: "uppercase",
               letterSpacing: "0.16em",
-              color: "#9ca3af",
+              color: sublabelColor,
             }}
           >
             {sublabel}

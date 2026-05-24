@@ -17,33 +17,32 @@ export default function ShowcasePage() {
   const activeSegment = useShowcase((s) => s.activeSegment);
   const activeSolution = useShowcase((s) => s.activeSolution);
 
-  // v13.17 — fit por largura E altura, content sempre visível em 100vh.
-  // Flex center + transform-origin top-left mantém o canvas 1920×1080
-  // ancorado no canto e o flex centraliza a bounding box restante.
-  const { scale, width, height } = useViewportFit();
+  // v13.18 — main posicionado absoluto com offset calculado em JS para
+  // que o canto TOP-LEFT do conteúdo VISUAL fique exatamente onde
+  // desejamos (centralizado), sem o bounding box 1920×1080 estourar
+  // pelas bordas do viewport. Resolve o "header cortado" reportado.
+  const { scale, offsetX, offsetY, width, height } = useViewportFit();
 
   return (
     <div
       className="bg-surface-raised"
       style={{
+        position: "relative",
         width: "100vw",
         height: "100vh",
         overflow: "hidden",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
       }}
     >
       <main
-        className="relative bg-surface-raised"
+        className="bg-surface-raised"
         style={{
+          position: "absolute",
+          left: offsetX,
+          top: offsetY,
           width,
           height,
           transform: `scale(${scale})`,
-          // center origin keeps the visual content in the middle of the
-          // bounding box, so flex center aligns the visual content too
-          transformOrigin: "center center",
-          flexShrink: 0,
+          transformOrigin: "top left",
         }}
       >
         <ShowcaseNav />

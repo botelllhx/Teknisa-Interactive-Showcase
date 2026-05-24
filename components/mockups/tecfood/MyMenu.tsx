@@ -219,7 +219,12 @@ function StatusBar() {
 
 function Header() {
   return (
-    <div className="flex items-center justify-between border-b border-brand/8 px-4 py-2">
+    <div
+      className="flex items-center justify-between border-b border-brand/8 px-4 py-2.5"
+      style={{
+        background: "linear-gradient(180deg, #ffffff 0%, #fafbfd 100%)",
+      }}
+    >
       <Image
         src="/logo-teknisa.svg"
         alt="Teknisa"
@@ -228,13 +233,34 @@ function Header() {
         className="select-none"
       />
       <div className="leading-tight text-center">
-        <p className="font-ui text-[11px] font-bold text-brand">MyMenu</p>
-        <p className="font-ui text-[8px] text-neutral-500">
+        <p
+          className="font-display text-[12px] font-bold text-brand"
+          style={{ letterSpacing: "-0.018em" }}
+        >
+          MyMenu
+        </p>
+        <p
+          className="font-ui text-[8.5px] text-neutral-500"
+          style={{ letterSpacing: "-0.005em" }}
+        >
           Restaurante Berrini
         </p>
       </div>
-      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-ghost text-brand">
-        <span className="font-ui text-[10px] font-bold">MC</span>
+      <span
+        className="flex h-8 w-8 items-center justify-center rounded-full text-white"
+        style={{
+          background:
+            "linear-gradient(135deg, #020788 0%, #1a1fa8 60%, #7c3aed 100%)",
+          boxShadow:
+            "0 2px 6px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
+        }}
+      >
+        <span
+          className="font-ui text-[10px] font-bold tabular-nums"
+          style={{ letterSpacing: "-0.005em" }}
+        >
+          MC
+        </span>
       </span>
     </div>
   );
@@ -270,7 +296,12 @@ function Tabs({ tab, onPick }: { tab: Tab; onPick: (t: Tab) => void }) {
             {active && (
               <motion.span
                 layoutId="mm-tab"
-                className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-brand"
+                className="absolute inset-x-3 bottom-0 h-[2px] rounded-full"
+                style={{
+                  background:
+                    "linear-gradient(90deg, #020788 0%, #1a1fa8 60%, #7c3aed 100%)",
+                }}
+                transition={{ type: "spring", stiffness: 380, damping: 28 }}
               />
             )}
           </motion.button>

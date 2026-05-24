@@ -276,21 +276,41 @@ function Header({
       <div className="flex items-center gap-3">
         <Image src="/logo-teknisa.svg" alt="Teknisa" width={92} height={17} />
         <span className="h-5 w-px bg-neutral-200" />
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <span
-            className="flex h-8 w-8 items-center justify-center rounded-md text-white"
-            style={{ background: "#020788" }}
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-white"
+            style={{
+              background:
+                "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
+              boxShadow:
+                "0 4px 12px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
+            }}
           >
-            <ChefHat size={15} strokeWidth={2} />
+            <ChefHat size={16} strokeWidth={2.25} />
           </span>
           <div className="leading-tight">
-            <p className="font-ui text-[15px] font-bold text-neutral-900">
+            <p
+              className="font-display text-[15px] font-bold text-neutral-900"
+              style={{ letterSpacing: "-0.018em" }}
+            >
               Cardápio Inteligente
             </p>
             <p className="font-ui text-[11px] text-neutral-500">
-              Semana 26/05 a 30/05 · 4 unidades sincronizadas
+              <span className="tabular-nums">Semana 26/05 a 30/05</span> · 4
+              unidades sincronizadas
             </p>
           </div>
+          <span
+            className="ml-1 inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-success"
+            style={{ letterSpacing: "0.14em" }}
+          >
+            <motion.span
+              animate={{ opacity: [1, 0.4, 1] }}
+              transition={{ duration: 1.4, repeat: Infinity }}
+              className="h-1.5 w-1.5 rounded-full bg-success"
+            />
+            ao vivo
+          </span>
         </div>
       </div>
 
@@ -1316,14 +1336,25 @@ function AILiveAssistant({
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="overflow-hidden rounded-2xl"
+      className="relative overflow-hidden rounded-2xl"
       style={{
         background:
-          "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
+          "linear-gradient(135deg, #020788 0%, #1a1fa8 50%, #7c3aed 100%)",
+        boxShadow:
+          "0 12px 28px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
       }}
     >
+      {/* Decorative orb */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-40 blur-2xl"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(255,255,255,0.40), transparent 70%)",
+        }}
+      />
       {/* Header */}
-      <div className="flex items-center justify-between px-3.5 pb-2 pt-3">
+      <div className="relative flex items-center justify-between px-3.5 pb-2 pt-3">
         <div className="flex items-center gap-2">
           <motion.span
             animate={{
@@ -1361,7 +1392,7 @@ function AILiveAssistant({
       </div>
 
       {/* Score + breakdown */}
-      <div className="flex items-center gap-3 px-3.5">
+      <div className="relative flex items-center gap-3 px-3.5">
         <div className="relative flex h-[68px] w-[68px] flex-none items-center justify-center">
           <svg width="68" height="68" viewBox="0 0 68 68">
             <circle
@@ -1452,7 +1483,7 @@ function AILiveAssistant({
       </div>
 
       {/* Decisions feed */}
-      <div className="mt-2 space-y-1 px-2 pb-3">
+      <div className="relative mt-2 space-y-1 px-2 pb-3">
         {decisions.map((d, i) => (
           <motion.div
             key={i}

@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
-import { Badge } from "@/components/ui/shadcn";
 import { RadialGauge } from "@/components/ui/charts";
 
 interface MyQuestProps {
@@ -180,27 +179,50 @@ function StatusBar() {
 
 function Header() {
   return (
-    <div className="flex items-center justify-between border-b border-brand/8 bg-white px-4 py-2.5">
-      <div className="flex items-center gap-2">
+    <div
+      className="flex items-center justify-between border-b border-brand/8 px-4 py-2.5"
+      style={{
+        background: "linear-gradient(180deg, #ffffff 0%, #fafbfd 100%)",
+      }}
+    >
+      <div className="flex items-center gap-2.5">
         <span
-          className="flex h-8 w-8 items-center justify-center rounded-md text-white"
-          style={{ background: "#020788" }}
+          className="flex h-9 w-9 items-center justify-center rounded-xl text-white"
+          style={{
+            background:
+              "linear-gradient(135deg, #16a34a 0%, #15803d 60%, #047857 100%)",
+            boxShadow:
+              "0 4px 10px rgba(22,163,74,0.32), inset 0 1px 0 rgba(255,255,255,0.20)",
+          }}
         >
-          <Salad size={15} strokeWidth={2} />
+          <Salad size={16} strokeWidth={2.25} />
         </span>
         <div className="leading-tight">
-          <p className="font-ui text-[12px] font-bold text-neutral-900">
+          <p
+            className="font-display text-[13px] font-bold text-neutral-900"
+            style={{ letterSpacing: "-0.018em" }}
+          >
             MyQuest
           </p>
-          <p className="font-ui text-[9px] text-neutral-500">
+          <p
+            className="font-ui text-[9.5px] text-neutral-500"
+            style={{ letterSpacing: "-0.005em" }}
+          >
             Reserve sua refeição no totem
           </p>
         </div>
       </div>
-      <Badge variant="success">
-        <span className="h-1.5 w-1.5 rounded-full bg-success" />
+      <span
+        className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-0.5 font-ui text-[9px] font-bold uppercase text-success"
+        style={{ letterSpacing: "0.14em" }}
+      >
+        <motion.span
+          animate={{ opacity: [1, 0.4, 1] }}
+          transition={{ duration: 1.4, repeat: Infinity }}
+          className="h-1.5 w-1.5 rounded-full bg-success"
+        />
         Aberto
-      </Badge>
+      </span>
     </div>
   );
 }

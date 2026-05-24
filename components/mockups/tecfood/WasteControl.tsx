@@ -239,27 +239,45 @@ function Header() {
       <div className="flex items-center gap-3">
         <Image src="/logo-teknisa.svg" alt="Teknisa" width={86} height={16} />
         <span className="h-5 w-px bg-neutral-200" />
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <span
-            className="flex h-7 w-7 items-center justify-center rounded-md text-white"
-            style={{ background: "#020788" }}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-white"
+            style={{
+              background:
+                "linear-gradient(135deg, #f59e0b 0%, #d97706 60%, #b45309 100%)",
+              boxShadow:
+                "0 3px 8px rgba(217,119,6,0.32), inset 0 1px 0 rgba(255,255,255,0.20)",
+            }}
           >
-            <Scale size={14} strokeWidth={2} />
+            <Scale size={15} strokeWidth={2.25} />
           </span>
           <div className="leading-tight">
-            <p className="font-ui text-[13px] font-bold text-neutral-900">
+            <p
+              className="font-display text-[14px] font-bold text-neutral-900"
+              style={{ letterSpacing: "-0.018em" }}
+            >
               WasteControl
             </p>
-            <p className="font-ui text-[10px] text-neutral-500">
-              Sistema de controle de desperdício
+            <p
+              className="font-ui text-[10px] text-neutral-500"
+              style={{ letterSpacing: "-0.005em" }}
+            >
+              Controle de desperdício em tempo real
             </p>
           </div>
         </div>
       </div>
-      <Badge variant="success">
-        <span className="h-1.5 w-1.5 rounded-full bg-success" />
+      <span
+        className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-0.5 font-ui text-[9px] font-bold uppercase text-success"
+        style={{ letterSpacing: "0.14em" }}
+      >
+        <motion.span
+          animate={{ opacity: [1, 0.4, 1] }}
+          transition={{ duration: 1.4, repeat: Infinity }}
+          className="h-1.5 w-1.5 rounded-full bg-success"
+        />
         Sincronizado
-      </Badge>
+      </span>
     </header>
   );
 }
@@ -278,7 +296,12 @@ function TopTabs({
   return (
     <div
       data-tour="wc-top-tabs"
-      className="mt-2 grid grid-cols-2 gap-2 rounded-2xl bg-white p-1.5 shadow-card"
+      className="relative mt-2 grid grid-cols-2 gap-1 rounded-2xl bg-white p-1.5"
+      style={{
+        border: "1px solid rgba(0,0,0,0.05)",
+        boxShadow:
+          "0 1px 2px rgba(0,0,0,0.03), inset 0 0 0 1px rgba(255,255,255,0.6)",
+      }}
     >
       {items.map((t) => {
         const active = t.id === tab;
@@ -289,14 +312,28 @@ function TopTabs({
             whileTap={{ scale: 0.98 }}
             onClick={() => onPick(t.id)}
             className={cn(
-              "flex items-center justify-center gap-1.5 rounded-xl py-2.5 font-ui text-[12px] font-bold transition-colors",
-              active
-                ? "bg-brand text-white shadow-brand"
-                : "text-neutral-500 hover:bg-brand-ghost",
+              "relative flex items-center justify-center gap-1.5 rounded-xl py-2.5 font-ui text-[12.5px] font-bold transition-colors",
+              active ? "text-white" : "text-neutral-500 hover:text-brand",
             )}
+            style={{ letterSpacing: "-0.005em" }}
           >
-            <t.Icon size={13} strokeWidth={2.25} />
-            {t.label}
+            {active && (
+              <motion.span
+                layoutId="wc-tab-active"
+                className="absolute inset-0 rounded-xl"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
+                  boxShadow:
+                    "0 4px 12px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
+                }}
+                transition={{ type: "spring", stiffness: 380, damping: 28 }}
+              />
+            )}
+            <span className="relative inline-flex items-center gap-1.5">
+              <t.Icon size={13} strokeWidth={2.25} />
+              {t.label}
+            </span>
           </motion.button>
         );
       })}

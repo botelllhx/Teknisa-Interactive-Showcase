@@ -365,29 +365,51 @@ function HomeScreen({
       <div className="flex items-center justify-between px-5 pt-3">
         <div className="leading-tight">
           <p
-            className="font-ui text-[22px] font-bold tracking-wider"
-            style={{ color: COLORS.amber }}
+            className="font-display text-[22px] font-bold"
+            style={{
+              color: COLORS.amber,
+              letterSpacing: "0.10em",
+            }}
           >
-            PREMIUM<span className="ml-1 font-light text-white">CLUB</span>
+            PREMIUM
+            <span
+              className="ml-1.5 font-light text-white"
+              style={{ letterSpacing: "0.14em" }}
+            >
+              CLUB
+            </span>
           </p>
           <Image
             src="/logo-teknisa-white.svg"
             alt="Teknisa"
             width={50}
             height={9}
-            className="mt-1 opacity-60"
+            className="mt-1.5 opacity-60"
           />
         </div>
         <button
           type="button"
           className="flex h-10 w-10 items-center justify-center rounded-full"
-          style={{ background: COLORS.bgLayer }}
+          style={{
+            background: COLORS.bgLayer,
+            boxShadow:
+              "inset 0 1px 0 rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.18)",
+          }}
         >
-          <UserRound size={18} strokeWidth={2} style={{ color: COLORS.amber }} />
+          <UserRound
+            size={18}
+            strokeWidth={2.25}
+            style={{ color: COLORS.amber }}
+          />
         </button>
       </div>
 
-      <p className="mt-4 px-5 font-ui text-[18px] font-medium">Olá, Thomas</p>
+      <p
+        className="mt-4 px-5 font-display text-[20px] font-bold text-white"
+        style={{ letterSpacing: "-0.022em" }}
+      >
+        Olá, <span style={{ color: COLORS.amber }}>Thomas</span>
+      </p>
 
       <div className="mx-5 mt-3" data-tour="crm-cashback-card">
         <CashbackCard balance={balance} />

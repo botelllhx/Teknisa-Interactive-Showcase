@@ -76,35 +76,50 @@ function Header() {
             animate={{
               boxShadow: [
                 "0 0 0 0 rgba(124,58,237,0)",
-                "0 0 0 6px rgba(124,58,237,0.10)",
+                "0 0 0 6px rgba(124,58,237,0.18)",
                 "0 0 0 0 rgba(124,58,237,0)",
               ],
             }}
             transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-            className="flex h-8 w-8 items-center justify-center rounded-xl"
+            className="flex h-9 w-9 items-center justify-center rounded-xl"
             style={{
               background:
                 "linear-gradient(135deg, #020788 0%, #1a1fa8 50%, #7c3aed 100%)",
+              boxShadow:
+                "0 4px 12px rgba(124,58,237,0.32), inset 0 1px 0 rgba(255,255,255,0.20)",
             }}
           >
-            <Bot size={15} strokeWidth={2.25} className="text-white" />
+            <Bot size={16} strokeWidth={2.25} className="text-white" />
           </motion.span>
           <div className="leading-tight">
             <p
-              className="font-ui text-[13px] font-bold text-neutral-900"
-              style={{ letterSpacing: "-0.005em" }}
+              className="font-display text-[15px] font-bold text-neutral-900"
+              style={{ letterSpacing: "-0.022em" }}
             >
               ISA
             </p>
-            <p className="font-ui text-[10px] text-neutral-500">
-              Copiloto Teknisa · GPT-T 4o
+            <p
+              className="font-ui text-[10.5px] text-neutral-500"
+              style={{ letterSpacing: "-0.005em" }}
+            >
+              Copiloto Teknisa ·{" "}
+              <span className="tabular-nums">GPT-T 4o</span>
             </p>
           </div>
         </div>
-        <Badge variant="ai" className="gap-1">
-          <Sparkles size={10} strokeWidth={2.5} />
+        <span
+          className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-ui text-[10px] font-bold uppercase text-white"
+          style={{
+            background:
+              "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
+            boxShadow:
+              "0 2px 8px rgba(124,58,237,0.32), inset 0 1px 0 rgba(255,255,255,0.18)",
+            letterSpacing: "0.12em",
+          }}
+        >
+          <Sparkles size={11} strokeWidth={2.5} />
           Online
-        </Badge>
+        </span>
       </div>
       <div className="flex items-center gap-3">
         <span className="flex items-center gap-1 font-ui text-[10px] font-medium text-neutral-500">

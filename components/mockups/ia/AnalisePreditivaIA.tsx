@@ -72,12 +72,36 @@ function Header() {
       <div className="flex items-center gap-3">
         <Image src="/logo-teknisa.svg" alt="Teknisa" width={88} height={16} />
         <span className="h-5 w-px bg-neutral-200" />
-        <p
-          className="font-ui text-[13px] font-medium text-neutral-700"
-          style={{ letterSpacing: "-0.005em" }}
-        >
-          Análise Preditiva
-        </p>
+        <div className="flex items-center gap-2">
+          <span
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-white"
+            style={{
+              background:
+                "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
+              boxShadow:
+                "0 2px 6px rgba(124,58,237,0.32), inset 0 1px 0 rgba(255,255,255,0.20)",
+            }}
+          >
+            <Sparkles size={13} strokeWidth={2.25} />
+          </span>
+          <p
+            className="font-display text-[13.5px] font-bold text-neutral-900"
+            style={{ letterSpacing: "-0.018em" }}
+          >
+            Análise Preditiva
+          </p>
+          <span
+            className="ml-1 inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-success"
+            style={{ letterSpacing: "0.14em" }}
+          >
+            <motion.span
+              animate={{ opacity: [1, 0.4, 1] }}
+              transition={{ duration: 1.4, repeat: Infinity }}
+              className="h-1.5 w-1.5 rounded-full bg-success"
+            />
+            Modelo ativo
+          </span>
+        </div>
       </div>
       <div className="flex items-center gap-3">
         <StackedAvatars

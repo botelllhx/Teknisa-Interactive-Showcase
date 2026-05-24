@@ -192,7 +192,7 @@ function KPITile({
       </div>
       <p
         className="mt-2 font-ui text-[10px] font-bold uppercase text-neutral-500"
-        style={{ letterSpacing: "0.14em" }}
+        style={{ letterSpacing: "0.08em" }}
       >
         {label}
       </p>
@@ -280,7 +280,7 @@ function MainArea() {
         <div className="mt-2 border-t border-neutral-100 pt-2">
           <p
             className="font-ui text-[9px] font-bold uppercase text-brand"
-            style={{ letterSpacing: "0.18em" }}
+            style={{ letterSpacing: "0.10em" }}
           >
             O que o modelo está olhando agora
           </p>
@@ -312,7 +312,7 @@ function MainArea() {
           <div className="flex items-center justify-between">
             <p
               className="font-ui text-[9px] font-bold uppercase text-white/80"
-              style={{ letterSpacing: "0.18em" }}
+              style={{ letterSpacing: "0.10em" }}
             >
               Modelo ativo
             </p>
@@ -399,7 +399,7 @@ function BottomRow() {
             <div className="leading-tight">
               <p
                 className="font-ui text-[9px] font-bold uppercase text-white/80"
-                style={{ letterSpacing: "0.18em" }}
+                style={{ letterSpacing: "0.10em" }}
               >
                 Agente preditivo · agindo agora
               </p>
@@ -432,7 +432,7 @@ function BottomRow() {
             >
               <p
                 className="font-ui text-[9px] font-bold uppercase text-white/75"
-                style={{ letterSpacing: "0.14em" }}
+                style={{ letterSpacing: "0.08em" }}
               >
                 {b.l}
               </p>
@@ -457,7 +457,7 @@ function BottomRow() {
       >
         <p
           className="font-ui text-[9px] font-bold uppercase text-brand"
-          style={{ letterSpacing: "0.18em" }}
+          style={{ letterSpacing: "0.10em" }}
         >
           Decisões recentes
         </p>

@@ -13,8 +13,7 @@ export type SolutionSegment =
   | "pessoas-rh"
   | "supply-compras"
   | "crm"
-  | "ia"
-  | "gestao-corporativa";
+  | "ia";
 
 export type CompanionType =
   | "POSCardReader"
@@ -97,12 +96,19 @@ export interface Segment {
   comingSoon?: boolean;
 }
 
+// v13 copy refinement:
+// - Description aligned to a consistent ~50 chars / 2 line block so titles
+//   never shift vertically across cards. All start with action verb in
+//   the same tone: "PDV ..." / "Refeições ..." / "Fiscal ..." etc.
+// - Tagline = 1 short line punch (~32 chars), uppercase eyebrow on cards.
+// - Gestão Corporativa removed completely (client request — was placeholder
+//   distracting from real solutions).
 export const segments: Segment[] = [
   {
     id: "frente-de-loja",
     label: "Frente de Loja",
-    description: "PDV, autoatendimento e experiência de compra",
-    tagline: "Vendas e atendimento em qualquer ponto de contato",
+    description: "PDV, autoatendimento e cardápio digital integrados",
+    tagline: "Vendas em qualquer ponto de contato",
     icon: "Monitor",
     color: "#020788",
     solutions: [
@@ -117,8 +123,8 @@ export const segments: Segment[] = [
   {
     id: "tecfood",
     label: "TecFood",
-    description: "Gestão especializada em refeições coletivas",
-    tagline: "Food service do planejamento ao prato",
+    description: "Refeições coletivas do planejamento ao serviço",
+    tagline: "Food service do prato ao indicador",
     icon: "Utensils",
     color: "#020788",
     solutions: [
@@ -131,8 +137,8 @@ export const segments: Segment[] = [
   {
     id: "erp-backoffice",
     label: "ERP Backoffice",
-    description: "Gestão fiscal, estoque e rastreabilidade",
-    tagline: "Operação financeira e fiscal sob controle",
+    description: "Fiscal, estoque e rastreabilidade automatizados",
+    tagline: "Operação financeira sob controle",
     icon: "LayoutGrid",
     color: "#020788",
     solutions: [
@@ -144,8 +150,8 @@ export const segments: Segment[] = [
   {
     id: "pessoas-rh",
     label: "Pessoas e RH",
-    description: "Gestão de pessoas, ponto e operações de RH",
-    tagline: "Gente e operação alinhadas em tempo real",
+    description: "Gestão de pessoas, ponto e jornada em tempo real",
+    tagline: "Gente e operação no mesmo painel",
     icon: "Users",
     color: "#020788",
     solutions: [
@@ -159,7 +165,7 @@ export const segments: Segment[] = [
   {
     id: "supply-compras",
     label: "Supply e Compras",
-    description: "Cotações, compras e gestão de fornecedores",
+    description: "Cotações, fornecedores e negociação integradas",
     tagline: "Negociação inteligente de ponta a ponta",
     icon: "ShoppingCart",
     color: "#020788",
@@ -168,8 +174,8 @@ export const segments: Segment[] = [
   {
     id: "crm",
     label: "CRM",
-    description: "Fidelidade, jornada do cliente e campanhas",
-    tagline: "Relacionamento que vira receita recorrente",
+    description: "Fidelidade, cashback e jornada do cliente",
+    tagline: "Relacionamento que vira receita",
     icon: "Heart",
     color: "#020788",
     solutions: ["crm-premium"],
@@ -177,21 +183,11 @@ export const segments: Segment[] = [
   {
     id: "ia",
     label: "IA",
-    description: "Inteligência artificial aplicada ao food service",
-    tagline: "Capacidades transversais de IA da plataforma",
+    description: "Agentes inteligentes que decidem e executam por você",
+    tagline: "Copiloto e modelos preditivos da plataforma",
     icon: "Sparkles",
     color: "#020788",
     solutions: ["isa-chatbot", "analise-preditiva-ia"],
-  },
-  {
-    id: "gestao-corporativa",
-    label: "Gestão Corporativa",
-    description: "Multiunidades, franquias e BI",
-    tagline: "Visão consolidada de toda a rede",
-    icon: "Globe",
-    color: "#020788",
-    solutions: [],
-    comingSoon: true,
   },
 ];
 

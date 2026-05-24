@@ -410,7 +410,7 @@ function DashboardScreen() {
           tone="brand"
           label="Vendas hoje"
           value="R$ 24,5k"
-          delta="+12,0%"
+          delta="+12%"
           deltaUp
         />
         <DashKPITile
@@ -418,7 +418,7 @@ function DashboardScreen() {
           tone="danger"
           label="CMV real"
           value="31,74%"
-          delta="+3,74pp"
+          delta="+3,7pp"
           highlight
         />
         <DashKPITile
@@ -426,7 +426,7 @@ function DashboardScreen() {
           tone="warning"
           label="Margem"
           value="42,0%"
-          delta="−3,0pp"
+          delta="−3pp"
         />
         <DashKPITile
           icon={<Package />}
@@ -442,7 +442,7 @@ function DashboardScreen() {
       <div className="col-start-2 row-start-1 flex items-center justify-between">
         <p
           className="font-ui text-[11px] font-bold uppercase text-brand"
-          style={{ letterSpacing: "0.18em" }}
+          style={{ letterSpacing: "0.10em" }}
         >
           AI Insights
         </p>
@@ -616,7 +616,7 @@ function DashboardScreen() {
           </motion.span>
           <p
             className="font-ui text-[9px] font-bold uppercase text-white/85"
-            style={{ letterSpacing: "0.18em" }}
+            style={{ letterSpacing: "0.10em" }}
           >
             IA aplicou hoje
           </p>
@@ -718,25 +718,25 @@ function DashKPITile({
       </div>
       <p
         className={cn(
-          "mt-2 font-ui text-[10px] font-bold uppercase",
+          "mt-2 font-ui text-[9.5px] font-semibold uppercase",
           tone === "danger" ? "text-white/65" : "text-neutral-500",
         )}
-        style={{ letterSpacing: "0.14em" }}
+        style={{ letterSpacing: "0.10em" }}
       >
         {label}
       </p>
-      <div className="mt-0.5 flex items-baseline gap-1.5">
+      <div className="mt-0.5 flex items-baseline gap-1.5 whitespace-nowrap">
         <span
           className={cn(
             "font-ui font-bold tabular-nums leading-none",
-            tone === "danger" ? "text-white text-[22px]" : "text-neutral-900 text-[22px]",
+            tone === "danger" ? "text-white" : "text-neutral-900",
           )}
-          style={{ letterSpacing: "-0.02em" }}
+          style={{ letterSpacing: "-0.025em", fontSize: 20 }}
         >
           {value}
         </span>
         <span
-          className="font-ui text-[10px] font-bold tabular-nums"
+          className="font-ui text-[10px] font-semibold tabular-nums"
           style={{ color: tone === "danger" ? "#4ade80" : deltaColor }}
         >
           {delta}
@@ -805,7 +805,7 @@ function DiagnosticoScreen() {
           <BrainCircuit size={26} strokeWidth={1.75} />
         </motion.span>
         <div className="flex-1">
-          <p className="text-[11px] font-bold uppercase tracking-[3px] text-brand">
+          <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-brand">
             Diagnóstico da unidade
           </p>
           <p className="mt-1 font-ui text-[22px] font-bold leading-snug text-neutral-900">
@@ -982,7 +982,7 @@ function MatrizScreen() {
       <Card className="p-6">
         <div className="mb-4 flex items-start justify-between">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[3px] text-brand">
+            <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-brand">
               Engenharia de cardápio
             </p>
             <p className="mt-0.5 font-ui text-[20px] font-bold text-neutral-900">
@@ -1235,7 +1235,7 @@ function ProdutoScreen() {
       <Card className="flex flex-col gap-4 p-5">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[3px] text-brand">
+            <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-brand">
               5 ações recomendadas
             </p>
             <p className="mt-0.5 font-ui text-[18px] font-bold text-neutral-900">
@@ -1344,7 +1344,7 @@ function SimulacaoScreen() {
           <Layers size={26} strokeWidth={1.75} />
         </motion.span>
         <div className="flex-1">
-          <p className="text-[11px] font-bold uppercase tracking-[3px] text-brand">
+          <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-brand">
             Simulação de impacto
           </p>
           <p className="mt-1 font-ui text-[22px] font-bold leading-snug text-neutral-900">
@@ -1465,7 +1465,7 @@ function ScenarioCard({
         }}
       >
         <p
-          className="font-ui text-[11px] font-bold uppercase tracking-[3px]"
+          className="font-ui text-[11px] font-bold uppercase tracking-[1.5px]"
           style={{ color: c }}
         >
           {title}
@@ -1575,7 +1575,7 @@ function PlanoScreen() {
           <Calendar size={22} strokeWidth={1.75} />
         </motion.span>
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[3px] text-brand">
+          <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-brand">
             Plano de ação, gerado pela IA
           </p>
           <p className="mt-0.5 font-ui text-[19px] font-bold leading-tight text-neutral-900">
@@ -1722,7 +1722,7 @@ function MonitorScreen() {
       </motion.span>
 
       <div className="text-center">
-        <p className="text-[11px] font-bold uppercase tracking-[3px] text-brand">
+        <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-brand">
           Decisão registrada
         </p>
         <p className="mt-1 font-ui text-[26px] font-bold text-neutral-900">

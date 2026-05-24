@@ -132,7 +132,7 @@ function Sidebar() {
       <div className="flex items-center justify-between">
         <p
           className="font-ui text-[9px] font-bold uppercase text-brand"
-          style={{ letterSpacing: "0.18em" }}
+          style={{ letterSpacing: "0.10em" }}
         >
           Conversas
         </p>
@@ -182,7 +182,7 @@ function Sidebar() {
       <div className="mt-2">
         <p
           className="font-ui text-[9px] font-bold uppercase text-neutral-500"
-          style={{ letterSpacing: "0.18em" }}
+          style={{ letterSpacing: "0.10em" }}
         >
           Atalhos
         </p>
@@ -441,7 +441,7 @@ function ISASalesResponse({ animate }: { animate?: boolean }) {
           >
             <p
               className="font-ui text-[8.5px] font-bold uppercase text-neutral-500"
-              style={{ letterSpacing: "0.14em" }}
+              style={{ letterSpacing: "0.08em" }}
             >
               {k.l}
             </p>
@@ -474,7 +474,7 @@ function ISASalesResponse({ animate }: { animate?: boolean }) {
       >
         <p
           className="font-ui text-[10px] font-bold uppercase text-brand"
-          style={{ letterSpacing: "0.16em" }}
+          style={{ letterSpacing: "0.10em" }}
         >
           Vendas últimos 7 dias
         </p>
@@ -518,7 +518,7 @@ function ISAWasteResponse({ animate }: { animate?: boolean }) {
         <div className="flex items-center justify-between">
           <p
             className="font-ui text-[10px] font-bold uppercase text-warning"
-            style={{ letterSpacing: "0.14em" }}
+            style={{ letterSpacing: "0.08em" }}
           >
             Previsão · sexta, 24/05
           </p>

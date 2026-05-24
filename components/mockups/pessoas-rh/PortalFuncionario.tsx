@@ -112,7 +112,7 @@ function PunchSheetView() {
         <div className="min-w-0 flex-1">
           <p
             className="font-ui text-[9px] font-bold uppercase text-brand"
-            style={{ letterSpacing: "0.18em" }}
+            style={{ letterSpacing: "0.10em" }}
           >
             Bem-vinda
           </p>
@@ -156,7 +156,7 @@ function PunchSheetView() {
           >
             <p
               className="font-ui text-[8px] font-bold uppercase text-neutral-400"
-              style={{ letterSpacing: "0.14em" }}
+              style={{ letterSpacing: "0.08em" }}
             >
               {k.l}
             </p>
@@ -177,7 +177,7 @@ function PunchSheetView() {
 
       <p
         className="mt-1 font-ui text-[9px] font-bold uppercase text-neutral-500"
-        style={{ letterSpacing: "0.16em" }}
+        style={{ letterSpacing: "0.10em" }}
       >
         Últimas marcações
       </p>

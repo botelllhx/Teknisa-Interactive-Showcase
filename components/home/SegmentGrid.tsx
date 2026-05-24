@@ -1,31 +1,29 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, Clock } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { segments, type Segment } from "@/data/solutions";
 import { useShowcase } from "@/lib/store";
 import { staggerContainer, fadeInUp } from "@/lib/animations";
 import { SegmentIcon } from "@/components/ui/SegmentIcon";
-import { cn } from "@/lib/cn";
 
 export function SegmentGrid() {
   const selectSegment = useShowcase((s) => s.selectSegment);
 
+  // v13: 7 segments (Gestão Corporativa removed). Auto rows so the second
+  // row holds 3 cards left-aligned without a visible empty cell stretching.
   return (
     <motion.div
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="grid grid-cols-4 grid-rows-2 gap-5 px-12 pb-10"
+      className="grid grid-cols-4 gap-5 px-12 pb-10"
     >
       {segments.map((segment) => (
         <SegmentCard
           key={segment.id}
           segment={segment}
-          onSelect={() => {
-            if (segment.comingSoon) return;
-            selectSegment(segment.id);
-          }}
+          onSelect={() => selectSegment(segment.id)}
         />
       ))}
     </motion.div>
@@ -38,67 +36,72 @@ interface SegmentCardProps {
 }
 
 function SegmentCard({ segment, onSelect }: SegmentCardProps) {
-  const disabled = !!segment.comingSoon;
   const solutionCount = segment.solutions.length;
 
   return (
     <motion.button
       type="button"
       variants={fadeInUp}
-      whileHover={disabled ? undefined : { scale: 1.02, y: -4 }}
-      whileTap={disabled ? undefined : { scale: 0.97 }}
+      whileHover={{ y: -3 }}
+      whileTap={{ scale: 0.985 }}
       transition={{ type: "spring", stiffness: 320, damping: 22 }}
       onClick={onSelect}
-      disabled={disabled}
       aria-label={`Abrir ${segment.label}`}
-      className={cn(
-        "group relative flex h-full flex-col justify-between rounded-frame border border-brand/10 bg-white p-8 text-left shadow-card transition-shadow",
-        disabled
-          ? "cursor-not-allowed opacity-60"
-          : "hover:border-brand/20 hover:bg-brand-ghost hover:shadow-card-hover",
-      )}
+      // v13 refinement: tighter typography (tracking -0.02em on big title),
+      // subtle shadow (shadow-subtle), borders 6% opacity, uniform tagline
+      // height via min-h so titles align across cards even with varied text
+      className="group relative flex h-full flex-col justify-between rounded-2xl bg-white p-6 text-left transition-all hover:-translate-y-[1px] hover:shadow-elevated"
+      style={{
+        border: "1px solid rgba(0,0,0,0.05)",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+      }}
     >
-      {disabled && (
-        <span className="absolute right-5 top-5 inline-flex items-center gap-1.5 rounded-full bg-neutral-200 px-3 py-1 text-label-sm font-medium text-neutral-700">
-          <Clock size={14} strokeWidth={2} />
-          Em breve
-        </span>
-      )}
-
       <div className="flex items-start justify-between">
         <div
-          className={cn(
-            "flex h-16 w-16 items-center justify-center rounded-2xl transition-colors",
-            disabled
-              ? "bg-neutral-100 text-neutral-500"
-              : "bg-brand-subtle text-brand group-hover:bg-brand group-hover:text-white",
-          )}
+          className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand-subtle text-brand transition-colors group-hover:bg-brand group-hover:text-white"
+          style={{
+            background:
+              "linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%)",
+            color: "#020788",
+          }}
         >
-          <SegmentIcon name={segment.icon} size={32} />
+          <SegmentIcon name={segment.icon} size={28} />
         </div>
 
-        {!disabled && (
-          <span className="rounded-full bg-neutral-100 px-3 py-1 text-label-sm font-medium text-neutral-700">
-            {solutionCount} {solutionCount === 1 ? "solução" : "soluções"}
-          </span>
-        )}
+        <span
+          className="font-ui text-[10px] font-bold uppercase text-neutral-500"
+          style={{ letterSpacing: "0.08em" }}
+        >
+          {solutionCount} {solutionCount === 1 ? "solução" : "soluções"}
+        </span>
       </div>
 
-      <div className="mt-10 flex items-end justify-between gap-4">
-        <div>
-          <h2 className="font-display text-display-lg leading-tight text-neutral-900">
+      <div className="mt-12 flex items-end justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h2
+            className="font-display text-[26px] font-bold leading-tight text-neutral-900"
+            style={{ letterSpacing: "-0.02em" }}
+          >
             {segment.label}
           </h2>
-          <p className="mt-2 max-w-[16ch] text-body-md text-neutral-600">
+          <p
+            className="mt-1.5 font-ui text-[12.5px] leading-snug text-neutral-500"
+            style={{
+              letterSpacing: "-0.005em",
+              minHeight: "2.6em", // mantém títulos alinhados independente do tamanho da tagline
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
             {segment.tagline}
           </p>
         </div>
 
-        {!disabled && (
-          <span className="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-neutral-100 text-neutral-600 transition-colors group-hover:bg-brand group-hover:text-white">
-            <ArrowUpRight size={22} strokeWidth={2} />
-          </span>
-        )}
+        <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-neutral-100 text-neutral-500 transition-colors group-hover:bg-brand group-hover:text-white">
+          <ArrowUpRight size={18} strokeWidth={2.25} />
+        </span>
       </div>
     </motion.button>
   );

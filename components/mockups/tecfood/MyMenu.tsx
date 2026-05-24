@@ -372,7 +372,7 @@ function MenuView({
         <div className="mb-2 flex items-center justify-between">
           <p
             className="font-ui text-[10px] font-bold uppercase text-neutral-500"
-            style={{ letterSpacing: "0.16em" }}
+            style={{ letterSpacing: "0.10em" }}
           >
             Cardápio do dia
           </p>

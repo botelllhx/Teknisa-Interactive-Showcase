@@ -423,7 +423,7 @@ function KPITile({
       <div className="min-w-0">
         <p
           className="font-ui text-[9px] font-bold uppercase text-neutral-500"
-          style={{ letterSpacing: "0.14em" }}
+          style={{ letterSpacing: "0.08em" }}
         >
           {label}
         </p>
@@ -490,7 +490,7 @@ function CotacoesListView({ onOpen }: { onOpen: (c: Cotacao) => void }) {
         >
           <p
             className="font-ui text-[9px] font-bold uppercase text-brand"
-            style={{ letterSpacing: "0.16em" }}
+            style={{ letterSpacing: "0.10em" }}
           >
             Economia 7d
           </p>

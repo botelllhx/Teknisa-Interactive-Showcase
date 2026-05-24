@@ -769,7 +769,7 @@ function PaymentView({
                 <p className="text-[10px] font-bold uppercase tracking-[2px] text-white/75">
                   Cartão salvo
                 </p>
-                <p className="mt-2 font-mono text-[16px] tracking-[3px] tabular-nums">
+                <p className="mt-2 font-mono text-[16px] tracking-[1.5px] tabular-nums">
                   •••• •••• •••• 4218
                 </p>
                 <div className="mt-3 flex items-end justify-between">

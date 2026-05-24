@@ -541,7 +541,7 @@ function CashbackCard({ balance }: { balance: number }) {
     >
       <div className="relative flex items-start justify-between">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[3px] text-white/75">
+          <p className="text-[10px] font-bold uppercase tracking-[1.5px] text-white/75">
             Saldo Premium Club
           </p>
           <p className="mt-3 text-[12px] text-white/70">

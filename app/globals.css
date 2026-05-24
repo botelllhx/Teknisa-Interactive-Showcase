@@ -3,8 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --font-display: "Sora", system-ui, sans-serif;
-  --font-ui: "Roboto", system-ui, sans-serif;
+  /* v13: switched to Plus Jakarta Sans (closest open-source to Google Sans).
+     The actual variables are set by next/font in app/layout.tsx; these are
+     fallbacks if the font fails to load. */
+  --font-display: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --font-ui: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
 
   --brand: #020788;
   --brand-light: #1a1fa8;

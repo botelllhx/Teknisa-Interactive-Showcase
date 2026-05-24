@@ -1,18 +1,24 @@
 import type { Metadata, Viewport } from "next";
-import { Sora, Roboto } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-const sora = Sora({
+// v13 swap: Plus Jakarta Sans is the closest open-source font to Google Sans
+// (Product Sans), the family the client referenced. We use it for BOTH display
+// and ui — it has enough weight range (400-800) to cover headings and body,
+// and gives the Linear/Notion/Noteflow-style geometric clarity the project
+// kept missing under Roboto. Variable preserves backward CSS-var compat:
+// --font-display and --font-ui both point to Plus Jakarta Sans now.
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-display",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-ui",
   display: "swap",
 });
 
-const roboto = Roboto({
+const jakartaDisplay = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
-  variable: "--font-ui",
+  weight: ["600", "700", "800"],
+  variable: "--font-display",
   display: "swap",
 });
 
@@ -35,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${sora.variable} ${roboto.variable}`}>
+    <html lang="pt-BR" className={`${jakarta.variable} ${jakartaDisplay.variable}`}>
       <body className="font-ui antialiased">{children}</body>
     </html>
   );

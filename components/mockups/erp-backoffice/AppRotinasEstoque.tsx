@@ -61,7 +61,7 @@ function TaskListView() {
           <div>
             <p
               className="font-ui text-[10px] font-bold uppercase text-brand"
-              style={{ letterSpacing: "0.18em" }}
+              style={{ letterSpacing: "0.10em" }}
             >
               Hoje · 21 mai
             </p>
@@ -86,7 +86,7 @@ function TaskListView() {
             >
               <p
                 className="font-ui text-[8px] font-bold uppercase text-neutral-400"
-                style={{ letterSpacing: "0.14em" }}
+                style={{ letterSpacing: "0.08em" }}
               >
                 {k.l}
               </p>

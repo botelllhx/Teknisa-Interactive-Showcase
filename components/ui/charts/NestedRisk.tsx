@@ -119,7 +119,7 @@ export function NestedRisk({
               fontSize: 9,
               fontWeight: 700,
               textTransform: "uppercase",
-              letterSpacing: "0.14em",
+              letterSpacing: "0.08em",
               color: "rgba(255,255,255,0.85)",
             }}
           >

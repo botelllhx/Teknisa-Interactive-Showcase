@@ -153,7 +153,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
             <div className="flex items-center justify-between">
               <p
                 className="font-ui text-[10px] font-bold uppercase text-brand"
-                style={{ letterSpacing: "0.18em" }}
+                style={{ letterSpacing: "0.10em" }}
               >
                 Feed ao vivo
               </p>

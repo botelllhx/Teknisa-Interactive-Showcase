@@ -81,7 +81,7 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
               <div className="flex-1">
                 <p
                   className="font-ui text-[10px] font-bold uppercase text-brand"
-                  style={{ letterSpacing: "0.18em" }}
+                  style={{ letterSpacing: "0.10em" }}
                 >
                   Obrigações do mês
                 </p>

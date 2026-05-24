@@ -176,6 +176,28 @@ export function SmartPOSMockup({ step }: SmartPOSProps) {
     setDetailQty(1);
   };
 
+  // Auto-seed cart when the tour advances past product detail without user
+  // having added anything — keeps Cart/Payment/Success screens meaningful in
+  // the demo (instead of R$ 0,00). User can still remove items if they want.
+  useEffect(() => {
+    if (step >= 2 && cart.length === 0) {
+      const seeded = PRODUCT_FOR_CATEGORY[selectedCategory] ?? PRODUCT_FOR_CATEGORY.pizzas;
+      setCart([
+        {
+          id: `${seeded.id}-seed`,
+          name: seeded.name,
+          unit: seeded.price + 4, // + queijo adicional padrão
+          qty: 1,
+          addons: ["queijo"],
+          obs: OBS_OPTIONS[0],
+        },
+      ]);
+    }
+    // We deliberately don't depend on `cart.length` to avoid re-seeding once
+    // the user has interacted with the cart. Only triggers on step changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
   const updateCartQty = (id: string, delta: number) => {
     setCart((prev) =>
       prev

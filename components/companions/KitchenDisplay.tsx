@@ -113,7 +113,7 @@ export function KitchenDisplay({
             aria-hidden
             className="h-1 w-1 rounded-full bg-neutral-400/60"
           />
-          <span className="text-[7px] font-bold uppercase tracking-[3px] text-neutral-400">
+          <span className="text-[7px] font-bold uppercase tracking-[1.5px] text-neutral-400">
             Teknisa KDS
           </span>
           <span

@@ -539,7 +539,7 @@ function ConfirmedView({ slotLabel }: { slotLabel?: string }) {
         <div className="min-w-0 flex-1">
           <p
             className="font-ui text-[10px] font-bold uppercase text-success"
-            style={{ letterSpacing: "0.16em" }}
+            style={{ letterSpacing: "0.10em" }}
           >
             Reserva confirmada
           </p>
@@ -602,7 +602,7 @@ function ConfirmedView({ slotLabel }: { slotLabel?: string }) {
           <div className="min-w-0 flex-1 pt-1">
             <p
               className="font-ui text-[10px] font-bold uppercase text-brand"
-              style={{ letterSpacing: "0.16em" }}
+              style={{ letterSpacing: "0.10em" }}
             >
               Sua vez em
             </p>

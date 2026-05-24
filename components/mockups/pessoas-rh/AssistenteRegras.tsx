@@ -118,7 +118,7 @@ function ExistingRulesView() {
                   </p>
                   <p
                     className="font-ui text-[9px] font-bold uppercase text-neutral-500"
-                    style={{ letterSpacing: "0.16em" }}
+                    style={{ letterSpacing: "0.10em" }}
                   >
                     {r.category}
                   </p>
@@ -214,7 +214,7 @@ function ConditionsView() {
       <div className="flex items-center justify-between">
         <p
           className="font-ui text-[10px] font-bold uppercase text-brand"
-          style={{ letterSpacing: "0.18em" }}
+          style={{ letterSpacing: "0.10em" }}
         >
           Configuração detectada
         </p>

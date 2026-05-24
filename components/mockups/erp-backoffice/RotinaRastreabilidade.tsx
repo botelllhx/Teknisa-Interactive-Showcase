@@ -138,7 +138,7 @@ export function RotinaRastreabilidadeMockup({
                   <div>
                     <p
                       className="font-ui text-[10px] font-bold uppercase text-brand"
-                      style={{ letterSpacing: "0.18em" }}
+                      style={{ letterSpacing: "0.10em" }}
                     >
                       Linha do tempo · lote AP247
                     </p>

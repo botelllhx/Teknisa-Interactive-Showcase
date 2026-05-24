@@ -143,7 +143,6 @@ export function CardapioDigitalMockup({ step }: CardapioDigitalProps) {
       price: ITEMS[id]?.price ?? 0,
     }));
     const cartCount = itemList.reduce((s, i) => s + i.qty, 0);
-    const last = itemList[itemList.length - 1];
     const selectedAddonsList = Object.entries(addonQty)
       .filter(([, q]) => q > 0)
       .map(([id, q]) => {
@@ -155,7 +154,11 @@ export function CardapioDigitalMockup({ step }: CardapioDigitalProps) {
       cartCount,
       cartTotal: subtotal,
       cartSubtotal: subtotal,
-      selectedItemName: last?.name ?? ITEMS.marguerita.name,
+      // DetailView shows the marguerita hardcoded, so the tour tooltip's
+      // "personalize a {selectedItemName}" must always say Marguerita — not
+      // the last item added to the cart (which made it say "Sonho de Morango"
+      // when the detail screen was clearly showing pizza).
+      selectedItemName: ITEMS.marguerita.name,
       selectedAddons: selectedAddonsList,
       dishQty,
     });

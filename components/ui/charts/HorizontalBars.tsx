@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { useEffect, useId } from "react";
+import { useEffect } from "react";
 
 export interface HBar {
   label: string;
@@ -83,7 +83,6 @@ function BarRow({
   thickness: number;
   formatValue: (v: number) => string;
 }) {
-  const uid = useId().replace(/:/g, "");
   const motionVal = useMotionValue(0);
   const display = useTransform(motionVal, (v) => formatValue(Math.round(v)));
 

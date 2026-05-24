@@ -13,6 +13,7 @@ import { cn } from "@/lib/cn";
 import { Badge, Card } from "@/components/ui/shadcn";
 import { people, type Photo } from "@/lib/photos";
 import { PersonAvatar } from "@/components/ui/PersonAvatar";
+import { AreaChart, Sparkline } from "@/components/ui/charts";
 
 interface AnalisePreditivaProps {
   step: number;
@@ -43,7 +44,6 @@ const RISK_SERIES = [
 ];
 
 export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
-  const max = Math.max(...RISK_SERIES.map((s) => s.v));
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-surface-raised font-ui text-neutral-800">
       <header className="flex h-14 items-center justify-between border-b border-brand/8 bg-white px-5">
@@ -98,22 +98,49 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
         <section className="flex flex-col gap-3 overflow-hidden">
           <Card data-tour="ip-kpis" className="p-4">
             <div className="flex items-center justify-between">
-              <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
+              <p
+                className="font-ui text-[10.5px] font-bold uppercase text-brand"
+                style={{ letterSpacing: "0.18em" }}
+              >
                 Indicadores de RH
               </p>
               <Badge variant="secondary">12 meses</Badge>
             </div>
             <div className="mt-3 grid grid-cols-3 gap-2">
               {[
-                { label: "Turnover atual", value: "8,4%", tone: "warning" as const },
-                { label: "Predição 90d", value: "11,2%", tone: "warning" as const },
-                { label: "Risco crítico", value: "14", tone: "danger" as const },
+                {
+                  label: "Turnover atual",
+                  value: "8,4%",
+                  tone: "warning" as const,
+                  trend: [6.2, 6.8, 7.1, 7.0, 7.5, 7.9, 8.1, 8.4],
+                  color: "#d97706",
+                },
+                {
+                  label: "Predição 90d",
+                  value: "11,2%",
+                  tone: "warning" as const,
+                  trend: [7.8, 8.2, 8.8, 9.3, 9.8, 10.4, 10.8, 11.2],
+                  color: "#d97706",
+                },
+                {
+                  label: "Risco crítico",
+                  value: "14",
+                  tone: "danger" as const,
+                  trend: [5, 6, 7, 8, 10, 11, 13, 14],
+                  color: "#dc2626",
+                },
               ].map((k) => (
                 <div
                   key={k.label}
-                  className="rounded-xl bg-neutral-50 p-3"
+                  className="relative rounded-xl bg-neutral-50 p-3"
+                  style={{
+                    border: "1px solid rgba(0,0,0,0.04)",
+                  }}
                 >
-                  <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+                  <p
+                    className="font-ui text-[9.5px] font-bold uppercase text-neutral-500"
+                    style={{ letterSpacing: "0.16em" }}
+                  >
                     {k.label}
                   </p>
                   <p
@@ -122,49 +149,48 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
                       k.tone === "warning" && "text-warning",
                       k.tone === "danger" && "text-danger",
                     )}
+                    style={{ letterSpacing: "-0.030em" }}
                   >
                     {k.value}
                   </p>
+                  {/* Sparkline mini-chart — Linear/Notion style */}
+                  <div className="mt-2">
+                    <Sparkline
+                      data={k.trend}
+                      color={k.color}
+                      width={92}
+                      height={20}
+                      fill
+                    />
+                  </div>
                 </div>
               ))}
             </div>
             <div className="mt-4">
-              <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
-                Tendência · últimos 8 meses
-              </p>
-              <div className="mt-2 flex h-32 items-end gap-1.5">
-                {RISK_SERIES.map((s, i) => {
-                  const h = (s.v / max) * 100;
-                  const critical = i >= 6;
-                  return (
-                    <div
-                      key={s.m}
-                      className="flex h-full flex-1 flex-col items-center justify-end gap-1"
-                    >
-                      <span className="font-ui text-[10px] font-bold tabular-nums text-neutral-500">
-                        {s.v}
-                      </span>
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: `${h}%` }}
-                        transition={{
-                          delay: 0.04 * i,
-                          duration: 0.5,
-                          ease: [0.16, 1, 0.3, 1],
-                        }}
-                        className={cn(
-                          "w-full rounded-t-md",
-                          critical
-                            ? "bg-gradient-to-t from-danger to-danger/55 shadow-[0_2px_8px_rgba(220,38,38,0.25)]"
-                            : "bg-gradient-to-t from-brand to-brand/40",
-                        )}
-                      />
-                      <span className="font-ui text-[9px] font-bold text-neutral-500">
-                        {s.m}
-                      </span>
-                    </div>
-                  );
-                })}
+              <div className="flex items-center justify-between">
+                <p
+                  className="font-ui text-[9.5px] font-bold uppercase text-neutral-500"
+                  style={{ letterSpacing: "0.16em" }}
+                >
+                  Tendência · últimos 8 meses
+                </p>
+                <p
+                  className="font-ui text-[10px] text-neutral-400 tabular-nums"
+                  style={{ letterSpacing: "-0.005em" }}
+                >
+                  Riscos críticos
+                </p>
+              </div>
+              <div className="mt-2">
+                <AreaChart
+                  data={RISK_SERIES.map((s) => ({ x: s.m, y: s.v }))}
+                  color="#dc2626"
+                  aspectRatio="16/5"
+                  yMin={10}
+                  formatY={(v) => Math.round(v).toString()}
+                  showYLabels
+                  smooth
+                />
               </div>
             </div>
           </Card>

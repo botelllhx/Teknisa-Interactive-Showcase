@@ -38,6 +38,7 @@ import {
   AreaChart,
   NestedRisk,
   HorizontalBars,
+  Sparkline,
 } from "@/components/ui/charts";
 import { InsightCard } from "@/components/ui/InsightCard";
 import { GradientIcon } from "@/components/ui/GradientIcon";
@@ -412,6 +413,7 @@ function DashboardScreen() {
           value="R$ 24,5k"
           delta="+12%"
           deltaUp
+          trend={[18, 19.5, 20.2, 19.8, 21.4, 22.1, 23.2, 24.5]}
         />
         <DashKPITile
           icon={<Activity />}
@@ -420,6 +422,7 @@ function DashboardScreen() {
           value="31,74%"
           delta="+3,7pp"
           highlight
+          trend={[28.1, 28.4, 28.9, 29.6, 30.1, 30.8, 31.2, 31.74]}
         />
         <DashKPITile
           icon={<TrendingDown />}
@@ -427,6 +430,7 @@ function DashboardScreen() {
           label="Margem"
           value="42,0%"
           delta="−3pp"
+          trend={[45, 44.5, 44, 43.6, 43.2, 42.8, 42.4, 42]}
         />
         <DashKPITile
           icon={<Package />}
@@ -435,6 +439,7 @@ function DashboardScreen() {
           value="R$ 184k"
           delta="OK"
           deltaUp
+          trend={[176, 178, 180, 181, 179, 182, 183, 184]}
         />
       </div>
 
@@ -709,6 +714,7 @@ function DashKPITile({
   delta,
   deltaUp,
   highlight,
+  trend,
 }: {
   icon: ReactElement;
   tone: "brand" | "danger" | "warning" | "teal";
@@ -717,12 +723,23 @@ function DashKPITile({
   delta: string;
   deltaUp?: boolean;
   highlight?: boolean;
+  trend?: number[];
 }) {
   const deltaColor = deltaUp
     ? "#16a34a"
     : delta.startsWith("−") || delta.startsWith("-")
       ? "#dc2626"
       : "#9ca3af";
+  // Sparkline color: brand/teal use brand; warning uses warning; danger
+  // (which has dark navy bg) uses light green so it pops.
+  const sparkColor =
+    tone === "danger"
+      ? "#4ade80"
+      : tone === "warning"
+        ? "#d97706"
+        : tone === "teal"
+          ? "#0d9488"
+          : "#020788";
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -764,26 +781,39 @@ function DashKPITile({
           "mt-2 font-ui text-[9.5px] font-semibold uppercase",
           tone === "danger" ? "text-white/65" : "text-neutral-500",
         )}
-        style={{ letterSpacing: "0.10em" }}
+        style={{ letterSpacing: "0.14em" }}
       >
         {label}
       </p>
-      <div className="mt-0.5 flex items-baseline gap-1.5 whitespace-nowrap">
-        <span
-          className={cn(
-            "font-ui font-bold tabular-nums leading-none",
-            tone === "danger" ? "text-white" : "text-neutral-900",
-          )}
-          style={{ letterSpacing: "-0.025em", fontSize: 20 }}
-        >
-          {value}
-        </span>
-        <span
-          className="font-ui text-[10px] font-semibold tabular-nums"
-          style={{ color: tone === "danger" ? "#4ade80" : deltaColor }}
-        >
-          {delta}
-        </span>
+      <div className="mt-0.5 flex items-baseline justify-between gap-1.5">
+        <div className="flex items-baseline gap-1.5 whitespace-nowrap">
+          <span
+            className={cn(
+              "font-ui font-bold tabular-nums leading-none",
+              tone === "danger" ? "text-white" : "text-neutral-900",
+            )}
+            style={{ letterSpacing: "-0.030em", fontSize: 20 }}
+          >
+            {value}
+          </span>
+          <span
+            className="font-ui text-[10px] font-bold tabular-nums"
+            style={{ color: tone === "danger" ? "#4ade80" : deltaColor }}
+          >
+            {delta}
+          </span>
+        </div>
+        {trend && (
+          <div className="flex-shrink-0">
+            <Sparkline
+              data={trend}
+              color={sparkColor}
+              width={56}
+              height={20}
+              fill
+            />
+          </div>
+        )}
       </div>
     </motion.div>
   );

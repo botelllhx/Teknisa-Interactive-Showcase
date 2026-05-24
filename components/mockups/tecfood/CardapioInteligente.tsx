@@ -224,7 +224,7 @@ export function CardapioInteligenteMockup({ step }: CardapioInteligenteProps) {
               />
             </section>
 
-            <aside className="flex flex-col gap-3 overflow-y-auto border-l border-brand/8 bg-gradient-to-b from-white via-white to-brand-ghost/30 p-4">
+            <aside className="flex flex-col gap-4 overflow-y-auto border-l border-brand/8 bg-gradient-to-b from-white via-white to-brand-ghost/30 p-5">
               <AILiveAssistant balanced={balanced} totals={dayTotals} approved={approved} />
               <NutritionPanel totals={dayTotals} balanced={balanced} />
               <CostPanel totals={dayTotals} />

@@ -943,7 +943,7 @@ function HomeView({
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Promo banner */}
         <div
-          className="relative m-2.5 mb-2 flex items-center gap-2 overflow-hidden rounded-2xl p-3 text-white"
+          className="relative m-3 mb-2 flex items-center gap-3 overflow-hidden rounded-2xl p-4 text-white"
           style={{
             background: `linear-gradient(135deg, ${skin.brandDark} 0%, ${skin.brand} 55%, ${skin.accent} 100%)`,
             boxShadow:

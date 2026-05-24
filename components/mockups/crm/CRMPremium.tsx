@@ -411,7 +411,7 @@ function HomeScreen({
         Olá, <span style={{ color: COLORS.amber }}>Thomas</span>
       </p>
 
-      <div className="mx-5 mt-3" data-tour="crm-cashback-card">
+      <div className="mx-5 mt-3">
         <CashbackCard balance={balance} />
       </div>
 
@@ -555,6 +555,7 @@ function HomeScreen({
 function CashbackCard({ balance }: { balance: number }) {
   return (
     <motion.div
+      data-tour="crm-cashback-card"
       className="relative overflow-hidden rounded-2xl p-4"
       style={{
         background:

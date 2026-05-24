@@ -357,10 +357,11 @@ function HomeView({
       </div>
 
       {/* Categories shortcut */}
-      <div className="mx-4 mt-3" data-tour="cd-categories">
+      <div className="mx-4 mt-3">
         <motion.button
+          data-tour="cd-categories"
           whileTap={{ scale: 0.98 }}
-          className="flex w-full items-center gap-3 rounded-xl border border-brand/15 bg-brand-ghost p-3 text-left transition-shadow hover:shadow-card"
+          className="flex w-full items-center gap-3 rounded-xl border border-brand/15 bg-brand-ghost p-3.5 text-left transition-shadow hover:shadow-card"
         >
           <div className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-white text-brand">
             <BookOpen size={18} strokeWidth={2} />

@@ -335,25 +335,51 @@ function SyncedView() {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.22 }}
-      className="flex flex-1 flex-col items-center justify-center gap-3 px-5"
+      className="flex flex-1 flex-col items-center justify-center px-5"
     >
-      <motion.div
+      {/* data-tour no wrapper estático — o motion rotativo do Cloud
+          rotacionaria o spotlight junto */}
+      <div
         data-tour="ae-sync"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1.4, ease: "easeInOut" }}
-        className="flex h-20 w-20 items-center justify-center rounded-full bg-brand text-white shadow-brand"
+        className="flex flex-col items-center gap-3.5 rounded-2xl bg-white px-6 py-6"
+        style={{
+          border: "1px solid rgba(2,7,136,0.08)",
+          boxShadow:
+            "0 4px 16px rgba(2,7,136,0.08), inset 0 1px 0 rgba(255,255,255,0.6)",
+        }}
       >
-        <Cloud size={32} strokeWidth={2} />
-      </motion.div>
-      <p className="font-ui text-[15px] font-bold text-neutral-900">
-        Sincronizado
-      </p>
-      <p className="text-center font-ui text-[11px] text-neutral-500">
-        Contagem do açougue enviada ao ERP
-      </p>
-      <div className="flex items-center gap-1.5 rounded-full bg-success/15 px-3 py-1 font-ui text-[10px] font-bold text-success">
-        <RefreshCw size={11} strokeWidth={2.5} />
-        12 itens · há instantes
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1.4, ease: "easeInOut" }}
+          className="flex h-20 w-20 items-center justify-center rounded-full text-white"
+          style={{
+            background:
+              "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
+            boxShadow:
+              "0 8px 20px rgba(2,7,136,0.32), inset 0 1px 0 rgba(255,255,255,0.20)",
+          }}
+        >
+          <Cloud size={32} strokeWidth={2.25} />
+        </motion.div>
+        <p
+          className="font-display text-[16px] font-bold text-neutral-900"
+          style={{ letterSpacing: "-0.020em" }}
+        >
+          Sincronizado
+        </p>
+        <p
+          className="text-center font-ui text-[11.5px] text-neutral-500"
+          style={{ letterSpacing: "-0.005em" }}
+        >
+          Contagem do açougue enviada ao ERP
+        </p>
+        <div
+          className="flex items-center gap-1.5 rounded-full bg-success/15 px-3 py-1 font-ui text-[10px] font-bold uppercase text-success"
+          style={{ letterSpacing: "0.14em" }}
+        >
+          <RefreshCw size={11} strokeWidth={2.5} />
+          <span className="tabular-nums">12 itens</span> · há instantes
+        </div>
       </div>
     </motion.div>
   );

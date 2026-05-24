@@ -812,34 +812,51 @@ function SuccessOverlay({
 }) {
   return (
     <motion.div
-      data-tour="pdv-receipt"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="absolute inset-0 z-30 flex items-center justify-center bg-white/95 backdrop-blur"
     >
       <motion.div
+        data-tour="pdv-receipt"
         initial={{ scale: 0.92, y: 12 }}
         animate={{ scale: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 220, damping: 18 }}
-        className="flex w-80 flex-col items-center rounded-2xl border-2 border-success/30 bg-white p-6 shadow-frame"
+        className="flex w-80 flex-col items-center rounded-2xl border-2 border-success/30 bg-white p-7 shadow-frame"
       >
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success text-white shadow-brand">
           <CheckCircle2 size={36} strokeWidth={2.5} />
         </div>
-        <p className="mt-3 font-display text-[18px] font-bold text-neutral-900">
+        <p
+          className="mt-4 font-display text-[20px] font-bold text-neutral-900"
+          style={{ letterSpacing: "-0.022em" }}
+        >
           Venda concluída
         </p>
-        <p className="text-[11px] text-neutral-500">Comanda 000001 · Jorge</p>
+        <p
+          className="mt-1 font-ui text-[11.5px] text-neutral-500 tabular-nums"
+          style={{ letterSpacing: "-0.005em" }}
+        >
+          Comanda 000001 · Jorge
+        </p>
 
-        <div className="mt-3 w-full rounded-xl bg-surface-raised p-3 text-center">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
+        <div className="mt-4 w-full rounded-xl bg-surface-raised p-4 text-center">
+          <p
+            className="font-ui text-[10px] font-bold uppercase text-neutral-500"
+            style={{ letterSpacing: "0.18em" }}
+          >
             Total pago
           </p>
-          <p className="font-display text-[28px] font-bold text-success tabular-nums">
+          <p
+            className="mt-1 font-display text-[30px] font-bold text-success tabular-nums leading-none"
+            style={{ letterSpacing: "-0.030em" }}
+          >
             R$ {total.toFixed(2).replace(".", ",")}
           </p>
-          <p className="mt-1 text-[10px] text-neutral-500">
+          <p
+            className="mt-2 font-ui text-[10.5px] text-neutral-500 tabular-nums"
+            style={{ letterSpacing: "-0.005em" }}
+          >
             {paymentLabel} · aprovado em 2s
           </p>
         </div>

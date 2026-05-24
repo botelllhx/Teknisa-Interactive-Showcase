@@ -815,25 +815,48 @@ function SuccessScreen({
 }) {
   return (
     <motion.div
-      data-tour="smartpos-approved"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="flex h-full flex-col items-center justify-center gap-4 bg-[#16a34a] px-4 text-white"
+      className="flex h-full flex-col items-center justify-center gap-5 bg-[#16a34a] px-4 text-white"
     >
       <motion.div
         initial={{ scale: 0.5 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 240, damping: 14 }}
         className="flex h-28 w-28 items-center justify-center rounded-full bg-white"
+        style={{
+          boxShadow:
+            "0 12px 32px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.4)",
+        }}
       >
         <Check size={64} strokeWidth={3} className="text-[#16a34a]" />
       </motion.div>
-      <div className="text-center">
-        <p className="font-ui text-[18px] font-bold">Pagamento aprovado</p>
-        <p className="mt-1 text-[12px] opacity-90">{paymentLabel} · 1x sem juros</p>
-        <p className="mt-3 font-ui text-[32px] font-bold tabular-nums">
+      <div
+        data-tour="smartpos-approved"
+        className="rounded-2xl bg-white/15 px-5 py-3.5 text-center backdrop-blur"
+        style={{
+          boxShadow:
+            "inset 0 1px 0 rgba(255,255,255,0.20), 0 4px 14px rgba(0,0,0,0.10)",
+        }}
+      >
+        <p
+          className="font-display text-[18px] font-bold"
+          style={{ letterSpacing: "-0.020em" }}
+        >
+          Pagamento aprovado
+        </p>
+        <p
+          className="mt-1 font-ui text-[12px] tabular-nums opacity-90"
+          style={{ letterSpacing: "-0.005em" }}
+        >
+          {paymentLabel} · 1x sem juros
+        </p>
+        <p
+          className="mt-3 font-display text-[32px] font-bold tabular-nums leading-none"
+          style={{ letterSpacing: "-0.030em" }}
+        >
           R$ {total.toFixed(2).replace(".", ",")}
         </p>
       </div>

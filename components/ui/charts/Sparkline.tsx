@@ -66,7 +66,7 @@ export function Sparkline({
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       className={className}
-      style={{ display: "block", overflow: "visible" }}
+      style={{ display: "block", overflow: "hidden" }}
     >
       <defs>
         <linearGradient id={`spark-${uid}`} x1="0" y1="0" x2="0" y2="1">

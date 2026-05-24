@@ -172,7 +172,7 @@ export function QuickPassMockup({ step }: QuickPassProps) {
   };
 
   return (
-    <div className="flex h-full w-full flex-col bg-white text-neutral-800 font-ui">
+    <div className="flex h-full w-full flex-col overflow-hidden bg-white text-neutral-800 font-ui">
       <StatusBar />
       <main className="flex-1 overflow-hidden">
         <AnimatePresence mode="wait">

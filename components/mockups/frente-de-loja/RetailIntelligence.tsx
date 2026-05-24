@@ -244,7 +244,7 @@ function Header() {
 function JourneyPanel({ screen }: { screen: Screen }) {
   const idx = SCREEN_ORDER.indexOf(screen);
   return (
-    <aside className="flex w-[280px] flex-none flex-col border-l border-brand/10 bg-white">
+    <aside className="flex w-[280px] flex-none flex-col overflow-hidden border-l border-brand/10 bg-white">
       <div className="flex flex-none flex-col gap-1 border-b border-neutral-100 px-5 py-4">
         <p className="text-[10px] font-bold uppercase tracking-[2px] text-brand">
           Jornada da IA

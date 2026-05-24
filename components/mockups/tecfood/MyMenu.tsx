@@ -163,7 +163,7 @@ export function MyMenuMockup({ step }: MyMenuProps) {
   }, [tab, activeDate, menu, reservedSlot, feedback, patchLive]);
 
   return (
-    <div className="flex h-full w-full flex-col bg-white font-ui text-neutral-800">
+    <div className="flex h-full w-full flex-col overflow-hidden bg-white font-ui text-neutral-800">
       <StatusBar />
       <Header />
       <Tabs tab={tab} onPick={setTab} />

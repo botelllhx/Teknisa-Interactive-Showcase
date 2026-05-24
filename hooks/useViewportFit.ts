@@ -3,25 +3,30 @@
 import { useEffect, useState } from "react";
 
 /**
- * v13.16 — auto-fit-to-viewport, fix do bug "espaço gigantesco na direita".
+ * v13.17 — auto-fit por LARGURA + ALTURA, centralizado.
  *
- * Antes (v13.15): scale = min(vw/1920, vh/1080). Quando o viewport é mais
- * "baixo" que 16:9 (laptop com browser chrome comendo altura), o scale era
- * limitado pela ALTURA, fazendo a largura visual ser MENOR que o viewport
- * → espaço vazio na direita.
+ * Cliente: "tenho que scrollar para ver, pq tem mt espaço em volta do
+ * mockup, a ideia é sempre visualizar os 100vh da tela".
  *
- * Agora: scale APENAS por largura. Se a altura do conteúdo escalado for
- * maior que o viewport, scroll vertical. Nunca scroll horizontal.
+ * Solução: scale = min(vw/1920, vh/1080, 1). Conteúdo SEMPRE cabe
+ * no viewport sem scroll. Wrapper aplica flex center pra que o
+ * eventual espaço sobrando (quando ratios não batem) fique balanceado
+ * (top/bottom ou left/right), não tudo de um lado.
+ *
+ * Não use widht ou height isolados — qualquer um deles individualmente
+ * obriga scroll no eixo limitado.
  */
 export function useViewportFit() {
   const TARGET_W = 1920;
+  const TARGET_H = 1080;
 
   const [scale, setScale] = useState(1);
 
   useEffect(() => {
     const update = () => {
       const vw = window.innerWidth;
-      const s = Math.min(vw / TARGET_W, 1);
+      const vh = window.innerHeight;
+      const s = Math.min(vw / TARGET_W, vh / TARGET_H, 1);
       setScale(s);
     };
     update();
@@ -29,5 +34,5 @@ export function useViewportFit() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  return { scale, width: TARGET_W };
+  return { scale, width: TARGET_W, height: TARGET_H };
 }

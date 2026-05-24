@@ -468,9 +468,25 @@ function GeneratingScreen({ onComplete }: { onComplete: () => void }) {
       </div>
 
       <div className="z-10 mb-10 px-10 text-center">
-        <p className="font-ui text-[12px] font-bold uppercase tracking-[4px] text-brand/55">
-          Sistema neural Teknisa
-        </p>
+        <span
+          className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5"
+          style={{
+            border: "1px solid rgba(2,7,136,0.10)",
+            boxShadow: "0 2px 6px rgba(2,7,136,0.06)",
+          }}
+        >
+          <motion.span
+            animate={{ opacity: [1, 0.35, 1] }}
+            transition={{ duration: 1.4, repeat: Infinity }}
+            className="h-1.5 w-1.5 rounded-full bg-brand"
+          />
+          <span
+            className="font-ui text-[9.5px] font-bold uppercase text-brand"
+            style={{ letterSpacing: "0.18em" }}
+          >
+            IA processando
+          </span>
+        </span>
         <AnimatePresence mode="wait">
           <motion.p
             key={insightIdx}
@@ -478,7 +494,8 @@ function GeneratingScreen({ onComplete }: { onComplete: () => void }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.3 }}
-            className="mt-2 font-ui text-[18px] font-medium text-neutral-900"
+            className="mt-3 font-display text-[17px] font-bold text-neutral-900"
+            style={{ letterSpacing: "-0.020em" }}
           >
             {INSIGHTS[insightIdx]}
           </motion.p>
@@ -644,96 +661,252 @@ function PhaseStepper({
 }
 
 // ----- AnimatedAIBrain ------------------------------------------------------
-// Center piece: circuit network + concentric rings + orbiting particles +
-// pulsing brain.
+// v13.17 — substituído o "blue ball" anterior (bolinha boring) por um
+// BENTO DE ANÁLISE temático: 6 cards mostrando dados reais que a IA está
+// processando, cada um animado de forma própria. Muito mais bonito,
+// temático com Cardápio Inteligente, e dá sensação real de "a IA tá
+// trabalhando" — não só um spinner glorificado.
 
 function AnimatedAIBrain({ phaseIdx }: { phaseIdx: number }) {
-  // Clean, elegant "AI orb" with breathing ripples.
-  // 3 concentric circles softly emanating outward + a solid core sphere
-  // with the current phase icon. Less mechanical, more premium.
-  const size = 320;
-  const PhaseIcon = PHASES[phaseIdx]?.Icon ?? Brain;
   return (
     <div
-      className="relative flex items-center justify-center"
-      style={{ width: size, height: size }}
+      className="grid w-full max-w-[560px] grid-cols-3 gap-3 px-6"
+      style={{ gridAutoRows: "1fr" }}
     >
-      {/* Soft radial background glow */}
-      <motion.span
-        aria-hidden
-        animate={{ opacity: [0.5, 0.85, 0.5] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute inset-0 rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(164,177,255,0.45) 0%, rgba(164,177,255,0.10) 35%, transparent 70%)",
-          filter: "blur(8px)",
-        }}
+      <AnalysisTile
+        title="Unidades"
+        active={phaseIdx >= 0}
+        delay={0.0}
+        kind="units"
       />
+      <AnalysisTile
+        title="Fichas técnicas"
+        active={phaseIdx >= 0}
+        delay={0.15}
+        kind="counter"
+      />
+      <AnalysisTile
+        title="Histórico 12m"
+        active={phaseIdx >= 0}
+        delay={0.3}
+        kind="bars"
+      />
+      <AnalysisTile
+        title="Restrições"
+        active={phaseIdx >= 1}
+        delay={0.45}
+        kind="checks"
+      />
+      <AnalysisTile
+        title="Custo médio"
+        active={phaseIdx >= 1}
+        delay={0.6}
+        kind="cost"
+      />
+      <AnalysisTile
+        title="Combinações"
+        active={phaseIdx >= 2}
+        delay={0.75}
+        kind="grid"
+      />
+    </div>
+  );
+}
 
-      {/* Breathing ripples — water-drop emanation */}
-      {[0, 1, 2].map((i) => (
+function AnalysisTile({
+  title,
+  active,
+  delay,
+  kind,
+}: {
+  title: string;
+  active: boolean;
+  delay: number;
+  kind: "units" | "counter" | "bars" | "checks" | "cost" | "grid";
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: active ? 1 : 0.32, y: 0 }}
+      transition={{
+        duration: 0.5,
+        delay,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+      className="relative flex flex-col gap-2 overflow-hidden rounded-xl bg-white p-3.5"
+      style={{
+        border: "1px solid rgba(2,7,136,0.06)",
+        boxShadow: active
+          ? "0 4px 16px rgba(2,7,136,0.08), inset 0 1px 0 rgba(255,255,255,0.6)"
+          : "0 1px 2px rgba(0,0,0,0.03)",
+      }}
+    >
+      <div className="flex items-center justify-between">
+        <span
+          className="font-ui text-[9.5px] font-bold uppercase text-brand"
+          style={{ letterSpacing: "0.16em" }}
+        >
+          {title}
+        </span>
+        {active && (
+          <motion.span
+            animate={{ opacity: [1, 0.35, 1] }}
+            transition={{ duration: 1.4, repeat: Infinity }}
+            className="h-1.5 w-1.5 rounded-full bg-success"
+          />
+        )}
+      </div>
+
+      <div className="flex flex-1 items-center">
+        {kind === "units" && <UnitsViz active={active} />}
+        {kind === "counter" && <CounterViz active={active} target={240} />}
+        {kind === "bars" && <BarsViz active={active} />}
+        {kind === "checks" && <ChecksViz active={active} />}
+        {kind === "cost" && <CounterViz active={active} target={9.6} money />}
+        {kind === "grid" && <GridViz active={active} />}
+      </div>
+    </motion.div>
+  );
+}
+
+function UnitsViz({ active }: { active: boolean }) {
+  return (
+    <div className="flex w-full items-center justify-around">
+      {[0, 1, 2, 3].map((i) => (
         <motion.span
-          aria-hidden
           key={i}
-          className="absolute rounded-full"
-          style={{
-            border: "1.5px solid rgba(164,177,255,0.55)",
-            width: 96,
-            height: 96,
-          }}
-          initial={{ scale: 1, opacity: 0 }}
-          animate={{
-            scale: [1, 3, 3],
-            opacity: [0, 0.7, 0],
-          }}
+          animate={
+            active ? { scale: [1, 1.15, 1], opacity: [0.5, 1, 0.5] } : {}
+          }
           transition={{
-            duration: 3.2,
+            duration: 1.6,
             repeat: Infinity,
-            ease: "easeOut",
-            delay: i * 1.05,
+            delay: i * 0.18,
+            ease: "easeInOut",
+          }}
+          className="h-3 w-3 rounded-full"
+          style={{
+            background:
+              "linear-gradient(135deg, #020788 0%, #1a1fa8 60%, #3b42c4 100%)",
+            boxShadow: "0 0 0 3px rgba(2,7,136,0.08)",
           }}
         />
       ))}
+    </div>
+  );
+}
 
-      {/* Core sphere */}
-      <motion.div
-        className="relative flex h-24 w-24 items-center justify-center rounded-full"
-        animate={{
-          scale: [1, 1.04, 1],
-        }}
-        transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-        style={{
-          background:
-            "radial-gradient(circle at 30% 25%, #b9c4ff 0%, #3b42c4 45%, #020788 100%)",
-          boxShadow:
-            "0 0 32px rgba(164,177,255,0.55), 0 0 64px rgba(2,7,136,0.45), inset 0 -8px 24px rgba(2,7,136,0.6), inset 0 8px 16px rgba(185,196,255,0.55)",
-        }}
-      >
-        {/* Highlight shine */}
-        <span
-          aria-hidden
-          className="absolute left-3 top-3 h-5 w-7 rounded-full"
+function CounterViz({
+  active,
+  target,
+  money,
+}: {
+  active: boolean;
+  target: number;
+  money?: boolean;
+}) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (!active) return;
+    let raf = 0;
+    const start = performance.now();
+    const dur = 1400;
+    const animate = (now: number) => {
+      const t = Math.min(1, (now - start) / dur);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setVal(target * eased);
+      if (t < 1) raf = requestAnimationFrame(animate);
+    };
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
+  }, [active, target]);
+
+  const display = money
+    ? `R$ ${val.toFixed(2).replace(".", ",")}`
+    : Math.round(val).toLocaleString("pt-BR");
+
+  return (
+    <p
+      className="font-display text-[22px] font-bold tabular-nums leading-none text-neutral-900"
+      style={{ letterSpacing: "-0.030em" }}
+    >
+      {display}
+    </p>
+  );
+}
+
+function BarsViz({ active }: { active: boolean }) {
+  const heights = [40, 65, 55, 80, 70, 90];
+  return (
+    <div className="flex w-full items-end gap-0.5 h-8">
+      {heights.map((h, i) => (
+        <motion.span
+          key={i}
+          initial={{ height: 0 }}
+          animate={{ height: active ? `${h}%` : 0 }}
+          transition={{
+            duration: 0.7,
+            delay: i * 0.05,
+            ease: [0.16, 1, 0.3, 1],
+          }}
+          className="flex-1 rounded-t"
           style={{
             background:
-              "radial-gradient(ellipse at center, rgba(255,255,255,0.7) 0%, transparent 70%)",
-            filter: "blur(2px)",
+              "linear-gradient(180deg, #3b42c4 0%, #020788 100%)",
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.20)",
           }}
         />
+      ))}
+    </div>
+  );
+}
 
-        <AnimatePresence mode="wait">
-          <motion.span
-            key={phaseIdx}
-            initial={{ scale: 0.6, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.6, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 240, damping: 18 }}
-            className="relative text-white"
+function ChecksViz({ active }: { active: boolean }) {
+  return (
+    <div className="flex w-full flex-col gap-1">
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, x: -4 }}
+          animate={active ? { opacity: 1, x: 0 } : { opacity: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 + i * 0.15 }}
+          className="flex items-center gap-1.5"
+        >
+          <span
+            className="flex h-3 w-3 items-center justify-center rounded-full bg-success text-white"
+            style={{ boxShadow: "0 0 0 2px rgba(22,163,74,0.15)" }}
           >
-            <PhaseIcon size={36} strokeWidth={1.5} />
-          </motion.span>
-        </AnimatePresence>
-      </motion.div>
+            <Check size={8} strokeWidth={3} />
+          </span>
+          <span
+            className="h-1.5 flex-1 rounded-full bg-success/15"
+          />
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+function GridViz({ active }: { active: boolean }) {
+  return (
+    <div className="grid w-full grid-cols-5 gap-0.5">
+      {Array.from({ length: 20 }).map((_, i) => (
+        <motion.span
+          key={i}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={active ? { opacity: 1, scale: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.25, delay: 0.02 * i }}
+          className="aspect-square rounded-sm"
+          style={{
+            background:
+              i % 3 === 0
+                ? "linear-gradient(135deg, #020788 0%, #3b42c4 100%)"
+                : i % 5 === 0
+                  ? "#16a34a"
+                  : "rgba(2,7,136,0.12)",
+          }}
+        />
+      ))}
     </div>
   );
 }

@@ -163,7 +163,7 @@ function PunchSheetView() {
       </div>
 
       {/* Quick stats — 4 mini KPIs */}
-      <div className="grid grid-cols-4 gap-1.5">
+      <div className="grid grid-cols-4 gap-2">
         {[
           { l: "Saldo BH", v: "+6h30", tone: "success" as const },
           { l: "Hoje", v: "07:58", tone: "neutral" as const },
@@ -175,23 +175,26 @@ function PunchSheetView() {
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 * i, duration: 0.22 }}
-            className="rounded-xl bg-white p-2"
-            style={{ border: "1px solid rgba(0,0,0,0.05)" }}
+            className="rounded-xl bg-white p-2.5"
+            style={{
+              border: "1px solid rgba(0,0,0,0.05)",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+            }}
           >
             <p
-              className="font-ui text-[8px] font-bold uppercase text-neutral-400"
-              style={{ letterSpacing: "0.08em" }}
+              className="font-ui text-[9px] font-bold uppercase text-neutral-400"
+              style={{ letterSpacing: "0.16em" }}
             >
               {k.l}
             </p>
             <p
               className={cn(
-                "mt-0.5 font-ui text-[13px] font-bold leading-none tabular-nums",
+                "mt-0.5 font-display text-[14px] font-bold leading-none tabular-nums",
                 k.tone === "success" && "text-success",
                 k.tone === "brand" && "text-brand",
                 k.tone === "neutral" && "text-neutral-900",
               )}
-              style={{ letterSpacing: "-0.02em" }}
+              style={{ letterSpacing: "-0.025em" }}
             >
               {k.v}
             </p>
@@ -200,8 +203,8 @@ function PunchSheetView() {
       </div>
 
       <p
-        className="mt-1 font-ui text-[9px] font-bold uppercase text-neutral-500"
-        style={{ letterSpacing: "0.10em" }}
+        className="mt-1 font-ui text-[10px] font-bold uppercase text-neutral-500"
+        style={{ letterSpacing: "0.16em" }}
       >
         Últimas marcações
       </p>

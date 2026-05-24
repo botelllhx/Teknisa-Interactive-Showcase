@@ -15,18 +15,49 @@ import { Button, Card } from "@/components/ui/shadcn";
 import { people } from "@/lib/photos";
 import { PersonAvatar } from "@/components/ui/PersonAvatar";
 import { StackedAvatars } from "@/components/ui/StackedAvatars";
+import { Sparkline } from "@/components/ui/charts";
 
 interface MesaOperacoesProps {
   step: number;
 }
 
 const UNITS = [
-  { name: "Filial Centro", presence: 94, status: "ok" as const },
-  { name: "Ala B", presence: 88, status: "ok" as const },
-  { name: "Unidade Norte", presence: 62, status: "alert" as const },
-  { name: "Unidade Sul", presence: 96, status: "ok" as const },
-  { name: "Unidade Oeste", presence: 91, status: "ok" as const },
-  { name: "Café da Praça", presence: 100, status: "ok" as const },
+  {
+    name: "Filial Centro",
+    presence: 94,
+    status: "ok" as const,
+    trend: [91, 92, 93, 92, 94, 93, 94],
+  },
+  {
+    name: "Ala B",
+    presence: 88,
+    status: "ok" as const,
+    trend: [85, 86, 87, 88, 86, 88, 88],
+  },
+  {
+    name: "Unidade Norte",
+    presence: 62,
+    status: "alert" as const,
+    trend: [88, 84, 78, 72, 68, 65, 62],
+  },
+  {
+    name: "Unidade Sul",
+    presence: 96,
+    status: "ok" as const,
+    trend: [92, 93, 95, 94, 96, 95, 96],
+  },
+  {
+    name: "Unidade Oeste",
+    presence: 91,
+    status: "ok" as const,
+    trend: [88, 89, 90, 91, 90, 91, 91],
+  },
+  {
+    name: "Café da Praça",
+    presence: 100,
+    status: "ok" as const,
+    trend: [97, 98, 99, 100, 100, 100, 100],
+  },
 ];
 
 export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
@@ -117,21 +148,39 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
                       className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-danger"
                     />
                   )}
-                  <p className="font-ui text-[12px] font-bold text-neutral-900">
+                  <p
+                    className="font-display text-[13px] font-bold text-neutral-900"
+                    style={{ letterSpacing: "-0.018em" }}
+                  >
                     {unit.name}
                   </p>
-                  <div className="mt-2">
-                    <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
-                      Presença
-                    </p>
-                    <p
-                      className={cn(
-                        "mt-0.5 font-ui text-[28px] font-bold tabular-nums leading-none",
-                        isAlert && alertActive ? "text-danger" : "text-brand",
-                      )}
-                    >
-                      {unit.presence}%
-                    </p>
+                  <div className="mt-2 flex items-end justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p
+                        className="font-ui text-[10px] font-bold uppercase text-neutral-500"
+                        style={{ letterSpacing: "0.16em" }}
+                      >
+                        Presença
+                      </p>
+                      <p
+                        className={cn(
+                          "mt-0.5 font-display text-[28px] font-bold tabular-nums leading-none",
+                          isAlert && alertActive ? "text-danger" : "text-brand",
+                        )}
+                        style={{ letterSpacing: "-0.030em" }}
+                      >
+                        {unit.presence}%
+                      </p>
+                    </div>
+                    <Sparkline
+                      data={unit.trend}
+                      color={
+                        isAlert && alertActive ? "#dc2626" : "#020788"
+                      }
+                      width={64}
+                      height={24}
+                      fill
+                    />
                   </div>
                 </motion.div>
               );

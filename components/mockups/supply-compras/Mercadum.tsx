@@ -31,7 +31,7 @@ import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
 import { Button } from "@/components/ui/shadcn";
 import { GradientIcon } from "@/components/ui/GradientIcon";
-import { AreaChart } from "@/components/ui/charts";
+import { AreaChart, Sparkline } from "@/components/ui/charts";
 
 interface MercadumProps {
   step: number;
@@ -434,43 +434,66 @@ function KPITile({
   label,
   value,
   delta,
+  trend,
 }: {
   icon: React.ReactElement;
   tone: "brand" | "success" | "teal" | "warning";
   label: string;
   value: string;
   delta: string;
+  trend?: number[];
 }) {
+  const sparkColor =
+    tone === "success"
+      ? "#16a34a"
+      : tone === "teal"
+        ? "#0d9488"
+        : tone === "warning"
+          ? "#d97706"
+          : "#020788";
   return (
     <div
-      className="flex items-center gap-2.5 rounded-xl bg-white/85 px-3 py-2 backdrop-blur"
+      className="rounded-xl bg-white/90 px-3 py-2.5 backdrop-blur"
       style={{ border: "1px solid rgba(0,0,0,0.04)" }}
     >
-      <GradientIcon icon={icon} tone={tone} size={32} />
-      <div className="min-w-0">
-        <p
-          className="font-ui text-[9px] font-bold uppercase text-neutral-500"
-          style={{ letterSpacing: "0.08em" }}
-        >
-          {label}
-        </p>
-        <div className="flex items-baseline gap-1.5">
-          <span
-            className="font-ui text-[18px] font-bold tabular-nums leading-none text-neutral-900"
-            style={{ letterSpacing: "-0.02em" }}
+      <div className="flex items-center gap-2.5">
+        <GradientIcon icon={icon} tone={tone} size={32} />
+        <div className="min-w-0 flex-1">
+          <p
+            className="font-ui text-[9.5px] font-bold uppercase text-neutral-500"
+            style={{ letterSpacing: "0.16em" }}
           >
-            {value}
-          </span>
-          <span
-            className={cn(
-              "font-ui text-[10px] font-bold tabular-nums",
-              delta.startsWith("+") ? "text-success" : "text-danger",
-            )}
-          >
-            {delta}
-          </span>
+            {label}
+          </p>
+          <div className="flex items-baseline gap-1.5">
+            <span
+              className="font-display text-[18px] font-bold tabular-nums leading-none text-neutral-900"
+              style={{ letterSpacing: "-0.025em" }}
+            >
+              {value}
+            </span>
+            <span
+              className={cn(
+                "font-ui text-[10px] font-bold tabular-nums",
+                delta.startsWith("+") ? "text-success" : "text-danger",
+              )}
+            >
+              {delta}
+            </span>
+          </div>
         </div>
       </div>
+      {trend && (
+        <div className="-mt-1 -mb-1.5">
+          <Sparkline
+            data={trend}
+            color={sparkColor}
+            width={140}
+            height={20}
+            fill
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -496,6 +519,7 @@ function CotacoesListView({ onOpen }: { onOpen: (c: Cotacao) => void }) {
           label="Cotações abertas"
           value="47"
           delta="+8,6%"
+          trend={[34, 36, 38, 40, 42, 45, 47]}
         />
         <KPITile
           icon={<DollarSign />}
@@ -503,6 +527,7 @@ function CotacoesListView({ onOpen }: { onOpen: (c: Cotacao) => void }) {
           label="Economia do mês"
           value="R$ 84,2k"
           delta="+22,7%"
+          trend={[62, 65, 70, 74, 78, 81, 84]}
         />
         <KPITile
           icon={<Users />}
@@ -510,6 +535,7 @@ function CotacoesListView({ onOpen }: { onOpen: (c: Cotacao) => void }) {
           label="Fornecedores ativos"
           value="128"
           delta="+4,4%"
+          trend={[120, 122, 124, 125, 126, 127, 128]}
         />
         <div
           className="rounded-xl bg-white/80 px-3 py-2 backdrop-blur"

@@ -859,18 +859,30 @@ function MiniStat({
   Icon?: typeof TrendingUp;
 }) {
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-2.5 text-center">
-      <p className="text-[9px] font-bold uppercase tracking-wider text-neutral-500">
+    <div
+      className="rounded-xl bg-white p-3 text-center"
+      style={{
+        border: "1px solid rgba(0,0,0,0.05)",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+      }}
+    >
+      <p
+        className="font-ui text-[9.5px] font-bold uppercase text-neutral-500"
+        style={{ letterSpacing: "0.16em" }}
+      >
         {label}
       </p>
       <p
         className={cn(
-          "mt-1 flex items-center justify-center gap-1 font-ui tabular-nums",
-          bold ? "text-[14px] font-bold" : "text-[12px] font-bold",
+          "mt-1 flex items-center justify-center gap-1 font-display tabular-nums leading-none",
+          bold ? "text-[16px] font-bold" : "text-[14px] font-bold",
         )}
-        style={{ color: tone }}
+        style={{
+          color: tone,
+          letterSpacing: "-0.025em",
+        }}
       >
-        {Icon && <Icon size={11} strokeWidth={2.25} />}
+        {Icon && <Icon size={12} strokeWidth={2.5} />}
         {value}
       </p>
     </div>

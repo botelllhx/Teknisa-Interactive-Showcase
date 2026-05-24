@@ -42,7 +42,7 @@ export function PortalFuncionarioMockup({ step }: PortalFuncionarioProps) {
           </p>
         </div>
         <span
-          className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-success"
+          className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-success"
           style={{ letterSpacing: "0.14em" }}
         >
           <motion.span
@@ -135,7 +135,7 @@ function PunchSheetView() {
         />
         <div className="min-w-0 flex-1">
           <p
-            className="font-ui text-[9px] font-bold uppercase text-brand"
+            className="font-ui text-[10.5px] font-bold uppercase text-brand"
             style={{ letterSpacing: "0.10em" }}
           >
             Bem-vinda
@@ -182,7 +182,7 @@ function PunchSheetView() {
             }}
           >
             <p
-              className="font-ui text-[9px] font-bold uppercase text-neutral-400"
+              className="font-ui text-[10.5px] font-bold uppercase text-neutral-400"
               style={{ letterSpacing: "0.16em" }}
             >
               {k.l}
@@ -222,7 +222,7 @@ function PunchSheetView() {
               <span className="font-ui text-[13px] font-bold leading-none text-brand">
                 {d.day}
               </span>
-              <span className="font-ui text-[8px] font-bold uppercase tracking-[1px] text-brand">
+              <span className="font-ui text-[10.5px] font-bold uppercase tracking-[1px] text-brand">
                 Mai
               </span>
             </span>

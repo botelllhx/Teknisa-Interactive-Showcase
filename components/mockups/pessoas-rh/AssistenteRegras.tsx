@@ -137,7 +137,7 @@ function ExistingRulesView() {
                     {r.name}
                   </p>
                   <p
-                    className="font-ui text-[9px] font-bold uppercase text-neutral-500"
+                    className="font-ui text-[10.5px] font-bold uppercase text-neutral-500"
                     style={{ letterSpacing: "0.10em" }}
                   >
                     {r.category}
@@ -402,7 +402,7 @@ function Block({
         </p>
         <span
           className={cn(
-            "rounded-full px-2 py-0.5 font-ui text-[9px] font-bold uppercase tracking-wider",
+            "rounded-full px-2 py-0.5 font-ui text-[10.5px] font-bold uppercase tracking-wider",
             tone === "brand" && "bg-brand-subtle text-brand",
             tone === "neutral" && "bg-neutral-100 text-neutral-600",
             tone === "success" && "bg-success/10 text-success",

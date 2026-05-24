@@ -48,7 +48,7 @@ export function AppRotinasEstoqueMockup({ step }: AppRotinasEstoqueProps) {
           </p>
         </div>
         <span
-          className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-success"
+          className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-success"
           style={{ letterSpacing: "0.14em" }}
         >
           <motion.span
@@ -109,7 +109,7 @@ function TaskListView() {
               style={{ border: "1px solid rgba(0,0,0,0.04)" }}
             >
               <p
-                className="font-ui text-[8px] font-bold uppercase text-neutral-400"
+                className="font-ui text-[10.5px] font-bold uppercase text-neutral-400"
                 style={{ letterSpacing: "0.08em" }}
               >
                 {k.l}

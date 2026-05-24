@@ -148,7 +148,7 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
                   }}
                 >
                   <p
-                    className="font-ui text-[9.5px] font-bold uppercase text-neutral-500"
+                    className="font-ui text-[10.5px] font-bold uppercase text-neutral-500"
                     style={{ letterSpacing: "0.16em" }}
                   >
                     {k.label}
@@ -179,7 +179,7 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
             <div className="mt-4">
               <div className="flex items-center justify-between">
                 <p
-                  className="font-ui text-[9.5px] font-bold uppercase text-neutral-500"
+                  className="font-ui text-[10.5px] font-bold uppercase text-neutral-500"
                   style={{ letterSpacing: "0.16em" }}
                 >
                   Tendência · últimos 8 meses
@@ -261,7 +261,7 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
                         </div>
                         <div className="text-right">
                           <p
-                            className="font-ui text-[9.5px] font-bold uppercase text-neutral-400"
+                            className="font-ui text-[10.5px] font-bold uppercase text-neutral-400"
                             style={{ letterSpacing: "0.16em" }}
                           >
                             Risco

@@ -268,10 +268,10 @@ function WindowBar() {
               "inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(2,7,136,0.20)",
           }}
         >
-          <span className="text-[8px] font-bold tabular-nums">T</span>
+          <span className="text-[10.5px] font-bold tabular-nums">T</span>
         </div>
         <span
-          className="text-[9px] font-bold uppercase text-neutral-500"
+          className="text-[10.5px] font-bold uppercase text-neutral-500"
           style={{ letterSpacing: "0.14em" }}
         >
           Retail
@@ -285,7 +285,7 @@ function WindowBar() {
         <span className="ml-1 inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5">
           <span className="h-1 w-1 rounded-full bg-success" />
           <span
-            className="text-[8px] font-bold uppercase text-success"
+            className="text-[10.5px] font-bold uppercase text-success"
             style={{ letterSpacing: "0.10em" }}
           >
             v 01.222
@@ -336,7 +336,7 @@ function Toolbar() {
           Caixa
         </span>
         <span
-          className="ml-1.5 rounded-full bg-brand-ghost px-1.5 py-0.5 text-[9px] font-bold tabular-nums text-brand"
+          className="ml-1.5 rounded-full bg-brand-ghost px-1.5 py-0.5 text-[10.5px] font-bold tabular-nums text-brand"
           style={{ letterSpacing: "-0.005em" }}
         >
           #001
@@ -407,10 +407,10 @@ function ComandaPanel({
                     <p className="line-clamp-1 font-display text-[11px] font-bold text-neutral-900">
                       {item.name}
                     </p>
-                    <p className="text-[9px] text-neutral-500">
+                    <p className="text-[10.5px] text-neutral-500">
                       x0{item.qty} (R$ {item.price.toFixed(2).replace(".", ",")})
                     </p>
-                    <p className="font-mono text-[8px] text-neutral-400">
+                    <p className="font-mono text-[10.5px] text-neutral-400">
                       {item.code}
                     </p>
                   </div>
@@ -426,7 +426,7 @@ function ComandaPanel({
                     <span className="font-display text-[10px] font-bold text-neutral-900">
                       R$ {(item.qty * item.price).toFixed(2).replace(".", ",")}
                     </span>
-                    <span className="text-[8px] text-neutral-400">17:52</span>
+                    <span className="text-[10.5px] text-neutral-400">17:52</span>
                   </div>
                 </div>
                 <div className="mt-1.5 flex items-center justify-end gap-1">
@@ -635,7 +635,7 @@ function FunctionKeysColumn() {
             }}
           >
             <span
-              className="text-[9px] font-bold leading-tight"
+              className="text-[10.5px] font-bold leading-tight"
               style={{
                 color: style.text,
                 letterSpacing: "0.01em",
@@ -644,7 +644,7 @@ function FunctionKeysColumn() {
               {k.label}
             </span>
             <span
-              className="mt-0.5 text-[8px] font-medium tabular-nums opacity-70"
+              className="mt-0.5 text-[10.5px] font-medium tabular-nums opacity-70"
               style={{
                 color: style.text,
                 letterSpacing: "0.06em",
@@ -677,11 +677,11 @@ function FooterBar({
 
   return (
     <div className="flex items-stretch border-t border-neutral-200 bg-white">
-      <div className="flex flex-1 items-center gap-4 px-3 py-1.5 text-[9px]">
+      <div className="flex flex-1 items-center gap-4 px-3 py-1.5 text-[10.5px]">
         <div className="flex items-center gap-2">
           <PersonAvatar photo={people.carlos} name="Carlos Mello" size={28} />
           <div className="flex flex-col leading-tight">
-            <span className="text-[8px] font-bold uppercase tracking-wider text-neutral-400">
+            <span className="text-[10.5px] font-bold uppercase tracking-wider text-neutral-400">
               Operador
             </span>
             <span className="font-ui text-[10px] font-bold text-neutral-800">
@@ -776,17 +776,17 @@ function FooterBar({
 function FooterField({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col leading-tight">
-      <span className="font-display text-[9px] font-bold uppercase tracking-wider text-brand">
+      <span className="font-display text-[10.5px] font-bold uppercase tracking-wider text-brand">
         {label}
       </span>
-      <span className="text-[9px] text-neutral-500">{value}</span>
+      <span className="text-[10.5px] text-neutral-500">{value}</span>
     </div>
   );
 }
 
 function StatusBar() {
   return (
-    <div className="flex h-5 items-center justify-between border-t border-neutral-200 bg-white px-3 text-[9px] text-neutral-500">
+    <div className="flex h-5 items-center justify-between border-t border-neutral-200 bg-white px-3 text-[10.5px] text-neutral-500">
       <div className="flex items-center gap-3">
         <span>FOS 2025.0000</span>
         <span>v 01.222.000.0</span>

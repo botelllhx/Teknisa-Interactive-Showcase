@@ -146,14 +146,14 @@ function Sidebar() {
     <aside className="flex flex-col gap-3 overflow-y-auto border-r border-brand/8 bg-gradient-to-b from-white to-brand-ghost/30 p-3">
       <div className="flex items-center justify-between">
         <p
-          className="font-ui text-[9px] font-bold uppercase text-brand"
+          className="font-ui text-[10.5px] font-bold uppercase text-brand"
           style={{ letterSpacing: "0.10em" }}
         >
           Conversas
         </p>
         <button
           type="button"
-          className="rounded-md bg-gradient-to-r from-brand via-brand-light to-[#7c3aed] px-2 py-0.5 font-ui text-[9px] font-bold text-white shadow-brand"
+          className="rounded-md bg-gradient-to-r from-brand via-brand-light to-[#7c3aed] px-2 py-0.5 font-ui text-[10.5px] font-bold text-white shadow-brand"
         >
           + Nova
         </button>
@@ -187,7 +187,7 @@ function Sidebar() {
             >
               {c.label}
             </p>
-            <p className="mt-0.5 font-ui text-[9px] text-neutral-400">
+            <p className="mt-0.5 font-ui text-[10.5px] text-neutral-400">
               {c.time}
             </p>
           </button>
@@ -196,7 +196,7 @@ function Sidebar() {
 
       <div className="mt-2">
         <p
-          className="font-ui text-[9px] font-bold uppercase text-neutral-500"
+          className="font-ui text-[10.5px] font-bold uppercase text-neutral-500"
           style={{ letterSpacing: "0.10em" }}
         >
           Atalhos
@@ -587,7 +587,7 @@ function ISAScaleResponse({ animate }: { animate?: boolean }) {
             style={{ border: "1px solid rgba(0,0,0,0.04)" }}
           >
             <p
-              className="font-ui text-[9.5px] font-bold uppercase text-neutral-400"
+              className="font-ui text-[10.5px] font-bold uppercase text-neutral-400"
               style={{ letterSpacing: "0.16em" }}
             >
               {k.label}
@@ -653,7 +653,7 @@ function ISASalesResponse({
             }}
           >
             <p
-              className="font-ui text-[8.5px] font-bold uppercase text-neutral-500"
+              className="font-ui text-[10px] font-bold uppercase text-neutral-500"
               style={{ letterSpacing: "0.08em" }}
             >
               {k.l}
@@ -666,7 +666,7 @@ function ISASalesResponse({
             </p>
             <p
               className={cn(
-                "mt-0.5 font-ui text-[9px] font-bold tabular-nums",
+                "mt-0.5 font-ui text-[10.5px] font-bold tabular-nums",
                 k.tone === "success" && "text-success",
                 k.tone === "brand" && "text-brand",
               )}
@@ -745,7 +745,7 @@ function ISAWasteResponse({
           >
             Previsão · sexta, 24/05
           </p>
-          <Badge variant="warning" className="text-[9px]">
+          <Badge variant="warning" className="text-[10.5px]">
             <Sparkles size={9} strokeWidth={2.5} />
             Modelo XGBoost · 87% acurácia
           </Badge>
@@ -923,7 +923,7 @@ function ChatInput({ onSend }: { onSend?: () => void }) {
             >
               Pergunte algo ao ISA…
             </div>
-            <span className="flex items-center gap-1 rounded-md bg-neutral-100 px-1.5 py-0.5 font-ui text-[9px] font-bold text-neutral-500">
+            <span className="flex items-center gap-1 rounded-md bg-neutral-100 px-1.5 py-0.5 font-ui text-[10.5px] font-bold text-neutral-500">
               ⌘
               <ChevronDown size={9} strokeWidth={2.5} />K
             </span>
@@ -946,7 +946,7 @@ function ChatInput({ onSend }: { onSend?: () => void }) {
             </motion.button>
           </motion.div>
         </AnimatePresence>
-        <p className="mt-1.5 text-center font-ui text-[9px] text-neutral-400">
+        <p className="mt-1.5 text-center font-ui text-[10.5px] text-neutral-400">
           ISA aprende com seus dados e nunca compartilha com terceiros · v4.2
         </p>
       </div>

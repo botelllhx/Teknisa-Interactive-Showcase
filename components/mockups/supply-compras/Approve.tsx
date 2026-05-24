@@ -421,7 +421,7 @@ function ListScreen({
                 ).replace("Reprovada", "Reprovadas")}
               </span>
               <span
-                className="inline-flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-bold"
+                className="inline-flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[10.5px] font-bold"
                 style={{
                   background: active ? meta.bg : "transparent",
                   color: active ? meta.color : "#9ca3af",
@@ -507,7 +507,7 @@ function RequestCard({
               {request.title}
             </p>
             <span
-              className="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+              className="rounded-full px-1.5 py-0.5 text-[10.5px] font-bold uppercase tracking-wider"
               style={{ background: stat.bg, color: stat.color }}
             >
               {stat.label}
@@ -790,7 +790,7 @@ function DetailScreen({
                     <p className="font-ui text-[11px] font-bold text-neutral-900">
                       {m.who}
                     </p>
-                    <span className="font-ui text-[9px] tabular-nums text-neutral-400">
+                    <span className="font-ui text-[10.5px] tabular-nums text-neutral-400">
                       {m.when}
                     </span>
                   </div>
@@ -867,7 +867,7 @@ function MiniStat({
       }}
     >
       <p
-        className="font-ui text-[9.5px] font-bold uppercase text-neutral-500"
+        className="font-ui text-[10.5px] font-bold uppercase text-neutral-500"
         style={{ letterSpacing: "0.16em" }}
       >
         {label}

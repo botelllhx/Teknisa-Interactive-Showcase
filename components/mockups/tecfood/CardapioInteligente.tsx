@@ -310,7 +310,7 @@ function Header({
             </p>
           </div>
           <span
-            className="ml-1 inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-success"
+            className="ml-1 inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-success"
             style={{ letterSpacing: "0.14em" }}
           >
             <motion.span
@@ -481,7 +481,7 @@ function GeneratingScreen({ onComplete }: { onComplete: () => void }) {
             className="h-1.5 w-1.5 rounded-full bg-brand"
           />
           <span
-            className="font-ui text-[9.5px] font-bold uppercase text-brand"
+            className="font-ui text-[10.5px] font-bold uppercase text-brand"
             style={{ letterSpacing: "0.18em" }}
           >
             IA processando
@@ -743,7 +743,7 @@ function AnalysisTile({
     >
       <div className="flex items-center justify-between">
         <span
-          className="font-ui text-[9.5px] font-bold uppercase text-brand"
+          className="font-ui text-[10.5px] font-bold uppercase text-brand"
           style={{ letterSpacing: "0.16em" }}
         >
           {title}
@@ -1108,7 +1108,7 @@ function SlotCard({
             {dish.tag && (
               <span
                 className={cn(
-                  "mt-1 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider",
+                  "mt-1 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10.5px] font-bold uppercase tracking-wider",
                   dish.tag === "sugerido-ia"
                     ? "bg-brand-ghost text-brand"
                     : dish.tag === "popular"
@@ -1289,7 +1289,7 @@ function CostPanel({ totals }: { totals: { cost: number } }) {
       <div className="flex flex-col gap-2 px-4 pb-3">
         <div className="flex items-baseline justify-between gap-2">
           <span
-            className="font-ui text-[9.5px] font-bold uppercase text-neutral-400"
+            className="font-ui text-[10.5px] font-bold uppercase text-neutral-400"
             style={{ letterSpacing: "0.16em" }}
           >
             Por refeição
@@ -1310,7 +1310,7 @@ function CostPanel({ totals }: { totals: { cost: number } }) {
           style={{ borderColor: "rgba(0,0,0,0.06)" }}
         >
           <span
-            className="font-ui text-[9.5px] font-bold uppercase text-neutral-400"
+            className="font-ui text-[10.5px] font-bold uppercase text-neutral-400"
             style={{ letterSpacing: "0.16em" }}
           >
             Total do dia
@@ -1331,7 +1331,7 @@ function CostPanel({ totals }: { totals: { cost: number } }) {
       {/* 7-day trend area chart */}
       <div className="px-2 pb-3 pt-1">
         <p
-          className="mb-1 px-1.5 font-ui text-[9.5px] font-bold uppercase text-neutral-400"
+          className="mb-1 px-1.5 font-ui text-[10.5px] font-bold uppercase text-neutral-400"
           style={{ letterSpacing: "0.16em" }}
         >
           Últimos 7 dias
@@ -1586,7 +1586,7 @@ function AILiveAssistant({
         </div>
         <span
           className={cn(
-            "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase",
+            "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase",
             approved ? "bg-white/15 text-white" : "bg-white/15 text-white",
           )}
           style={{ letterSpacing: "0.06em" }}
@@ -1662,7 +1662,7 @@ function AILiveAssistant({
           ].map((m) => (
             <div key={m.l} className="flex items-center gap-2">
               <span
-                className="w-12 font-ui text-[9px] font-medium text-white/70"
+                className="w-12 font-ui text-[10.5px] font-medium text-white/70"
                 style={{ letterSpacing: "0.04em" }}
               >
                 {m.l}
@@ -1683,7 +1683,7 @@ function AILiveAssistant({
                   }}
                 />
               </div>
-              <span className="w-8 text-right font-ui text-[9px] font-bold tabular-nums text-white">
+              <span className="w-8 text-right font-ui text-[10.5px] font-bold tabular-nums text-white">
                 {m.v}
               </span>
             </div>
@@ -1714,7 +1714,7 @@ function AILiveAssistant({
               >
                 {d.msg}
               </p>
-              <span className="font-ui text-[8.5px] font-medium tabular-nums text-white/55">
+              <span className="font-ui text-[10px] font-medium tabular-nums text-white/55">
                 Há {d.t}
               </span>
             </div>

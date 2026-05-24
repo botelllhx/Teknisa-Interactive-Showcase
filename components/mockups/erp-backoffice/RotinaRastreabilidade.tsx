@@ -98,7 +98,7 @@ export function RotinaRastreabilidadeMockup({
             initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 320, damping: 22 }}
-            className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-1 font-ui text-[9.5px] font-bold uppercase text-success"
+            className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-1 font-ui text-[10.5px] font-bold uppercase text-success"
             style={{ letterSpacing: "0.12em" }}
           >
             <FileText size={11} strokeWidth={2.5} />
@@ -248,10 +248,10 @@ export function RotinaRastreabilidadeMockup({
                           >
                             {t.label}
                           </p>
-                          <p className="mt-0.5 px-1 font-ui text-[9px] leading-tight text-neutral-400 line-clamp-2">
+                          <p className="mt-0.5 px-1 font-ui text-[10.5px] leading-tight text-neutral-400 line-clamp-2">
                             {t.sub}
                           </p>
-                          <span className="mt-1 font-ui text-[9px] font-bold tabular-nums text-neutral-400">
+                          <span className="mt-1 font-ui text-[10.5px] font-bold tabular-nums text-neutral-400">
                             {t.when}
                           </span>
                         </motion.li>

@@ -177,7 +177,7 @@ export function PortalGestorMockup({ step }: PortalGestorProps) {
                 João Costa
               </span>
               <span
-                className="block font-ui text-[9px] text-neutral-500"
+                className="block font-ui text-[10.5px] text-neutral-500"
                 style={{ letterSpacing: "0.005em" }}
               >
                 Gestor · Filial Centro
@@ -261,7 +261,7 @@ function DashboardView() {
               Presença · últimos 7 dias
             </p>
             <span
-              className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-0.5 font-ui text-[9.5px] font-bold uppercase text-success"
+              className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-0.5 font-ui text-[10.5px] font-bold uppercase text-success"
               style={{ letterSpacing: "0.14em" }}
             >
               <span className="tabular-nums">94%</span> hoje

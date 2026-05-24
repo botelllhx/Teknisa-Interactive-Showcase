@@ -241,7 +241,7 @@ function Header() {
           MyMenu
         </p>
         <p
-          className="font-ui text-[8.5px] text-neutral-500"
+          className="font-ui text-[10px] text-neutral-500"
           style={{ letterSpacing: "-0.005em" }}
         >
           Restaurante Berrini
@@ -350,7 +350,7 @@ function MenuView({
           <ChevronLeft size={14} strokeWidth={2.5} />
         </button>
         <div className="text-center">
-          <p className="font-ui text-[9px] font-bold uppercase tracking-wider text-brand">
+          <p className="font-ui text-[10.5px] font-bold uppercase tracking-wider text-brand">
             {menu.weekday}
           </p>
           <p className="font-ui text-[12px] font-bold text-neutral-900 tabular-nums">
@@ -388,7 +388,7 @@ function MenuView({
                 active ? "bg-brand text-white shadow-brand" : "bg-brand-ghost/50 text-neutral-600",
               )}
             >
-              <span className="font-ui text-[8px] font-bold uppercase tracking-wider opacity-80">
+              <span className="font-ui text-[10.5px] font-bold uppercase tracking-wider opacity-80">
                 {m.weekday.slice(0, 3)}
               </span>
               <span className="font-ui text-[12px] font-bold tabular-nums">
@@ -409,7 +409,7 @@ function MenuView({
             Cardápio do dia
           </p>
           <span
-            className="font-ui text-[9px] font-medium text-neutral-400 tabular-nums"
+            className="font-ui text-[10.5px] font-medium text-neutral-400 tabular-nums"
           >
             {menu.dishes.length} itens
           </span>
@@ -451,17 +451,17 @@ function MenuView({
                     >
                       {d.name}
                     </p>
-                    <span className="flex flex-none items-center gap-0.5 font-ui text-[9px] font-bold text-neutral-600 tabular-nums">
+                    <span className="flex flex-none items-center gap-0.5 font-ui text-[10.5px] font-bold text-neutral-600 tabular-nums">
                       <Flame size={9} strokeWidth={2.25} className="text-warning" />
                       {d.kcal}
                     </span>
                   </div>
-                  <p className="mt-0.5 line-clamp-2 text-[9.5px] leading-snug text-neutral-500">
+                  <p className="mt-0.5 line-clamp-2 text-[10.5px] leading-snug text-neutral-500">
                     {d.desc}
                   </p>
                   <div className="mt-1.5 flex items-center gap-1">
                     <span
-                      className="inline-flex items-center rounded-full px-1.5 py-0.5 font-ui text-[8px] font-bold uppercase"
+                      className="inline-flex items-center rounded-full px-1.5 py-0.5 font-ui text-[10.5px] font-bold uppercase"
                       style={{
                         letterSpacing: "0.12em",
                         background: "rgba(2,7,136,0.06)",
@@ -473,7 +473,7 @@ function MenuView({
                     {d.tag && (
                       <span
                         className={cn(
-                          "inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 font-ui text-[8px] font-bold uppercase",
+                          "inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 font-ui text-[10.5px] font-bold uppercase",
                           d.tag === "vegetariano"
                             ? "bg-success/12 text-success"
                             : d.tag === "leve"
@@ -520,7 +520,7 @@ function ReservaView({
       className="flex h-full flex-col overflow-hidden"
     >
       <div className="border-b border-brand/8 bg-brand-ghost px-3 py-1.5">
-        <p className="font-ui text-[9px] font-bold uppercase tracking-wider text-brand">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-wider text-brand">
           Reservar para
         </p>
         <p className="font-ui text-[12px] font-bold text-neutral-900">
@@ -583,7 +583,7 @@ function ReservaView({
                   </p>
                   {s.suggested && (
                     <p
-                      className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-brand"
+                      className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-brand"
                       style={{ letterSpacing: "0.14em" }}
                     >
                       <Sparkles size={9} strokeWidth={2.5} />
@@ -611,7 +611,7 @@ function ReservaView({
               exit={{ opacity: 0 }}
               className="mt-3 rounded-2xl border-2 border-dashed border-success/30 bg-success/5 p-3"
             >
-              <p className="text-[9px] font-bold uppercase tracking-wider text-success">
+              <p className="text-[10.5px] font-bold uppercase tracking-wider text-success">
                 Reserva confirmada
               </p>
               <p className="mt-0.5 font-ui text-[12px] font-bold text-neutral-900">
@@ -622,11 +622,11 @@ function ReservaView({
                   <QrCode size={52} strokeWidth={0.5} className="text-neutral-900" />
                 </div>
                 <div>
-                  <p className="text-[9px] text-neutral-500">QR de acesso</p>
+                  <p className="text-[10.5px] text-neutral-500">QR de acesso</p>
                   <p className="font-ui text-[12px] font-bold text-neutral-900 tabular-nums">
                     R-2026-1247
                   </p>
-                  <p className="mt-0.5 text-[9px] text-neutral-500">
+                  <p className="mt-0.5 text-[10.5px] text-neutral-500">
                     Apresente no totem do refeitório
                   </p>
                 </div>
@@ -695,7 +695,7 @@ function FeedbackView({
       className="flex h-full flex-col overflow-y-auto"
     >
       <div className="border-b border-brand/8 bg-brand-ghost px-3 py-1.5">
-        <p className="font-ui text-[9px] font-bold uppercase tracking-wider text-brand">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-wider text-brand">
           Sua opinião conta
         </p>
         <p className="font-ui text-[12px] font-bold text-neutral-900">

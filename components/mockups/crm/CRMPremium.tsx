@@ -524,7 +524,7 @@ function HomeScreen({
                 )}
               </div>
               <div className="p-1.5">
-                <p className="font-ui text-[9.5px] font-bold leading-tight text-white line-clamp-2">
+                <p className="font-ui text-[10.5px] font-bold leading-tight text-white line-clamp-2">
                   {p.name}
                 </p>
                 <div className="mt-0.5 flex items-baseline gap-1">
@@ -599,7 +599,7 @@ function CashbackCard({ balance }: { balance: number }) {
           Use em qualquer parceiro do Premium Club
         </p>
         <p
-          className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+          className="rounded-full px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wider"
           style={{ background: COLORS.amber, color: "#000" }}
         >
           +10% no Kharina hoje
@@ -667,7 +667,7 @@ function StoreCard({
           <motion.span
             animate={{ scale: [1, 1.06, 1], opacity: [0.8, 1, 0.8] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute right-2 top-2 rounded-full px-2 py-0.5 text-[9px] font-bold text-black"
+            className="absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10.5px] font-bold text-black"
             style={{ background: COLORS.amber }}
           >
             10% CASHBACK
@@ -1481,7 +1481,7 @@ function SaldoScreen({
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
-                  className="absolute right-2 top-2 rounded-full px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider"
+                  className="absolute right-2 top-2 rounded-full px-1.5 py-0.5 text-[10.5px] font-bold uppercase tracking-wider"
                   style={{ background: COLORS.amber, color: "#000" }}
                 >
                   Novo

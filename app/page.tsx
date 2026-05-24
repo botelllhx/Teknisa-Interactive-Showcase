@@ -16,12 +16,12 @@ export default function ShowcasePage() {
   const activeSegment = useShowcase((s) => s.activeSegment);
   const activeSolution = useShowcase((s) => s.activeSolution);
 
-  // v13.22 — REMOVIDO auto-fit (useViewportFit). Volta ao layout natural
-  // 100vw × 100vh. Solution view fills 100vh, device frame scales pelo
-  // SolutionFrame pra encaixar no espaço disponível. SEM crop, SEM scroll,
-  // SEM whitespace centralizado. Cada viewport renderiza naturalmente.
+  // v13.23 — main vira flex flex-col, então ShowcaseNav ocupa seus 56px e
+  // o motion.div fica flex-1 min-h-0 (ocupa o RESTO, não overlap com nav).
+  // Antes: nav era relative + motion.div h-full sobrepondo, escondendo
+  // os 56px superiores do conteúdo atrás do header → títulos colados.
   return (
-    <main className="relative h-screen w-screen overflow-hidden bg-surface-raised">
+    <main className="relative flex h-screen w-screen flex-col overflow-hidden bg-surface-raised">
       <ShowcaseNav />
 
       <AnimatePresence mode="wait">
@@ -32,7 +32,7 @@ export default function ShowcasePage() {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="flex h-full flex-col justify-center"
+            className="flex min-h-0 flex-1 flex-col justify-center"
           >
             <HeroSection />
             <SegmentGrid />
@@ -46,7 +46,7 @@ export default function ShowcasePage() {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="flex h-full flex-col justify-center"
+            className="flex min-h-0 flex-1 flex-col"
           >
             <SolutionGrid segmentId={activeSegment} />
           </motion.div>
@@ -59,7 +59,7 @@ export default function ShowcasePage() {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="h-full"
+            className="min-h-0 flex-1"
           >
             <SolutionDemo solutionId={activeSolution} />
           </motion.div>

@@ -411,7 +411,7 @@ function TopBar({ view, cotacao }: { view: View; cotacao: Cotacao }) {
               Alexa Rawles Grahamson
             </span>
             <span
-              className="inline-block rounded-full bg-brand-ghost px-1.5 py-0 font-ui text-[8.5px] font-bold uppercase text-brand"
+              className="inline-block rounded-full bg-brand-ghost px-1.5 py-0 font-ui text-[10px] font-bold uppercase text-brand"
               style={{ letterSpacing: "0.12em" }}
             >
               Master
@@ -460,7 +460,7 @@ function KPITile({
         <GradientIcon icon={icon} tone={tone} size={32} />
         <div className="min-w-0 flex-1">
           <p
-            className="font-ui text-[9.5px] font-bold uppercase text-neutral-500"
+            className="font-ui text-[10.5px] font-bold uppercase text-neutral-500"
             style={{ letterSpacing: "0.16em" }}
           >
             {label}
@@ -542,7 +542,7 @@ function CotacoesListView({ onOpen }: { onOpen: (c: Cotacao) => void }) {
           style={{ border: "1px solid rgba(0,0,0,0.04)" }}
         >
           <p
-            className="font-ui text-[9px] font-bold uppercase text-brand"
+            className="font-ui text-[10.5px] font-bold uppercase text-brand"
             style={{ letterSpacing: "0.10em" }}
           >
             Economia 7d
@@ -845,7 +845,7 @@ function CotacaoDetailView({
                 >
                   {p.valorCotacao.toFixed(2).replace(".", ",")}
                 </span>
-                <span className="block text-[9px] text-neutral-500 mt-0.5">
+                <span className="block text-[10.5px] text-neutral-500 mt-0.5">
                   {p.posicao}ª Posição
                 </span>
               </span>
@@ -871,7 +871,7 @@ function CotacaoDetailView({
                     {p.variacao.toFixed(2).replace(".", ",")}
                   </span>
                 </span>
-                <span className="block text-[9px] text-neutral-500 tabular-nums">
+                <span className="block text-[10.5px] text-neutral-500 tabular-nums">
                   {p.variacaoPct.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 3 })}%
                 </span>
               </span>
@@ -886,7 +886,7 @@ function CotacaoDetailView({
                   )}
                   {p.menor.toFixed(2).replace(".", ",")}
                 </span>
-                <span className="block text-[9px] text-neutral-500 tabular-nums">
+                <span className="block text-[10.5px] text-neutral-500 tabular-nums">
                   {p.menorData}
                 </span>
               </span>

@@ -51,7 +51,7 @@ export function AppComercialMockup({ step }: AppComercialProps) {
         />
         <div className="min-w-0 flex-1 leading-tight">
           <p
-            className="font-ui text-[9.5px] font-bold uppercase text-brand"
+            className="font-ui text-[10.5px] font-bold uppercase text-brand"
             style={{ letterSpacing: "0.18em" }}
           >
             App Comercial
@@ -63,7 +63,7 @@ export function AppComercialMockup({ step }: AppComercialProps) {
             Lucas Pereira
           </p>
           <p
-            className="font-ui text-[9.5px] text-neutral-500"
+            className="font-ui text-[10.5px] text-neutral-500"
             style={{ letterSpacing: "-0.005em" }}
           >
             Representante Sul ·{" "}
@@ -71,7 +71,7 @@ export function AppComercialMockup({ step }: AppComercialProps) {
           </p>
         </div>
         <span
-          className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-1 font-ui text-[9.5px] font-bold uppercase text-success"
+          className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-1 font-ui text-[10.5px] font-bold uppercase text-success"
           style={{ letterSpacing: "0.10em" }}
         >
           <span className="tabular-nums">Meta</span>

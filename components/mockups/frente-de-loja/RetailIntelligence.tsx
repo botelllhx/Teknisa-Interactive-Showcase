@@ -29,6 +29,7 @@ import {
   DollarSign,
   Bell,
   Search,
+  type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
@@ -227,7 +228,7 @@ function Header() {
             <span className="block font-ui text-[12px] font-bold text-brand">
               Mateus Souza
             </span>
-            <span className="block text-[9px] text-neutral-500">
+            <span className="block text-[10.5px] text-neutral-500">
               Gestor, Berrini
             </span>
           </span>
@@ -479,7 +480,7 @@ function DashboardScreen() {
           </div>
           <div className="flex items-center gap-2">
             <span
-              className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-success"
+              className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-success"
               style={{ letterSpacing: "0.14em" }}
             >
               <motion.span
@@ -531,7 +532,7 @@ function DashboardScreen() {
             Análise de risco no mix
           </p>
           <p
-            className="mt-0.5 font-ui text-[9.5px] text-neutral-500"
+            className="mt-0.5 font-ui text-[10.5px] text-neutral-500"
             style={{ letterSpacing: "-0.005em" }}
           >
             Score preditivo de produtos
@@ -568,13 +569,13 @@ function DashboardScreen() {
                 Performance por categoria
               </p>
               <p
-                className="mt-0.5 font-ui text-[9.5px] text-neutral-500"
+                className="mt-0.5 font-ui text-[10.5px] text-neutral-500"
                 style={{ letterSpacing: "-0.005em" }}
               >
                 Contribuição no mix · últimos 30 dias
               </p>
             </div>
-            <Badge variant="ai" className="text-[9px]">
+            <Badge variant="ai" className="text-[10.5px]">
               <Sparkles size={9} strokeWidth={2.5} />
               IA ordenou
             </Badge>
@@ -673,7 +674,7 @@ function DashKPITile({
           <motion.span
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 1.6, repeat: Infinity }}
-            className="inline-flex items-center gap-1 rounded-full bg-danger/20 px-1.5 py-0.5 font-ui text-[8px] font-bold uppercase text-danger"
+            className="inline-flex items-center gap-1 rounded-full bg-danger/20 px-1.5 py-0.5 font-ui text-[10.5px] font-bold uppercase text-danger"
             style={{ letterSpacing: "0.10em" }}
           >
             <span className="h-1 w-1 rounded-full bg-danger" />
@@ -683,7 +684,7 @@ function DashKPITile({
       </div>
       <p
         className={cn(
-          "mt-2 font-ui text-[9.5px] font-semibold uppercase",
+          "mt-2 font-ui text-[10.5px] font-semibold uppercase",
           tone === "danger" ? "text-white/65" : "text-neutral-500",
         )}
         style={{ letterSpacing: "0.14em" }}
@@ -872,7 +873,7 @@ function PriorityCard({
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-brand via-brand-light to-[#7c3aed] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white"
+              className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-brand via-brand-light to-[#7c3aed] px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wider text-white"
             >
               <Sparkles size={9} strokeWidth={2.5} />
               Em foco
@@ -949,14 +950,34 @@ const MATRIX_DISHES: MatrixDish[] = [
 ];
 
 const QUADRANT_META = {
-  estrela: { label: "Estrela", color: "#16a34a", tag: "Manter destaque" },
-  burro: { label: "Burro de carga", color: "#d97706", tag: "Revisar preço" },
-  puzzle: { label: "Quebra-cabeça", color: "#020788", tag: "Promover" },
-  cachorro: { label: "Cachorro", color: "#6b7280", tag: "Reavaliar" },
+  estrela: {
+    label: "Estrela",
+    color: "#16a34a",
+    colorDeep: "#15803d",
+    tag: "Manter destaque",
+  },
+  burro: {
+    label: "Burro de carga",
+    color: "#d97706",
+    colorDeep: "#b45309",
+    tag: "Revisar preço",
+  },
+  puzzle: {
+    label: "Quebra-cabeça",
+    color: "#020788",
+    colorDeep: "#020669",
+    tag: "Promover",
+  },
+  cachorro: {
+    label: "Cachorro",
+    color: "#6b7280",
+    colorDeep: "#4b5563",
+    tag: "Reavaliar",
+  },
 } as const;
 
-// v13.22 — Dot da matriz com hover tooltip refinado.
-// Foco: label permanente. Outros: label só no hover (sem overlap).
+// v13.23 — Dot SaaS-2026: core bright + soft halo + ring concêntrico no
+// focus + label tooltip-style com backdrop blur.
 function MatrixDot({
   dish,
   meta,
@@ -970,19 +991,20 @@ function MatrixDot({
 }) {
   const [hover, setHover] = useState(false);
   const showLabel = focus || hover;
+  const size = focus ? 18 : 12;
   return (
     <motion.button
       type="button"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{
-        delay: 0.15 + index * 0.07,
+        delay: 0.15 + index * 0.06,
         type: "spring",
-        stiffness: 220,
-        damping: 18,
+        stiffness: 240,
+        damping: 20,
       }}
-      whileHover={{ scale: 1.2 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={{ scale: 1.25 }}
+      whileTap={{ scale: 0.92 }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       data-tour={focus ? "ri-matrix-focus" : undefined}
@@ -990,22 +1012,22 @@ function MatrixDot({
       style={{
         left: `${dish.x}%`,
         top: `${100 - dish.y}%`,
-        background: meta.color,
-        width: focus ? 22 : 14,
-        height: focus ? 22 : 14,
+        width: size,
+        height: size,
+        background: `radial-gradient(circle at 30% 30%, ${meta.color}, ${meta.colorDeep})`,
         boxShadow: focus
-          ? `0 0 0 6px ${meta.color}18, 0 0 28px ${meta.color}66, 0 0 60px ${meta.color}33`
-          : `0 0 10px ${meta.color}40`,
-        zIndex: hover || focus ? 10 : 1,
+          ? `0 0 0 4px white, 0 0 0 6px ${meta.color}, 0 0 28px ${meta.color}88, 0 0 60px ${meta.color}40, inset 0 1px 0 rgba(255,255,255,0.5)`
+          : `0 0 0 3px white, 0 0 0 4px ${meta.color}66, 0 0 14px ${meta.color}55, inset 0 1px 0 rgba(255,255,255,0.5)`,
+        zIndex: hover || focus ? 30 : 5,
       }}
       aria-label={dish.name}
     >
       {focus && (
         <>
           <motion.span
-            animate={{ scale: [1, 1.9, 1], opacity: [0.6, 0, 0.6] }}
+            animate={{ scale: [1, 2.4, 1], opacity: [0.45, 0, 0.45] }}
             transition={{
-              duration: 1.6,
+              duration: 1.8,
               repeat: Infinity,
               ease: "easeInOut",
             }}
@@ -1013,12 +1035,12 @@ function MatrixDot({
             style={{ background: meta.color }}
           />
           <motion.span
-            animate={{ scale: [1, 2.6, 1], opacity: [0.3, 0, 0.3] }}
+            animate={{ scale: [1, 3.6, 1], opacity: [0.22, 0, 0.22] }}
             transition={{
-              duration: 2.4,
+              duration: 2.6,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: 0.4,
+              delay: 0.5,
             }}
             className="absolute inset-0 rounded-full"
             style={{ background: meta.color }}
@@ -1028,22 +1050,24 @@ function MatrixDot({
       <AnimatePresence>
         {showLabel && (
           <motion.span
-            initial={{ opacity: 0, x: -4, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: -4, scale: 0.9 }}
+            initial={{ opacity: 0, y: 4, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 4, scale: 0.92 }}
             transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
             className={cn(
-              "absolute whitespace-nowrap rounded-full px-3 py-1.5 font-ui text-[12px] font-medium pointer-events-none",
-              focus ? "font-bold text-brand" : "text-neutral-700",
+              "absolute whitespace-nowrap rounded-lg px-2.5 py-1 font-ui text-[11.5px] pointer-events-none",
+              focus ? "font-bold" : "font-semibold text-neutral-800",
             )}
             style={{
-              left: focus ? 30 : 22,
-              top: "50%",
-              transform: "translateY(-50%)",
-              background: "white",
+              left: "50%",
+              bottom: focus ? `${size + 14}px` : `${size + 10}px`,
+              transform: "translateX(-50%)",
+              background: "rgba(255,255,255,0.96)",
+              backdropFilter: "blur(8px)",
+              color: focus ? meta.colorDeep : undefined,
               boxShadow: focus
-                ? "0 4px 16px rgba(2,7,136,0.22), 0 0 0 1.5px rgba(2,7,136,0.25)"
-                : "0 2px 8px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06)",
+                ? `0 4px 18px ${meta.color}30, 0 0 0 1.5px ${meta.color}66, inset 0 1px 0 rgba(255,255,255,0.7)`
+                : "0 4px 14px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.05)",
             }}
           >
             {dish.name}
@@ -1054,117 +1078,447 @@ function MatrixDot({
   );
 }
 
+const QUADRANT_CORNERS = {
+  puzzle: {
+    corner: "tl" as const,
+    Icon: Layers,
+    count: 3,
+    revenue: "R$ 8.640",
+  },
+  estrela: {
+    corner: "tr" as const,
+    Icon: Crown,
+    count: 1,
+    revenue: "R$ 12.840",
+  },
+  cachorro: {
+    corner: "bl" as const,
+    Icon: TrendingDown,
+    count: 2,
+    revenue: "R$ 1.820",
+  },
+  burro: {
+    corner: "br" as const,
+    Icon: TrendingUp,
+    count: 2,
+    revenue: "R$ 14.420",
+  },
+};
+
+function QuadrantBadge({
+  corner,
+  meta,
+  count,
+  Icon,
+}: {
+  corner: "tl" | "tr" | "bl" | "br";
+  meta: (typeof QUADRANT_META)[keyof typeof QUADRANT_META];
+  count: number;
+  Icon: LucideIcon;
+}) {
+  const pos = {
+    tl: "left-3 top-3",
+    tr: "right-3 top-3",
+    bl: "bottom-3 left-3",
+    br: "bottom-3 right-3",
+  }[corner];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.35, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+      className={cn("absolute z-20 flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3", pos)}
+      style={{
+        background: "rgba(255,255,255,0.92)",
+        backdropFilter: "blur(8px)",
+        boxShadow: `0 4px 14px ${meta.color}20, 0 0 0 1px ${meta.color}33, inset 0 1px 0 rgba(255,255,255,0.6)`,
+      }}
+    >
+      <span
+        className="flex h-6 w-6 items-center justify-center rounded-full text-white"
+        style={{
+          background: `linear-gradient(135deg, ${meta.color}, ${meta.colorDeep})`,
+          boxShadow: `0 2px 6px ${meta.color}55`,
+        }}
+      >
+        <Icon size={12} strokeWidth={2.5} />
+      </span>
+      <span
+        className="font-ui text-[11px] font-bold uppercase"
+        style={{ letterSpacing: "0.10em", color: meta.colorDeep }}
+      >
+        {meta.label}
+      </span>
+      <span
+        className="ml-0.5 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 font-ui text-[10.5px] font-bold tabular-nums text-white"
+        style={{ background: meta.colorDeep }}
+      >
+        {count}
+      </span>
+    </motion.div>
+  );
+}
+
 function MatrizScreen() {
+  const focusDish = MATRIX_DISHES.find((d) => d.focus)!;
+  const focusMeta = QUADRANT_META[focusDish.group];
   return (
     <motion.section
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="grid h-full grid-cols-[1fr_240px] gap-5 px-8 py-6"
+      className="grid h-full grid-cols-[1fr_300px] gap-5 px-8 py-6"
     >
-      <Card className="p-6">
-        <div className="mb-4 flex items-start justify-between">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-brand">
-              Engenharia de cardápio
-            </p>
-            <p className="mt-0.5 font-ui text-[20px] font-bold text-neutral-900">
-              Popularidade × Margem
-            </p>
+      <Card className="relative overflow-hidden p-6">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at top right, rgba(22,163,74,0.05), transparent 55%), radial-gradient(ellipse at bottom left, rgba(2,7,136,0.04), transparent 55%)",
+          }}
+        />
+
+        <div className="relative">
+          {/* Header */}
+          <div className="mb-5 flex items-start justify-between">
+            <div>
+              <p
+                className="font-ui text-[10.5px] font-bold uppercase text-brand"
+                style={{ letterSpacing: "0.20em" }}
+              >
+                Engenharia de cardápio · IA
+              </p>
+              <h3
+                className="mt-1 font-display text-[26px] font-bold leading-tight text-neutral-900"
+                style={{ letterSpacing: "-0.024em" }}
+              >
+                Popularidade <span className="text-neutral-400">×</span> Margem
+              </h3>
+              <p className="mt-1 font-ui text-[12.5px] text-neutral-500">
+                8 pratos · análise mensal · base 142 pedidos
+              </p>
+            </div>
+            <Badge
+              variant="ai"
+              className="gap-1.5 px-3 py-1.5 text-[11px] shadow-elevated"
+            >
+              <Sparkles size={11} strokeWidth={2.5} />
+              Oportunidade identificada
+            </Badge>
           </div>
-          <Badge variant="secondary" className="gap-1.5 px-3 py-1 text-[11px]">
-            <Sparkles size={11} strokeWidth={2.5} />
-            Oportunidade encontrada
-          </Badge>
-        </div>
 
-        <div className="relative" style={{ aspectRatio: "16/9" }}>
-          {/* Quadrant background */}
-          <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 overflow-hidden rounded-xl">
-            <div className="border-b border-r border-brand/10 bg-brand-ghost/30" />
-            <div className="border-b border-brand/10 bg-success/5" />
-            <div className="border-r border-brand/10 bg-neutral-50/60" />
-            <div className="bg-warning/5" />
-          </div>
-
-          {/* Cross lines */}
-          <div className="absolute left-1/2 top-0 h-full w-px bg-brand/15" />
-          <div className="absolute left-0 top-1/2 h-px w-full bg-brand/15" />
-
-          {/* Quadrant labels */}
-          <span className="absolute left-4 top-3 font-ui text-[11px] font-bold uppercase tracking-wider text-brand">
-            Quebra-cabeça
-          </span>
-          <span className="absolute right-4 top-3 font-ui text-[11px] font-bold uppercase tracking-wider text-success">
-            Estrela
-          </span>
-          <span className="absolute bottom-3 left-4 font-ui text-[11px] font-bold uppercase tracking-wider text-neutral-400">
-            Cachorro
-          </span>
-          <span className="absolute bottom-3 right-4 font-ui text-[11px] font-bold uppercase tracking-wider text-warning">
-            Burro de carga
-          </span>
-
-          {/* Axes */}
-          <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-[11px] font-bold text-neutral-500">
-            Popularidade →
-          </span>
-          <span
-            className="absolute -left-12 top-1/2 -translate-y-1/2 -rotate-90 text-[11px] font-bold text-neutral-500"
-            style={{ transformOrigin: "center" }}
+          {/* Chart canvas */}
+          <div
+            className="relative rounded-2xl border border-neutral-100"
+            style={{
+              aspectRatio: "16 / 9.2",
+              padding: "20px 20px 28px 60px",
+              background:
+                "linear-gradient(180deg, rgba(255,255,255,1), rgba(248,249,251,0.6))",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8), 0 0 0 1px rgba(0,0,0,0.025)",
+            }}
           >
-            Margem →
-          </span>
+            {/* Inner plot area */}
+            <div className="relative h-full w-full overflow-hidden rounded-xl">
+              {/* Quadrant gradient backgrounds */}
+              <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
+                {/* TL: Quebra-cabeça */}
+                <div
+                  style={{
+                    background:
+                      "radial-gradient(circle at 70% 80%, rgba(2,7,136,0.08), transparent 70%)",
+                  }}
+                />
+                {/* TR: Estrela */}
+                <div
+                  style={{
+                    background:
+                      "radial-gradient(circle at 30% 80%, rgba(22,163,74,0.10), transparent 70%)",
+                  }}
+                />
+                {/* BL: Cachorro */}
+                <div
+                  style={{
+                    background:
+                      "radial-gradient(circle at 70% 20%, rgba(107,114,128,0.06), transparent 70%)",
+                  }}
+                />
+                {/* BR: Burro */}
+                <div
+                  style={{
+                    background:
+                      "radial-gradient(circle at 30% 20%, rgba(217,119,6,0.08), transparent 70%)",
+                  }}
+                />
+              </div>
 
-          {/* v13.22 — Dishes: label só no focus + hover tooltip nos outros.
-              Resolve o overlap reportado pelo cliente. */}
-          {MATRIX_DISHES.map((d, i) => {
-            const focus = d.focus;
-            const meta = QUADRANT_META[d.group];
-            return (
-              <MatrixDot
-                key={d.id}
-                dish={d}
-                meta={meta}
-                index={i}
-                focus={!!focus}
+              {/* Grid lines (quartis) */}
+              <svg
+                className="absolute inset-0 h-full w-full"
+                preserveAspectRatio="none"
+                aria-hidden
+              >
+                <line
+                  x1="25%"
+                  y1="0"
+                  x2="25%"
+                  y2="100%"
+                  stroke="rgba(2,7,136,0.05)"
+                  strokeDasharray="2 4"
+                />
+                <line
+                  x1="75%"
+                  y1="0"
+                  x2="75%"
+                  y2="100%"
+                  stroke="rgba(2,7,136,0.05)"
+                  strokeDasharray="2 4"
+                />
+                <line
+                  x1="0"
+                  y1="25%"
+                  x2="100%"
+                  y2="25%"
+                  stroke="rgba(2,7,136,0.05)"
+                  strokeDasharray="2 4"
+                />
+                <line
+                  x1="0"
+                  y1="75%"
+                  x2="100%"
+                  y2="75%"
+                  stroke="rgba(2,7,136,0.05)"
+                  strokeDasharray="2 4"
+                />
+              </svg>
+
+              {/* Center cross lines (gradient fade) */}
+              <div
+                className="absolute left-1/2 top-0 h-full w-px"
+                style={{
+                  background:
+                    "linear-gradient(180deg, transparent, rgba(2,7,136,0.20), transparent)",
+                }}
               />
-            );
-          })}
+              <div
+                className="absolute left-0 top-1/2 h-px w-full"
+                style={{
+                  background:
+                    "linear-gradient(90deg, transparent, rgba(2,7,136,0.20), transparent)",
+                }}
+              />
+
+              {/* Quadrant corner badges */}
+              <QuadrantBadge
+                corner="tl"
+                meta={QUADRANT_META.puzzle}
+                count={QUADRANT_CORNERS.puzzle.count}
+                Icon={QUADRANT_CORNERS.puzzle.Icon}
+              />
+              <QuadrantBadge
+                corner="tr"
+                meta={QUADRANT_META.estrela}
+                count={QUADRANT_CORNERS.estrela.count}
+                Icon={QUADRANT_CORNERS.estrela.Icon}
+              />
+              <QuadrantBadge
+                corner="bl"
+                meta={QUADRANT_META.cachorro}
+                count={QUADRANT_CORNERS.cachorro.count}
+                Icon={QUADRANT_CORNERS.cachorro.Icon}
+              />
+              <QuadrantBadge
+                corner="br"
+                meta={QUADRANT_META.burro}
+                count={QUADRANT_CORNERS.burro.count}
+                Icon={QUADRANT_CORNERS.burro.Icon}
+              />
+
+              {/* Dishes */}
+              {MATRIX_DISHES.map((d, i) => (
+                <MatrixDot
+                  key={d.id}
+                  dish={d}
+                  meta={QUADRANT_META[d.group]}
+                  index={i}
+                  focus={!!d.focus}
+                />
+              ))}
+            </div>
+
+            {/* Y-axis: Margem */}
+            <div className="absolute bottom-7 left-0 top-5 flex w-[52px] flex-col justify-between pr-3 text-right">
+              <span className="font-ui text-[10px] font-bold uppercase tabular-nums text-neutral-400" style={{ letterSpacing: "0.12em" }}>
+                ALTA
+              </span>
+              <span className="font-ui text-[10px] font-bold uppercase tabular-nums text-neutral-300" style={{ letterSpacing: "0.12em" }}>
+                50%
+              </span>
+              <span className="font-ui text-[10px] font-bold uppercase tabular-nums text-neutral-400" style={{ letterSpacing: "0.12em" }}>
+                BAIXA
+              </span>
+            </div>
+            {/* Y-axis title */}
+            <span
+              className="absolute left-2 top-1/2 -translate-y-1/2 -rotate-90 font-ui text-[10.5px] font-bold uppercase tabular-nums text-brand"
+              style={{ letterSpacing: "0.22em", transformOrigin: "center" }}
+            >
+              Margem
+            </span>
+
+            {/* X-axis: Popularidade */}
+            <div className="absolute bottom-2 left-[60px] right-5 flex justify-between">
+              <span className="font-ui text-[10px] font-bold uppercase text-neutral-400" style={{ letterSpacing: "0.12em" }}>
+                BAIXA
+              </span>
+              <span className="font-ui text-[10.5px] font-bold uppercase text-brand" style={{ letterSpacing: "0.22em" }}>
+                Popularidade →
+              </span>
+              <span className="font-ui text-[10px] font-bold uppercase text-neutral-400" style={{ letterSpacing: "0.12em" }}>
+                ALTA
+              </span>
+            </div>
+          </div>
         </div>
       </Card>
 
-      <aside className="flex flex-col gap-3">
-        {Object.entries(QUADRANT_META).map(([id, meta]) => (
-          <motion.div
-            key={id}
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
+      {/* Sidebar */}
+      <aside className="flex flex-col gap-3 overflow-y-auto">
+        {/* Foco card */}
+        <motion.div
+          initial={{ opacity: 0, x: 12 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.35, delay: 0.1 }}
+        >
+          <Card
+            className="relative overflow-hidden p-4"
+            style={{
+              boxShadow: `0 0 0 1.5px ${focusMeta.color}33, 0 8px 24px ${focusMeta.color}1a`,
+            }}
           >
-            <Card className="p-3">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background: `radial-gradient(ellipse at top right, ${focusMeta.color}10, transparent 60%)`,
+              }}
+            />
+            <div className="relative">
               <div className="flex items-center gap-2">
                 <span
-                  className="block h-3 w-3 rounded-full"
+                  className="flex h-7 w-7 items-center justify-center rounded-full text-white"
                   style={{
-                    background: meta.color,
-                    boxShadow: `0 0 10px ${meta.color}55`,
+                    background: `linear-gradient(135deg, ${focusMeta.color}, ${focusMeta.colorDeep})`,
+                    boxShadow: `0 2px 8px ${focusMeta.color}55`,
                   }}
-                />
-                <p className="font-ui text-[13px] font-bold text-neutral-900">
-                  {meta.label}
+                >
+                  <Target size={13} strokeWidth={2.5} />
+                </span>
+                <p
+                  className="font-ui text-[10px] font-bold uppercase"
+                  style={{ letterSpacing: "0.18em", color: focusMeta.colorDeep }}
+                >
+                  Foco da IA
                 </p>
               </div>
-              <p
-                className="mt-1.5 text-[11px] font-bold uppercase tracking-wider"
-                style={{ color: meta.color }}
-              >
-                {meta.tag}
+              <p className="mt-2.5 font-display text-[16px] font-bold leading-tight text-neutral-900" style={{ letterSpacing: "-0.018em" }}>
+                {focusDish.name}
               </p>
-            </Card>
-          </motion.div>
-        ))}
+              <p className="mt-0.5 font-ui text-[11.5px] text-neutral-500">
+                {focusMeta.label} · {focusMeta.tag}
+              </p>
+
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <div
+                  className="rounded-lg p-2"
+                  style={{ background: "rgba(2,7,136,0.04)" }}
+                >
+                  <p className="font-ui text-[9.5px] font-bold uppercase text-neutral-500" style={{ letterSpacing: "0.14em" }}>
+                    Popularidade
+                  </p>
+                  <p className="mt-0.5 font-ui text-[15px] font-bold tabular-nums text-neutral-900" style={{ letterSpacing: "-0.02em" }}>
+                    42%
+                  </p>
+                </div>
+                <div
+                  className="rounded-lg p-2"
+                  style={{ background: "rgba(22,163,74,0.06)" }}
+                >
+                  <p className="font-ui text-[9.5px] font-bold uppercase text-neutral-500" style={{ letterSpacing: "0.14em" }}>
+                    Margem
+                  </p>
+                  <p className="mt-0.5 font-ui text-[15px] font-bold tabular-nums text-success" style={{ letterSpacing: "-0.02em" }}>
+                    62%
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+
+        {/* Quadrant breakdown */}
+        <div className="flex flex-col gap-2">
+          <p
+            className="font-ui text-[10px] font-bold uppercase text-neutral-400"
+            style={{ letterSpacing: "0.18em" }}
+          >
+            Distribuição por quadrante
+          </p>
+          {(Object.entries(QUADRANT_META) as [
+            keyof typeof QUADRANT_META,
+            (typeof QUADRANT_META)[keyof typeof QUADRANT_META],
+          ][]).map(([id, meta], i) => {
+            const detail = QUADRANT_CORNERS[id];
+            const Icon = detail.Icon;
+            return (
+              <motion.div
+                key={id}
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.15 + i * 0.05 }}
+              >
+                <Card className="p-3" style={{ borderLeft: `3px solid ${meta.color}` }}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="flex h-6 w-6 items-center justify-center rounded-md"
+                        style={{
+                          background: `${meta.color}15`,
+                          color: meta.colorDeep,
+                        }}
+                      >
+                        <Icon size={12} strokeWidth={2.5} />
+                      </span>
+                      <p className="font-ui text-[12.5px] font-bold text-neutral-900" style={{ letterSpacing: "-0.005em" }}>
+                        {meta.label}
+                      </p>
+                    </div>
+                    <span
+                      className="inline-flex h-5 min-w-[22px] items-center justify-center rounded-full px-1.5 font-ui text-[10.5px] font-bold tabular-nums text-white"
+                      style={{ background: meta.color }}
+                    >
+                      {detail.count}
+                    </span>
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between">
+                    <p
+                      className="font-ui text-[10px] font-bold uppercase"
+                      style={{ letterSpacing: "0.12em", color: meta.colorDeep }}
+                    >
+                      {meta.tag}
+                    </p>
+                    <p className="font-ui text-[11px] font-semibold tabular-nums text-neutral-500">
+                      {detail.revenue}
+                    </p>
+                  </div>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
       </aside>
     </motion.section>
   );

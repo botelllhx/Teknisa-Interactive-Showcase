@@ -101,7 +101,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
           </div>
         </div>
         <span
-          className="inline-flex items-center gap-1.5 rounded-full bg-success/12 px-2 py-1 font-ui text-[9.5px] font-bold uppercase text-success"
+          className="inline-flex items-center gap-1.5 rounded-full bg-success/12 px-2 py-1 font-ui text-[10.5px] font-bold uppercase text-success"
           style={{ letterSpacing: "0.14em" }}
         >
           <motion.span
@@ -225,7 +225,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
               >
                 Feed ao vivo
               </p>
-              <span className="flex items-center gap-1 font-ui text-[9px] font-bold text-success">
+              <span className="flex items-center gap-1 font-ui text-[10.5px] font-bold text-success">
                 <motion.span
                   animate={{ opacity: [1, 0.4, 1] }}
                   transition={{ duration: 1.4, repeat: Infinity }}
@@ -283,7 +283,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
                       <p className="font-ui text-[10px] font-bold text-neutral-900">
                         {m.who}
                       </p>
-                      <span className="font-ui text-[8px] tabular-nums text-neutral-400">
+                      <span className="font-ui text-[10.5px] tabular-nums text-neutral-400">
                         {m.when}
                       </span>
                     </div>

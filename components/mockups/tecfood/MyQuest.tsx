@@ -165,12 +165,12 @@ function StatusBar() {
           height={10}
           className="select-none opacity-90"
         />
-        <span className="text-[9px] font-medium uppercase tracking-wider opacity-75">
+        <span className="text-[10.5px] font-medium uppercase tracking-wider opacity-75">
           Restaurante Berrini
         </span>
       </div>
       <div className="flex items-center gap-1.5">
-        <span className="text-[9px] tabular-nums opacity-80">12:14</span>
+        <span className="text-[10.5px] tabular-nums opacity-80">12:14</span>
         <Wifi size={10} strokeWidth={2.5} className="opacity-80" />
       </div>
     </div>
@@ -205,7 +205,7 @@ function Header() {
             MyQuest
           </p>
           <p
-            className="font-ui text-[9.5px] text-neutral-500"
+            className="font-ui text-[10.5px] text-neutral-500"
             style={{ letterSpacing: "-0.005em" }}
           >
             Reserve sua refeição no totem
@@ -213,7 +213,7 @@ function Header() {
         </div>
       </div>
       <span
-        className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-0.5 font-ui text-[9px] font-bold uppercase text-success"
+        className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-0.5 font-ui text-[10.5px] font-bold uppercase text-success"
         style={{ letterSpacing: "0.14em" }}
       >
         <motion.span
@@ -488,7 +488,7 @@ function ScheduleView({
                     </p>
                     {s.suggested && (
                       <span
-                        className="inline-flex items-center gap-0.5 rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-brand"
+                        className="inline-flex items-center gap-0.5 rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-brand"
                         style={{ letterSpacing: "0.14em" }}
                       >
                         <Sparkles size={9} strokeWidth={2.5} />
@@ -513,7 +513,7 @@ function ScheduleView({
                 </div>
                 <span
                   className={cn(
-                    "rounded-full px-2 py-0.5 font-ui text-[9.5px] font-bold uppercase",
+                    "rounded-full px-2 py-0.5 font-ui text-[10.5px] font-bold uppercase",
                     statusTone.bg,
                     statusTone.text,
                   )}
@@ -605,7 +605,7 @@ function ConfirmedView({ slotLabel }: { slotLabel?: string }) {
         <div className="flex items-center justify-between">
           <div>
             <p
-              className="font-ui text-[9px] font-bold uppercase text-brand"
+              className="font-ui text-[10.5px] font-bold uppercase text-brand"
               style={{ letterSpacing: "0.20em" }}
             >
               Sua senha
@@ -660,11 +660,11 @@ function ConfirmedView({ slotLabel }: { slotLabel?: string }) {
               Refeitório Principal · Capacidade hoje 120
             </p>
             <div className="mt-2 flex items-center gap-1.5">
-              <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-1.5 py-0.5 text-[9px] font-bold text-success">
+              <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-1.5 py-0.5 text-[10.5px] font-bold text-success">
                 <span className="h-1 w-1 rounded-full bg-success" />
                 Livre
               </span>
-              <span className="font-ui text-[9px] text-neutral-400">
+              <span className="font-ui text-[10.5px] text-neutral-400">
                 73 saíram nos últimos 10min
               </span>
             </div>
@@ -701,7 +701,7 @@ function ConfirmedView({ slotLabel }: { slotLabel?: string }) {
                   style={{ marginTop: `${100 - s.pct}%` }}
                 />
               </div>
-              <span className="mt-0.5 font-ui text-[8px] font-medium tabular-nums text-neutral-400">
+              <span className="mt-0.5 font-ui text-[10.5px] font-medium tabular-nums text-neutral-400">
                 {s.l}
               </span>
             </div>

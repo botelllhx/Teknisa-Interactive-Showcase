@@ -783,7 +783,7 @@ function BrandStripe({
         />
         <span className="h-3 w-px bg-white/25" />
         <span
-          className="font-ui text-[9px] font-bold uppercase opacity-90"
+          className="font-ui text-[10.5px] font-bold uppercase opacity-90"
           style={{ letterSpacing: "0.18em" }}
         >
           Totem
@@ -806,7 +806,7 @@ function BrandStripe({
                 whileTap={{ scale: 0.94 }}
                 onClick={() => onSkinChange(id)}
                 className={cn(
-                  "relative z-10 rounded-full px-2.5 py-1 font-ui text-[9px] font-bold uppercase transition-colors",
+                  "relative z-10 rounded-full px-2.5 py-1 font-ui text-[10.5px] font-bold uppercase transition-colors",
                   active ? "text-neutral-900" : "text-white/80",
                 )}
                 style={{ letterSpacing: "0.10em" }}
@@ -836,7 +836,7 @@ function BrandStripe({
         <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-1.5 py-0.5 backdrop-blur">
           <Wifi size={10} strokeWidth={2.5} className="opacity-90" />
           <span
-            className="font-ui text-[8px] font-bold uppercase opacity-90 tabular-nums"
+            className="font-ui text-[10.5px] font-bold uppercase opacity-90 tabular-nums"
             style={{ letterSpacing: "0.10em" }}
           >
             Online
@@ -877,7 +877,7 @@ function HomeView({
           style={{ color: skin.brand }}
         >
           <Tag size={14} strokeWidth={2.5} />
-          <span className="font-ui text-[9px] font-bold tracking-wider">
+          <span className="font-ui text-[10.5px] font-bold tracking-wider">
             CUPOM
           </span>
         </motion.button>
@@ -926,7 +926,7 @@ function HomeView({
                 variant={active ? "solid" : "soft"}
               />
               <span
-                className="font-ui text-[9px] font-bold leading-tight"
+                className="font-ui text-[10.5px] font-bold leading-tight"
                 style={{
                   color: active ? skin.brand : "#6b7280",
                   letterSpacing: "0.04em",
@@ -961,7 +961,7 @@ function HomeView({
           />
           <div className="relative flex-1">
             <p
-              className="font-ui text-[9px] font-bold uppercase opacity-85"
+              className="font-ui text-[10.5px] font-bold uppercase opacity-85"
               style={{ letterSpacing: "0.18em" }}
             >
               {skin.bannerTitle}
@@ -1005,7 +1005,7 @@ function HomeView({
               {CATEGORIES.find((c) => c.id === activeCategory)?.label ?? ""}
             </h2>
             <span
-              className="rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[8.5px] font-bold tabular-nums text-brand"
+              className="rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[10px] font-bold tabular-nums text-brand"
               style={{ letterSpacing: "0.04em" }}
             >
               {products.length} itens
@@ -1013,7 +1013,7 @@ function HomeView({
           </div>
           <button
             type="button"
-            className="flex items-center gap-1 rounded-full border border-neutral-200 bg-white px-2 py-0.5 text-[9px] font-medium text-neutral-500"
+            className="flex items-center gap-1 rounded-full border border-neutral-200 bg-white px-2 py-0.5 text-[10.5px] font-medium text-neutral-500"
             style={{ boxShadow: "0 1px 1px rgba(0,0,0,0.03)" }}
           >
             <Search size={10} strokeWidth={2.25} />
@@ -1076,7 +1076,7 @@ function HomeView({
                         className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/30 to-transparent"
                       />
                       {p.oldPrice > p.price && (
-                        <span className="absolute left-1.5 top-1.5 inline-flex items-center rounded-full bg-white/95 px-1.5 py-0.5 font-ui text-[8px] font-bold uppercase tracking-wider text-success shadow-card backdrop-blur">
+                        <span className="absolute left-1.5 top-1.5 inline-flex items-center rounded-full bg-white/95 px-1.5 py-0.5 font-ui text-[10.5px] font-bold uppercase tracking-wider text-success shadow-card backdrop-blur">
                           {Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100)}% off
                         </span>
                       )}
@@ -1096,7 +1096,7 @@ function HomeView({
                       <p className="font-ui text-[11px] font-bold leading-tight text-neutral-900 line-clamp-1">
                         {p.name}
                       </p>
-                      <p className="text-[9px] leading-tight text-neutral-500 line-clamp-2">
+                      <p className="text-[10.5px] leading-tight text-neutral-500 line-clamp-2">
                         {p.desc}
                       </p>
                       <div className="mt-1 flex items-baseline gap-1.5">
@@ -1104,7 +1104,7 @@ function HomeView({
                           R$ {p.price.toFixed(2).replace(".", ",")}
                         </span>
                         {p.oldPrice > p.price && (
-                          <span className="text-[9px] text-neutral-400 line-through tabular-nums">
+                          <span className="text-[10.5px] text-neutral-400 line-through tabular-nums">
                             R$ {p.oldPrice.toFixed(2).replace(".", ",")}
                           </span>
                         )}
@@ -1716,7 +1716,7 @@ function ProcessingDoneOverlay({
         style={{ borderColor: skin.brand, background: skin.brandSoft }}
       >
         <p
-          className="text-[9px] font-bold uppercase tracking-wider"
+          className="text-[10.5px] font-bold uppercase tracking-wider"
           style={{ color: skin.brand }}
         >
           Sua senha
@@ -1775,7 +1775,7 @@ function BottomTotalBar({
       <div className="flex items-center gap-3 text-right">
         <div className="leading-tight">
           <p
-            className="font-ui text-[8.5px] font-bold uppercase opacity-80"
+            className="font-ui text-[10px] font-bold uppercase opacity-80"
             style={{ letterSpacing: "0.16em" }}
           >
             Total

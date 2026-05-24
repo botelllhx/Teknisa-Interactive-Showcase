@@ -91,7 +91,7 @@ function Header() {
             Análise Preditiva
           </p>
           <span
-            className="ml-1 inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-success"
+            className="ml-1 inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-success"
             style={{ letterSpacing: "0.14em" }}
           >
             <motion.span

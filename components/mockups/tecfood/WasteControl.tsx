@@ -268,7 +268,7 @@ function Header() {
         </div>
       </div>
       <span
-        className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-0.5 font-ui text-[9px] font-bold uppercase text-success"
+        className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-0.5 font-ui text-[10.5px] font-bold uppercase text-success"
         style={{ letterSpacing: "0.14em" }}
       >
         <motion.span
@@ -617,7 +617,7 @@ function HistoricoView({
               <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
                 Composição por tipo
               </p>
-              <Badge variant="success" className="px-1.5 py-0 text-[9px]">
+              <Badge variant="success" className="px-1.5 py-0 text-[10.5px]">
                 7 dias
               </Badge>
             </div>
@@ -650,7 +650,7 @@ function HistoricoView({
         </div>
 
         <div className="mt-2 overflow-hidden rounded-xl border border-neutral-200">
-          <div className="grid grid-cols-[80px_110px_1fr_70px] items-center bg-neutral-50 px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider text-neutral-500">
+          <div className="grid grid-cols-[80px_110px_1fr_70px] items-center bg-neutral-50 px-3 py-1.5 text-[10.5px] font-bold uppercase tracking-wider text-neutral-500">
             <span>Data/Hora</span>
             <span>Tipo</span>
             <span>Prato</span>

@@ -337,10 +337,10 @@ function HomeView({
           </span>
         </div>
         <div className="mt-1.5 flex items-center gap-1.5">
-          <span className="inline-block rounded-md bg-success/15 px-2 py-0.5 text-[9px] font-bold text-success">
+          <span className="inline-block rounded-md bg-success/15 px-2 py-0.5 text-[10.5px] font-bold text-success">
             Aberto · 14:00 às 17:00
           </span>
-          <span className="inline-block rounded-md bg-neutral-100 px-2 py-0.5 text-[9px] font-bold text-neutral-600">
+          <span className="inline-block rounded-md bg-neutral-100 px-2 py-0.5 text-[10.5px] font-bold text-neutral-600">
             Tempo médio · 18 min
           </span>
         </div>
@@ -367,7 +367,7 @@ function HomeView({
             <BookOpen size={18} strokeWidth={2} />
           </div>
           <div className="flex-1">
-            <p className="text-[9px] font-bold uppercase tracking-wider text-brand/70">
+            <p className="text-[10.5px] font-bold uppercase tracking-wider text-brand/70">
               Veja todas as opções
             </p>
             <p className="font-display text-[14px] font-bold text-brand">
@@ -450,7 +450,7 @@ function HomeView({
                       key={inCart}
                       initial={{ scale: 0.6 }}
                       animate={{ scale: 1 }}
-                      className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-success px-1 text-[8px] font-bold text-white"
+                      className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-success px-1 text-[10.5px] font-bold text-white"
                     >
                       {inCart}
                     </motion.span>
@@ -537,7 +537,7 @@ function DetailView({
         <p className="font-display text-[12px] font-bold text-brand">
           Acréscimos
         </p>
-        <span className="text-[9px] font-medium text-neutral-500">
+        <span className="text-[10.5px] font-medium text-neutral-500">
           {selectedCount} selecionado(s)
         </span>
       </div>
@@ -708,7 +708,7 @@ function CartView({
                 <p className="font-display text-[11px] font-bold text-neutral-900">
                   {p.name}
                 </p>
-                <button className="mt-0.5 flex items-center gap-1 rounded-md bg-brand-ghost px-1.5 py-0.5 text-[9px] font-medium text-brand">
+                <button className="mt-0.5 flex items-center gap-1 rounded-md bg-brand-ghost px-1.5 py-0.5 text-[10.5px] font-medium text-brand">
                   <Edit3 size={9} strokeWidth={2.25} />
                   Editar
                 </button>
@@ -846,7 +846,7 @@ function ConfirmView({ subtotal }: { subtotal: number }) {
         }}
       >
         <p
-          className="font-ui text-[8.5px] font-bold uppercase text-success"
+          className="font-ui text-[10px] font-bold uppercase text-success"
           style={{ letterSpacing: "0.18em" }}
         >
           Número do pedido
@@ -870,14 +870,14 @@ function KitchenStatusView() {
     <div data-tour="cd-kitchen" className="flex h-full flex-col px-4 pt-2">
       <div className="mb-2 flex items-center justify-between">
         <div>
-          <p className="text-[9px] font-bold uppercase tracking-wider text-brand">
+          <p className="text-[10.5px] font-bold uppercase tracking-wider text-brand">
             Pedido #C1247 · Mesa 10
           </p>
           <h2 className="font-display text-[14px] font-bold text-brand">
             Acompanhe seu pedido
           </h2>
         </div>
-        <span className="rounded-full bg-warning/15 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-warning">
+        <span className="rounded-full bg-warning/15 px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-wider text-warning">
           Em preparo
         </span>
       </div>
@@ -930,7 +930,7 @@ function KitchenStatusView() {
                   <p className="font-display text-[11px] font-bold text-neutral-900">
                     {item.label}
                   </p>
-                  <p className="text-[9px] text-neutral-500">{item.time}</p>
+                  <p className="text-[10.5px] text-neutral-500">{item.time}</p>
                 </div>
               </div>
             ))}
@@ -995,7 +995,7 @@ function BottomNav({ step }: { step: number }) {
           )}
           <item.Icon size={18} strokeWidth={item.active ? 2.5 : 2} />
           <span
-            className="font-ui text-[9.5px] font-bold"
+            className="font-ui text-[10.5px] font-bold"
             style={{ letterSpacing: "-0.005em" }}
           >
             {item.label}

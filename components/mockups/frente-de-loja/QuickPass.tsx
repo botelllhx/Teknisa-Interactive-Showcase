@@ -389,7 +389,7 @@ function CatalogView({
                     className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/40 to-transparent"
                   />
                   {p.tag && (
-                    <span className="absolute left-1.5 top-1.5 rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-bold text-brand shadow-card backdrop-blur">
+                    <span className="absolute left-1.5 top-1.5 rounded-full bg-white/95 px-2 py-0.5 text-[10.5px] font-bold text-brand shadow-card backdrop-blur">
                       {p.tag}
                     </span>
                   )}
@@ -774,7 +774,7 @@ function PaymentView({
                 </p>
                 <div className="mt-3 flex items-end justify-between">
                   <div>
-                    <p className="text-[9px] uppercase text-white/60">
+                    <p className="text-[10.5px] uppercase text-white/60">
                       Titular
                     </p>
                     <p className="font-ui text-[11px] font-bold">
@@ -952,7 +952,7 @@ function SuccessView({
             </div>
             <div className="flex-1">
               <p
-                className="font-ui text-[9px] font-bold uppercase text-brand"
+                className="font-ui text-[10.5px] font-bold uppercase text-brand"
                 style={{ letterSpacing: "0.18em" }}
               >
                 Retirada no balcão
@@ -967,7 +967,7 @@ function SuccessView({
                 Apresente este QR no balcão da Hell&apos;s Burgers · setor B.
               </p>
               <p
-                className="mt-2 inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 font-ui text-[9.5px] font-bold uppercase text-warning"
+                className="mt-2 inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 font-ui text-[10.5px] font-bold uppercase text-warning"
                 style={{ letterSpacing: "0.14em" }}
               >
                 <Clock size={10} strokeWidth={2.5} />

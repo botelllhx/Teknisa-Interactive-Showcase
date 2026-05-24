@@ -84,7 +84,7 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
           </span>
           {declared && (
             <span
-              className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-1 font-ui text-[9.5px] font-bold uppercase text-success"
+              className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-1 font-ui text-[10.5px] font-bold uppercase text-success"
               style={{ letterSpacing: "0.12em" }}
             >
               <CheckCircle2 size={11} strokeWidth={2.5} />
@@ -355,7 +355,7 @@ function Stat({
 }) {
   return (
     <div className="rounded-xl bg-neutral-50 p-2.5 text-center">
-      <p className="font-ui text-[9px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+      <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
         {label}
       </p>
       <p

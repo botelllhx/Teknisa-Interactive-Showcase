@@ -440,13 +440,29 @@ function DashboardScreen() {
 
       {/* Side header: AI Insights column title */}
       <div className="col-start-2 row-start-1 flex items-center justify-between">
-        <p
-          className="font-ui text-[11px] font-bold uppercase text-brand"
-          style={{ letterSpacing: "0.10em" }}
+        <div className="flex items-center gap-1.5">
+          <span
+            className="flex h-5 w-5 items-center justify-center rounded-md text-white"
+            style={{
+              background:
+                "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
+              boxShadow:
+                "0 2px 6px rgba(124,58,237,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
+            }}
+          >
+            <Sparkles size={11} strokeWidth={2.5} />
+          </span>
+          <p
+            className="font-ui text-[10.5px] font-bold uppercase text-brand"
+            style={{ letterSpacing: "0.16em" }}
+          >
+            AI Insights
+          </p>
+        </div>
+        <span
+          className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-success"
+          style={{ letterSpacing: "0.14em" }}
         >
-          AI Insights
-        </p>
-        <span className="flex items-center gap-1 font-ui text-[9px] font-bold text-success">
           <motion.span
             animate={{ opacity: [1, 0.4, 1] }}
             transition={{ duration: 1.4, repeat: Infinity }}
@@ -600,40 +616,67 @@ function DashboardScreen() {
       {/* Side: bottom AI auto-action footer */}
       <div
         data-tour="ri-analisar-oportunidade"
-        className="col-start-2 row-start-3 flex flex-col gap-2 rounded-2xl p-3"
+        className="relative col-start-2 row-start-3 flex flex-col gap-2 overflow-hidden rounded-2xl p-3.5"
         style={{
           background:
-            "linear-gradient(135deg, rgba(2,7,136,0.95) 0%, rgba(26,31,168,0.92) 50%, rgba(124,58,237,0.88) 100%)",
+            "linear-gradient(135deg, #020788 0%, #1a1fa8 45%, #7c3aed 100%)",
+          boxShadow:
+            "0 12px 28px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
         }}
       >
-        <div className="flex items-center gap-1.5">
+        {/* Decorative orb */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-50 blur-2xl"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(255,255,255,0.45), transparent 70%)",
+          }}
+        />
+        <div className="relative flex items-center gap-1.5">
           <motion.span
-            animate={{ scale: [1, 1.08, 1] }}
-            transition={{ duration: 2.2, repeat: Infinity }}
+            animate={{
+              scale: [1, 1.06, 1],
+              boxShadow: [
+                "0 0 0 0 rgba(255,255,255,0)",
+                "0 0 0 4px rgba(255,255,255,0.18)",
+                "0 0 0 0 rgba(255,255,255,0)",
+              ],
+            }}
+            transition={{ duration: 2.4, repeat: Infinity }}
             className="flex h-6 w-6 items-center justify-center rounded-md bg-white/15 text-white backdrop-blur"
+            style={{
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.20)",
+            }}
           >
             <BrainCircuit size={12} strokeWidth={2.25} />
           </motion.span>
           <p
             className="font-ui text-[9px] font-bold uppercase text-white/85"
-            style={{ letterSpacing: "0.10em" }}
+            style={{ letterSpacing: "0.18em" }}
           >
             IA aplicou hoje
           </p>
         </div>
         <p
-          className="font-ui text-[17px] font-bold leading-tight text-white"
-          style={{ letterSpacing: "-0.02em" }}
+          className="relative font-display text-[18px] font-bold leading-[1.1] text-white tabular-nums"
+          style={{ letterSpacing: "-0.025em" }}
         >
           12 ações automáticas
         </p>
-        <p className="font-ui text-[10px] leading-snug text-white/75">
+        <p className="relative font-ui text-[10.5px] leading-snug text-white/80">
           5 ajustes de cardápio, 3 renegociações e 4 alertas. CMV projetado
-          <span className="font-bold text-white"> −1,8pp</span> em 7 dias.
+          <span className="font-bold tabular-nums text-white"> −1,8pp</span> em
+          7 dias.
         </p>
         <button
           type="button"
-          className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-1.5 font-ui text-[11px] font-bold text-brand transition-transform hover:-translate-y-[1px]"
+          className="relative mt-1.5 inline-flex items-center justify-center gap-1.5 rounded-xl bg-white px-3 py-2 font-ui text-[11px] font-bold text-brand transition-all hover:-translate-y-[1px]"
+          style={{
+            boxShadow:
+              "0 4px 12px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.40)",
+            letterSpacing: "-0.005em",
+          }}
         >
           Abrir diagnóstico
           <ArrowRight size={11} strokeWidth={2.5} />

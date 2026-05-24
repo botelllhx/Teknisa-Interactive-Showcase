@@ -767,8 +767,11 @@ function BrandStripe({
 }) {
   return (
     <div
-      className="flex items-center justify-between px-3 py-1.5 text-white"
-      style={{ background: skin.brand }}
+      className="relative flex items-center justify-between px-3 py-2 text-white"
+      style={{
+        background: `linear-gradient(180deg, ${skin.accent} 0%, ${skin.brand} 60%, ${skin.brandDark} 100%)`,
+        boxShadow: "inset 0 -1px 0 rgba(0,0,0,0.18)",
+      }}
     >
       <div className="flex items-center gap-2">
         <Image
@@ -776,11 +779,24 @@ function BrandStripe({
           alt="Teknisa"
           width={62}
           height={11}
-          className="select-none opacity-90"
+          className="select-none opacity-95"
         />
+        <span className="h-3 w-px bg-white/25" />
+        <span
+          className="font-ui text-[9px] font-bold uppercase opacity-90"
+          style={{ letterSpacing: "0.18em" }}
+        >
+          Totem
+        </span>
       </div>
       <div className="flex items-center gap-2">
-        <div className="inline-flex items-center rounded-full bg-white/15 p-0.5 backdrop-blur">
+        <div
+          className="relative inline-flex items-center rounded-full p-0.5 backdrop-blur"
+          style={{
+            background: "rgba(255,255,255,0.18)",
+            boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.10)",
+          }}
+        >
           {(["central", "astrobox"] as const).map((id) => {
             const active = id === skinId;
             return (
@@ -790,19 +806,42 @@ function BrandStripe({
                 whileTap={{ scale: 0.94 }}
                 onClick={() => onSkinChange(id)}
                 className={cn(
-                  "rounded-full px-2 py-0.5 font-ui text-[9px] font-bold transition-colors",
-                  active ? "text-white" : "text-white/70",
+                  "relative z-10 rounded-full px-2.5 py-1 font-ui text-[9px] font-bold uppercase transition-colors",
+                  active ? "text-neutral-900" : "text-white/80",
                 )}
-                style={{
-                  background: active ? "rgba(0,0,0,0.25)" : "transparent",
-                }}
+                style={{ letterSpacing: "0.10em" }}
               >
-                {SKINS[id].name.split(" ")[0]}
+                {active && (
+                  <motion.span
+                    layoutId="taa-skin-active"
+                    className="absolute inset-0 rounded-full bg-white"
+                    style={{
+                      boxShadow:
+                        "0 2px 6px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.4)",
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 380,
+                      damping: 28,
+                    }}
+                  />
+                )}
+                <span className="relative">
+                  {SKINS[id].name.split(" ")[0]}
+                </span>
               </motion.button>
             );
           })}
         </div>
-        <Wifi size={11} strokeWidth={2.5} className="opacity-80" />
+        <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-1.5 py-0.5 backdrop-blur">
+          <Wifi size={10} strokeWidth={2.5} className="opacity-90" />
+          <span
+            className="font-ui text-[8px] font-bold uppercase opacity-90 tabular-nums"
+            style={{ letterSpacing: "0.10em" }}
+          >
+            Online
+          </span>
+        </span>
       </div>
     </div>
   );
@@ -904,39 +943,78 @@ function HomeView({
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Promo banner */}
         <div
-          className="m-2.5 mb-2 flex items-center gap-2 overflow-hidden rounded-2xl p-3 text-white"
+          className="relative m-2.5 mb-2 flex items-center gap-2 overflow-hidden rounded-2xl p-3 text-white"
           style={{
-            background: `linear-gradient(135deg, ${skin.brandDark} 0%, ${skin.brand} 60%, ${skin.accent} 100%)`,
+            background: `linear-gradient(135deg, ${skin.brandDark} 0%, ${skin.brand} 55%, ${skin.accent} 100%)`,
+            boxShadow:
+              "inset 0 1px 0 rgba(255,255,255,0.18), 0 6px 18px rgba(0,0,0,0.12)",
           }}
         >
-          <div className="flex-1">
-            <p className="text-[9px] font-bold uppercase tracking-wider opacity-80">
+          {/* Decorative orb */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full opacity-40 blur-2xl"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(255,255,255,0.55), transparent 70%)",
+            }}
+          />
+          <div className="relative flex-1">
+            <p
+              className="font-ui text-[9px] font-bold uppercase opacity-85"
+              style={{ letterSpacing: "0.18em" }}
+            >
               {skin.bannerTitle}
             </p>
-            <p className="mt-0.5 font-ui text-[13px] font-bold leading-tight">
+            <p
+              className="mt-0.5 font-display text-[14px] font-bold leading-tight"
+              style={{ letterSpacing: "-0.018em" }}
+            >
               {skin.bannerSubtitle}
             </p>
-            <p className="mt-1.5 font-ui text-[16px] font-bold tabular-nums">
+            <p
+              className="mt-1.5 font-ui text-[18px] font-bold tabular-nums leading-none"
+              style={{ letterSpacing: "-0.025em" }}
+            >
               {skin.bannerCaption}
             </p>
           </div>
-          <div className="relative flex h-14 w-14 flex-none items-center justify-center rounded-xl bg-white/15 backdrop-blur">
+          <div
+            className="relative flex h-16 w-16 flex-none items-center justify-center rounded-2xl backdrop-blur"
+            style={{
+              background: "rgba(255,255,255,0.16)",
+              boxShadow:
+                "inset 0 1px 0 rgba(255,255,255,0.30), inset 0 0 0 1px rgba(255,255,255,0.10)",
+            }}
+          >
             {skin.id === "astrobox" ? (
-              <Pizza size={26} strokeWidth={1.5} />
+              <Pizza size={28} strokeWidth={1.5} />
             ) : (
-              <Salad size={26} strokeWidth={1.5} />
+              <Salad size={28} strokeWidth={1.5} />
             )}
           </div>
         </div>
 
         {/* Section title + search */}
         <div className="flex items-center justify-between px-2.5 pb-1.5">
-          <h2 className="font-ui text-[13px] font-bold text-neutral-900">
-            {CATEGORIES.find((c) => c.id === activeCategory)?.label ?? ""}
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2
+              className="font-display text-[14px] font-bold text-neutral-900"
+              style={{ letterSpacing: "-0.018em" }}
+            >
+              {CATEGORIES.find((c) => c.id === activeCategory)?.label ?? ""}
+            </h2>
+            <span
+              className="rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[8.5px] font-bold tabular-nums text-brand"
+              style={{ letterSpacing: "0.04em" }}
+            >
+              {products.length} itens
+            </span>
+          </div>
           <button
             type="button"
-            className="flex items-center gap-1 rounded-full border border-neutral-200 px-2 py-0.5 text-[9px] font-medium text-neutral-500"
+            className="flex items-center gap-1 rounded-full border border-neutral-200 bg-white px-2 py-0.5 text-[9px] font-medium text-neutral-500"
+            style={{ boxShadow: "0 1px 1px rgba(0,0,0,0.03)" }}
           >
             <Search size={10} strokeWidth={2.25} />
             Buscar
@@ -1681,31 +1759,59 @@ function BottomTotalBar({
 }) {
   return (
     <div
-      className="flex items-center justify-between gap-2 px-3 py-2.5 text-white"
-      style={{ background: skin.brand }}
+      className="relative flex items-center justify-between gap-2 px-3 py-2.5 text-white"
+      style={{
+        background: `linear-gradient(180deg, ${skin.brand} 0%, ${skin.brandDark} 100%)`,
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10)",
+      }}
     >
       <Image
         src="/logo-teknisa-white.svg"
         alt="Teknisa"
         width={62}
         height={11}
-        className="select-none opacity-90"
+        className="select-none opacity-95"
       />
-      <div className="flex items-center gap-2 text-right">
-        <div>
-          <p className="text-[9px] opacity-75">Total:</p>
-          <p className="font-ui text-[14px] font-bold tabular-nums">
+      <div className="flex items-center gap-3 text-right">
+        <div className="leading-tight">
+          <p
+            className="font-ui text-[8.5px] font-bold uppercase opacity-80"
+            style={{ letterSpacing: "0.16em" }}
+          >
+            Total
+          </p>
+          <p
+            className="mt-0.5 font-ui text-[15px] font-bold tabular-nums leading-none"
+            style={{ letterSpacing: "-0.025em" }}
+          >
             R$ {total.toFixed(2).replace(".", ",")}
           </p>
         </div>
         <motion.button
           type="button"
           whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-1.5 rounded-md bg-white px-2.5 py-2 font-ui text-[10px] font-bold"
-          style={{ color: skin.brand }}
+          className="relative flex items-center gap-1.5 rounded-full bg-white px-3 py-2 font-ui text-[10.5px] font-bold transition-all hover:-translate-y-[1px]"
+          style={{
+            color: skin.brand,
+            boxShadow:
+              "0 4px 12px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.40)",
+            letterSpacing: "-0.005em",
+          }}
         >
-          <ShoppingBag size={11} strokeWidth={2.5} />
-          Ver Carrinho{cartCount > 0 ? ` · ${cartCount}` : ""}
+          <ShoppingBag size={12} strokeWidth={2.5} />
+          Ver Carrinho
+          {cartCount > 0 && (
+            <span
+              className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-white tabular-nums"
+              style={{
+                background: skin.brand,
+                fontSize: 10,
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18)",
+              }}
+            >
+              {cartCount}
+            </span>
+          )}
         </motion.button>
       </div>
     </div>

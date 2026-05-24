@@ -796,35 +796,67 @@ function ConfirmView({ subtotal }: { subtotal: number }) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25 }}
-      className="flex h-full flex-col items-center justify-center px-6"
+      className="relative flex h-full flex-col items-center justify-center px-6"
+      style={{
+        background:
+          "radial-gradient(ellipse at top, rgba(22,163,74,0.06), transparent 55%), radial-gradient(ellipse at bottom, rgba(124,58,237,0.04), transparent 60%)",
+      }}
     >
       <motion.div
         initial={{ scale: 0.5 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 240, damping: 14 }}
-        className="relative flex h-20 w-20 items-center justify-center rounded-full bg-success/15 text-success"
+        className="relative flex h-24 w-24 items-center justify-center rounded-full text-white"
+        style={{
+          background:
+            "linear-gradient(135deg, #16a34a 0%, #15803d 60%, #047857 100%)",
+          boxShadow:
+            "0 12px 32px rgba(22,163,74,0.32), inset 0 1px 0 rgba(255,255,255,0.20)",
+        }}
       >
         <motion.span
-          animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0, 0.4] }}
+          animate={{ scale: [1, 1.55, 1], opacity: [0.45, 0, 0.45] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 rounded-full bg-success/20"
+          className="absolute inset-0 rounded-full"
+          style={{ boxShadow: "0 0 0 4px rgba(22,163,74,0.30)" }}
         />
-        <CheckCircle2 size={44} strokeWidth={2.25} />
+        <CheckCircle2 size={48} strokeWidth={2.5} />
       </motion.div>
-      <h2 className="mt-4 font-display text-[18px] font-bold text-brand">
+      <h2
+        className="mt-5 font-display text-[20px] font-bold text-neutral-900"
+        style={{ letterSpacing: "-0.022em" }}
+      >
         Pedido enviado!
       </h2>
-      <p className="mt-1 text-center text-[11px] text-neutral-500">
-        A cozinha recebeu seu pedido no <span className="font-bold">KDS</span>.
+      <p
+        className="mt-1.5 text-center font-ui text-[12px] leading-snug text-neutral-500"
+        style={{ letterSpacing: "-0.005em" }}
+      >
+        A cozinha já recebeu o pedido no{" "}
+        <span className="font-bold text-neutral-700">KDS</span>.
       </p>
-      <div className="mt-4 rounded-2xl border-2 border-dashed border-success/30 bg-success/5 px-6 py-3 text-center">
-        <p className="text-[9px] font-bold uppercase tracking-wider text-success">
+      <div
+        className="mt-5 rounded-2xl px-7 py-4 text-center"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(22,163,74,0.06) 0%, rgba(22,163,74,0.02) 100%)",
+          border: "1.5px dashed rgba(22,163,74,0.30)",
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)",
+        }}
+      >
+        <p
+          className="font-ui text-[8.5px] font-bold uppercase text-success"
+          style={{ letterSpacing: "0.18em" }}
+        >
           Número do pedido
         </p>
-        <p className="font-display text-[24px] font-bold leading-none text-success tabular-nums">
+        <p
+          className="mt-1 font-display text-[28px] font-bold leading-none text-success tabular-nums"
+          style={{ letterSpacing: "-0.030em" }}
+        >
           #C1247
         </p>
-        <p className="mt-1.5 text-[10px] text-neutral-600">
+        <p className="mt-2 font-ui text-[10px] text-neutral-600 tabular-nums">
           Mesa 10 · R$ {subtotal.toFixed(2).replace(".", ",")}
         </p>
       </div>
@@ -922,24 +954,49 @@ function KitchenStatusView() {
 
 function BottomNav({ step }: { step: number }) {
   const items = [
-    { Icon: Home, label: "Início", active: step === 0 },
-    { Icon: BookOpen, label: "Cardápio", active: step === 1 },
-    { Icon: ShoppingBag, label: "Pedidos", active: step >= 2 },
-    { Icon: User, label: "Conta", active: false },
+    { id: "home", Icon: Home, label: "Início", active: step === 0 },
+    { id: "menu", Icon: BookOpen, label: "Cardápio", active: step === 1 },
+    {
+      id: "orders",
+      Icon: ShoppingBag,
+      label: "Pedidos",
+      active: step >= 2,
+    },
+    { id: "account", Icon: User, label: "Conta", active: false },
   ];
   return (
-    <nav className="flex items-center justify-around border-t border-neutral-100 bg-white py-1.5">
+    <nav
+      className="relative flex items-center justify-around border-t border-neutral-100 bg-white py-1"
+      style={{
+        boxShadow:
+          "inset 0 1px 0 rgba(255,255,255,0.6), 0 -1px 2px rgba(0,0,0,0.02)",
+      }}
+    >
       {items.map((item) => (
         <button
-          key={item.label}
+          key={item.id}
           type="button"
           className={cn(
-            "flex flex-col items-center gap-0.5",
+            "relative flex flex-col items-center gap-0.5 px-3 py-1",
             item.active ? "text-brand" : "text-neutral-400",
           )}
         >
-          <item.Icon size={18} strokeWidth={2} />
-          <span className="font-display text-[9px] font-semibold">
+          {item.active && (
+            <motion.span
+              layoutId="cd-nav-active"
+              className="absolute -top-1 left-1/2 h-[3px] w-7 -translate-x-1/2 rounded-full"
+              style={{
+                background:
+                  "linear-gradient(90deg, #020788 0%, #1a1fa8 60%, #7c3aed 100%)",
+              }}
+              transition={{ type: "spring", stiffness: 380, damping: 28 }}
+            />
+          )}
+          <item.Icon size={18} strokeWidth={item.active ? 2.5 : 2} />
+          <span
+            className="font-ui text-[9.5px] font-bold"
+            style={{ letterSpacing: "-0.005em" }}
+          >
             {item.label}
           </span>
         </button>

@@ -888,20 +888,43 @@ function SuccessView({
     >
       <AppHeader showBack title="Pedido pago" />
 
-      <div className="flex-1 overflow-y-auto px-4 py-3">
+      <div
+        className="flex-1 overflow-y-auto px-4 py-3"
+        style={{
+          background:
+            "radial-gradient(ellipse at top, rgba(22,163,74,0.05), transparent 50%)",
+        }}
+      >
         <motion.div
           initial={{ scale: 0.85, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 220, damping: 16 }}
-          className="rounded-2xl bg-success/10 p-3.5 text-center"
+          className="relative rounded-2xl p-4 text-center"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(22,163,74,0.10) 0%, rgba(22,163,74,0.04) 100%)",
+            border: "1px solid rgba(22,163,74,0.18)",
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)",
+          }}
         >
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-success text-white">
+          <motion.div
+            className="mx-auto flex h-14 w-14 items-center justify-center rounded-full text-white"
+            style={{
+              background:
+                "linear-gradient(135deg, #16a34a 0%, #15803d 60%, #047857 100%)",
+              boxShadow:
+                "0 8px 18px rgba(22,163,74,0.32), inset 0 1px 0 rgba(255,255,255,0.20)",
+            }}
+          >
             <CheckCircle2 size={30} strokeWidth={2.5} />
-          </div>
-          <p className="mt-2 font-ui text-[15px] font-bold text-success">
+          </motion.div>
+          <p
+            className="mt-2.5 font-display text-[16px] font-bold text-success"
+            style={{ letterSpacing: "-0.018em" }}
+          >
             Pagamento aprovado
           </p>
-          <p className="mt-0.5 text-[11px] text-neutral-600">
+          <p className="mt-0.5 font-ui text-[11px] text-neutral-600 tabular-nums">
             {method === "cartao"
               ? "Cartão final 4218 · 1x sem juros"
               : "Pix · confirmado em 2s"}
@@ -910,34 +933,55 @@ function SuccessView({
 
         <div
           data-tour="qp-retirada-qr"
-          className="mt-3.5 rounded-2xl border-2 border-brand/20 bg-white p-3.5 shadow-card"
+          className="mt-4 rounded-2xl bg-white p-3.5"
+          style={{
+            border: "1px solid rgba(2,7,136,0.10)",
+            boxShadow:
+              "0 4px 16px rgba(2,7,136,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
+          }}
         >
           <div className="flex items-start gap-3">
-            <div className="flex h-28 w-28 flex-none items-center justify-center rounded-md bg-white p-2 ring-1 ring-neutral-200">
+            <div
+              className="flex h-28 w-28 flex-none items-center justify-center rounded-xl bg-white p-2"
+              style={{
+                boxShadow:
+                  "inset 0 0 0 1px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.03)",
+              }}
+            >
               <QrCode size={92} strokeWidth={0.5} className="text-neutral-900" />
             </div>
             <div className="flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-[2px] text-brand">
+              <p
+                className="font-ui text-[9px] font-bold uppercase text-brand"
+                style={{ letterSpacing: "0.18em" }}
+              >
                 Retirada no balcão
               </p>
-              <p className="mt-0.5 font-ui text-[15px] font-bold text-neutral-900">
-                Pedido #320108
+              <p
+                className="mt-0.5 font-display text-[16px] font-bold text-neutral-900"
+                style={{ letterSpacing: "-0.020em" }}
+              >
+                Pedido <span className="tabular-nums">#320108</span>
               </p>
-              <p className="mt-1 text-[11px] leading-snug text-neutral-600">
+              <p className="mt-1 font-ui text-[11px] leading-snug text-neutral-500">
                 Apresente este QR no balcão da Hell&apos;s Burgers · setor B.
               </p>
-              <p className="mt-2 inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-warning">
+              <p
+                className="mt-2 inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 font-ui text-[9.5px] font-bold uppercase text-warning"
+                style={{ letterSpacing: "0.14em" }}
+              >
                 <Clock size={10} strokeWidth={2.5} />
                 Pronto em ~4 min
               </p>
             </div>
           </div>
           {cartItems.length > 0 && (
-            <ul className="mt-3 space-y-0.5 border-t border-neutral-100 pt-2 text-[11px] text-neutral-700">
+            <ul className="mt-3 space-y-0.5 border-t border-neutral-100 pt-2 font-ui text-[11px] text-neutral-700">
               {cartItems.map((it) => (
                 <li key={it.id} className="flex items-center justify-between">
                   <span>
-                    <span className="font-bold">{it.qty}×</span> {it.name}
+                    <span className="font-bold tabular-nums">{it.qty}×</span>{" "}
+                    {it.name}
                   </span>
                 </li>
               ))}
@@ -945,10 +989,20 @@ function SuccessView({
           )}
         </div>
 
-        <div className="mt-3 space-y-1 rounded-lg bg-neutral-50 px-3 py-2.5 text-[11px] text-neutral-600">
+        <div
+          className="mt-3 space-y-1 rounded-xl px-3 py-2.5 font-ui text-[11px] text-neutral-600"
+          style={{
+            background:
+              "linear-gradient(180deg, #f8f9fc 0%, #f1f3fa 100%)",
+            border: "1px solid rgba(0,0,0,0.05)",
+          }}
+        >
           <div className="flex items-center justify-between">
             <span>Total pago</span>
-            <span className="font-ui font-bold text-neutral-900 tabular-nums">
+            <span
+              className="font-ui font-bold text-neutral-900 tabular-nums"
+              style={{ letterSpacing: "-0.015em" }}
+            >
               R$ {total.toFixed(2).replace(".", ",")}
             </span>
           </div>
@@ -963,7 +1017,14 @@ function SuccessView({
         <motion.button
           type="button"
           whileTap={{ scale: 0.98 }}
-          className="mt-3 w-full rounded-md bg-brand py-3 text-center font-ui text-[13px] font-bold text-white shadow-brand"
+          className="mt-3 w-full rounded-xl py-3 text-center font-ui text-[13px] font-bold text-white transition-all hover:-translate-y-[1px]"
+          style={{
+            background:
+              "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
+            boxShadow:
+              "0 4px 14px rgba(2,7,136,0.32), inset 0 1px 0 rgba(255,255,255,0.18)",
+            letterSpacing: "-0.005em",
+          }}
         >
           Comprar novamente
         </motion.button>

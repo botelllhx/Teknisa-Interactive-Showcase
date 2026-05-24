@@ -288,7 +288,20 @@ function KPIRow() {
 // ============================================================================
 
 function ForecastCard() {
-  const forecast = [
+  // v13.11 — toggles 7d/14d/30d agora realmente filtram a série
+  const [range, setRange] = useState<"7d" | "14d" | "30d">("14d");
+
+  const series7 = [
+    { x: "S-3", y: 1790 },
+    { x: "S-2", y: 1900 },
+    { x: "S-1", y: 1847 },
+    { x: "Hoje", y: 1847 },
+    { x: "S+1", y: 1890 },
+    { x: "S+2", y: 1920 },
+    { x: "S+3", y: 1980 },
+  ];
+
+  const series14 = [
     { x: "S-7", y: 1620 },
     { x: "S-6", y: 1710 },
     { x: "S-5", y: 1680 },
@@ -304,6 +317,29 @@ function ForecastCard() {
     { x: "S+5", y: 2150 },
     { x: "S+6", y: 2200 },
   ];
+
+  // 30d series: weekly samples
+  const series30 = [
+    { x: "Sem-4", y: 1480 },
+    { x: "Sem-3", y: 1620 },
+    { x: "Sem-2", y: 1750 },
+    { x: "Sem-1", y: 1820 },
+    { x: "Atual", y: 1847 },
+    { x: "Sem+1", y: 1930 },
+    { x: "Sem+2", y: 2050 },
+    { x: "Sem+3", y: 2180 },
+    { x: "Sem+4", y: 2300 },
+  ];
+
+  const data =
+    range === "7d" ? series7 : range === "30d" ? series30 : series14;
+
+  const tabs: { label: typeof range; subtitle: string }[] = [
+    { label: "7d", subtitle: "última semana + próxima" },
+    { label: "14d", subtitle: "2 semanas centradas em hoje" },
+    { label: "30d", subtitle: "4 semanas + 4 semanas projetadas" },
+  ];
+  const activeTab = tabs.find((t) => t.label === range)!;
 
   return (
     <motion.section
@@ -321,46 +357,70 @@ function ForecastCard() {
         <div>
           <h2
             className="font-display text-[18px] font-bold leading-tight text-neutral-900"
-            style={{ letterSpacing: "-0.02em" }}
+            style={{ letterSpacing: "-0.022em" }}
           >
             Demanda prevista
           </h2>
-          <p
-            className="mt-1 font-ui text-[12px] text-neutral-500"
+          <motion.p
+            key={range}
+            initial={{ opacity: 0, y: 2 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="mt-1 font-ui text-[12.5px] text-neutral-500"
             style={{ letterSpacing: "-0.005em" }}
           >
-            7 dias de histórico + 7 dias de previsão · XGBoost v4.2
-          </p>
+            {activeTab.subtitle} · XGBoost v4.2
+          </motion.p>
         </div>
-        <div className="flex items-center gap-1">
-          {[
-            { label: "7d", active: false },
-            { label: "14d", active: true },
-            { label: "30d", active: false },
-          ].map((t) => (
-            <button
-              key={t.label}
-              type="button"
-              className={cn(
-                "rounded-md px-2.5 py-1 font-ui text-[11px] font-medium transition-all",
-                t.active
-                  ? "bg-neutral-900 text-white"
-                  : "text-neutral-500 hover:bg-neutral-100",
-              )}
-            >
-              {t.label}
-            </button>
-          ))}
+        <div
+          className="flex items-center gap-0.5 rounded-lg bg-neutral-100 p-1"
+          style={{
+            boxShadow: "inset 0 1px 2px rgba(0,0,0,0.03)",
+          }}
+        >
+          {tabs.map((t) => {
+            const active = t.label === range;
+            return (
+              <motion.button
+                key={t.label}
+                type="button"
+                whileTap={{ scale: 0.96 }}
+                onClick={() => setRange(t.label)}
+                className={cn(
+                  "relative rounded-md px-3 py-1.5 font-ui text-[11.5px] font-bold transition-colors",
+                  active ? "text-white" : "text-neutral-500 hover:text-neutral-700",
+                )}
+                style={{ letterSpacing: "-0.005em" }}
+              >
+                {active && (
+                  <motion.span
+                    layoutId="apia-forecast-tab"
+                    className="absolute inset-0 rounded-md"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
+                      boxShadow:
+                        "0 2px 6px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
+                    }}
+                    transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                  />
+                )}
+                <span className="relative">{t.label}</span>
+              </motion.button>
+            );
+          })}
         </div>
       </div>
       <div className="mt-4 h-[180px]">
         <AreaChart
-          data={forecast}
+          key={range}
+          data={data}
           color="#7c3aed"
-          yMin={1500}
-          yMax={2300}
+          yMin={1400}
+          yMax={2400}
           aspectRatio="16/4"
           formatY={(v) => `${v.toFixed(0)} refeições`}
+          showYLabels
         />
       </div>
     </motion.section>

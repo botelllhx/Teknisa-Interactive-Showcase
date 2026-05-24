@@ -16,16 +16,45 @@ import { Badge, Button, Card } from "@/components/ui/shadcn";
 import { people, type Photo } from "@/lib/photos";
 import { PersonAvatar } from "@/components/ui/PersonAvatar";
 import { StackedAvatars } from "@/components/ui/StackedAvatars";
+import { Sparkline, AreaChart } from "@/components/ui/charts";
 
 interface PortalGestorProps {
   step: number;
 }
 
-const TEAM_KPIS = [
-  { label: "Equipe", value: "48" },
-  { label: "Presença hoje", value: "94%", tone: "success" as const },
-  { label: "Hora extra", value: "12h", tone: "warning" as const },
-  { label: "Solicitações", value: "7" },
+const TEAM_KPIS: Array<{
+  label: string;
+  value: string;
+  tone?: "success" | "warning";
+  trend: number[];
+  trendColor: string;
+}> = [
+  {
+    label: "Equipe",
+    value: "48",
+    trend: [42, 44, 45, 46, 47, 48, 48, 48],
+    trendColor: "#020788",
+  },
+  {
+    label: "Presença hoje",
+    value: "94%",
+    tone: "success",
+    trend: [88, 92, 90, 95, 91, 94, 94, 94],
+    trendColor: "#16a34a",
+  },
+  {
+    label: "Hora extra",
+    value: "12h",
+    tone: "warning",
+    trend: [4, 6, 8, 9, 11, 10, 12, 12],
+    trendColor: "#d97706",
+  },
+  {
+    label: "Solicitações",
+    value: "7",
+    trend: [2, 3, 4, 5, 6, 6, 7, 7],
+    trendColor: "#020788",
+  },
 ];
 
 const WEEK_DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -170,7 +199,6 @@ export function PortalGestorMockup({ step }: PortalGestorProps) {
 }
 
 function DashboardView() {
-  const max = Math.max(...PRESENCE_WEEK);
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -178,10 +206,13 @@ function DashboardView() {
       transition={{ duration: 0.22 }}
       className="flex h-full flex-col gap-3 overflow-hidden"
     >
-      <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
+      <p
+        className="font-ui text-[11px] font-bold uppercase text-brand"
+        style={{ letterSpacing: "0.18em" }}
+      >
         Dashboard de equipe
       </p>
-      <div data-tour="pg-dashboard" className="grid grid-cols-4 gap-2">
+      <div data-tour="pg-dashboard" className="grid grid-cols-4 gap-2.5">
         {TEAM_KPIS.map((kpi, i) => (
           <motion.div
             key={kpi.label}
@@ -190,61 +221,65 @@ function DashboardView() {
             transition={{ delay: 0.05 * i, duration: 0.22 }}
           >
             <Card className="p-3.5">
-              <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+              <p
+                className="font-ui text-[10px] font-bold uppercase text-neutral-500"
+                style={{ letterSpacing: "0.16em" }}
+              >
                 {kpi.label}
               </p>
-              <p
-                className={cn(
-                  "mt-1 font-ui text-[28px] font-bold tabular-nums leading-none",
-                  kpi.tone === "success" && "text-success",
-                  kpi.tone === "warning" && "text-warning",
-                  !kpi.tone && "text-neutral-900",
-                )}
-              >
-                {kpi.value}
-              </p>
+              <div className="mt-1 flex items-end justify-between gap-1.5">
+                <p
+                  className={cn(
+                    "font-display text-[26px] font-bold tabular-nums leading-none",
+                    kpi.tone === "success" && "text-success",
+                    kpi.tone === "warning" && "text-warning",
+                    !kpi.tone && "text-neutral-900",
+                  )}
+                  style={{ letterSpacing: "-0.030em" }}
+                >
+                  {kpi.value}
+                </p>
+                <Sparkline
+                  data={kpi.trend}
+                  color={kpi.trendColor}
+                  width={56}
+                  height={20}
+                  fill
+                />
+              </div>
             </Card>
           </motion.div>
         ))}
       </div>
-      <div className="flex-1">
+      <div className="flex-1 overflow-hidden">
         <Card className="flex h-full flex-col p-4">
-          <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
-            Presença · últimos 7 dias
-          </p>
-          <div className="mt-3 flex flex-1 items-end gap-2">
-            {PRESENCE_WEEK.map((v, i) => {
-              const h = (v / max) * 100;
-              const isToday = i === PRESENCE_WEEK.length - 1;
-              return (
-                <div
-                  key={i}
-                  className="flex h-full flex-1 flex-col items-center justify-end gap-1.5"
-                >
-                  <span className="font-ui text-[10px] font-bold tabular-nums text-neutral-500">
-                    {v}%
-                  </span>
-                  <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: `${h}%` }}
-                    transition={{
-                      delay: 0.05 * i,
-                      duration: 0.5,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
-                    className={cn(
-                      "w-full rounded-t-md",
-                      isToday
-                        ? "bg-gradient-to-t from-brand to-brand-light shadow-brand"
-                        : "bg-gradient-to-t from-brand/45 to-brand/20",
-                    )}
-                  />
-                  <span className="font-ui text-[10px] font-medium text-neutral-400">
-                    {WEEK_DAYS[i] ?? "Hoje"}
-                  </span>
-                </div>
-              );
-            })}
+          <div className="flex items-center justify-between">
+            <p
+              className="font-ui text-[11px] font-bold uppercase text-brand"
+              style={{ letterSpacing: "0.18em" }}
+            >
+              Presença · últimos 7 dias
+            </p>
+            <span
+              className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-0.5 font-ui text-[9.5px] font-bold uppercase text-success"
+              style={{ letterSpacing: "0.14em" }}
+            >
+              <span className="tabular-nums">94%</span> hoje
+            </span>
+          </div>
+          <div className="mt-3 flex-1">
+            <AreaChart
+              data={PRESENCE_WEEK.map((v, i) => ({
+                x: WEEK_DAYS[i] ?? "Hoje",
+                y: v,
+              }))}
+              color="#020788"
+              yMin={80}
+              yMax={100}
+              aspectRatio="16/4"
+              formatY={(v) => `${v.toFixed(0)}%`}
+              showYLabels
+            />
           </div>
         </Card>
       </div>

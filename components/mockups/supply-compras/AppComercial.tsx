@@ -15,6 +15,7 @@ import { cn } from "@/lib/cn";
 import { Badge } from "@/components/ui/shadcn";
 import { people } from "@/lib/photos";
 import { PersonAvatar } from "@/components/ui/PersonAvatar";
+import { Sparkline } from "@/components/ui/charts";
 
 interface AppComercialProps {
   step: number;
@@ -125,22 +126,49 @@ function DashboardView() {
 
       <div className="grid grid-cols-2 gap-2">
         {[
-          { Icon: TrendingUp, label: "Vendas hoje", value: "R$ 8,2k" },
-          { Icon: Target, label: "Pedidos", value: "12" },
-        ].map(({ Icon, label, value }) => (
+          {
+            Icon: TrendingUp,
+            label: "Vendas hoje",
+            value: "R$ 8,2k",
+            trend: [6.2, 6.8, 7.1, 7.5, 7.4, 8.0, 8.2],
+            color: "#020788",
+          },
+          {
+            Icon: Target,
+            label: "Pedidos",
+            value: "12",
+            trend: [7, 8, 9, 10, 11, 11, 12],
+            color: "#16a34a",
+          },
+        ].map(({ Icon, label, value, trend, color }) => (
           <div
             key={label}
-            className="rounded-xl border border-brand/8 bg-white p-3 shadow-card"
+            className="rounded-xl border border-brand/8 bg-white p-3.5 shadow-card"
           >
             <div className="flex items-center gap-1.5">
-              <Icon size={11} strokeWidth={2.25} className="text-brand" />
-              <span className="font-ui text-[9px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+              <Icon size={12} strokeWidth={2.25} className="text-brand" />
+              <span
+                className="font-ui text-[10px] font-bold uppercase text-neutral-500"
+                style={{ letterSpacing: "0.16em" }}
+              >
                 {label}
               </span>
             </div>
-            <p className="mt-1 font-ui text-[18px] font-bold tabular-nums text-neutral-900">
-              {value}
-            </p>
+            <div className="mt-1 flex items-end justify-between gap-1.5">
+              <p
+                className="font-display text-[18px] font-bold tabular-nums leading-none text-neutral-900"
+                style={{ letterSpacing: "-0.025em" }}
+              >
+                {value}
+              </p>
+              <Sparkline
+                data={trend}
+                color={color}
+                width={48}
+                height={18}
+                fill
+              />
+            </div>
           </div>
         ))}
       </div>

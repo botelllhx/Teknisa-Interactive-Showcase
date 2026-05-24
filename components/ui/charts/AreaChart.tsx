@@ -24,8 +24,14 @@ interface AreaChartProps {
   /** Optional override for min/max — useful to make small deltas visible. */
   yMin?: number;
   yMax?: number;
-  /** Aspect of the chart viewBox. */
+  /** Aspect of the chart viewBox. Ignored when `fillContainer` is true. */
   aspectRatio?: string;
+  /**
+   * When true, the chart fills its parent's width AND height instead of
+   * being driven by `aspectRatio`. Use this when the chart sits inside a
+   * `flex-1` row whose height is set by the surrounding layout.
+   */
+  fillContainer?: boolean;
   className?: string;
   /** Format the tooltip Y. */
   formatY?: (v: number) => string;
@@ -63,6 +69,7 @@ export function AreaChart({
   yMin: yMinOverride,
   yMax: yMaxOverride,
   aspectRatio = "16/7",
+  fillContainer = false,
   className,
   formatY = (v) => v.toString(),
   showXLabels = true,
@@ -124,7 +131,11 @@ export function AreaChart({
   return (
     <div
       className={className}
-      style={{ width: "100%", position: "relative", aspectRatio }}
+      style={
+        fillContainer
+          ? { width: "100%", height: "100%", position: "relative" }
+          : { width: "100%", position: "relative", aspectRatio }
+      }
     >
       <svg
         viewBox={`0 0 ${VBW} ${VBH}`}

@@ -192,7 +192,7 @@ export function CardapioDigitalMockup({ step }: CardapioDigitalProps) {
   };
 
   return (
-    <div className="flex h-full w-full flex-col bg-white text-neutral-800">
+    <div className="relative flex h-full w-full flex-col overflow-hidden bg-white text-neutral-800">
       <StatusBar />
       <TopBar />
       <main className="flex-1 overflow-hidden">

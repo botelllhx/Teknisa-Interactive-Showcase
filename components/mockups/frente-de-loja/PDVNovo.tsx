@@ -212,7 +212,7 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
   const completed = step >= 4;
 
   return (
-    <div className="flex h-full w-full flex-col bg-[#f5f6f8] text-neutral-800 text-[12px]">
+    <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#f5f6f8] text-neutral-800 text-[12px]">
       <WindowBar />
       <Toolbar />
 

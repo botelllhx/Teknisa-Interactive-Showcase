@@ -212,7 +212,7 @@ export function SmartPOSMockup({ step }: SmartPOSProps) {
   };
 
   return (
-    <div className="flex h-full w-full flex-col bg-[#f5f6f8] text-neutral-800 font-ui">
+    <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#f5f6f8] text-neutral-800 font-ui">
       {step === 0 && (
         <CategoryGrid
           selected={selectedCategory}

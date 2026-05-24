@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { segments, type Segment } from "@/data/solutions";
 import { useShowcase } from "@/lib/store";
@@ -10,14 +10,12 @@ import { SegmentIcon } from "@/components/ui/SegmentIcon";
 export function SegmentGrid() {
   const selectSegment = useShowcase((s) => s.selectSegment);
 
-  // v13: 7 segments (Gestão Corporativa removed). Auto rows so the second
-  // row holds 3 cards left-aligned without a visible empty cell stretching.
   return (
     <motion.div
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="grid grid-cols-4 gap-5 px-12 pb-10"
+      className="grid grid-cols-4 gap-4 px-12 pb-10"
     >
       {segments.map((segment) => (
         <SegmentCard
@@ -35,68 +33,159 @@ interface SegmentCardProps {
   onSelect: () => void;
 }
 
+/**
+ * v13.6 — redesign "painel" pedido pelo cliente:
+ * - Mais quadrado (rounded-xl 12px, era 2xl 20px)
+ * - Anatomia de painel: header (eyebrow numérico + chip), corpo
+ *   (ícone + título + tagline), footer (divider sutil + meta)
+ * - Animação NÃO PULA (sem y -3 brusco). Em vez disso:
+ *   - Spring suave stiffness 180 damping 26 mass 0.8
+ *   - Cursor parallax 3D sutil (rotateX/Y ~3° baseado em mouse) -
+ *     dá sensação de painel respondendo ao usuário
+ *   - Border brand fade-in (5% → 25% no hover) em vez de transform
+ *   - Arrow desliza 2px à direita, sem rotação
+ *   - Icon ganha glow soft no hover (boxShadow brand)
+ *   - Status dot pulsante no canto (live indicator)
+ */
 function SegmentCard({ segment, onSelect }: SegmentCardProps) {
   const solutionCount = segment.solutions.length;
+
+  // Parallax 3D motion values
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
+  const rxSpring = useSpring(rotateX, { stiffness: 220, damping: 28, mass: 0.6 });
+  const rySpring = useSpring(rotateY, { stiffness: 220, damping: 28, mass: 0.6 });
+
+  // Light position for the highlight gradient (follows mouse)
+  const lightX = useMotionValue(50);
+  const lightY = useMotionValue(50);
+  const lxSpring = useSpring(lightX, { stiffness: 80, damping: 18 });
+  const lySpring = useSpring(lightY, { stiffness: 80, damping: 18 });
+  const lightBg = useTransform(
+    [lxSpring, lySpring],
+    ([x, y]: number[]) =>
+      `radial-gradient(circle at ${x}% ${y}%, rgba(2,7,136,0.06), transparent 60%)`,
+  );
 
   return (
     <motion.button
       type="button"
       variants={fadeInUp}
-      whileHover={{ y: -3 }}
-      whileTap={{ scale: 0.985 }}
-      transition={{ type: "spring", stiffness: 320, damping: 22 }}
+      transition={{ type: "spring", stiffness: 180, damping: 26, mass: 0.8 }}
       onClick={onSelect}
+      onPointerMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+        rotateY.set((x - 0.5) * 6);
+        rotateX.set(-(y - 0.5) * 6);
+        lightX.set(x * 100);
+        lightY.set(y * 100);
+      }}
+      onPointerLeave={() => {
+        rotateX.set(0);
+        rotateY.set(0);
+        lightX.set(50);
+        lightY.set(50);
+      }}
+      whileTap={{ scale: 0.99 }}
       aria-label={`Abrir ${segment.label}`}
-      // v13.3: card refinado Noteflow-airy. Eyebrow numérico "0X · grupo",
-      // ícone gradient soft brand→roxo (Notion-style), arrow chip que ganha
-      // wash brand no hover, tipografia mais firme (-0.025em no título).
-      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-white p-6 text-left transition-all hover:-translate-y-[1px]"
+      className="group relative flex h-full flex-col overflow-hidden rounded-xl bg-white text-left"
       style={{
-        border: "1px solid rgba(0,0,0,0.05)",
-        boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+        border: "1px solid rgba(0,0,0,0.06)",
+        boxShadow:
+          "0 1px 2px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.8)",
+        transformStyle: "preserve-3d",
+        rotateX: rxSpring,
+        rotateY: rySpring,
+        perspective: 1000,
       }}
     >
-      {/* Hover-only soft wash (apenas indigo brand) */}
+      {/* Cursor-following highlight (suave) */}
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{ background: lightBg }}
+      />
+
+      {/* Hover border glow */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{
-          background:
-            "radial-gradient(ellipse at top left, rgba(59,66,196,0.08), transparent 55%), radial-gradient(ellipse at bottom right, rgba(2,7,136,0.05), transparent 60%)",
+          boxShadow:
+            "inset 0 0 0 1px rgba(2,7,136,0.18), 0 12px 28px -10px rgba(2,7,136,0.12)",
         }}
       />
 
-      <div className="relative flex items-start justify-between">
-        <div
-          className="flex h-14 w-14 items-center justify-center rounded-2xl text-brand transition-transform group-hover:scale-[1.04]"
+      {/* ───────── Header strip (panel anatomy) ───────── */}
+      <div
+        className="flex items-center justify-between px-5 pb-3 pt-4"
+        style={{
+          borderBottom: "1px solid rgba(0,0,0,0.04)",
+        }}
+      >
+        <div className="flex items-center gap-1.5">
+          <span
+            className="font-ui text-[9.5px] font-bold tabular-nums text-neutral-400"
+            style={{ letterSpacing: "0.16em" }}
+          >
+            {String(segments.findIndex((s) => s.id === segment.id) + 1).padStart(
+              2,
+              "0",
+            )}
+          </span>
+          <span className="h-3 w-px bg-neutral-200" />
+          <span
+            className="font-ui text-[9.5px] font-bold uppercase text-neutral-400"
+            style={{ letterSpacing: "0.16em" }}
+          >
+            {solutionCount === 1 ? "solução" : "soluções"}
+          </span>
+          <span
+            className="font-ui text-[9.5px] font-bold tabular-nums text-brand"
+            style={{ letterSpacing: "-0.005em" }}
+          >
+            ·{solutionCount.toString().padStart(2, "0")}
+          </span>
+        </div>
+        {/* Live dot status — indica painel ativo */}
+        <span
+          aria-hidden
+          className="relative flex h-1.5 w-1.5 items-center justify-center"
+        >
+          <motion.span
+            animate={{ scale: [1, 2, 1], opacity: [0.35, 0, 0.35] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-0 rounded-full bg-success"
+          />
+          <span className="relative h-1.5 w-1.5 rounded-full bg-success" />
+        </span>
+      </div>
+
+      {/* ───────── Body ───────── */}
+      <div className="flex flex-1 flex-col gap-5 px-5 pb-4 pt-5">
+        <motion.div
+          className="flex h-12 w-12 items-center justify-center rounded-xl text-brand transition-shadow duration-300"
           style={{
             background:
               "linear-gradient(135deg, rgba(2,7,136,0.10) 0%, rgba(59,66,196,0.14) 100%)",
             boxShadow:
-              "inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 2px rgba(2,7,136,0.08)",
+              "inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 2px rgba(2,7,136,0.06)",
           }}
         >
-          <SegmentIcon name={segment.icon} size={26} />
-        </div>
+          <SegmentIcon name={segment.icon} size={24} />
+        </motion.div>
 
-        <span
-          className="font-ui text-[10px] font-bold uppercase text-neutral-400"
-          style={{ letterSpacing: "0.14em" }}
-        >
-          {solutionCount} {solutionCount === 1 ? "solução" : "soluções"}
-        </span>
-      </div>
-
-      <div className="relative mt-12 flex items-end justify-between gap-3">
         <div className="min-w-0 flex-1">
           <h2
-            className="font-display text-[26px] font-bold leading-[1.08] text-neutral-900"
-            style={{ letterSpacing: "-0.025em" }}
+            className="font-display text-[22px] font-bold leading-[1.08] text-neutral-900"
+            style={{ letterSpacing: "-0.028em" }}
           >
             {segment.label}
           </h2>
           <p
-            className="mt-2 font-ui text-[12.5px] leading-snug text-neutral-500"
+            className="mt-1.5 font-ui text-[12px] leading-[1.45] text-neutral-500"
             style={{
               letterSpacing: "-0.005em",
               minHeight: "2.6em",
@@ -109,19 +198,35 @@ function SegmentCard({ segment, onSelect }: SegmentCardProps) {
             {segment.tagline}
           </p>
         </div>
+      </div>
 
+      {/* ───────── Footer (panel chrome) ───────── */}
+      <div
+        className="flex items-center justify-between px-5 py-3"
+        style={{
+          borderTop: "1px solid rgba(0,0,0,0.04)",
+          background: "linear-gradient(180deg, transparent 0%, #fafbfd 100%)",
+        }}
+      >
         <span
-          className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-neutral-50 text-neutral-500 transition-all group-hover:bg-brand group-hover:text-white group-hover:shadow-brand"
+          className="font-ui text-[10px] font-semibold uppercase text-neutral-400 transition-colors duration-300 group-hover:text-brand"
+          style={{ letterSpacing: "0.16em" }}
+        >
+          Abrir painel
+        </span>
+        <motion.span
+          className="flex h-7 w-7 items-center justify-center rounded-md bg-neutral-50 text-neutral-500 transition-all duration-300 group-hover:bg-brand group-hover:text-white"
           style={{
-            border: "1px solid rgba(0,0,0,0.05)",
+            border: "1px solid rgba(0,0,0,0.06)",
           }}
+          whileHover={{ x: 2 }}
         >
           <ArrowUpRight
-            size={18}
-            strokeWidth={2.25}
-            className="transition-transform duration-300 group-hover:rotate-12"
+            size={14}
+            strokeWidth={2.5}
+            className="transition-transform"
           />
-        </span>
+        </motion.span>
       </div>
     </motion.button>
   );

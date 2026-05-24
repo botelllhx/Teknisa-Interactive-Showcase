@@ -3,46 +3,41 @@
 import { useEffect, useState } from "react";
 
 /**
- * v13.18 — auto-fit corrigido: bounding box bate com visual content.
+ * v13.20 — ULTRAREVIEW da responsividade.
  *
- * Bug da v13.17: usava `transformOrigin: center center` num main com
- * width:1920 height:1080. O CSS transform NÃO muda o bounding box —
- * ele continua 1920×1080 mesmo escalado. Com flex center no parent, o
- * box virtual era centralizado, mas como ele era MAIOR que o viewport,
- * suas bordas ficavam fora da view → os filhos do topo (header) caíam
- * ACIMA do viewport e ficavam cortados (a queixa "header cortado").
+ * Cliente: "antes tinhamos tudo bem grande e sendo bem exibido… algumas
+ * telas menores que outras… preciso de tamanhos reais".
  *
- * Fix: main vira position:absolute, transform-origin:top left,
- * e nós calculamos `offsetX` e `offsetY` para posicionar o canto
- * top-left do CONTEÚDO VISUAL (não do bounding box) onde queremos
- * — centralizado no viewport. Resultado: header sempre visível,
- * margens balanceadas, zero crop em qualquer monitor.
+ * Decisão: REMOVER o auto-fit por altura (que comprimia tudo visualmente).
+ * Manter scale APENAS quando a largura do monitor é menor que 1920.
+ *
+ * Comportamento:
+ * - Monitor TV 1920×1080+:           scale = 1, render 1:1 nativo
+ * - Monitor laptop 1600×900:         scale = 0.833 por largura
+ * - Monitor laptop 1366×768:         scale = 0.711 por largura
+ * - Monitor 1920×800 (chrome alto):  scale = 1, scroll vertical
+ *
+ * Em monitores menores em largura, escalamos por largura. Em monitores
+ * com altura insuficiente, o page tem overflowY auto — usuário scrolla.
+ * Antes (v13.18): escalava por altura também → tudo ficava menor que
+ * o necessário.
  */
 export function useViewportFit() {
   const TARGET_W = 1920;
-  const TARGET_H = 1080;
 
   const [state, setState] = useState({
     scale: 1,
     offsetX: 0,
-    offsetY: 0,
-    vw: TARGET_W,
-    vh: TARGET_H,
   });
 
   useEffect(() => {
     const update = () => {
       const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const s = Math.min(vw / TARGET_W, vh / TARGET_H, 1);
+      const s = Math.min(vw / TARGET_W, 1);
       const visualW = TARGET_W * s;
-      const visualH = TARGET_H * s;
       setState({
         scale: s,
         offsetX: (vw - visualW) / 2,
-        offsetY: (vh - visualH) / 2,
-        vw,
-        vh,
       });
     };
     update();
@@ -53,8 +48,6 @@ export function useViewportFit() {
   return {
     scale: state.scale,
     offsetX: state.offsetX,
-    offsetY: state.offsetY,
     width: TARGET_W,
-    height: TARGET_H,
   };
 }

@@ -36,6 +36,10 @@ interface SolutionFrameProps {
  * The header, companions, and the rest of the demo page stay responsive — only
  * the device-screen content is locked to a fixed canvas.
  */
+// v13.20 — sizes ajustadas pra ULTRAREVIEW da responsividade.
+// Portrait devices (mobile/tablet/kiosk/smartpos) ficavam visualmente
+// menores que landscape (desktop/POS) por conta do aspect ratio. Subi
+// os canonicals dos portraits pra terem PRESENÇA visual equiparável.
 const CANONICAL: Record<
   SolutionDevice,
   { outerW: number; outerH: number; frame: "desktop" | "mobile" | "tablet" | "kiosk" | "smartpos" | "pos-terminal"; value: number }
@@ -44,26 +48,29 @@ const CANONICAL: Record<
   // height=W*10/16 + 30 padding. Plus neck (30) + base (12) below.
   desktop: { outerW: 1500, outerH: 1500 * (10 / 16) + 30 + 30 + 12, frame: "desktop", value: 1500 },
   // MobileFrame(height=H): width = H * 9/19.5
-  mobile: { outerW: 820 * (9 / 19.5), outerH: 820, frame: "mobile", value: 820 },
+  // v13.20: 820 → 940 (bigger presence pra portrait)
+  mobile: { outerW: 940 * (9 / 19.5), outerH: 940, frame: "mobile", value: 940 },
   // TabletFrame(height=H): width = H * 3/4 (portrait)
-  tablet: { outerW: 920 * (3 / 4), outerH: 920, frame: "tablet", value: 920 },
+  // v13.20: 920 → 980
+  tablet: { outerW: 980 * (3 / 4), outerH: 980, frame: "tablet", value: 980 },
   // KioskFrame(height=H): width = H * 9/16
-  kiosk: { outerW: 960 * (9 / 16), outerH: 960, frame: "kiosk", value: 960 },
+  // v13.20: 960 → 1000
+  kiosk: { outerW: 1000 * (9 / 16), outerH: 1000, frame: "kiosk", value: 1000 },
   // SmartPOSDeviceFrame(height=H): screen 9/17 + 12px side padding * 2.
-  // For H=880: verticalChrome=136 → screenH=744 → screenW=744*9/17=393.88
-  // → outerW = screenW + 24 ≈ 418.
+  // v13.20: 880 → 980
   smartpos: {
-    outerW: (880 - 136) * (9 / 17) + 24,
-    outerH: 880,
+    outerW: (980 - 136) * (9 / 17) + 24,
+    outerH: 980,
     frame: "smartpos",
-    value: 880,
+    value: 980,
   },
   // POSTerminalFrame(height=H): width = (H*0.55*16/10) + 28
+  // v13.20: 800 → 860
   "pos-terminal": {
-    outerW: 800 * 0.55 * (16 / 10) + 28,
-    outerH: 800,
+    outerW: 860 * 0.55 * (16 / 10) + 28,
+    outerH: 860,
     frame: "pos-terminal",
-    value: 800,
+    value: 860,
   },
 };
 

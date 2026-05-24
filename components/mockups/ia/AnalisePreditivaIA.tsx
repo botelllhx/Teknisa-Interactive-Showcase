@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
-import { AreaChart, RadialGauge } from "@/components/ui/charts";
+import { RadialGauge, RechartsArea } from "@/components/ui/charts";
 import { PersonAvatar } from "@/components/ui/PersonAvatar";
 import { StackedAvatars } from "@/components/ui/StackedAvatars";
 import { people } from "@/lib/photos";
@@ -103,7 +103,7 @@ function Header() {
             Forecast IA
           </p>
           <span
-            className="ml-1 inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-success"
+            className="ml-1 inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10.5px] font-bold uppercase text-success"
             style={{ letterSpacing: "0.14em" }}
           >
             <motion.span
@@ -372,7 +372,7 @@ function ForecastCard() {
       <div className="flex items-start justify-between">
         <div>
           <p
-            className="font-ui text-[10px] font-bold uppercase text-brand"
+            className="font-ui text-[10.5px] font-bold uppercase text-brand"
             style={{ letterSpacing: "0.18em" }}
           >
             Demanda prevista · refeições
@@ -431,16 +431,17 @@ function ForecastCard() {
           })}
         </div>
       </div>
-      <div className="mt-4 flex-1">
-        <AreaChart
+      <div className="mt-4 min-h-[240px] flex-1">
+        <RechartsArea
           key={range}
           data={data}
           color="#7c3aed"
           yMin={1400}
           yMax={2400}
-          aspectRatio="16/8"
-          formatY={(v) => `${v.toFixed(0)} refeições`}
+          formatY={(v) => v.toFixed(0)}
           showYLabels
+          showXLabels
+          unit="refeições · XGBoost v4.2"
         />
       </div>
     </motion.section>
@@ -529,7 +530,7 @@ function XGBoostCard() {
         <div className="flex items-start justify-between">
           <div>
             <p
-              className="flex items-center gap-1.5 font-ui text-[10px] font-bold uppercase"
+              className="flex items-center gap-1.5 font-ui text-[10.5px] font-bold uppercase"
               style={{
                 letterSpacing: "0.20em",
                 color: "rgba(255,255,255,0.55)",
@@ -581,7 +582,7 @@ function XGBoostCard() {
         {/* Feature importance */}
         <div className="mt-4">
           <p
-            className="font-ui text-[10px] font-bold uppercase"
+            className="font-ui text-[10.5px] font-bold uppercase"
             style={{
               letterSpacing: "0.18em",
               color: "rgba(255,255,255,0.50)",
@@ -734,16 +735,16 @@ function Metric({ label, value }: { label: string; value: string }) {
       }}
     >
       <p
-        className="font-ui text-[9px] font-bold uppercase"
+        className="font-ui text-[10.5px] font-bold uppercase"
         style={{
           letterSpacing: "0.14em",
-          color: "rgba(255,255,255,0.45)",
+          color: "rgba(255,255,255,0.50)",
         }}
       >
         {label}
       </p>
       <p
-        className="font-ui text-[14px] font-bold tabular-nums"
+        className="font-ui text-[15px] font-bold tabular-nums"
         style={{ letterSpacing: "-0.015em", color: "white" }}
       >
         {value}
@@ -816,7 +817,7 @@ function DecisionsCard() {
       <div className="flex items-start justify-between">
         <div>
           <p
-            className="font-ui text-[10px] font-bold uppercase text-brand"
+            className="font-ui text-[10.5px] font-bold uppercase text-brand"
             style={{ letterSpacing: "0.18em" }}
           >
             Agente preditivo · 24h

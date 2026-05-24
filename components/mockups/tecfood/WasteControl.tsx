@@ -259,7 +259,7 @@ function Header() {
               WasteControl
             </p>
             <p
-              className="font-ui text-[10px] text-neutral-500"
+              className="font-ui text-[10.5px] text-neutral-500"
               style={{ letterSpacing: "-0.005em" }}
             >
               Controle de desperdício em tempo real
@@ -421,7 +421,7 @@ function RegistrosView({
               />
               <span
                 className={cn(
-                  "font-ui text-[10px] font-bold leading-tight tracking-tight",
+                  "font-ui text-[10.5px] font-bold leading-tight tracking-tight",
                   active ? "text-neutral-900" : "text-neutral-500",
                 )}
               >
@@ -614,7 +614,7 @@ function HistoricoView({
           />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
+              <p className="font-ui text-[10.5px] font-bold uppercase tracking-[2px] text-brand">
                 Composição por tipo
               </p>
               <Badge variant="success" className="px-1.5 py-0 text-[10.5px]">
@@ -642,7 +642,7 @@ function HistoricoView({
           </div>
           <button
             type="button"
-            className="inline-flex items-center gap-1 rounded-full border border-brand/15 px-2 py-0.5 text-[10px] font-medium text-brand hover:bg-brand-ghost"
+            className="inline-flex items-center gap-1 rounded-full border border-brand/15 px-2 py-0.5 text-[10.5px] font-medium text-brand hover:bg-brand-ghost"
           >
             <Filter size={10} strokeWidth={2.25} />
             Filtros
@@ -679,9 +679,9 @@ function HistoricoView({
                       <span className="block font-bold text-neutral-700">
                         {r.data}
                       </span>
-                      <span className="block text-[10px]">{r.hora}</span>
+                      <span className="block text-[10.5px]">{r.hora}</span>
                     </span>
-                    <span className="flex items-center gap-1.5 text-[10px] font-bold text-brand">
+                    <span className="flex items-center gap-1.5 text-[10.5px] font-bold text-brand">
                       <m.Icon size={11} strokeWidth={2.25} />
                       <span className="line-clamp-1">{m.label}</span>
                     </span>
@@ -716,7 +716,7 @@ function Field({
 }) {
   return (
     <div>
-      <p className="font-ui text-[10px] font-bold uppercase tracking-wider text-neutral-500">
+      <p className="font-ui text-[10.5px] font-bold uppercase tracking-wider text-neutral-500">
         {label}
       </p>
       <div className="mt-1">{children}</div>
@@ -761,7 +761,7 @@ function SelectChip({
             whileTap={{ scale: 0.96 }}
             onClick={() => onPick(o)}
             className={cn(
-              "rounded-md border-2 px-2.5 py-1.5 font-ui text-[10px] font-medium transition-colors",
+              "rounded-md border-2 px-2.5 py-1.5 font-ui text-[10.5px] font-medium transition-colors",
               active
                 ? "border-brand bg-brand text-white shadow-brand"
                 : "border-neutral-200 bg-white text-neutral-600 hover:border-brand/30",
@@ -808,7 +808,7 @@ function ChipList({
               whileTap={{ scale: 0.96 }}
               onClick={() => onPick(o)}
               className={cn(
-                "rounded-full border px-2.5 py-1 font-ui text-[10px] font-medium transition-colors",
+                "rounded-full border px-2.5 py-1 font-ui text-[10.5px] font-medium transition-colors",
                 active
                   ? "border-brand bg-brand text-white"
                   : "border-neutral-200 bg-white text-neutral-600 hover:border-brand/30",
@@ -864,7 +864,7 @@ function QtyStepper({
             type="button"
             whileTap={{ scale: 0.95 }}
             onClick={() => onChange(value + p)}
-            className="flex-1 rounded-full bg-brand-ghost px-1 py-0.5 font-ui text-[10px] font-bold text-brand"
+            className="flex-1 rounded-full bg-brand-ghost px-1 py-0.5 font-ui text-[10.5px] font-bold text-brand"
           >
             +{p}
           </motion.button>
@@ -890,7 +890,7 @@ function StatCard({
   return (
     <Card className="p-3">
       <div className="flex items-center justify-between">
-        <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-[2px] text-brand">
           {label}
         </p>
         {Icon && <Icon size={12} strokeWidth={2.25} className="text-success" />}
@@ -903,7 +903,7 @@ function StatCard({
       >
         {value}
       </p>
-      <p className="text-[10px] text-neutral-500">{hint}</p>
+      <p className="text-[10.5px] text-neutral-500">{hint}</p>
     </Card>
   );
 }

@@ -16,7 +16,7 @@ import { Badge, Button, Card } from "@/components/ui/shadcn";
 import { people, type Photo } from "@/lib/photos";
 import { PersonAvatar } from "@/components/ui/PersonAvatar";
 import { StackedAvatars } from "@/components/ui/StackedAvatars";
-import { Sparkline, AreaChart } from "@/components/ui/charts";
+import { Sparkline, RechartsArea } from "@/components/ui/charts";
 
 interface PortalGestorProps {
   step: number;
@@ -222,7 +222,7 @@ function DashboardView() {
           >
             <Card className="p-3.5">
               <p
-                className="font-ui text-[10px] font-bold uppercase text-neutral-500"
+                className="font-ui text-[10.5px] font-bold uppercase text-neutral-500"
                 style={{ letterSpacing: "0.16em" }}
               >
                 {kpi.label}
@@ -267,8 +267,8 @@ function DashboardView() {
               <span className="tabular-nums">94%</span> hoje
             </span>
           </div>
-          <div className="mt-3 flex-1">
-            <AreaChart
+          <div className="mt-3 min-h-[180px] flex-1">
+            <RechartsArea
               data={PRESENCE_WEEK.map((v, i) => ({
                 x: WEEK_DAYS[i] ?? "Hoje",
                 y: v,
@@ -276,9 +276,10 @@ function DashboardView() {
               color="#020788"
               yMin={80}
               yMax={100}
-              aspectRatio="16/4"
               formatY={(v) => `${v.toFixed(0)}%`}
               showYLabels
+              showXLabels
+              unit="presença"
             />
           </div>
         </Card>
@@ -300,7 +301,7 @@ function ScheduleView() {
       </p>
       <div data-tour="pg-schedule" className="flex-1 overflow-hidden">
         <Card className="h-full overflow-y-auto p-4">
-          <div className="grid grid-cols-[120px_repeat(6,1fr)] items-center gap-2 border-b border-neutral-100 pb-2 font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+          <div className="grid grid-cols-[120px_repeat(6,1fr)] items-center gap-2 border-b border-neutral-100 pb-2 font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
             <span>Funcionário</span>
             {WEEK_DAYS.map((d) => (
               <span key={d} className="text-center">
@@ -323,7 +324,7 @@ function ScheduleView() {
                 <span
                   key={j}
                   className={cn(
-                    "h-7 rounded-md text-center font-ui text-[10px] font-bold leading-7",
+                    "h-7 rounded-md text-center font-ui text-[10.5px] font-bold leading-7",
                     d
                       ? "bg-brand text-white"
                       : "bg-neutral-100 text-neutral-400",

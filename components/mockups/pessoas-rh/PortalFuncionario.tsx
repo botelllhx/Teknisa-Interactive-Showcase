@@ -29,20 +29,20 @@ export function PortalFuncionarioMockup({ step }: PortalFuncionarioProps) {
       >
         <div>
           <p
-            className="font-ui text-[10px] font-bold uppercase text-brand"
+            className="font-ui text-[10.5px] font-bold uppercase text-brand"
             style={{ letterSpacing: "0.18em" }}
           >
             Portal Funcionário
           </p>
           <p
-            className="mt-0.5 font-ui text-[10px] text-neutral-500"
+            className="mt-0.5 font-ui text-[10.5px] text-neutral-500"
             style={{ letterSpacing: "-0.005em" }}
           >
             Teknisa · Mobile
           </p>
         </div>
         <span
-          className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-success"
+          className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10.5px] font-bold uppercase text-success"
           style={{ letterSpacing: "0.14em" }}
         >
           <motion.span
@@ -146,7 +146,7 @@ function PunchSheetView() {
           >
             Mariana Costa
           </p>
-          <p className="font-ui text-[10px] text-neutral-500">
+          <p className="font-ui text-[10.5px] text-neutral-500">
             Restaurante Central · Mat. 28471
           </p>
         </div>
@@ -203,7 +203,7 @@ function PunchSheetView() {
       </div>
 
       <p
-        className="mt-1 font-ui text-[10px] font-bold uppercase text-neutral-500"
+        className="mt-1 font-ui text-[10.5px] font-bold uppercase text-neutral-500"
         style={{ letterSpacing: "0.16em" }}
       >
         Últimas marcações
@@ -234,7 +234,7 @@ function PunchSheetView() {
                 {d.clock}
               </p>
               {d.label && (
-                <p className="font-ui text-[10px] text-neutral-500">
+                <p className="font-ui text-[10.5px] text-neutral-500">
                   {d.label}
                 </p>
               )}
@@ -258,7 +258,7 @@ function RequestVacationView() {
       className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-3"
     >
       <div className="rounded-xl bg-brand-ghost px-3 py-2.5">
-        <p className="flex items-center gap-1.5 font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-brand">
+        <p className="flex items-center gap-1.5 font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-brand">
           <Plane size={11} strokeWidth={2.25} />
           Solicitação de férias
         </p>
@@ -330,13 +330,13 @@ function PayslipView() {
         data-tour="pf-payslip"
         className="rounded-2xl bg-gradient-to-br from-brand via-brand-light to-[#3b42c4] p-4 text-white shadow-brand"
       >
-        <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] opacity-85">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-[2px] opacity-85">
           Holerite · Maio 2026
         </p>
         <p className="mt-1 font-ui text-[28px] font-bold tabular-nums leading-none">
           R$ 4.840,12
         </p>
-        <div className="mt-3 flex items-center justify-between border-t border-white/20 pt-2 font-ui text-[10px] opacity-90">
+        <div className="mt-3 flex items-center justify-between border-t border-white/20 pt-2 font-ui text-[10.5px] opacity-90">
           <span>Disponível</span>
           <span className="font-bold">Há instantes</span>
         </div>
@@ -382,7 +382,7 @@ function Field({ label, value }: { label: string; value: string }) {
     <div className="flex items-center justify-between rounded-lg border border-brand/10 bg-white px-3 py-2.5">
       <div className="flex items-center gap-2">
         <Calendar size={12} strokeWidth={2} className="text-brand" />
-        <span className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+        <span className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
           {label}
         </span>
       </div>
@@ -422,7 +422,7 @@ function Step({
         {label}
       </span>
       {time && (
-        <span className="font-ui text-[10px] text-neutral-400">{time}</span>
+        <span className="font-ui text-[10.5px] text-neutral-400">{time}</span>
       )}
     </div>
   );

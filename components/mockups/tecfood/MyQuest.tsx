@@ -269,7 +269,7 @@ function IdentifyView() {
         Tocar para iniciar
       </motion.button>
 
-      <div className="flex items-center gap-3 text-[10px] text-neutral-400">
+      <div className="flex items-center gap-3 text-[10.5px] text-neutral-400">
         <span className="flex items-center gap-1">
           <span className="h-1.5 w-1.5 rounded-full bg-brand" />
           Matrícula 28471
@@ -309,7 +309,7 @@ function PickView({
       className="flex flex-1 flex-col"
     >
       <div className="border-b border-brand/8 bg-brand-ghost px-4 py-2">
-        <p className="font-ui text-[10px] font-bold uppercase tracking-wider text-brand">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-wider text-brand">
           Cardápio de hoje
         </p>
         <p className="font-ui text-[12px] font-bold text-neutral-900">
@@ -319,10 +319,10 @@ function PickView({
 
       <div className="flex-1 overflow-y-auto px-3 py-2.5">
         <div className="mb-2 flex items-center justify-between">
-          <p className="font-ui text-[10px] font-bold uppercase tracking-wider text-neutral-500">
+          <p className="font-ui text-[10.5px] font-bold uppercase tracking-wider text-neutral-500">
             Monte seu prato
           </p>
-          <p className="font-ui text-[10px] font-bold text-brand tabular-nums">
+          <p className="font-ui text-[10.5px] font-bold text-brand tabular-nums">
             {completion}/4
           </p>
         </div>
@@ -334,7 +334,7 @@ function PickView({
                 key={c.id}
                 className="rounded-xl border border-brand/8 bg-white p-2.5"
               >
-                <p className="font-ui text-[10px] font-bold uppercase tracking-wider text-brand">
+                <p className="font-ui text-[10.5px] font-bold uppercase tracking-wider text-brand">
                   {c.label}
                 </p>
                 <div className="mt-1.5 space-y-1">
@@ -387,7 +387,7 @@ function PickView({
         </div>
       </div>
 
-      <div className="border-t border-brand/8 bg-white px-3 py-2.5 text-center text-[10px] text-neutral-500">
+      <div className="border-t border-brand/8 bg-white px-3 py-2.5 text-center text-[10.5px] text-neutral-500">
         Toque nas opções acima e toque em Continuar no tooltip
       </div>
     </motion.div>
@@ -414,7 +414,7 @@ function ScheduleView({
       className="flex flex-1 flex-col"
     >
       <div className="border-b border-brand/8 bg-brand-ghost px-4 py-2">
-        <p className="font-ui text-[10px] font-bold uppercase tracking-wider text-brand">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-wider text-brand">
           Horário da refeição
         </p>
         <p className="font-ui text-[12px] font-bold text-neutral-900">
@@ -488,7 +488,7 @@ function ScheduleView({
                     </p>
                     {s.suggested && (
                       <span
-                        className="inline-flex items-center gap-0.5 rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-brand"
+                        className="inline-flex items-center gap-0.5 rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[10.5px] font-bold uppercase text-brand"
                         style={{ letterSpacing: "0.14em" }}
                       >
                         <Sparkles size={9} strokeWidth={2.5} />
@@ -582,7 +582,7 @@ function ConfirmedView({ slotLabel }: { slotLabel?: string }) {
         </motion.div>
         <div className="min-w-0 flex-1">
           <p
-            className="font-ui text-[10px] font-bold uppercase text-success"
+            className="font-ui text-[10.5px] font-bold uppercase text-success"
             style={{ letterSpacing: "0.10em" }}
           >
             Reserva confirmada
@@ -616,7 +616,7 @@ function ConfirmedView({ slotLabel }: { slotLabel?: string }) {
             >
               B247
             </p>
-            <p className="mt-1.5 flex items-center gap-1 text-[10px] font-medium text-neutral-600">
+            <p className="mt-1.5 flex items-center gap-1 text-[10.5px] font-medium text-neutral-600">
               <Clock size={10} strokeWidth={2.5} className="text-brand" />
               Horário
               <span className="font-bold text-neutral-900 tabular-nums">
@@ -645,7 +645,7 @@ function ConfirmedView({ slotLabel }: { slotLabel?: string }) {
           />
           <div className="min-w-0 flex-1 pt-1">
             <p
-              className="font-ui text-[10px] font-bold uppercase text-brand"
+              className="font-ui text-[10.5px] font-bold uppercase text-brand"
               style={{ letterSpacing: "0.10em" }}
             >
               Sua vez em
@@ -656,7 +656,7 @@ function ConfirmedView({ slotLabel }: { slotLabel?: string }) {
             >
               ~8 min
             </p>
-            <p className="mt-1 font-ui text-[10px] leading-snug text-neutral-500">
+            <p className="mt-1 font-ui text-[10.5px] leading-snug text-neutral-500">
               Refeitório Principal · Capacidade hoje 120
             </p>
             <div className="mt-2 flex items-center gap-1.5">
@@ -709,7 +709,7 @@ function ConfirmedView({ slotLabel }: { slotLabel?: string }) {
         </div>
       </div>
 
-      <p className="flex items-center justify-center gap-1.5 pt-1 text-center text-[10px] text-neutral-500">
+      <p className="flex items-center justify-center gap-1.5 pt-1 text-center text-[10.5px] text-neutral-500">
         <Utensils size={11} strokeWidth={2.25} className="text-neutral-400" />
         Bom apetite, Mariana!
       </p>

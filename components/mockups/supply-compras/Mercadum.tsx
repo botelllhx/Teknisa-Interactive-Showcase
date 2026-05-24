@@ -411,7 +411,7 @@ function TopBar({ view, cotacao }: { view: View; cotacao: Cotacao }) {
               Alexa Rawles Grahamson
             </span>
             <span
-              className="inline-block rounded-full bg-brand-ghost px-1.5 py-0 font-ui text-[10px] font-bold uppercase text-brand"
+              className="inline-block rounded-full bg-brand-ghost px-1.5 py-0 font-ui text-[10.5px] font-bold uppercase text-brand"
               style={{ letterSpacing: "0.12em" }}
             >
               Master
@@ -474,7 +474,7 @@ function KPITile({
             </span>
             <span
               className={cn(
-                "font-ui text-[10px] font-bold tabular-nums",
+                "font-ui text-[10.5px] font-bold tabular-nums",
                 delta.startsWith("+") ? "text-success" : "text-danger",
               )}
             >
@@ -562,7 +562,7 @@ function CotacoesListView({ onOpen }: { onOpen: (c: Cotacao) => void }) {
               showXLabels={false}
               highlightLast={true}
               grid={false}
-              aspectRatio="16/4"
+              aspectRatio="16/5"
               formatY={(v) => `R$ ${v.toFixed(0)}k`}
             />
           </div>
@@ -780,7 +780,7 @@ function CotacaoDetailView({
       </div>
 
       <div className="mt-2 overflow-hidden rounded-lg border border-neutral-200 bg-white">
-        <div className="grid grid-cols-[28px_2fr_50px_1fr_0.9fr_0.9fr_1.1fr_1.1fr_1fr_1.2fr_1.2fr] items-center border-b border-neutral-200 bg-neutral-100 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-brand">
+        <div className="grid grid-cols-[28px_2fr_50px_1fr_0.9fr_0.9fr_1.1fr_1.1fr_1fr_1.2fr_1.2fr] items-center border-b border-neutral-200 bg-neutral-100 px-3 py-2 text-[10.5px] font-bold uppercase tracking-wider text-brand">
           <span></span>
           <span>Produto</span>
           <span>Unid.</span>
@@ -924,7 +924,7 @@ function InfoCol({
 }) {
   return (
     <div>
-      <p className="text-[10px] font-medium text-neutral-500">{label}</p>
+      <p className="text-[10.5px] font-medium text-neutral-500">{label}</p>
       <p
         className={cn(
           "mt-0.5 font-ui font-bold",
@@ -1152,7 +1152,7 @@ function ChatBubble({ message }: { message: ChatMessage }) {
       className={cn("flex items-start gap-2", isYou && "flex-row-reverse")}
     >
       <span
-        className="flex h-7 w-7 flex-none items-center justify-center rounded-full text-[10px] font-bold text-white"
+        className="flex h-7 w-7 flex-none items-center justify-center rounded-full text-[10.5px] font-bold text-white"
         style={{ background: isYou ? "#020788" : "#d97706" }}
       >
         {isYou ? "EU" : "MS"}
@@ -1170,7 +1170,7 @@ function ChatBubble({ message }: { message: ChatMessage }) {
         </div>
         <p
           className={cn(
-            "mt-1 text-[10px] text-neutral-400",
+            "mt-1 text-[10.5px] text-neutral-400",
             isYou && "text-right",
           )}
         >
@@ -1313,7 +1313,7 @@ function Breadcrumb({
             className={cn(
               "font-ui",
               i === path.length - 1
-                ? "font-bold text-brand uppercase tracking-wider text-[10px]"
+                ? "font-bold text-brand uppercase tracking-wider text-[10.5px]"
                 : "text-neutral-500",
             )}
           >

@@ -90,7 +90,7 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
           </div>
         </div>
         <span
-          className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-ui text-[10px] font-bold uppercase text-white"
+          className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-ui text-[10.5px] font-bold uppercase text-white"
           style={{
             background:
               "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
@@ -185,7 +185,7 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
                   Tendência · últimos 8 meses
                 </p>
                 <p
-                  className="font-ui text-[10px] text-neutral-400 tabular-nums"
+                  className="font-ui text-[10.5px] text-neutral-400 tabular-nums"
                   style={{ letterSpacing: "-0.005em" }}
                 >
                   Riscos críticos
@@ -195,7 +195,7 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
                 <AreaChart
                   data={RISK_SERIES.map((s) => ({ x: s.m, y: s.v }))}
                   color="#dc2626"
-                  aspectRatio="16/5"
+                  aspectRatio="16/7"
                   yMin={10}
                   formatY={(v) => Math.round(v).toString()}
                   showYLabels
@@ -394,7 +394,7 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
                 </p>
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <div className="rounded-xl bg-neutral-50 p-3 text-center">
-                    <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+                    <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
                       Antes
                     </p>
                     <p className="mt-1 font-ui text-[26px] font-bold tabular-nums leading-none text-danger">
@@ -402,7 +402,7 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
                     </p>
                   </div>
                   <div className="rounded-xl border-2 border-success/30 bg-success/5 p-3 text-center">
-                    <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-success">
+                    <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-success">
                       Depois
                     </p>
                     <p className="mt-1 font-ui text-[26px] font-bold tabular-nums leading-none text-success">
@@ -430,7 +430,7 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
           )}
 
           <Card className="mt-auto p-4">
-            <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+            <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
               Modelo
             </p>
             <p className="mt-1 font-ui text-[12px] font-bold text-neutral-900">

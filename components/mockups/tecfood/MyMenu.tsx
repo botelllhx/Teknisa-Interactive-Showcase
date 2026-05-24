@@ -211,8 +211,8 @@ function StatusBar() {
         12:34
       </span>
       <div className="flex items-center gap-1 text-neutral-700">
-        <span className="text-[10px] font-bold tracking-wide">5G</span>
-        <span className="text-[10px] tabular-nums">94%</span>
+        <span className="text-[10.5px] font-bold tracking-wide">5G</span>
+        <span className="text-[10.5px] tabular-nums">94%</span>
       </div>
     </div>
   );
@@ -241,7 +241,7 @@ function Header() {
           MyMenu
         </p>
         <p
-          className="font-ui text-[10px] text-neutral-500"
+          className="font-ui text-[10.5px] text-neutral-500"
           style={{ letterSpacing: "-0.005em" }}
         >
           Restaurante Berrini
@@ -257,7 +257,7 @@ function Header() {
         }}
       >
         <span
-          className="font-ui text-[10px] font-bold tabular-nums"
+          className="font-ui text-[10.5px] font-bold tabular-nums"
           style={{ letterSpacing: "-0.005em" }}
         >
           MC
@@ -293,7 +293,7 @@ function Tabs({ tab, onPick }: { tab: Tab; onPick: (t: Tab) => void }) {
             )}
           >
             <i.Icon size={15} strokeWidth={active ? 2.5 : 2} />
-            <span className="font-ui text-[10px] font-bold">{i.label}</span>
+            <span className="font-ui text-[10.5px] font-bold">{i.label}</span>
             {active && (
               <motion.span
                 layoutId="mm-tab"
@@ -403,7 +403,7 @@ function MenuView({
       <div data-tour="mm-dishes" className="flex-1 overflow-y-auto px-3 pb-3">
         <div className="mb-2 flex items-center justify-between">
           <p
-            className="font-ui text-[10px] font-bold uppercase text-neutral-500"
+            className="font-ui text-[10.5px] font-bold uppercase text-neutral-500"
             style={{ letterSpacing: "0.10em" }}
           >
             Cardápio do dia
@@ -530,7 +530,7 @@ function ReservaView({
 
       <div className="flex-1 overflow-y-auto px-3 py-2.5">
         <p
-          className="mb-2 font-ui text-[10px] font-bold uppercase text-neutral-500"
+          className="mb-2 font-ui text-[10.5px] font-bold uppercase text-neutral-500"
           style={{ letterSpacing: "0.16em" }}
         >
           Horários disponíveis
@@ -583,7 +583,7 @@ function ReservaView({
                   </p>
                   {s.suggested && (
                     <p
-                      className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-brand"
+                      className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[10.5px] font-bold uppercase text-brand"
                       style={{ letterSpacing: "0.14em" }}
                     >
                       <Sparkles size={9} strokeWidth={2.5} />
@@ -704,7 +704,7 @@ function FeedbackView({
       </div>
 
       <div className="px-3 py-3">
-        <p className="font-ui text-[10px] font-bold uppercase tracking-wider text-neutral-500">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-wider text-neutral-500">
           Sua nota
         </p>
         <div data-tour="mm-rating" className="mt-1.5 flex items-center justify-between">
@@ -731,7 +731,7 @@ function FeedbackView({
           ))}
         </div>
 
-        <p className="mt-3 font-ui text-[10px] font-bold uppercase tracking-wider text-neutral-500">
+        <p className="mt-3 font-ui text-[10.5px] font-bold uppercase tracking-wider text-neutral-500">
           Tipo de feedback
         </p>
         <div className="mt-1.5 grid grid-cols-3 gap-1.5">
@@ -763,7 +763,7 @@ function FeedbackView({
                   style={{ color: active ? t.color : "#6b7280" }}
                 />
                 <span
-                  className="font-ui text-[10px] font-bold"
+                  className="font-ui text-[10.5px] font-bold"
                   style={{ color: active ? t.color : "#6b7280" }}
                 >
                   {t.label}
@@ -779,7 +779,7 @@ function FeedbackView({
             animate={{ opacity: 1, y: 0 }}
             className="mt-3"
           >
-            <p className="font-ui text-[10px] font-bold uppercase tracking-wider text-neutral-500">
+            <p className="font-ui text-[10.5px] font-bold uppercase tracking-wider text-neutral-500">
               Toque em uma opção
             </p>
             <div className="mt-1.5 space-y-1.5">
@@ -858,7 +858,7 @@ function FeedbackView({
             <p className="mt-1 font-ui text-[12px] font-bold text-success">
               Obrigado pelo feedback!
             </p>
-            <p className="mt-0.5 text-[10px] text-neutral-500">
+            <p className="mt-0.5 text-[10.5px] text-neutral-500">
               Sua opinião vai direto para o Cardápio Inteligente
             </p>
           </motion.div>

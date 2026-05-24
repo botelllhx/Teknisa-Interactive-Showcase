@@ -268,7 +268,7 @@ function AppHeader({
           </span>
         </div>
       )}
-      <span className="inline-flex items-center gap-1 rounded-full bg-brand-ghost px-2 py-0.5 text-[10px] font-bold text-brand">
+      <span className="inline-flex items-center gap-1 rounded-full bg-brand-ghost px-2 py-0.5 text-[10.5px] font-bold text-brand">
         <Zap size={10} strokeWidth={2.5} />
         QuickPass
       </span>
@@ -288,7 +288,7 @@ function VenueBanner() {
       >
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[2px] text-white/75">
+            <p className="text-[10.5px] font-bold uppercase tracking-[2px] text-white/75">
               Hoje · show ao vivo
             </p>
             <p className="mt-0.5 font-ui text-[16px] font-bold leading-tight">
@@ -299,7 +299,7 @@ function VenueBanner() {
               Allianz Parque · setor B · loja 12
             </p>
           </div>
-          <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur">
+          <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-1 text-[10.5px] font-bold uppercase tracking-wider backdrop-blur">
             <Clock size={10} strokeWidth={2.5} />
             Pronto em 4 min
           </span>
@@ -408,7 +408,7 @@ function CatalogView({
                   <p className="font-ui text-[12px] font-bold leading-snug text-neutral-900 line-clamp-1">
                     {p.name}
                   </p>
-                  <p className="mt-0.5 text-[10px] leading-snug text-neutral-500 line-clamp-2">
+                  <p className="mt-0.5 text-[10.5px] leading-snug text-neutral-500 line-clamp-2">
                     {p.desc}
                   </p>
                   <div className="mt-2 flex items-center justify-between">
@@ -443,7 +443,7 @@ function CatalogView({
                 <p className="font-ui text-[12px] font-bold leading-tight">
                   {cartCount} {cartCount === 1 ? "item" : "itens"} no carrinho
                 </p>
-                <p className="text-[10px] text-white/80">
+                <p className="text-[10.5px] text-white/80">
                   Toque em revisar para continuar
                 </p>
               </div>
@@ -536,7 +536,7 @@ function CartView({
                   <p className="font-ui text-[12px] font-bold text-neutral-900 leading-tight">
                     {p.name}
                   </p>
-                  <p className="text-[10px] text-neutral-500 leading-snug">
+                  <p className="text-[10.5px] text-neutral-500 leading-snug">
                     {p.desc}
                   </p>
                   <p className="mt-1 font-ui text-[13px] font-bold text-brand tabular-nums">
@@ -594,7 +594,7 @@ function CartView({
               <button
                 type="button"
                 onClick={() => onApplyCoupon(null)}
-                className="text-[10px] font-medium text-neutral-500 underline hover:text-brand"
+                className="text-[10.5px] font-medium text-neutral-500 underline hover:text-brand"
               >
                 Remover
               </button>
@@ -633,7 +633,7 @@ function CartView({
                       />
                     )}
                   </span>
-                  <span className="mt-0.5 text-[10px] text-neutral-500">
+                  <span className="mt-0.5 text-[10.5px] text-neutral-500">
                     {c.label} · {Math.round(c.pct * 100)}% off
                   </span>
                 </motion.button>
@@ -641,7 +641,7 @@ function CartView({
             })}
           </div>
           {appliedCoupon && (
-            <p className="mt-1.5 text-[10px] font-medium text-success">
+            <p className="mt-1.5 text-[10.5px] font-medium text-success">
               ✓ {Math.round(appliedCoupon.pct * 100)}% de desconto aplicado
             </p>
           )}
@@ -766,7 +766,7 @@ function PaymentView({
                     "linear-gradient(135deg, #020788 0%, #1a1fa8 60%, #3b42c4 100%)",
                 }}
               >
-                <p className="text-[10px] font-bold uppercase tracking-[2px] text-white/75">
+                <p className="text-[10.5px] font-bold uppercase tracking-[2px] text-white/75">
                   Cartão salvo
                 </p>
                 <p className="mt-2 font-mono text-[16px] tracking-[1.5px] tabular-nums">
@@ -781,7 +781,7 @@ function PaymentView({
                       MATEUS SOUZA
                     </p>
                   </div>
-                  <span className="rounded bg-white/15 px-2 py-0.5 text-[10px] font-bold tracking-wider backdrop-blur">
+                  <span className="rounded bg-white/15 px-2 py-0.5 text-[10.5px] font-bold tracking-wider backdrop-blur">
                     VISA
                   </span>
                 </div>

@@ -102,7 +102,7 @@ function DashboardView() {
         data-tour="ac-goal"
         className="rounded-2xl bg-gradient-to-br from-brand via-brand-light to-[#3b42c4] p-4 text-white shadow-brand"
       >
-        <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] opacity-85">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-[2px] opacity-85">
           Meta do mês
         </p>
         <div className="mt-1.5 flex items-baseline justify-between">
@@ -119,7 +119,7 @@ function DashboardView() {
             className="block h-full rounded-full bg-white"
           />
         </div>
-        <p className="mt-1.5 font-ui text-[10px] opacity-90">
+        <p className="mt-1.5 font-ui text-[10.5px] opacity-90">
           79% atingido · 10 dias restantes
         </p>
       </div>
@@ -148,7 +148,7 @@ function DashboardView() {
             <div className="flex items-center gap-1.5">
               <Icon size={12} strokeWidth={2.25} className="text-brand" />
               <span
-                className="font-ui text-[10px] font-bold uppercase text-neutral-500"
+                className="font-ui text-[10.5px] font-bold uppercase text-neutral-500"
                 style={{ letterSpacing: "0.16em" }}
               >
                 {label}
@@ -228,7 +228,7 @@ function ClientView() {
               <p className="truncate font-ui text-[12px] font-bold text-neutral-900">
                 {c.name}
               </p>
-              <p className="font-ui text-[10px] tabular-nums text-neutral-500">
+              <p className="font-ui text-[10.5px] tabular-nums text-neutral-500">
                 {c.cnpj}
               </p>
             </div>
@@ -248,7 +248,7 @@ function ProductsView() {
       className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-3"
     >
       <div className="rounded-xl bg-brand-ghost px-3 py-2">
-        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-brand">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-brand">
           Cliente
         </p>
         <p className="font-ui text-[12px] font-bold text-neutral-900">
@@ -257,7 +257,7 @@ function ProductsView() {
       </div>
 
       <div className="mt-1 flex items-center justify-between">
-        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
           Produtos sugeridos
         </p>
         <Badge variant="ai">
@@ -315,7 +315,7 @@ function SummaryView() {
       className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-3"
     >
       <div className="rounded-xl bg-brand-ghost px-3 py-2">
-        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-brand">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-brand">
           Cliente
         </p>
         <p className="font-ui text-[12px] font-bold text-neutral-900">
@@ -327,7 +327,7 @@ function SummaryView() {
         data-tour="ac-summary"
         className="rounded-2xl border border-brand/8 bg-white p-3 shadow-card"
       >
-        <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-[2px] text-brand">
           Resumo do pedido
         </p>
         <div className="mt-2.5 space-y-1.5 font-ui text-[11px]">
@@ -344,7 +344,7 @@ function SummaryView() {
           ))}
         </div>
         <div className="mt-3 flex items-baseline justify-between border-t border-dashed border-neutral-200 pt-2">
-          <span className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+          <span className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
             Total
           </span>
           <span className="font-ui text-[20px] font-bold tabular-nums text-brand">
@@ -390,7 +390,7 @@ function SentView() {
         Pedido enviado
       </p>
       <div className="rounded-xl border-2 border-dashed border-success/30 bg-success/5 px-4 py-2 text-center">
-        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
           Pedido
         </p>
         <p className="font-ui text-[16px] font-bold tabular-nums text-success">

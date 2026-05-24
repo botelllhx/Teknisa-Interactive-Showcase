@@ -295,7 +295,7 @@ function WindowBar() {
       <div className="flex items-center gap-2">
         <button
           type="button"
-          className="flex items-center gap-1 text-[10px] font-semibold text-neutral-700 hover:text-brand"
+          className="flex items-center gap-1 text-[10.5px] font-semibold text-neutral-700 hover:text-brand"
         >
           Ajuda
           <ChevronDown size={10} strokeWidth={2.25} />
@@ -330,7 +330,7 @@ function Toolbar() {
           <RotateCw size={10} strokeWidth={2} />
         </button>
         <span
-          className="ml-3 font-display text-[10px] font-bold uppercase text-neutral-700"
+          className="ml-3 font-display text-[10.5px] font-bold uppercase text-neutral-700"
           style={{ letterSpacing: "0.14em" }}
         >
           Caixa
@@ -347,7 +347,7 @@ function Toolbar() {
         style={{ boxShadow: "inset 0 1px 1px rgba(0,0,0,0.03)" }}
       >
         <Search size={11} strokeWidth={2.25} className="text-neutral-400" />
-        <span className="text-[10px] text-neutral-400">Buscar produto…</span>
+        <span className="text-[10.5px] text-neutral-400">Buscar produto…</span>
       </div>
     </div>
   );
@@ -373,7 +373,7 @@ function ComandaPanel({
   return (
     <aside className="flex flex-col border-r border-neutral-200 bg-white">
       <div className="border-b border-neutral-200 bg-[#eef0f7] px-2.5 py-1">
-        <p className="font-mono text-[10px] tabular-nums text-neutral-600">
+        <p className="font-mono text-[10.5px] tabular-nums text-neutral-600">
           01/01/2025 · 17:32:00
         </p>
       </div>
@@ -385,7 +385,7 @@ function ComandaPanel({
         <AnimatePresence>
           {cart.length === 0 ? (
             <div className="flex h-full items-center justify-center px-3">
-              <p className="text-center text-[10px] italic text-neutral-400">
+              <p className="text-center text-[10.5px] italic text-neutral-400">
                 Toque em um produto<br />no centro
               </p>
             </div>
@@ -423,7 +423,7 @@ function ComandaPanel({
                     >
                       <X size={11} strokeWidth={2} />
                     </button>
-                    <span className="font-display text-[10px] font-bold text-neutral-900">
+                    <span className="font-display text-[10.5px] font-bold text-neutral-900">
                       R$ {(item.qty * item.price).toFixed(2).replace(".", ",")}
                     </span>
                     <span className="text-[10.5px] text-neutral-400">17:52</span>
@@ -437,7 +437,7 @@ function ComandaPanel({
                   >
                     <Minus size={9} strokeWidth={2.5} />
                   </button>
-                  <span className="w-5 text-center font-display text-[10px] font-bold text-neutral-700">
+                  <span className="w-5 text-center font-display text-[10.5px] font-bold text-neutral-700">
                     {item.qty}
                   </span>
                   <button
@@ -483,7 +483,7 @@ function ComandaPanel({
           </span>
         </motion.div>
         {discountApplied && discount > 0 && (
-          <div className="border-t border-dashed border-neutral-200 px-2.5 py-1 text-[10px] text-success">
+          <div className="border-t border-dashed border-neutral-200 px-2.5 py-1 text-[10.5px] text-success">
             ↓ Desconto fidelidade R$ {discount.toFixed(2).replace(".", ",")}
           </div>
         )}
@@ -684,7 +684,7 @@ function FooterBar({
             <span className="text-[10.5px] font-bold uppercase tracking-wider text-neutral-400">
               Operador
             </span>
-            <span className="font-ui text-[10px] font-bold text-neutral-800">
+            <span className="font-ui text-[10.5px] font-bold text-neutral-800">
               Carlos Mello
             </span>
           </div>
@@ -842,7 +842,7 @@ function SuccessOverlay({
 
         <div className="mt-4 w-full rounded-xl bg-surface-raised p-4 text-center">
           <p
-            className="font-ui text-[10px] font-bold uppercase text-neutral-500"
+            className="font-ui text-[10.5px] font-bold uppercase text-neutral-500"
             style={{ letterSpacing: "0.18em" }}
           >
             Total pago

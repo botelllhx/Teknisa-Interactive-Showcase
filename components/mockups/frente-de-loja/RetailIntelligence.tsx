@@ -36,10 +36,10 @@ import { useTourLive } from "@/lib/tourState";
 import { food, people, pexels } from "@/lib/photos";
 import { StackedAvatars } from "@/components/ui/StackedAvatars";
 import {
-  AreaChart,
   NestedRisk,
   HorizontalBars,
   Sparkline,
+  RechartsArea,
 } from "@/components/ui/charts";
 import { GradientIcon } from "@/components/ui/GradientIcon";
 import { type ReactElement } from "react";
@@ -221,7 +221,7 @@ function Header() {
           <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-danger ring-2 ring-white" />
         </button>
         <div className="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-2.5 py-1 shadow-card">
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand font-ui text-[10px] font-bold text-white">
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand font-ui text-[10.5px] font-bold text-white">
             MS
           </span>
           <span className="leading-tight">
@@ -247,7 +247,7 @@ function JourneyPanel({ screen }: { screen: Screen }) {
   return (
     <aside className="flex w-[280px] flex-none flex-col overflow-hidden border-l border-brand/10 bg-white">
       <div className="flex flex-none flex-col gap-1 border-b border-neutral-100 px-5 py-4">
-        <p className="text-[10px] font-bold uppercase tracking-[2px] text-brand">
+        <p className="text-[10.5px] font-bold uppercase tracking-[2px] text-brand">
           Jornada da IA
         </p>
         <p className="font-ui text-[13px] font-medium text-neutral-600">
@@ -376,7 +376,7 @@ function JourneyPanel({ screen }: { screen: Screen }) {
         >
           <Sparkles size={12} strokeWidth={2.5} />
         </motion.span>
-        <p className="text-[10px] leading-snug text-neutral-600">
+        <p className="text-[10.5px] leading-snug text-neutral-600">
           Caminho:{" "}
           <span className="font-bold text-brand">
             detectar, explicar, recomendar, simular, agir
@@ -480,7 +480,7 @@ function DashboardScreen() {
           </div>
           <div className="flex items-center gap-2">
             <span
-              className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-success"
+              className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10.5px] font-bold uppercase text-success"
               style={{ letterSpacing: "0.14em" }}
             >
               <motion.span
@@ -492,7 +492,7 @@ function DashboardScreen() {
             </span>
             <button
               type="button"
-              className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2 py-1 font-ui text-[10px] font-medium text-neutral-600 hover:bg-neutral-50"
+              className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2 py-1 font-ui text-[10.5px] font-medium text-neutral-600 hover:bg-neutral-50"
             >
               Mensal
               <ChevronRight size={9} strokeWidth={2.5} className="rotate-90" />
@@ -500,7 +500,7 @@ function DashboardScreen() {
           </div>
         </div>
         <div className="min-h-0 flex-1">
-          <AreaChart
+          <RechartsArea
             data={CMV_SERIES}
             color="#7c3aed"
             referenceY={28}
@@ -510,7 +510,7 @@ function DashboardScreen() {
             showYLabels
             showXLabels
             formatY={(v) => `${v.toFixed(1).replace(".", ",")}%`}
-            fillContainer
+            unit="CMV real"
           />
         </div>
       </div>
@@ -703,7 +703,7 @@ function DashKPITile({
             {value}
           </span>
           <span
-            className="font-ui text-[10px] font-bold tabular-nums"
+            className="font-ui text-[10.5px] font-bold tabular-nums"
             style={{ color: tone === "danger" ? "#4ade80" : deltaColor }}
           >
             {delta}
@@ -1351,13 +1351,13 @@ function MatrizScreen() {
 
             {/* Y-axis: Margem */}
             <div className="absolute bottom-7 left-0 top-5 flex w-[52px] flex-col justify-between pr-3 text-right">
-              <span className="font-ui text-[10px] font-bold uppercase tabular-nums text-neutral-400" style={{ letterSpacing: "0.12em" }}>
+              <span className="font-ui text-[10.5px] font-bold uppercase tabular-nums text-neutral-400" style={{ letterSpacing: "0.12em" }}>
                 ALTA
               </span>
-              <span className="font-ui text-[10px] font-bold uppercase tabular-nums text-neutral-300" style={{ letterSpacing: "0.12em" }}>
+              <span className="font-ui text-[10.5px] font-bold uppercase tabular-nums text-neutral-300" style={{ letterSpacing: "0.12em" }}>
                 50%
               </span>
-              <span className="font-ui text-[10px] font-bold uppercase tabular-nums text-neutral-400" style={{ letterSpacing: "0.12em" }}>
+              <span className="font-ui text-[10.5px] font-bold uppercase tabular-nums text-neutral-400" style={{ letterSpacing: "0.12em" }}>
                 BAIXA
               </span>
             </div>
@@ -1371,13 +1371,13 @@ function MatrizScreen() {
 
             {/* X-axis: Popularidade */}
             <div className="absolute bottom-2 left-[60px] right-5 flex justify-between">
-              <span className="font-ui text-[10px] font-bold uppercase text-neutral-400" style={{ letterSpacing: "0.12em" }}>
+              <span className="font-ui text-[10.5px] font-bold uppercase text-neutral-400" style={{ letterSpacing: "0.12em" }}>
                 BAIXA
               </span>
               <span className="font-ui text-[10.5px] font-bold uppercase text-brand" style={{ letterSpacing: "0.22em" }}>
                 Popularidade →
               </span>
-              <span className="font-ui text-[10px] font-bold uppercase text-neutral-400" style={{ letterSpacing: "0.12em" }}>
+              <span className="font-ui text-[10.5px] font-bold uppercase text-neutral-400" style={{ letterSpacing: "0.12em" }}>
                 ALTA
               </span>
             </div>
@@ -1418,7 +1418,7 @@ function MatrizScreen() {
                   <Target size={13} strokeWidth={2.5} />
                 </span>
                 <p
-                  className="font-ui text-[10px] font-bold uppercase"
+                  className="font-ui text-[10.5px] font-bold uppercase"
                   style={{ letterSpacing: "0.18em", color: focusMeta.colorDeep }}
                 >
                   Foco da IA
@@ -1462,7 +1462,7 @@ function MatrizScreen() {
         {/* Quadrant breakdown */}
         <div className="flex flex-col gap-2">
           <p
-            className="font-ui text-[10px] font-bold uppercase text-neutral-400"
+            className="font-ui text-[10.5px] font-bold uppercase text-neutral-400"
             style={{ letterSpacing: "0.18em" }}
           >
             Distribuição por quadrante
@@ -1505,7 +1505,7 @@ function MatrizScreen() {
                   </div>
                   <div className="mt-1.5 flex items-center justify-between">
                     <p
-                      className="font-ui text-[10px] font-bold uppercase"
+                      className="font-ui text-[10.5px] font-bold uppercase"
                       style={{ letterSpacing: "0.12em", color: meta.colorDeep }}
                     >
                       {meta.tag}
@@ -1591,7 +1591,7 @@ function ProdutoScreen() {
           </div>
 
           <div className="mt-4 rounded-xl border border-brand/15 bg-gradient-to-br from-brand-ghost via-white to-brand-subtle/40 p-3">
-            <p className="flex items-center gap-1.5 font-ui text-[10px] font-bold uppercase tracking-wider text-brand">
+            <p className="flex items-center gap-1.5 font-ui text-[10.5px] font-bold uppercase tracking-wider text-brand">
               <Sparkles size={11} strokeWidth={2.5} />
               Leitura da IA
             </p>
@@ -1642,7 +1642,7 @@ function ProdutoScreen() {
               <p className="flex-1 font-ui text-[13px] font-medium text-neutral-800">
                 {r.text}
               </p>
-              <span className="rounded-full bg-brand-subtle px-2 py-0.5 font-ui text-[10px] font-bold tabular-nums text-brand">
+              <span className="rounded-full bg-brand-subtle px-2 py-0.5 font-ui text-[10.5px] font-bold tabular-nums text-brand">
                 {String(i + 1).padStart(2, "0")}
               </span>
             </motion.div>
@@ -1664,7 +1664,7 @@ function ProdStat({
 }) {
   return (
     <div className="rounded-xl bg-neutral-50 p-3">
-      <p className="text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+      <p className="text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
         {label}
       </p>
       <p
@@ -1853,7 +1853,7 @@ function ScenarioCard({
           />
           <ScenarioRow label="Margem" value={`${margem}%`} tone={c} />
           <div className="border-t border-neutral-100 pt-2">
-            <p className="text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+            <p className="text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
               Contribuição estimada
             </p>
             <motion.p
@@ -2127,7 +2127,7 @@ function MonitorScreen() {
                   <m.Icon size={17} strokeWidth={2} />
                 </span>
                 <div className="flex-1">
-                  <p className="text-[10px] font-bold uppercase tracking-[2px] text-neutral-500">
+                  <p className="text-[10.5px] font-bold uppercase tracking-[2px] text-neutral-500">
                     {m.label}
                   </p>
                   <p
@@ -2144,7 +2144,7 @@ function MonitorScreen() {
       </div>
 
       <div className="flex w-full max-w-[640px] flex-col items-center gap-3 rounded-2xl border border-brand/10 bg-gradient-to-br from-brand-ghost via-white to-brand-subtle/30 px-5 py-4">
-        <p className="text-[10px] font-bold uppercase tracking-[2px] text-brand">
+        <p className="text-[10.5px] font-bold uppercase tracking-[2px] text-brand">
           Equipe acompanhando este plano
         </p>
         <StackedAvatars

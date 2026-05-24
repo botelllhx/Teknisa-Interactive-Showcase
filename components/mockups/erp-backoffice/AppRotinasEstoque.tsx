@@ -35,20 +35,20 @@ export function AppRotinasEstoqueMockup({ step }: AppRotinasEstoqueProps) {
       >
         <div>
           <p
-            className="font-ui text-[10px] font-bold uppercase text-brand"
+            className="font-ui text-[10.5px] font-bold uppercase text-brand"
             style={{ letterSpacing: "0.18em" }}
           >
             Rotinas · Estoque
           </p>
           <p
-            className="mt-0.5 font-ui text-[10px] text-neutral-500 tabular-nums"
+            className="mt-0.5 font-ui text-[10.5px] text-neutral-500 tabular-nums"
             style={{ letterSpacing: "-0.005em" }}
           >
             Quinta-feira · 21/05
           </p>
         </div>
         <span
-          className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-success"
+          className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10.5px] font-bold uppercase text-success"
           style={{ letterSpacing: "0.14em" }}
         >
           <motion.span
@@ -84,7 +84,7 @@ function TaskListView() {
           <GradientIcon icon={<PackageSearch />} tone="brand" size={36} />
           <div>
             <p
-              className="font-ui text-[10px] font-bold uppercase text-brand"
+              className="font-ui text-[10.5px] font-bold uppercase text-brand"
               style={{ letterSpacing: "0.10em" }}
             >
               Hoje · 21 mai
@@ -165,7 +165,7 @@ function TaskListView() {
               <p className="font-ui text-[12px] font-bold text-neutral-900">
                 {task.label}
               </p>
-              <p className="font-ui text-[10px] text-neutral-500">
+              <p className="font-ui text-[10.5px] text-neutral-500">
                 {task.count}
               </p>
             </div>
@@ -188,18 +188,18 @@ function CountingView() {
       className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-3"
     >
       <div className="rounded-xl bg-brand-ghost px-3 py-2.5">
-        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-brand">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-brand">
           Contando item 4 de 12
         </p>
         <p className="font-ui text-[15px] font-bold text-neutral-900">
           Patinho moído kg
         </p>
-        <p className="font-ui text-[10px] text-neutral-500">
+        <p className="font-ui text-[10.5px] text-neutral-500">
           SKU 28471 · Açougue
         </p>
       </div>
 
-      <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+      <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
         Quantidade contada
       </p>
       <div
@@ -256,7 +256,7 @@ function DivergenceView() {
       </p>
       <div className="grid w-full grid-cols-2 gap-2">
         <div className="rounded-xl bg-neutral-50 px-3 py-3 text-center">
-          <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+          <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
             Sistema
           </p>
           <p className="mt-1 font-ui text-[20px] font-bold tabular-nums leading-none text-neutral-900">
@@ -264,7 +264,7 @@ function DivergenceView() {
           </p>
         </div>
         <div className="rounded-xl border-2 border-warning/40 bg-warning/5 px-3 py-3 text-center">
-          <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-warning">
+          <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-warning">
             Contado
           </p>
           <p className="mt-1 font-ui text-[20px] font-bold tabular-nums leading-none text-warning">
@@ -287,7 +287,7 @@ function JustificationView() {
       transition={{ duration: 0.22 }}
       className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-3"
     >
-      <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+      <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
         Justificativa
       </p>
       <div className="space-y-1.5">
@@ -318,7 +318,7 @@ function JustificationView() {
         data-tour="ae-justification"
         className="mt-2 rounded-xl border border-dashed border-brand/30 bg-brand-ghost/50 px-3 py-2.5"
       >
-        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
           Observação
         </p>
         <p className="mt-0.5 font-ui text-[11px] text-neutral-700">
@@ -374,7 +374,7 @@ function SyncedView() {
           Contagem do açougue enviada ao ERP
         </p>
         <div
-          className="flex items-center gap-1.5 rounded-full bg-success/15 px-3 py-1 font-ui text-[10px] font-bold uppercase text-success"
+          className="flex items-center gap-1.5 rounded-full bg-success/15 px-3 py-1 font-ui text-[10.5px] font-bold uppercase text-success"
           style={{ letterSpacing: "0.14em" }}
         >
           <RefreshCw size={11} strokeWidth={2.5} />

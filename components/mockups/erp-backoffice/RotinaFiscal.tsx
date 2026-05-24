@@ -70,7 +70,7 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
         </div>
         <div className="flex items-center gap-2">
           <span
-            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-ui text-[10px] font-bold uppercase text-white"
+            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-ui text-[10.5px] font-bold uppercase text-white"
             style={{
               background:
                 "linear-gradient(135deg, #d97706 0%, #b45309 55%, #92400e 100%)",
@@ -104,7 +104,7 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
                 <p
-                  className="font-ui text-[10px] font-bold uppercase text-brand"
+                  className="font-ui text-[10.5px] font-bold uppercase text-brand"
                   style={{ letterSpacing: "0.10em" }}
                 >
                   Obrigações do mês
@@ -222,7 +222,7 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
                     initial={{ y: 4, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2 + 0.05 * i }}
-                    className="rounded-full bg-white px-2.5 py-1 font-ui text-[10px] font-bold text-warning shadow-card"
+                    className="rounded-full bg-white px-2.5 py-1 font-ui text-[10.5px] font-bold text-warning shadow-card"
                   >
                     {tag}
                   </motion.span>
@@ -271,25 +271,25 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
                 </p>
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <div className="rounded-xl bg-neutral-50 p-3">
-                    <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+                    <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
                       Regime atual
                     </p>
                     <p className="mt-1 font-ui text-[22px] font-bold tabular-nums leading-none text-neutral-700">
                       R$ 84,2k
                     </p>
-                    <p className="mt-1 font-ui text-[10px] text-neutral-500">
+                    <p className="mt-1 font-ui text-[10.5px] text-neutral-500">
                       ICMS + ISS + PIS/COFINS
                     </p>
                   </div>
                   <div className="rounded-xl border-2 border-warning/30 bg-warning/5 p-3">
-                    <p className="flex items-center gap-1 font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-warning">
+                    <p className="flex items-center gap-1 font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-warning">
                       <Sparkles size={10} strokeWidth={2.5} />
                       Novo regime
                     </p>
                     <p className="mt-1 font-ui text-[22px] font-bold tabular-nums leading-none text-warning">
                       R$ 79,4k
                     </p>
-                    <p className="mt-1 font-ui text-[10px] text-warning">
+                    <p className="mt-1 font-ui text-[10.5px] text-warning">
                       IBS + CBS + IS
                     </p>
                   </div>

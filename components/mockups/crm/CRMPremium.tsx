@@ -336,7 +336,7 @@ function StatusBar() {
       <span className="font-ui text-[12px] font-bold tabular-nums">12:30</span>
       <div className="flex items-center gap-1.5">
         <Wifi size={11} strokeWidth={2.5} className="opacity-80" />
-        <span className="text-[10px] font-bold tabular-nums opacity-80">62%</span>
+        <span className="text-[10.5px] font-bold tabular-nums opacity-80">62%</span>
       </div>
     </div>
   );
@@ -441,7 +441,7 @@ function HomeScreen({
                 strokeWidth={1.75}
                 style={{ color: COLORS.amber }}
               />
-              <span className="font-ui text-[10px] font-medium text-white">
+              <span className="font-ui text-[10.5px] font-medium text-white">
                 {c.label}
               </span>
             </motion.button>
@@ -454,7 +454,7 @@ function HomeScreen({
           <p className="font-ui text-[14px] font-bold text-white">
             Próximos de você
           </p>
-          <span className="text-[10px]" style={{ color: COLORS.textMuted }}>
+          <span className="text-[10.5px]" style={{ color: COLORS.textMuted }}>
             {STORES.length} parceiros
           </span>
         </div>
@@ -479,7 +479,7 @@ function HomeScreen({
           </p>
           <button
             type="button"
-            className="text-[10px] font-medium"
+            className="text-[10.5px] font-medium"
             style={{ color: COLORS.amber }}
           >
             Ver todas →
@@ -537,7 +537,7 @@ function HomeScreen({
                     </span>
                   )}
                   <span
-                    className="font-ui text-[10px] font-bold tabular-nums"
+                    className="font-ui text-[10.5px] font-bold tabular-nums"
                     style={{ color: COLORS.amber }}
                   >
                     R$ {p.price.toFixed(2).replace(".", ",")}
@@ -564,7 +564,7 @@ function CashbackCard({ balance }: { balance: number }) {
     >
       <div className="relative flex items-start justify-between">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[1.5px] text-white/75">
+          <p className="text-[10.5px] font-bold uppercase tracking-[1.5px] text-white/75">
             Saldo Premium Club
           </p>
           <p className="mt-3 text-[12px] text-white/70">
@@ -595,7 +595,7 @@ function CashbackCard({ balance }: { balance: number }) {
       </div>
 
       <div className="relative mt-3 flex items-center justify-between">
-        <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.7)" }}>
+        <p className="text-[10.5px]" style={{ color: "rgba(255,255,255,0.7)" }}>
           Use em qualquer parceiro do Premium Club
         </p>
         <p
@@ -677,7 +677,7 @@ function StoreCard({
       <div className="p-2.5">
         <p className="font-ui text-[13px] font-bold text-white">{store.name}</p>
         <p
-          className="text-[10px]"
+          className="text-[10.5px]"
           style={{ color: COLORS.textMuted }}
         >
           {store.category} · {store.distance}
@@ -788,7 +788,7 @@ function StoreScreen({
         </span>
         <div className="flex-1 min-w-0">
           <p className="font-ui text-[15px] font-bold text-white">{store.name}</p>
-          <p className="flex items-center gap-1 text-[10px]" style={{ color: COLORS.textMuted }}>
+          <p className="flex items-center gap-1 text-[10.5px]" style={{ color: COLORS.textMuted }}>
             <MapPin size={9} strokeWidth={2.25} />
             {store.category} · {store.distance}
           </p>
@@ -805,7 +805,7 @@ function StoreScreen({
                 }}
               />
             ))}
-            <span className="ml-1 text-[10px] text-white/65">
+            <span className="ml-1 text-[10.5px] text-white/65">
               {store.rating.toFixed(1)}
             </span>
           </span>
@@ -902,7 +902,7 @@ function StoreScreen({
                     {p.name}
                   </p>
                   <p
-                    className="mt-0.5 line-clamp-2 text-[10px] leading-snug"
+                    className="mt-0.5 line-clamp-2 text-[10.5px] leading-snug"
                     style={{ color: COLORS.textMuted }}
                   >
                     {p.desc}
@@ -916,7 +916,7 @@ function StoreScreen({
                     </span>
                     {p.oldPrice && (
                       <span
-                        className="font-ui text-[10px] tabular-nums line-through"
+                        className="font-ui text-[10.5px] tabular-nums line-through"
                         style={{ color: COLORS.textMuted }}
                       >
                         R$ {p.oldPrice.toFixed(2).replace(".", ",")}
@@ -926,7 +926,7 @@ function StoreScreen({
                 </div>
                 <div className="flex flex-col items-end text-right">
                   <p
-                    className="font-ui text-[10px] font-bold uppercase tracking-wider"
+                    className="font-ui text-[10.5px] font-bold uppercase tracking-wider"
                     style={{ color: COLORS.textMuted }}
                   >
                     Cashback
@@ -951,7 +951,7 @@ function StoreScreen({
         style={{ background: COLORS.bg }}
       >
         <div className="leading-tight">
-          <p className="text-[10px]" style={{ color: COLORS.textMuted }}>
+          <p className="text-[10.5px]" style={{ color: COLORS.textMuted }}>
             Total selecionado
           </p>
           <p className="font-ui text-[17px] font-bold tabular-nums text-white">
@@ -1030,7 +1030,7 @@ function CheckoutSheet({
             <p className="font-ui text-[12px] font-bold text-white">
               {promo.name}
             </p>
-            <p className="text-[10px]" style={{ color: COLORS.textMuted }}>
+            <p className="text-[10.5px]" style={{ color: COLORS.textMuted }}>
               {promo.desc}
             </p>
           </div>
@@ -1227,7 +1227,7 @@ function SuccessOverlay({
         className="mt-2 rounded-xl px-4 py-2 text-center"
         style={{ background: COLORS.bgLayer, border: `1px solid ${COLORS.amber}40` }}
       >
-        <p className="text-[10px]" style={{ color: COLORS.textMuted }}>
+        <p className="text-[10.5px]" style={{ color: COLORS.textMuted }}>
           Novo saldo
         </p>
         <p
@@ -1333,7 +1333,7 @@ function PushNotification({
         <Bell size={15} strokeWidth={2.25} />
       </span>
       <div className="flex-1 min-w-0">
-        <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: COLORS.amber }}>
+        <p className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider" style={{ color: COLORS.amber }}>
           Premium Club
           <span className="text-white/40">·</span>
           <span className="text-white/50">agora</span>
@@ -1341,7 +1341,7 @@ function PushNotification({
         <p className="mt-0.5 font-ui text-[12px] font-bold text-white">
           Você ganhou R$ {cashback.toFixed(2).replace(".", ",")} em cashback!
         </p>
-        <p className="text-[10px]" style={{ color: COLORS.textMuted }}>
+        <p className="text-[10.5px]" style={{ color: COLORS.textMuted }}>
           {store} · vence em 180 dias
         </p>
       </div>
@@ -1433,7 +1433,7 @@ function SaldoScreen({
           })}
         </motion.p>
         <p
-          className="mt-1 font-ui text-[10px]"
+          className="mt-1 font-ui text-[10.5px]"
           style={{ color: COLORS.textMuted }}
         >
           Use em qualquer parceiro do Premium Club.
@@ -1503,7 +1503,7 @@ function SaldoScreen({
                   {h.store}
                 </p>
                 <p
-                  className="text-[10px]"
+                  className="text-[10.5px]"
                   style={{ color: COLORS.textMuted }}
                 >
                   {h.date}
@@ -1571,7 +1571,7 @@ function PerfilScreen({
 
       <div className="mt-4 grid grid-cols-2 gap-2">
         <div className="rounded-xl p-3" style={{ background: COLORS.bgLayer }}>
-          <p className="text-[10px]" style={{ color: COLORS.textMuted }}>
+          <p className="text-[10.5px]" style={{ color: COLORS.textMuted }}>
             Cashback disponível
           </p>
           <p
@@ -1582,7 +1582,7 @@ function PerfilScreen({
           </p>
         </div>
         <div className="rounded-xl p-3" style={{ background: COLORS.bgLayer }}>
-          <p className="text-[10px]" style={{ color: COLORS.textMuted }}>
+          <p className="text-[10.5px]" style={{ color: COLORS.textMuted }}>
             Compras
           </p>
           <p className="mt-1 font-ui text-[16px] font-bold tabular-nums text-white">
@@ -1634,7 +1634,7 @@ function BottomNav({
               style={{ color: active ? COLORS.amber : COLORS.textMuted }}
             />
             <span
-              className="font-ui text-[10px] font-bold"
+              className="font-ui text-[10.5px] font-bold"
               style={{ color: active ? COLORS.amber : COLORS.textMuted }}
             >
               {it.label}

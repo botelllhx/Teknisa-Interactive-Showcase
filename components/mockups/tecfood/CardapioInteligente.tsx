@@ -310,7 +310,7 @@ function Header({
             </p>
           </div>
           <span
-            className="ml-1 inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase text-success"
+            className="ml-1 inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[10.5px] font-bold uppercase text-success"
             style={{ letterSpacing: "0.14em" }}
           >
             <motion.span
@@ -1097,7 +1097,7 @@ function SlotCard({
             <p className="font-ui text-[12px] font-bold leading-tight text-neutral-900 line-clamp-2">
               {dish.name}
             </p>
-            <div className="mt-1 flex items-center gap-1.5 text-[10px] text-neutral-500 tabular-nums">
+            <div className="mt-1 flex items-center gap-1.5 text-[10.5px] text-neutral-500 tabular-nums">
               <span className="inline-flex items-center gap-0.5">
                 <Flame size={9} strokeWidth={2.25} />
                 {dish.calories}kcal
@@ -1267,7 +1267,7 @@ function CostPanel({ totals }: { totals: { cost: number } }) {
         <GradientIcon icon={<Users />} tone="brand" size={32} />
         <div className="min-w-0 flex-1">
           <p
-            className="font-ui text-[10px] font-bold uppercase text-brand"
+            className="font-ui text-[10.5px] font-bold uppercase text-brand"
             style={{ letterSpacing: "0.18em" }}
           >
             Custo do dia
@@ -1482,7 +1482,7 @@ function DishPickerModal({
                 </p>
               </div>
               {d.tag === "sugerido-ia" && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-brand-ghost px-1.5 py-0.5 text-[10px] font-bold text-brand">
+                <span className="inline-flex items-center gap-1 rounded-full bg-brand-ghost px-1.5 py-0.5 text-[10.5px] font-bold text-brand">
                   <Sparkles size={9} strokeWidth={2.5} />
                   IA
                 </span>
@@ -1578,7 +1578,7 @@ function AILiveAssistant({
             <Sparkles size={11} strokeWidth={2.5} />
           </motion.span>
           <p
-            className="font-ui text-[10px] font-bold uppercase text-white/85"
+            className="font-ui text-[10.5px] font-bold uppercase text-white/85"
             style={{ letterSpacing: "0.10em" }}
           >
             Assistente IA
@@ -1586,7 +1586,7 @@ function AILiveAssistant({
         </div>
         <span
           className={cn(
-            "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-ui text-[10px] font-bold uppercase",
+            "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-ui text-[10.5px] font-bold uppercase",
             approved ? "bg-white/15 text-white" : "bg-white/15 text-white",
           )}
           style={{ letterSpacing: "0.06em" }}
@@ -1709,12 +1709,12 @@ function AILiveAssistant({
             />
             <div className="min-w-0 flex-1">
               <p
-                className="font-ui text-[10px] leading-snug text-white"
+                className="font-ui text-[10.5px] leading-snug text-white"
                 style={{ letterSpacing: "-0.005em" }}
               >
                 {d.msg}
               </p>
-              <span className="font-ui text-[10px] font-medium tabular-nums text-white/55">
+              <span className="font-ui text-[10.5px] font-medium tabular-nums text-white/55">
                 Há {d.t}
               </span>
             </div>

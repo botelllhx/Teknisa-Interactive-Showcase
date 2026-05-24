@@ -157,7 +157,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
                   <div className="mt-2 flex items-end justify-between gap-2">
                     <div className="min-w-0 flex-1">
                       <p
-                        className="font-ui text-[10px] font-bold uppercase text-neutral-500"
+                        className="font-ui text-[10.5px] font-bold uppercase text-neutral-500"
                         style={{ letterSpacing: "0.16em" }}
                       >
                         Presença
@@ -220,7 +220,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
           >
             <div className="flex items-center justify-between">
               <p
-                className="font-ui text-[10px] font-bold uppercase text-brand"
+                className="font-ui text-[10.5px] font-bold uppercase text-brand"
                 style={{ letterSpacing: "0.10em" }}
               >
                 Feed ao vivo
@@ -280,7 +280,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
                   <PersonAvatar photo={m.photo} name={m.who} size={24} />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline justify-between gap-1">
-                      <p className="font-ui text-[10px] font-bold text-neutral-900">
+                      <p className="font-ui text-[10.5px] font-bold text-neutral-900">
                         {m.who}
                       </p>
                       <span className="font-ui text-[10.5px] tabular-nums text-neutral-400">
@@ -289,7 +289,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
                     </div>
                     <p
                       className={cn(
-                        "mt-0.5 font-ui text-[10px] leading-snug",
+                        "mt-0.5 font-ui text-[10.5px] leading-snug",
                         m.tone === "danger" && "text-danger",
                         m.tone === "success" && "text-success",
                         m.tone === "brand" && "text-brand",
@@ -316,7 +316,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
                 <div className="mt-3 flex items-center justify-between gap-2 font-ui text-[12px]">
                   <div>
                     <p className="font-bold text-neutral-900">Filial Centro</p>
-                    <p className="font-ui text-[10px] text-neutral-500">
+                    <p className="font-ui text-[10.5px] text-neutral-500">
                       +2 disponíveis
                     </p>
                     <div className="mt-1.5">
@@ -338,7 +338,7 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
                   />
                   <div>
                     <p className="font-bold text-neutral-900">Unidade Norte</p>
-                    <p className="font-ui text-[10px] text-neutral-500">
+                    <p className="font-ui text-[10.5px] text-neutral-500">
                       precisa cobrir
                     </p>
                     <div className="mt-1.5">

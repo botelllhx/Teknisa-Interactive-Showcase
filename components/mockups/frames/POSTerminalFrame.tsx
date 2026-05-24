@@ -8,29 +8,17 @@ interface POSTerminalFrameProps {
   height: number;
 }
 
-// The terminal is taller than its display screen because of the keypad below.
-// We allocate ~55% of height to the screen (16:10 aspect) and the rest to the
-// keypad + base.
-const SCREEN_RATIO = 0.55;
+// v13.25 — bump screen ratio 0.55 → 0.70 (POS Novo é touch-first, keypad
+// fica residual). Cliente reportou que o PDV ficava muito menor que RI:
+// só 55% do canonical era tela, o resto era keypad/base, então a área
+// útil do mockup ficava 2.4× menor que RI. Com 0.70, a tela cresce ~60%.
+// Numeric keypad removido — substituído por strip de status + card reader
+// bay + 2 botoes hardware (CANCELAR/CONFIRMAR), look moderno.
+const SCREEN_RATIO = 0.70;
 
 // Canon light-grey gradient (CLAUDE §21.5)
 const HARDWARE_GRADIENT =
   "linear-gradient(180deg, #ebedf1 0%, #dde0e5 60%, #d4d7de 100%)";
-
-const KEYPAD: { label: string; sub?: string }[] = [
-  { label: "1", sub: "" },
-  { label: "2", sub: "ABC" },
-  { label: "3", sub: "DEF" },
-  { label: "4", sub: "GHI" },
-  { label: "5", sub: "JKL" },
-  { label: "6", sub: "MNO" },
-  { label: "7", sub: "PQRS" },
-  { label: "8", sub: "TUV" },
-  { label: "9", sub: "WXYZ" },
-  { label: "*" },
-  { label: "0" },
-  { label: "#" },
-];
 
 export function POSTerminalFrame({ children, height }: POSTerminalFrameProps) {
   const screenHeight = height * SCREEN_RATIO;
@@ -121,7 +109,8 @@ export function POSTerminalFrame({ children, height }: POSTerminalFrameProps) {
         </div>
       </div>
 
-      {/* Keypad area */}
+      {/* Bottom hardware strip — modern touch-first POS:
+           status row + card reader bay + CANCELAR/CONFIRMAR botoes */}
       <div
         style={{
           flex: 1,
@@ -136,55 +125,82 @@ export function POSTerminalFrame({ children, height }: POSTerminalFrameProps) {
           gap: 8,
         }}
       >
+        {/* Status row: LED + label */}
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 6,
-            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingInline: 4,
           }}
         >
-          {KEYPAD.map((k) => (
-            <button
-              key={k.label}
-              type="button"
-              tabIndex={-1}
-              aria-hidden
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span
               style={{
+                width: 7,
+                height: 7,
+                borderRadius: "50%",
                 background:
-                  "linear-gradient(180deg, #ffffff 0%, #f1f3f6 100%)",
-                borderRadius: 8,
-                border: "1px solid rgba(0,0,0,0.04)",
-                fontFamily: "var(--font-display)",
-                color: "#495057",
-                boxShadow:
-                  "inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.08), 0 -1px 0 rgba(0,0,0,0.04) inset",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                lineHeight: 1.05,
+                  "radial-gradient(circle at 30% 30%, #4ade80, #16a34a 70%)",
+                boxShadow: "0 0 6px rgba(22,163,74,0.45)",
+              }}
+            />
+            <span
+              style={{
+                fontFamily: "var(--font-ui)",
+                fontSize: 8.5,
+                fontWeight: 700,
+                letterSpacing: 1.4,
+                textTransform: "uppercase",
+                color: "#6b7280",
               }}
             >
-              <span style={{ fontSize: 16, fontWeight: 700 }}>{k.label}</span>
-              {k.sub && (
-                <span
-                  style={{
-                    fontSize: 6,
-                    fontWeight: 600,
-                    letterSpacing: 0.6,
-                    color: "#8a909c",
-                    marginTop: 1,
-                  }}
-                >
-                  {k.sub}
-                </span>
-              )}
-            </button>
-          ))}
+              EM USO
+            </span>
+          </div>
+          <span
+            style={{
+              fontFamily: "var(--font-ui)",
+              fontSize: 7.5,
+              fontWeight: 600,
+              letterSpacing: 0.8,
+              color: "#9ca3af",
+              textTransform: "uppercase",
+            }}
+          >
+            TEKNISA POS · v4
+          </span>
         </div>
+
+        {/* Card reader bay */}
         <div
-          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}
+          aria-hidden
+          style={{
+            background:
+              "linear-gradient(180deg, #c5c9d2 0%, #b6bac4 100%)",
+            borderRadius: 6,
+            height: 14,
+            position: "relative",
+            boxShadow:
+              "inset 0 2px 4px rgba(0,0,0,0.20), inset 0 -1px 0 rgba(255,255,255,0.30)",
+            display: "flex",
+            alignItems: "center",
+            paddingInline: 10,
+          }}
+        >
+          <span
+            style={{
+              width: "100%",
+              height: 1.5,
+              borderRadius: 1,
+              background: "rgba(0,0,0,0.18)",
+            }}
+          />
+        </div>
+
+        {/* CANCELAR / CONFIRMAR botoes hardware */}
+        <div
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, flex: 1 }}
         >
           <button
             type="button"
@@ -193,15 +209,15 @@ export function POSTerminalFrame({ children, height }: POSTerminalFrameProps) {
             style={{
               background:
                 "linear-gradient(180deg, #ef4444 0%, #dc2626 100%)",
-              borderRadius: 8,
+              borderRadius: 10,
               border: "none",
               color: "white",
               fontFamily: "var(--font-display)",
-              fontSize: 11,
+              fontSize: 13,
               fontWeight: 700,
-              letterSpacing: 0.5,
+              letterSpacing: 0.6,
               boxShadow:
-                "inset 0 1px 0 rgba(255,255,255,0.25), 0 1px 3px rgba(0,0,0,0.15)",
+                "inset 0 1px 0 rgba(255,255,255,0.25), 0 2px 6px rgba(220,38,38,0.30), 0 1px 3px rgba(0,0,0,0.15)",
             }}
           >
             CANCELAR
@@ -213,43 +229,20 @@ export function POSTerminalFrame({ children, height }: POSTerminalFrameProps) {
             style={{
               background:
                 "linear-gradient(180deg, #22c55e 0%, #16a34a 100%)",
-              borderRadius: 8,
+              borderRadius: 10,
               border: "none",
               color: "white",
               fontFamily: "var(--font-display)",
-              fontSize: 11,
+              fontSize: 13,
               fontWeight: 700,
-              letterSpacing: 0.5,
+              letterSpacing: 0.6,
               boxShadow:
-                "inset 0 1px 0 rgba(255,255,255,0.25), 0 1px 3px rgba(0,0,0,0.15)",
+                "inset 0 1px 0 rgba(255,255,255,0.25), 0 2px 6px rgba(22,163,74,0.30), 0 1px 3px rgba(0,0,0,0.15)",
             }}
           >
             CONFIRMAR
           </button>
         </div>
-      </div>
-
-      {/* Bottom magstripe/card slot decorative */}
-      <div
-        aria-hidden
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 4,
-          marginTop: -4,
-          flexShrink: 0,
-        }}
-      >
-        <span
-          style={{
-            width: "55%",
-            height: 3,
-            borderRadius: 2,
-            background: "rgba(0,0,0,0.08)",
-            boxShadow: "inset 0 1px 1px rgba(0,0,0,0.10)",
-          }}
-        />
       </div>
     </motion.div>
   );

@@ -233,8 +233,8 @@ function StatusBar() {
         12:34
       </span>
       <div className="flex items-center gap-1 text-neutral-700">
-        <span className="text-[10px] font-bold tracking-wide">5G</span>
-        <span className="text-[10px] tabular-nums">94%</span>
+        <span className="text-[10.5px] font-bold tracking-wide">5G</span>
+        <span className="text-[10.5px] tabular-nums">94%</span>
       </div>
     </div>
   );
@@ -305,11 +305,11 @@ function HomeView({
             <p className="font-display text-[20px] font-bold uppercase tracking-[5px] text-white drop-shadow">
               Mundo
             </p>
-            <p className="font-display text-[10px] font-bold tracking-[7px] text-white/85">
+            <p className="font-display text-[10.5px] font-bold tracking-[7px] text-white/85">
               ANIMAL
             </p>
           </div>
-          <span className="rounded-full bg-white/95 px-2 py-1 font-ui text-[10px] font-bold uppercase tracking-wider text-brand shadow-card backdrop-blur">
+          <span className="rounded-full bg-white/95 px-2 py-1 font-ui text-[10.5px] font-bold uppercase tracking-wider text-brand shadow-card backdrop-blur">
             Mesa 10
           </span>
         </div>
@@ -322,7 +322,7 @@ function HomeView({
             <h1 className="font-display text-[16px] font-bold text-brand">
               Mundo Animal
             </h1>
-            <p className="mt-0.5 flex items-center gap-1 text-[10px] text-neutral-500">
+            <p className="mt-0.5 flex items-center gap-1 text-[10.5px] text-neutral-500">
               <Star
                 size={10}
                 strokeWidth={2.25}
@@ -332,7 +332,7 @@ function HomeView({
               <span>· 320+ avaliações</span>
             </p>
           </div>
-          <span className="rounded-md bg-brand-ghost px-2 py-1 font-display text-[10px] font-bold text-brand">
+          <span className="rounded-md bg-brand-ghost px-2 py-1 font-display text-[10.5px] font-bold text-brand">
             Mesa 10
           </span>
         </div>
@@ -385,7 +385,7 @@ function HomeView({
             <Sparkles size={12} strokeWidth={2.25} className="text-warning" />
             Promoções de hoje
           </h2>
-          <button className="flex items-center gap-0.5 text-[10px] font-medium text-brand">
+          <button className="flex items-center gap-0.5 text-[10.5px] font-medium text-brand">
             Ver todas
             <ChevronRight size={11} strokeWidth={2.25} />
           </button>
@@ -424,10 +424,10 @@ function HomeView({
                   <p className="font-display text-[12px] font-bold text-neutral-900 leading-tight">
                     {p.name}
                   </p>
-                  <p className="mt-0.5 text-[10px] text-neutral-500 leading-tight">
+                  <p className="mt-0.5 text-[10.5px] text-neutral-500 leading-tight">
                     {p.desc}
                   </p>
-                  <p className="mt-1 text-[10px] text-neutral-500">
+                  <p className="mt-1 text-[10.5px] text-neutral-500">
                     {p.oldPrice && (
                       <span className="line-through">
                         R$ {p.oldPrice.toFixed(2).replace(".", ",")}
@@ -561,7 +561,7 @@ function DetailView({
                   <p className="font-display text-[12px] font-bold text-neutral-900">
                     {add.label}
                   </p>
-                  <p className="text-[10px] text-neutral-500">
+                  <p className="text-[10.5px] text-neutral-500">
                     + R$ {add.price.toFixed(2).replace(".", ",")}
                   </p>
                 </div>
@@ -667,12 +667,12 @@ function CartView({
         <h1 className="font-display text-[18px] font-bold text-brand">
           Seu pedido
         </h1>
-        <span className="rounded-md bg-brand-ghost px-2 py-1 text-[10px] font-bold text-brand">
+        <span className="rounded-md bg-brand-ghost px-2 py-1 text-[10.5px] font-bold text-brand">
           Mesa 10
         </span>
       </div>
 
-      <p className="px-4 text-[10px] text-neutral-500">
+      <p className="px-4 text-[10.5px] text-neutral-500">
         Mundo Animal · {entries.length} item(s)
       </p>
 
@@ -846,7 +846,7 @@ function ConfirmView({ subtotal }: { subtotal: number }) {
         }}
       >
         <p
-          className="font-ui text-[10px] font-bold uppercase text-success"
+          className="font-ui text-[10.5px] font-bold uppercase text-success"
           style={{ letterSpacing: "0.18em" }}
         >
           Número do pedido
@@ -857,7 +857,7 @@ function ConfirmView({ subtotal }: { subtotal: number }) {
         >
           #C1247
         </p>
-        <p className="mt-2 font-ui text-[10px] text-neutral-600 tabular-nums">
+        <p className="mt-2 font-ui text-[10.5px] text-neutral-600 tabular-nums">
           Mesa 10 · R$ {subtotal.toFixed(2).replace(".", ",")}
         </p>
       </div>

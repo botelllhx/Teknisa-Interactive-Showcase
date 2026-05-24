@@ -255,8 +255,8 @@ function StatusBar() {
     <div className="flex items-center justify-between bg-brand px-5 pt-2 pb-1.5 text-white">
       <span className="font-ui text-[12px] font-bold tabular-nums">09:41</span>
       <div className="flex items-center gap-1.5">
-        <span className="text-[10px] font-bold tracking-wide">5G</span>
-        <span className="text-[10px] tabular-nums">96%</span>
+        <span className="text-[10.5px] font-bold tracking-wide">5G</span>
+        <span className="text-[10.5px] tabular-nums">96%</span>
       </div>
     </div>
   );
@@ -345,7 +345,7 @@ function ListScreen({
       {/* Greeting + user */}
       <div className="border-b border-brand/8 bg-white px-4 py-3.5">
         <p
-          className="font-ui text-[10px] font-bold uppercase text-brand"
+          className="font-ui text-[10.5px] font-bold uppercase text-brand"
           style={{ letterSpacing: "0.18em" }}
         >
           Bom dia,
@@ -521,7 +521,7 @@ function RequestCard({
 
       <div className="flex items-center justify-between border-t border-neutral-100 pt-2 text-[12px]">
         <span className="flex items-center gap-1.5">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-100 text-[10px] font-bold text-neutral-600">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-100 text-[10.5px] font-bold text-neutral-600">
             {request.byInitials}
           </span>
           <span className="text-neutral-700">{request.by}</span>
@@ -596,7 +596,7 @@ function DetailScreen({
             <meta.Icon size={18} strokeWidth={2} />
           </span>
           <div className="flex-1">
-            <p className="font-ui text-[10px] font-bold uppercase tracking-wider text-brand">
+            <p className="font-ui text-[10.5px] font-bold uppercase tracking-wider text-brand">
               {meta.label}
             </p>
             <h2
@@ -666,7 +666,7 @@ function DetailScreen({
           </p>
           <div className="mt-2 grid grid-cols-2 gap-3 text-[12px]">
             <div>
-              <p className="text-[10px] text-neutral-500">Antes</p>
+              <p className="text-[10.5px] text-neutral-500">Antes</p>
               <p className="font-ui font-bold text-neutral-700 tabular-nums">
                 R${" "}
                 {(request.amount - request.delta).toLocaleString("pt-BR", {
@@ -675,7 +675,7 @@ function DetailScreen({
               </p>
             </div>
             <div>
-              <p className="text-[10px] text-neutral-500">Agora</p>
+              <p className="text-[10.5px] text-neutral-500">Agora</p>
               <p
                 className="font-ui font-bold tabular-nums"
                 style={{
@@ -735,7 +735,7 @@ function DetailScreen({
         {/* Histórico da solicitação — chat-style timeline (PMO Golden Garden ref) */}
         <section className="mt-4">
           <div className="flex items-center justify-between">
-            <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
+            <p className="font-ui text-[10.5px] font-bold uppercase tracking-[2px] text-brand">
               Histórico
             </p>
             <StackedAvatars

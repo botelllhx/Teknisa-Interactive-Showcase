@@ -472,7 +472,7 @@ function ProductDetailView({
                 )}
               >
                 {a.name}
-                <span className="text-[10px] opacity-80">
+                <span className="text-[10.5px] opacity-80">
                   +R${a.price.toFixed(2).replace(".", ",")}
                 </span>
               </motion.button>
@@ -620,7 +620,7 @@ function CartView({
                     return (
                       <span
                         key={id}
-                        className="rounded-full border border-brand/15 bg-brand-ghost/50 px-2 py-0.5 text-[10px] font-medium text-brand"
+                        className="rounded-full border border-brand/15 bg-brand-ghost/50 px-2 py-0.5 text-[10.5px] font-medium text-brand"
                       >
                         {a.name}
                       </span>
@@ -641,7 +641,7 @@ function CartView({
               key={count}
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
-              className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white"
+              className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-danger px-1 text-[10.5px] font-bold text-white"
             >
               {count}
             </motion.span>
@@ -718,7 +718,7 @@ function PaymentSelectView({
         }}
       >
         <p
-          className="font-ui text-[10px] font-bold uppercase text-neutral-400"
+          className="font-ui text-[10.5px] font-bold uppercase text-neutral-400"
           style={{ letterSpacing: "0.18em" }}
         >
           Total a pagar
@@ -730,7 +730,7 @@ function PaymentSelectView({
           R$ {total.toFixed(2).replace(".", ",")}
         </p>
         {total === 0 && (
-          <p className="mt-1 text-[10px] font-medium text-warning">
+          <p className="mt-1 text-[10.5px] font-medium text-warning">
             Volte ao catálogo e adicione um item para finalizar.
           </p>
         )}
@@ -738,7 +738,7 @@ function PaymentSelectView({
 
       <div className="flex-1 space-y-2 overflow-y-auto p-3">
         <p
-          className="font-ui text-[10px] font-bold uppercase text-neutral-500"
+          className="font-ui text-[10.5px] font-bold uppercase text-neutral-500"
           style={{ letterSpacing: "0.16em" }}
         >
           Forma de pagamento

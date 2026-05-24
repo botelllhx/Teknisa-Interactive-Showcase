@@ -63,7 +63,7 @@ export function AssistenteRegrasMockup({ step }: AssistenteRegrasProps) {
           </div>
         </div>
         <span
-          className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-ui text-[10px] font-bold uppercase text-white"
+          className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-ui text-[10.5px] font-bold uppercase text-white"
           style={{
             background:
               "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
@@ -175,7 +175,7 @@ function WizardView() {
             <Sparkles size={18} strokeWidth={2} />
           </div>
           <div>
-            <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
+            <p className="font-ui text-[10.5px] font-bold uppercase tracking-[2px] text-brand">
               Wizard, descreva o que precisa
             </p>
             <p className="font-ui text-[14px] font-bold text-neutral-900">
@@ -198,7 +198,7 @@ function WizardView() {
       </div>
 
       <div className="space-y-1.5">
-        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
           Sugestões da IA
         </p>
         {[
@@ -233,7 +233,7 @@ function ConditionsView() {
     >
       <div className="flex items-center justify-between">
         <p
-          className="font-ui text-[10px] font-bold uppercase text-brand"
+          className="font-ui text-[10.5px] font-bold uppercase text-brand"
           style={{ letterSpacing: "0.10em" }}
         >
           Configuração detectada
@@ -397,7 +397,7 @@ function Block({
       )}
     >
       <div className="flex items-center justify-between">
-        <p className="font-ui text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+        <p className="font-ui text-[10.5px] font-bold uppercase tracking-[1.5px] text-neutral-500">
           {label}
         </p>
         <span

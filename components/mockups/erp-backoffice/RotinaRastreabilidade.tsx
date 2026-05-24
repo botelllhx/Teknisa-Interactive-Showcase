@@ -154,7 +154,7 @@ export function RotinaRastreabilidadeMockup({
                 <div className="flex items-center justify-between">
                   <div>
                     <p
-                      className="font-ui text-[10px] font-bold uppercase text-brand"
+                      className="font-ui text-[10.5px] font-bold uppercase text-brand"
                       style={{ letterSpacing: "0.10em" }}
                     >
                       Linha do tempo · lote AP247
@@ -166,7 +166,7 @@ export function RotinaRastreabilidadeMockup({
                       Trajeto completo em {TIMELINE.length} etapas
                     </p>
                   </div>
-                  <Badge variant="success" className="text-[10px]">
+                  <Badge variant="success" className="text-[10.5px]">
                     Sem inconsistências
                   </Badge>
                 </div>

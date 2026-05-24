@@ -108,7 +108,7 @@ function Header() {
           </div>
         </div>
         <span
-          className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-ui text-[10px] font-bold uppercase text-white"
+          className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-ui text-[10.5px] font-bold uppercase text-white"
           style={{
             background:
               "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
@@ -122,7 +122,7 @@ function Header() {
         </span>
       </div>
       <div className="flex items-center gap-3">
-        <span className="flex items-center gap-1 font-ui text-[10px] font-medium text-neutral-500">
+        <span className="flex items-center gap-1 font-ui text-[10.5px] font-medium text-neutral-500">
           <RefreshCw size={11} strokeWidth={2.25} />
           Aprendendo com 24 meses
         </span>
@@ -653,7 +653,7 @@ function ISASalesResponse({
             }}
           >
             <p
-              className="font-ui text-[10px] font-bold uppercase text-neutral-500"
+              className="font-ui text-[10.5px] font-bold uppercase text-neutral-500"
               style={{ letterSpacing: "0.08em" }}
             >
               {k.l}
@@ -686,7 +686,7 @@ function ISASalesResponse({
         }}
       >
         <p
-          className="font-ui text-[10px] font-bold uppercase text-brand"
+          className="font-ui text-[10.5px] font-bold uppercase text-brand"
           style={{ letterSpacing: "0.10em" }}
         >
           Vendas últimos 7 dias
@@ -697,7 +697,7 @@ function ISASalesResponse({
             color="#7c3aed"
             yMin={15}
             yMax={28}
-            aspectRatio="16/4"
+            aspectRatio="16/6"
             formatY={(v) => `R$ ${v.toFixed(1)}k`}
           />
         </div>
@@ -740,7 +740,7 @@ function ISAWasteResponse({
       >
         <div className="flex items-center justify-between">
           <p
-            className="font-ui text-[10px] font-bold uppercase text-warning"
+            className="font-ui text-[10.5px] font-bold uppercase text-warning"
             style={{ letterSpacing: "0.08em" }}
           >
             Previsão · sexta, 24/05
@@ -763,7 +763,7 @@ function ISAWasteResponse({
         </div>
         <div className="mt-2 flex items-center justify-between rounded-lg bg-white px-3 py-2">
           <div>
-            <p className="font-ui text-[10px] font-medium text-neutral-500">
+            <p className="font-ui text-[10.5px] font-medium text-neutral-500">
               Recomendação
             </p>
             <p
@@ -773,7 +773,7 @@ function ISAWasteResponse({
               Reduzir produção de arroz em 8% e feijão em 12%
             </p>
           </div>
-          <span className="flex items-center gap-1 font-ui text-[10px] font-bold text-success">
+          <span className="flex items-center gap-1 font-ui text-[10.5px] font-bold text-success">
             <TrendingDown size={11} strokeWidth={2.5} />
             -R$ 187/dia
           </span>
@@ -840,7 +840,7 @@ function ISAActionResponse({ animate }: { animate?: boolean }) {
               <p className="font-ui text-[10.5px] font-bold text-neutral-900">
                 {a.who}
               </p>
-              <p className="font-ui text-[10px] text-neutral-600">{a.action}</p>
+              <p className="font-ui text-[10.5px] text-neutral-600">{a.action}</p>
             </div>
           </motion.div>
         ))}

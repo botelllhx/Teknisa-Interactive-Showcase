@@ -1005,7 +1005,7 @@ function HomeView({
               {CATEGORIES.find((c) => c.id === activeCategory)?.label ?? ""}
             </h2>
             <span
-              className="rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[10px] font-bold tabular-nums text-brand"
+              className="rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[10.5px] font-bold tabular-nums text-brand"
               style={{ letterSpacing: "0.04em" }}
             >
               {products.length} itens
@@ -1163,7 +1163,7 @@ function OrderTypeModal({ skin }: { skin: Skin }) {
         </button>
         <button
           type="button"
-          className="mt-3 flex w-full items-center justify-center gap-1.5 text-[10px] font-medium text-neutral-500 underline"
+          className="mt-3 flex w-full items-center justify-center gap-1.5 text-[10.5px] font-medium text-neutral-500 underline"
         >
           <UserRound size={11} strokeWidth={2.25} />
           Identifique-se com CPF
@@ -1250,7 +1250,7 @@ function ItemDetailModal({
             <p className="font-ui text-[15px] font-bold leading-tight drop-shadow">
               {product.name}
             </p>
-            <p className="mt-0.5 text-[10px] leading-snug text-white/85 line-clamp-2">
+            <p className="mt-0.5 text-[10.5px] leading-snug text-white/85 line-clamp-2">
               {product.desc}
             </p>
           </div>
@@ -1298,7 +1298,7 @@ function ItemDetailModal({
                           <span className="h-1 w-1 rounded-full bg-white" />
                         )}
                       </span>
-                      <span className="font-ui text-[10px] font-medium text-neutral-900 line-clamp-1">
+                      <span className="font-ui text-[10.5px] font-medium text-neutral-900 line-clamp-1">
                         {opt.label}
                       </span>
                     </motion.button>
@@ -1335,7 +1335,7 @@ function ItemDetailModal({
                       </div>
                       <div className="flex items-center gap-2">
                         {opt.price && (
-                          <span className="font-ui text-[10px] font-bold text-neutral-700 tabular-nums">
+                          <span className="font-ui text-[10.5px] font-bold text-neutral-700 tabular-nums">
                             + R$ {opt.price.toFixed(2).replace(".", ",")}
                           </span>
                         )}
@@ -1428,7 +1428,7 @@ function Section({
         </p>
         {required && (
           <p
-            className="font-ui text-[10px] font-medium"
+            className="font-ui text-[10.5px] font-medium"
             style={{ color: skin.brand }}
           >
             {required}
@@ -1632,7 +1632,7 @@ function PaymentModal({
         style={{ background: skin.brand }}
       >
         <div>
-          <p className="text-[10px] opacity-80">Total:</p>
+          <p className="text-[10.5px] opacity-80">Total:</p>
           <p className="font-ui text-[16px] font-bold tabular-nums">
             R$ {(total || 0).toFixed(2).replace(".", ",")}
           </p>
@@ -1640,14 +1640,14 @@ function PaymentModal({
         <div className="flex gap-1.5">
           <button
             type="button"
-            className="rounded-md border border-white px-2.5 py-2 font-ui text-[10px] font-bold text-white"
+            className="rounded-md border border-white px-2.5 py-2 font-ui text-[10.5px] font-bold text-white"
           >
             Continuar Comprando
           </button>
           <button
             type="button"
             disabled={!canPay}
-            className="rounded-md bg-white px-2.5 py-2 font-ui text-[10px] font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-md bg-white px-2.5 py-2 font-ui text-[10.5px] font-bold disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ color: skin.brand }}
           >
             {canPay ? "Finalizar Compra" : "Carrinho vazio"}
@@ -1727,7 +1727,7 @@ function ProcessingDoneOverlay({
         >
           A1247
         </p>
-        <p className="mt-2 flex items-center justify-center gap-1.5 text-[10px] text-neutral-500">
+        <p className="mt-2 flex items-center justify-center gap-1.5 text-[10.5px] text-neutral-500">
           <Clock size={11} strokeWidth={2.25} />
           Tempo estimado
           <span className="font-bold text-neutral-700">8 min</span>
@@ -1775,7 +1775,7 @@ function BottomTotalBar({
       <div className="flex items-center gap-3 text-right">
         <div className="leading-tight">
           <p
-            className="font-ui text-[10px] font-bold uppercase opacity-80"
+            className="font-ui text-[10.5px] font-bold uppercase opacity-80"
             style={{ letterSpacing: "0.16em" }}
           >
             Total

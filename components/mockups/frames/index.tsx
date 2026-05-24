@@ -64,10 +64,10 @@ const CANONICAL: Record<
     frame: "smartpos",
     value: 980,
   },
-  // POSTerminalFrame(height=H): width = (H*0.55*16/10) + 28
-  // v13.20: 800 → 860
+  // POSTerminalFrame(height=H): width = (H*0.70*16/10) + 28
+  // v13.20: 800 → 860 ; v13.25: SCREEN_RATIO 0.55→0.70 → outerW recalculado
   "pos-terminal": {
-    outerW: 860 * 0.55 * (16 / 10) + 28,
+    outerW: 860 * 0.70 * (16 / 10) + 28,
     outerH: 860,
     frame: "pos-terminal",
     value: 860,

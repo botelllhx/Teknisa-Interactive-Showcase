@@ -5,7 +5,6 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { ArrowRight, MousePointer2, X } from "lucide-react";
 import { resolveText, type TourStep } from "@/data/solutions";
 import { useTourLive } from "@/lib/tourState";
-import { Badge } from "@/components/ui/shadcn";
 
 export interface TourTooltipProps {
   step: TourStep;
@@ -193,20 +192,29 @@ export function TourTooltip({
         left: pos.left,
         width: TOOLTIP_WIDTH,
       }}
-      className="pointer-events-auto z-[10000] overflow-hidden rounded-2xl border border-brand/8 bg-white shadow-[0_18px_56px_rgba(0,0,0,0.18),0_2px_12px_rgba(0,0,0,0.08)] font-ui"
+      className="pointer-events-auto z-[10000] overflow-hidden rounded-2xl border border-brand/8 bg-white shadow-[0_18px_56px_rgba(2,7,136,0.18),0_2px_12px_rgba(0,0,0,0.06)] font-ui"
     >
-      {/* Top brand gradient accent strip */}
+      {/* Top brand→purple accent strip (refined gradient) */}
       <div
         aria-hidden
-        className="h-[3px] w-full bg-gradient-to-r from-brand via-brand-light to-brand"
+        className="h-[3px] w-full bg-gradient-to-r from-brand via-[#3b42c4] to-[#7c3aed]"
       />
 
       <div className="p-5">
         <div className="flex items-start justify-between gap-2">
-          <Badge variant="secondary" className="text-[10px]">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand" />
-            Passo {stepIndex + 1} / {totalSteps}
-          </Badge>
+          <span
+            className="inline-flex items-center gap-1.5 rounded-full bg-brand-ghost px-2.5 py-1 font-ui text-[10px] font-bold uppercase text-brand"
+            style={{ letterSpacing: "0.14em" }}
+          >
+            Etapa{" "}
+            <span className="tabular-nums">
+              {String(stepIndex + 1).padStart(2, "0")}
+            </span>
+            <span className="text-brand/40">·</span>
+            <span className="tabular-nums text-brand/60">
+              {String(totalSteps).padStart(2, "0")}
+            </span>
+          </span>
           <button
             type="button"
             onClick={onSkip}
@@ -222,7 +230,8 @@ export function TourTooltip({
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, delay: 0.05 }}
-          className="mt-3 font-display text-[19px] font-bold leading-snug text-neutral-900"
+          className="mt-3 font-display text-[20px] font-bold leading-[1.2] text-neutral-900"
+          style={{ letterSpacing: "-0.022em" }}
         >
           {title}
         </motion.h3>
@@ -231,12 +240,13 @@ export function TourTooltip({
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, delay: 0.1 }}
-          className="mt-1.5 font-ui text-[15px] leading-relaxed text-neutral-600"
+          className="mt-2 font-ui text-[14.5px] leading-[1.55] text-neutral-600"
+          style={{ letterSpacing: "-0.005em" }}
         >
           {description}
         </motion.p>
 
-        <div className="mt-4 flex items-center justify-between gap-2">
+        <div className="mt-5 flex items-center justify-between gap-2">
           {requiresInteraction && !isLast ? (
             <motion.span
               animate={{ x: [0, 2, 0] }}
@@ -245,9 +255,10 @@ export function TourTooltip({
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="inline-flex items-center gap-1.5 font-ui text-[12.5px] font-semibold uppercase tracking-wider text-brand"
+              className="inline-flex items-center gap-1.5 font-ui text-[11px] font-bold uppercase text-brand"
+              style={{ letterSpacing: "0.14em" }}
             >
-              <MousePointer2 size={14} strokeWidth={2.25} />
+              <MousePointer2 size={13} strokeWidth={2.5} />
               Toque no destacado
             </motion.span>
           ) : (
@@ -258,7 +269,14 @@ export function TourTooltip({
             <button
               type="button"
               onClick={onNext}
-              className="inline-flex h-11 items-center gap-1.5 rounded-full bg-gradient-to-b from-brand-light to-brand px-5 font-ui text-[14px] font-semibold text-white shadow-brand transition-all hover:-translate-y-[1px] hover:shadow-[0_8px_22px_rgba(2,7,136,0.32)] active:scale-[0.98]"
+              className="inline-flex h-11 items-center gap-1.5 rounded-full px-5 font-ui text-[14px] font-bold text-white transition-all hover:-translate-y-[1px] active:scale-[0.98]"
+              style={{
+                background:
+                  "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
+                boxShadow:
+                  "0 4px 14px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
+                letterSpacing: "-0.005em",
+              }}
             >
               {actionLabel}
               <ArrowRight size={15} strokeWidth={2.5} />

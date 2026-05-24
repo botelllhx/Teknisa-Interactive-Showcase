@@ -32,10 +32,10 @@ export function ConfirmationFeedback({
       className={cn("flex items-center justify-center p-6", className)}
     >
       <Card className="relative w-full max-w-[560px] overflow-hidden p-10 text-center shadow-[0_24px_72px_rgba(2,7,136,0.12),0_4px_16px_rgba(0,0,0,0.06)]">
-        {/* Decorative top accent */}
+        {/* Decorative top accent — brand→purple refinado */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-brand via-brand-light to-brand"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-brand via-[#3b42c4] to-[#7c3aed]"
         />
         {/* Soft halo behind the check */}
         <motion.div
@@ -57,7 +57,11 @@ export function ConfirmationFeedback({
               damping: 14,
               delay: 0.1,
             }}
-            className="relative flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-b from-brand-light to-brand text-white shadow-[0_12px_40px_rgba(2,7,136,0.30)]"
+            className="relative flex h-28 w-28 items-center justify-center rounded-full text-white shadow-[0_16px_40px_rgba(2,7,136,0.30),inset_0_1px_0_rgba(255,255,255,0.18)]"
+            style={{
+              background:
+                "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
+            }}
           >
             {/* Inner pulsing ring */}
             <motion.span
@@ -103,7 +107,8 @@ export function ConfirmationFeedback({
                 duration: 0.4,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="font-display text-[34px] font-bold leading-tight text-neutral-900"
+              className="font-display text-[34px] font-bold leading-[1.08] text-neutral-900"
+              style={{ letterSpacing: "-0.028em" }}
             >
               {title}
             </motion.h3>
@@ -115,7 +120,8 @@ export function ConfirmationFeedback({
                 duration: 0.4,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="mt-2 max-w-[42ch] font-ui text-[17px] leading-relaxed text-neutral-600"
+              className="mt-3 max-w-[42ch] font-ui text-[16px] leading-[1.55] text-neutral-500"
+              style={{ letterSpacing: "-0.005em" }}
             >
               {description}
             </motion.p>

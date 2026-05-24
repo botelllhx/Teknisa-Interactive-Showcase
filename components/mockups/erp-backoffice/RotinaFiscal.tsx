@@ -127,7 +127,7 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
                 colors={{ from: "#1a1fa8", to: "#020788" }}
               />
             </div>
-            <ul className="mt-3 space-y-1.5">
+            <ul className="mt-4 space-y-2">
               {OBLIGATIONS.map((o, i) => {
                 const tone =
                   o.status === "ok"
@@ -142,29 +142,41 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.04 * i, duration: 0.22 }}
                     whileHover={{ y: -1 }}
-                    className="group flex items-center justify-between rounded-xl bg-white px-3 py-2 transition-shadow hover:shadow-subtle"
-                    style={{ border: "1px solid rgba(0,0,0,0.04)" }}
+                    className="group flex items-center justify-between rounded-xl bg-white px-3.5 py-2.5 transition-shadow hover:shadow-subtle"
+                    style={{
+                      border: "1px solid rgba(0,0,0,0.05)",
+                      boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+                    }}
                   >
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-3">
                       <GradientIcon
                         icon={<FileText />}
                         tone={tone as "success" | "warning" | "brand"}
-                        size={28}
+                        size={32}
                       />
                       <div>
                         <p
-                          className="font-ui text-[12px] font-bold text-neutral-900"
-                          style={{ letterSpacing: "-0.005em" }}
+                          className="font-display text-[13px] font-bold text-neutral-900"
+                          style={{ letterSpacing: "-0.018em" }}
                         >
                           {o.code}
                         </p>
-                        <p className="font-ui text-[10px] text-neutral-500">
+                        <p
+                          className="font-ui text-[10.5px] text-neutral-500"
+                          style={{ letterSpacing: "-0.005em" }}
+                        >
                           {o.desc}
                         </p>
                       </div>
                     </div>
-                    <span className="flex items-center gap-1.5 font-ui text-[11px] tabular-nums text-neutral-500">
-                      <Calendar size={11} strokeWidth={2} />
+                    <span
+                      className="flex items-center gap-1.5 rounded-full bg-neutral-50 px-2.5 py-1 font-ui text-[10.5px] font-bold tabular-nums text-neutral-600"
+                      style={{
+                        border: "1px solid rgba(0,0,0,0.04)",
+                        letterSpacing: "-0.005em",
+                      }}
+                    >
+                      <Calendar size={11} strokeWidth={2.25} />
                       {o.due}
                     </span>
                   </motion.li>

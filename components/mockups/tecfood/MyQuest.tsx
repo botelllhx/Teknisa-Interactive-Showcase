@@ -455,12 +455,20 @@ function ScheduleView({
                 <div
                   className="flex h-12 w-14 flex-none flex-col items-center justify-center rounded-lg"
                   style={{
-                    background: active ? "#020788" : "rgba(2,7,136,0.08)",
+                    background: active
+                      ? "linear-gradient(135deg, #16a34a 0%, #15803d 60%, #047857 100%)"
+                      : "rgba(2,7,136,0.08)",
                     color: active ? "white" : "#020788",
+                    boxShadow: active
+                      ? "0 2px 6px rgba(22,163,74,0.30), inset 0 1px 0 rgba(255,255,255,0.18)"
+                      : undefined,
                   }}
                 >
-                  <Clock size={14} strokeWidth={2} className="opacity-80" />
-                  <span className="font-ui text-[13px] font-bold tabular-nums">
+                  <Clock size={11} strokeWidth={2} className="opacity-80" />
+                  <span
+                    className="font-display text-[13px] font-bold tabular-nums"
+                    style={{ letterSpacing: "-0.018em" }}
+                  >
                     {s.label}
                   </span>
                 </div>
@@ -468,34 +476,48 @@ function ScheduleView({
                   <div className="flex items-center gap-1.5">
                     <p
                       className={cn(
-                        "font-ui text-[11px] font-bold",
+                        "font-display text-[12px] font-bold",
                         active ? "text-brand" : "text-neutral-700",
                       )}
+                      style={{ letterSpacing: "-0.018em" }}
                     >
-                      {s.taken}/{s.capacity} reservas
+                      <span className="tabular-nums">
+                        {s.taken}/{s.capacity}
+                      </span>{" "}
+                      reservas
                     </p>
                     {s.suggested && (
-                      <span className="inline-flex items-center gap-0.5 rounded-full bg-brand-ghost px-1.5 py-0.5 text-[8px] font-bold text-brand">
-                        <Sparkles size={8} strokeWidth={2.5} />
+                      <span
+                        className="inline-flex items-center gap-0.5 rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-brand"
+                        style={{ letterSpacing: "0.14em" }}
+                      >
+                        <Sparkles size={9} strokeWidth={2.5} />
                         Pico baixo
                       </span>
                     )}
                   </div>
-                  <div className="mt-1 h-1 overflow-hidden rounded-full bg-neutral-100">
+                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-neutral-100">
                     <motion.span
                       initial={{ width: 0 }}
                       animate={{ width: `${pct}%` }}
-                      transition={{ duration: 0.4 }}
-                      className={cn("block h-full rounded-full", statusTone.bar)}
+                      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                      className={cn(
+                        "block h-full rounded-full",
+                        statusTone.bar,
+                      )}
+                      style={{
+                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.20)",
+                      }}
                     />
                   </div>
                 </div>
                 <span
                   className={cn(
-                    "rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider",
+                    "rounded-full px-2 py-0.5 font-ui text-[9.5px] font-bold uppercase",
                     statusTone.bg,
                     statusTone.text,
                   )}
+                  style={{ letterSpacing: "0.14em" }}
                 >
                   {status}
                 </span>

@@ -14,6 +14,7 @@ import {
   Apple,
   Beef,
   Star,
+  Sparkles,
   CheckCircle2,
   QrCode,
   ThumbsUp,
@@ -528,10 +529,13 @@ function ReservaView({
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 py-2.5">
-        <p className="mb-1.5 font-ui text-[10px] font-bold uppercase tracking-wider text-neutral-500">
+        <p
+          className="mb-2 font-ui text-[10px] font-bold uppercase text-neutral-500"
+          style={{ letterSpacing: "0.16em" }}
+        >
           Horários disponíveis
         </p>
-        <div data-tour="mm-reserve" className="space-y-1.5">
+        <div data-tour="mm-reserve" className="space-y-2">
           {TIME_SLOTS.map((s) => {
             const active = s.id === reservedSlot;
             return (
@@ -541,36 +545,49 @@ function ReservaView({
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onReserve(s.id)}
                 className={cn(
-                  "flex w-full items-center gap-2.5 rounded-xl border-2 p-2.5 text-left transition-all",
+                  "flex w-full items-center gap-3 rounded-xl border-2 p-3 text-left transition-all",
                   active
                     ? "border-brand bg-brand-ghost shadow-brand"
                     : "border-neutral-200 bg-white hover:border-brand/30",
                 )}
               >
                 <div
-                  className="flex h-11 w-12 flex-none flex-col items-center justify-center rounded-md"
+                  className="flex h-12 w-14 flex-none flex-col items-center justify-center rounded-lg"
                   style={{
-                    background: active ? "#020788" : "rgba(2,7,136,0.08)",
+                    background: active
+                      ? "linear-gradient(135deg, #020788 0%, #1a1fa8 60%, #3b42c4 100%)"
+                      : "rgba(2,7,136,0.08)",
                     color: active ? "white" : "#020788",
+                    boxShadow: active
+                      ? "0 2px 6px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)"
+                      : undefined,
                   }}
                 >
                   <Clock size={11} strokeWidth={2} className="opacity-80" />
-                  <span className="font-ui text-[12px] font-bold tabular-nums">
+                  <span
+                    className="font-display text-[13px] font-bold tabular-nums"
+                    style={{ letterSpacing: "-0.018em" }}
+                  >
                     {s.label}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p
                     className={cn(
-                      "font-ui text-[11px] font-bold",
+                      "font-display text-[12px] font-bold",
                       active ? "text-brand" : "text-neutral-700",
                     )}
+                    style={{ letterSpacing: "-0.018em" }}
                   >
                     {s.crowd}
                   </p>
                   {s.suggested && (
-                    <p className="text-[9px] text-brand">
-                      Recomendado para você
+                    <p
+                      className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-brand/8 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-brand"
+                      style={{ letterSpacing: "0.14em" }}
+                    >
+                      <Sparkles size={9} strokeWidth={2.5} />
+                      Recomendado
                     </p>
                   )}
                 </div>

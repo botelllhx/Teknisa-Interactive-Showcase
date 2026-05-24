@@ -361,15 +361,36 @@ function Hop({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <span
-        className={cn(
-          "h-2.5 w-2.5 flex-none rounded-full",
-          tone === "active" ? "bg-brand shadow-brand" : "bg-brand/30",
+      <span className="relative flex h-3 w-3 flex-none items-center justify-center">
+        {tone === "active" && (
+          <motion.span
+            animate={{ scale: [1, 1.8, 1], opacity: [0.4, 0, 0.4] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-0 rounded-full bg-brand/40"
+          />
         )}
-      />
+        <span
+          className={cn(
+            "relative h-2.5 w-2.5 rounded-full",
+            tone === "active"
+              ? "bg-brand shadow-brand ring-2 ring-brand/30"
+              : "bg-brand/30",
+          )}
+        />
+      </span>
       <div className="min-w-0 flex-1">
-        <p className="font-ui text-[12px] font-bold text-neutral-900">{label}</p>
-        <p className="truncate font-ui text-[11px] text-neutral-500">{detail}</p>
+        <p
+          className="font-display text-[12.5px] font-bold text-neutral-900"
+          style={{ letterSpacing: "-0.018em" }}
+        >
+          {label}
+        </p>
+        <p
+          className="truncate font-ui text-[11px] text-neutral-500"
+          style={{ letterSpacing: "-0.005em" }}
+        >
+          {detail}
+        </p>
       </div>
     </div>
   );

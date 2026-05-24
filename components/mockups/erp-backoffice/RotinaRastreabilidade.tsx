@@ -65,28 +65,45 @@ export function RotinaRastreabilidadeMockup({
         <div className="flex items-center gap-3">
           <Image src="/logo-teknisa.svg" alt="Teknisa" width={86} height={16} />
           <span className="h-5 w-px bg-neutral-200" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <span
-              className="flex h-7 w-7 items-center justify-center rounded-md text-white"
-              style={{ background: "#020788" }}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-white"
+              style={{
+                background:
+                  "linear-gradient(135deg, #0d9488 0%, #0f766e 60%, #115e59 100%)",
+                boxShadow:
+                  "0 3px 8px rgba(13,148,136,0.32), inset 0 1px 0 rgba(255,255,255,0.20)",
+              }}
             >
-              <GitBranch size={14} strokeWidth={2} />
+              <GitBranch size={15} strokeWidth={2.25} />
             </span>
             <div className="leading-tight">
-              <p className="font-ui text-[13px] font-bold text-neutral-900">
+              <p
+                className="font-display text-[14px] font-bold text-neutral-900"
+                style={{ letterSpacing: "-0.018em" }}
+              >
                 Rastreabilidade
               </p>
-              <p className="font-ui text-[11px] text-neutral-500">
+              <p
+                className="font-ui text-[10.5px] text-neutral-500"
+                style={{ letterSpacing: "-0.005em" }}
+              >
                 ERP Backoffice · Compliance
               </p>
             </div>
           </div>
         </div>
         {showReport && (
-          <Badge variant="success">
-            <FileText size={10} strokeWidth={2.5} />
+          <motion.span
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 320, damping: 22 }}
+            className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-1 font-ui text-[9.5px] font-bold uppercase text-success"
+            style={{ letterSpacing: "0.12em" }}
+          >
+            <FileText size={11} strokeWidth={2.5} />
             Relatório pronto
-          </Badge>
+          </motion.span>
         )}
       </header>
 

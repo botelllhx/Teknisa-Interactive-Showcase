@@ -799,7 +799,7 @@ function ConfirmView({ subtotal }: { subtotal: number }) {
       className="relative flex h-full flex-col items-center justify-center px-6"
       style={{
         background:
-          "radial-gradient(ellipse at top, rgba(22,163,74,0.06), transparent 55%), radial-gradient(ellipse at bottom, rgba(124,58,237,0.04), transparent 60%)",
+          "radial-gradient(ellipse at top, rgba(22,163,74,0.06), transparent 55%), radial-gradient(ellipse at bottom, rgba(2,7,136,0.04), transparent 60%)",
       }}
     >
       <motion.div
@@ -987,7 +987,7 @@ function BottomNav({ step }: { step: number }) {
               className="absolute -top-1 left-1/2 h-[3px] w-7 -translate-x-1/2 rounded-full"
               style={{
                 background:
-                  "linear-gradient(90deg, #020788 0%, #1a1fa8 60%, #7c3aed 100%)",
+                  "linear-gradient(90deg, #020788 0%, #1a1fa8 60%, #3b42c4 100%)",
               }}
               transition={{ type: "spring", stiffness: 380, damping: 28 }}
             />

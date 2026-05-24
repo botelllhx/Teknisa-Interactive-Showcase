@@ -32,10 +32,10 @@ export function ConfirmationFeedback({
       className={cn("flex items-center justify-center p-6", className)}
     >
       <Card className="relative w-full max-w-[560px] overflow-hidden p-10 text-center shadow-[0_24px_72px_rgba(2,7,136,0.12),0_4px_16px_rgba(0,0,0,0.06)]">
-        {/* Decorative top accent — brand→purple refinado */}
+        {/* Decorative top accent — apenas indigo */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-brand via-[#3b42c4] to-[#7c3aed]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-brand via-brand-light to-brand-lighter"
         />
         {/* Soft halo behind the check */}
         <motion.div
@@ -60,7 +60,7 @@ export function ConfirmationFeedback({
             className="relative flex h-28 w-28 items-center justify-center rounded-full text-white shadow-[0_16px_40px_rgba(2,7,136,0.30),inset_0_1px_0_rgba(255,255,255,0.18)]"
             style={{
               background:
-                "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
+                "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
             }}
           >
             {/* Inner pulsing ring */}

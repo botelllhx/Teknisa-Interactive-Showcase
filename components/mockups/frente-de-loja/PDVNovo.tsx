@@ -585,7 +585,7 @@ function CenterColumn({
                 className="flex h-10 w-10 items-center justify-center rounded-lg"
                 style={{
                   background: highlight
-                    ? "linear-gradient(135deg, rgba(124,58,237,0.14) 0%, rgba(2,7,136,0.10) 100%)"
+                    ? "linear-gradient(135deg, rgba(2,7,136,0.10) 0%, rgba(59,66,196,0.14) 100%)"
                     : "#eef0f7",
                   boxShadow:
                     "inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 1px rgba(2,7,136,0.04)",

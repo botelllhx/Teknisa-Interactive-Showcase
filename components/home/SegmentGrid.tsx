@@ -56,13 +56,13 @@ function SegmentCard({ segment, onSelect }: SegmentCardProps) {
         boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
       }}
     >
-      {/* Hover-only soft wash */}
+      {/* Hover-only soft wash (apenas indigo brand) */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{
           background:
-            "radial-gradient(ellipse at top left, rgba(124,58,237,0.06), transparent 55%), radial-gradient(ellipse at bottom right, rgba(2,7,136,0.05), transparent 60%)",
+            "radial-gradient(ellipse at top left, rgba(59,66,196,0.08), transparent 55%), radial-gradient(ellipse at bottom right, rgba(2,7,136,0.05), transparent 60%)",
         }}
       />
 
@@ -71,7 +71,7 @@ function SegmentCard({ segment, onSelect }: SegmentCardProps) {
           className="flex h-14 w-14 items-center justify-center rounded-2xl text-brand transition-transform group-hover:scale-[1.04]"
           style={{
             background:
-              "linear-gradient(135deg, rgba(124,58,237,0.14) 0%, rgba(2,7,136,0.10) 100%)",
+              "linear-gradient(135deg, rgba(2,7,136,0.10) 0%, rgba(59,66,196,0.14) 100%)",
             boxShadow:
               "inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 2px rgba(2,7,136,0.08)",
           }}

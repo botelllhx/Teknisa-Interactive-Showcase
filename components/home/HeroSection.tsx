@@ -35,7 +35,7 @@ export function HeroSection() {
         className="pointer-events-none absolute -left-32 -top-32 h-[420px] w-[420px] rounded-full opacity-60 blur-[80px]"
         style={{
           background:
-            "radial-gradient(circle at 30% 30%, rgba(124,58,237,0.18), rgba(2,7,136,0.10) 60%, transparent 75%)",
+            "radial-gradient(circle at 30% 30%, rgba(59,66,196,0.20), rgba(2,7,136,0.10) 60%, transparent 75%)",
         }}
       />
 
@@ -68,7 +68,7 @@ export function HeroSection() {
               animate={{ scaleY: 1 }}
               transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
               style={{ transformOrigin: "top" }}
-              className="w-[3px] rounded-full bg-gradient-to-b from-brand via-brand-light to-[#7c3aed]"
+              className="w-[3px] rounded-full bg-gradient-to-b from-brand via-brand-light to-brand-lighter"
               aria-hidden
             />
             <p

@@ -281,7 +281,7 @@ function Header({
             className="flex h-9 w-9 items-center justify-center rounded-xl text-white"
             style={{
               background:
-                "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
+                "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
               boxShadow:
                 "0 4px 12px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
             }}

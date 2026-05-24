@@ -194,10 +194,10 @@ export function TourTooltip({
       }}
       className="pointer-events-auto z-[10000] overflow-hidden rounded-2xl border border-brand/8 bg-white shadow-[0_18px_56px_rgba(2,7,136,0.18),0_2px_12px_rgba(0,0,0,0.06)] font-ui"
     >
-      {/* Top brand→purple accent strip (refined gradient) */}
+      {/* Top brand accent strip — apenas indigo (brand/light/lighter) */}
       <div
         aria-hidden
-        className="h-[3px] w-full bg-gradient-to-r from-brand via-[#3b42c4] to-[#7c3aed]"
+        className="h-[3px] w-full bg-gradient-to-r from-brand via-brand-light to-brand-lighter"
       />
 
       <div className="p-5">

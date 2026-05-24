@@ -17,7 +17,7 @@ interface GradientIconProps {
 }
 
 const TONES = {
-  brand: { from: "#020788", to: "#7c3aed", softFrom: "#dbe4ff", softTo: "#ede9fe", text: "#020788" },
+  brand: { from: "#020788", to: "#3b42c4", softFrom: "#dbe4ff", softTo: "#e8e9f8", text: "#020788" },
   ai: { from: "#1a1fa8", to: "#a855f7", softFrom: "#e0e7ff", softTo: "#f3e8ff", text: "#5b21b6" },
   success: { from: "#16a34a", to: "#0d9488", softFrom: "#d1fae5", softTo: "#ccfbf1", text: "#047857" },
   warning: { from: "#f59e0b", to: "#d97706", softFrom: "#fef3c7", softTo: "#fed7aa", text: "#b45309" },

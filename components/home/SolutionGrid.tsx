@@ -36,7 +36,7 @@ export function SolutionGrid({ segmentId }: SolutionGridProps) {
             className="flex h-20 w-20 items-center justify-center rounded-3xl text-white"
             style={{
               background:
-                "linear-gradient(135deg, #020788 0%, #1a1fa8 50%, #7c3aed 100%)",
+                "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
               boxShadow:
                 "0 12px 32px -8px rgba(2,7,136,0.45), inset 0 1px 0 rgba(255,255,255,0.18)",
             }}
@@ -123,7 +123,7 @@ function SolutionCard({ solution, onSelect }: SolutionCardProps) {
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{
           background:
-            "radial-gradient(ellipse at top right, rgba(124,58,237,0.07), transparent 60%)",
+            "radial-gradient(ellipse at top right, rgba(59,66,196,0.08), transparent 60%)",
         }}
       />
 
@@ -132,7 +132,7 @@ function SolutionCard({ solution, onSelect }: SolutionCardProps) {
           className="flex h-14 w-14 items-center justify-center rounded-2xl text-brand transition-transform group-hover:scale-[1.04]"
           style={{
             background:
-              "linear-gradient(135deg, rgba(124,58,237,0.14) 0%, rgba(2,7,136,0.10) 100%)",
+              "linear-gradient(135deg, rgba(2,7,136,0.10) 0%, rgba(59,66,196,0.14) 100%)",
             boxShadow:
               "inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 2px rgba(2,7,136,0.08)",
           }}

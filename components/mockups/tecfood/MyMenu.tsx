@@ -250,7 +250,7 @@ function Header() {
         className="flex h-8 w-8 items-center justify-center rounded-full text-white"
         style={{
           background:
-            "linear-gradient(135deg, #020788 0%, #1a1fa8 60%, #7c3aed 100%)",
+            "linear-gradient(135deg, #020788 0%, #1a1fa8 60%, #3b42c4 100%)",
           boxShadow:
             "0 2px 6px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
         }}
@@ -299,7 +299,7 @@ function Tabs({ tab, onPick }: { tab: Tab; onPick: (t: Tab) => void }) {
                 className="absolute inset-x-3 bottom-0 h-[2px] rounded-full"
                 style={{
                   background:
-                    "linear-gradient(90deg, #020788 0%, #1a1fa8 60%, #7c3aed 100%)",
+                    "linear-gradient(90deg, #020788 0%, #1a1fa8 60%, #3b42c4 100%)",
                 }}
                 transition={{ type: "spring", stiffness: 380, damping: 28 }}
               />

@@ -158,3 +158,17 @@ body.presentation-mode * {
 .mockup-zoom * {
   -webkit-font-smoothing: subpixel-antialiased;
 }
+
+/* Product Sans breaks visually abaixo de ~10.5px depois do scale(1.2).
+   Forçamos um piso de 10.5px em qualquer texto dentro de mockup-zoom.
+   Antes desse piso, troca pra DM Sans (mais robusto em tamanhos pequenos)
+   automaticamente via fallback. Esse approach é melhor que reescrever
+   todos os 24 mockups. */
+.mockup-zoom :where(p, span, label, li, td, th, small, strong, em, button) {
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+/* Caps eyebrows pequenos: aplicar peso 600+ ajuda Product Sans a ler. */
+.mockup-zoom [class*="uppercase"] {
+  font-weight: 700;
+}

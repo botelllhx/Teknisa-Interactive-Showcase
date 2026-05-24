@@ -19,7 +19,7 @@ export interface TourTooltipProps {
   isLast: boolean;
 }
 
-const TOOLTIP_WIDTH = 360;
+const TOOLTIP_WIDTH = 380;
 // Conservative default before we measure the actual tooltip; we always
 // re-clamp after layout to fit the real height. Bigger estimate keeps the
 // first paint from spilling past the viewport on tall tooltips.
@@ -200,10 +200,10 @@ export function TourTooltip({
         className="h-[3px] w-full bg-gradient-to-r from-brand via-brand-light to-brand-lighter"
       />
 
-      <div className="p-5">
+      <div className="p-6">
         <div className="flex items-start justify-between gap-2">
           <span
-            className="inline-flex items-center gap-1.5 rounded-full bg-brand-ghost px-2.5 py-1 font-ui text-[10px] font-bold uppercase text-brand"
+            className="inline-flex items-center gap-1.5 rounded-full bg-brand-ghost px-3 py-1.5 font-ui text-[11px] font-bold uppercase text-brand"
             style={{ letterSpacing: "0.14em" }}
           >
             Etapa{" "}
@@ -219,9 +219,9 @@ export function TourTooltip({
             type="button"
             onClick={onSkip}
             aria-label="Pular tour"
-            className="-mr-1 -mt-1 flex h-7 w-7 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+            className="-mr-1 -mt-1 flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
           >
-            <X size={14} strokeWidth={2.25} />
+            <X size={16} strokeWidth={2.25} />
           </button>
         </div>
 
@@ -230,7 +230,7 @@ export function TourTooltip({
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, delay: 0.05 }}
-          className="mt-3 font-display text-[20px] font-bold leading-[1.2] text-neutral-900"
+          className="mt-4 font-display text-[22px] font-bold leading-[1.2] text-neutral-900"
           style={{ letterSpacing: "-0.022em" }}
         >
           {title}
@@ -240,7 +240,7 @@ export function TourTooltip({
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, delay: 0.1 }}
-          className="mt-2 font-ui text-[14.5px] leading-[1.55] text-neutral-600"
+          className="mt-2.5 font-ui text-[15.5px] leading-[1.55] text-neutral-600"
           style={{ letterSpacing: "-0.005em" }}
         >
           {description}
@@ -255,10 +255,10 @@ export function TourTooltip({
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="inline-flex items-center gap-1.5 font-ui text-[11px] font-bold uppercase text-brand"
+              className="inline-flex items-center gap-1.5 font-ui text-[12px] font-bold uppercase text-brand"
               style={{ letterSpacing: "0.14em" }}
             >
-              <MousePointer2 size={13} strokeWidth={2.5} />
+              <MousePointer2 size={14} strokeWidth={2.5} />
               Toque no destacado
             </motion.span>
           ) : (
@@ -269,7 +269,7 @@ export function TourTooltip({
             <button
               type="button"
               onClick={onNext}
-              className="inline-flex h-11 items-center gap-1.5 rounded-full px-5 font-ui text-[14px] font-bold text-white transition-all hover:-translate-y-[1px] active:scale-[0.98]"
+              className="inline-flex h-12 items-center gap-1.5 rounded-full px-6 font-ui text-[15px] font-bold text-white transition-all hover:-translate-y-[1px] active:scale-[0.98]"
               style={{
                 background:
                   "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
@@ -279,7 +279,7 @@ export function TourTooltip({
               }}
             >
               {actionLabel}
-              <ArrowRight size={15} strokeWidth={2.5} />
+              <ArrowRight size={16} strokeWidth={2.5} />
             </button>
           )}
         </div>

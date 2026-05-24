@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   TrendingUp,
@@ -44,6 +45,15 @@ const RISK_SERIES = [
 ];
 
 export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
+  // v13.10 — user pode clicar livre em qualquer pessoa pra selecionar
+  // (não fica só preso ao step do tour). O detail panel reflete a
+  // pessoa escolhida.
+  const [pickedPersonIdx, setPickedPersonIdx] = useState<number>(0);
+  // tour controla o detail panel automaticamente nos steps 2+
+  useEffect(() => {
+    if (step >= 2 && pickedPersonIdx === null) setPickedPersonIdx(0);
+  }, [step, pickedPersonIdx]);
+  const activePerson = RISK_PEOPLE[pickedPersonIdx ?? 0];
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-surface-raised font-ui text-neutral-800">
       <header className="flex h-14 items-center justify-between border-b border-brand/8 bg-white px-5">
@@ -209,7 +219,8 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
                 </p>
                 <div className="mt-2 flex-1 space-y-2 overflow-y-auto">
                   {RISK_PEOPLE.map((p, i) => {
-                    const selected = step >= 2 && i === 0;
+                    const selected =
+                      pickedPersonIdx === i && step >= 2;
                     return (
                       <motion.button
                         key={p.name}
@@ -218,8 +229,10 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: 0.04 * i, duration: 0.22 }}
                         type="button"
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setPickedPersonIdx(i)}
                         className={cn(
-                          "flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-all",
+                          "flex w-full items-center gap-3 rounded-xl p-3 text-left transition-all",
                           selected
                             ? "border-2 border-brand bg-brand-ghost shadow-card"
                             : "border border-brand/10 bg-white hover:-translate-y-[1px] hover:shadow-card-hover",
@@ -228,29 +241,39 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
                         <PersonAvatar
                           photo={p.photo}
                           name={p.name}
-                          size={40}
+                          size={42}
                           ring={selected}
                           status={p.risk >= 70 ? "busy" : "online"}
                         />
                         <div className="min-w-0 flex-1">
-                          <p className="font-ui text-[12px] font-bold text-neutral-900">
+                          <p
+                            className="font-ui text-[12.5px] font-bold text-neutral-900"
+                            style={{ letterSpacing: "-0.005em" }}
+                          >
                             {p.name}
                           </p>
-                          <p className="font-ui text-[10px] text-neutral-500">
-                            {p.unit} · {p.tenure}
+                          <p
+                            className="font-ui text-[10.5px] text-neutral-500"
+                            style={{ letterSpacing: "-0.005em" }}
+                          >
+                            {p.unit} · <span className="tabular-nums">{p.tenure}</span>
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-ui text-[9px] font-bold uppercase tracking-[1.5px] text-neutral-500">
+                          <p
+                            className="font-ui text-[9.5px] font-bold uppercase text-neutral-400"
+                            style={{ letterSpacing: "0.16em" }}
+                          >
                             Risco
                           </p>
                           <p
                             className={cn(
-                              "font-ui text-[16px] font-bold tabular-nums leading-none",
+                              "font-display text-[17px] font-bold tabular-nums leading-none",
                               p.risk >= 70 && "text-danger",
                               p.risk < 70 && p.risk >= 50 && "text-warning",
                               p.risk < 50 && "text-neutral-700",
                             )}
+                            style={{ letterSpacing: "-0.030em" }}
                           >
                             {p.risk}%
                           </p>
@@ -304,19 +327,56 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
 
           {step >= 2 && step < 3 && (
             <motion.div
+              key={activePerson.name}
               initial={{ opacity: 0, x: 8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.25 }}
-              className="rounded-2xl border border-danger/30 bg-danger/5 p-4"
+              className={cn(
+                "rounded-2xl p-4",
+                activePerson.risk >= 70
+                  ? "border border-danger/30 bg-danger/5"
+                  : activePerson.risk >= 50
+                    ? "border border-warning/30 bg-warning/5"
+                    : "border border-brand/15 bg-brand-ghost",
+              )}
             >
               <div className="flex items-center gap-2">
-                <AlertTriangle size={16} strokeWidth={2.25} className="text-danger" />
-                <p className="font-ui text-[12px] font-bold text-danger">
-                  Risco crítico
+                <AlertTriangle
+                  size={16}
+                  strokeWidth={2.25}
+                  className={cn(
+                    activePerson.risk >= 70
+                      ? "text-danger"
+                      : activePerson.risk >= 50
+                        ? "text-warning"
+                        : "text-brand",
+                  )}
+                />
+                <p
+                  className={cn(
+                    "font-display text-[13px] font-bold",
+                    activePerson.risk >= 70
+                      ? "text-danger"
+                      : activePerson.risk >= 50
+                        ? "text-warning"
+                        : "text-brand",
+                  )}
+                  style={{ letterSpacing: "-0.018em" }}
+                >
+                  {activePerson.risk >= 70
+                    ? "Risco crítico"
+                    : activePerson.risk >= 50
+                      ? "Risco moderado"
+                      : "Risco baixo"}
                 </p>
               </div>
-              <p className="mt-1 font-ui text-[11px] text-neutral-700">
-                Ricardo Almeida · 87% de probabilidade nos próximos 90 dias
+              <p
+                className="mt-1.5 font-ui text-[12px] leading-snug text-neutral-700"
+                style={{ letterSpacing: "-0.005em" }}
+              >
+                <span className="font-bold">{activePerson.name}</span> ·{" "}
+                <span className="tabular-nums">{activePerson.risk}%</span> de
+                probabilidade nos próximos 90 dias
               </p>
             </motion.div>
           )}

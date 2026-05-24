@@ -129,7 +129,7 @@ export function AreaChart({
       <svg
         viewBox={`0 0 ${VBW} ${VBH}`}
         preserveAspectRatio="none"
-        style={{ width: "100%", height: "100%", overflow: "visible" }}
+        style={{ width: "100%", height: "100%", display: "block" }}
         onPointerLeave={() => setHover(null)}
       >
         <defs>

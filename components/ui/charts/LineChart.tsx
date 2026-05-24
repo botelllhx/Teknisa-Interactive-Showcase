@@ -138,7 +138,7 @@ export function LineChart({
         style={{
           width: "100%",
           height: showLegend ? "calc(100% - 24px)" : "100%",
-          overflow: "visible",
+          display: "block",
         }}
         onPointerLeave={() => setHover(null)}
       >

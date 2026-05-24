@@ -228,44 +228,172 @@ function Sidebar() {
 // Chat panel — main conversation
 // ============================================================================
 
+type PromptId = "sales" | "waste" | "scale" | "action";
+
+interface PromptDef {
+  id: PromptId;
+  label: string;
+  text: string;
+  Icon: typeof TrendingUp;
+  tone: "brand" | "warning" | "teal" | "ai";
+}
+
+const PROMPTS: PromptDef[] = [
+  {
+    id: "sales",
+    label: "Como estão as vendas hoje?",
+    text: "Como estão minhas vendas hoje em relação à meta?",
+    Icon: TrendingUp,
+    tone: "brand",
+  },
+  {
+    id: "waste",
+    label: "Previsão de desperdício",
+    text: "E o desperdício? Vamos ter pico nesta sexta?",
+    Icon: Package,
+    tone: "warning",
+  },
+  {
+    id: "scale",
+    label: "Escala da semana",
+    text: "Como está a escala da equipe esta semana?",
+    Icon: Users,
+    tone: "teal",
+  },
+  {
+    id: "action",
+    label: "Aplicar plano IA",
+    text: "Aplica a recomendação automaticamente.",
+    Icon: Sparkles,
+    tone: "ai",
+  },
+];
+
 function ChatPanel({ step }: { step: number }) {
-  // Local "user-driven" step so prompts inside the chat are actually
-  // clickable. We always show at LEAST whatever the tour points to, but if
-  // the user clicks a suggestion pill we advance the conversation on top
-  // of that. Result: ISA feels interactive instead of read-only.
-  const [userStep, setUserStep] = useState(0);
-  const visible = Math.max(step, userStep);
-  const advance = () => setUserStep((s) => Math.max(s, visible) + 1);
-  // Reset local step when tour moves backwards
+  // v13.10 — verdadeira interatividade. Cada prompt clicado vira um turno
+  // próprio na conversa. O tour ainda funciona (step=N → preenche os
+  // primeiros N prompts em ordem), mas o usuário pode clicar livre em
+  // qualquer prompt e dispara a resposta correta daquele tópico.
+  const tourOrder: PromptId[] = ["sales", "waste", "action"];
+  const [picked, setPicked] = useState<PromptId[]>([]);
+  const handlePick = (id: PromptId) =>
+    setPicked((p) => (p.includes(id) ? p : [...p, id]));
+
+  // Sync with tour step
   useEffect(() => {
-    if (step < userStep) setUserStep(step);
-  }, [step, userStep]);
+    setPicked((current) => {
+      const tourPrompts = tourOrder.slice(0, Math.max(0, step));
+      // Tour drives the first N prompts in fixed order, user can append
+      const userOnly = current.filter((id) => !tourOrder.includes(id));
+      return [...tourPrompts, ...userOnly];
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
+  // Suggestions to show after the conversation (those NOT yet picked)
+  const remaining = PROMPTS.filter((p) => !picked.includes(p.id));
 
   return (
     <section className="relative flex flex-col overflow-hidden">
       <div className="flex-1 overflow-y-auto px-6 py-4">
         <div className="mx-auto flex max-w-[680px] flex-col gap-4">
-          {visible === 0 && <EmptyState onPickPrompt={advance} />}
-          {visible >= 1 && (
-            <UserMsg text="Como estão minhas vendas hoje em relação à meta?" />
+          {picked.length === 0 && (
+            <EmptyState
+              onPickPrompt={(id) => handlePick(id)}
+            />
           )}
-          {visible >= 1 && (
-            <ISASalesResponse animate={visible === 1} onNext={advance} />
+
+          {picked.map((id, idx) => {
+            const prompt = PROMPTS.find((p) => p.id === id);
+            if (!prompt) return null;
+            const isLast = idx === picked.length - 1;
+            return (
+              <ConversationTurn
+                key={`${id}-${idx}`}
+                prompt={prompt}
+                animate={isLast}
+              />
+            );
+          })}
+
+          {picked.length > 0 && remaining.length > 0 && (
+            <FollowUpPrompts
+              prompts={remaining}
+              onPick={(id) => handlePick(id)}
+            />
           )}
-          {visible >= 2 && (
-            <UserMsg text="E o desperdício? Vamos ter pico nesta sexta?" />
-          )}
-          {visible >= 2 && (
-            <ISAWasteResponse animate={visible === 2} onApply={advance} />
-          )}
-          {visible >= 3 && (
-            <UserMsg text="Aplica a recomendação automaticamente." />
-          )}
-          {visible >= 3 && <ISAActionResponse animate={visible === 3} />}
         </div>
       </div>
-      <ChatInput onSend={advance} />
+      <ChatInput
+        onSend={() => {
+          // Sending via input picks the next unprompted item
+          const next = remaining[0];
+          if (next) handlePick(next.id);
+        }}
+      />
     </section>
+  );
+}
+
+function ConversationTurn({
+  prompt,
+  animate,
+}: {
+  prompt: PromptDef;
+  animate: boolean;
+}) {
+  return (
+    <>
+      <UserMsg text={prompt.text} />
+      {prompt.id === "sales" && <ISASalesResponse animate={animate} />}
+      {prompt.id === "waste" && <ISAWasteResponse animate={animate} />}
+      {prompt.id === "scale" && <ISAScaleResponse animate={animate} />}
+      {prompt.id === "action" && <ISAActionResponse animate={animate} />}
+    </>
+  );
+}
+
+function FollowUpPrompts({
+  prompts,
+  onPick,
+}: {
+  prompts: PromptDef[];
+  onPick: (id: PromptId) => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: 0.4 }}
+      className="mt-2 ml-12"
+    >
+      <p
+        className="mb-2 font-ui text-[11px] font-bold uppercase text-neutral-400"
+        style={{ letterSpacing: "0.16em" }}
+      >
+        Tente também
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {prompts.map((p) => (
+          <motion.button
+            key={p.id}
+            type="button"
+            whileTap={{ scale: 0.96 }}
+            whileHover={{ y: -1 }}
+            onClick={() => onPick(p.id)}
+            className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 font-ui text-[12px] font-medium text-neutral-700 transition-shadow hover:shadow-card"
+            style={{
+              border: "1px solid rgba(2,7,136,0.10)",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+              letterSpacing: "-0.005em",
+            }}
+          >
+            <p.Icon size={13} strokeWidth={2.25} className="text-brand" />
+            {p.label}
+          </motion.button>
+        ))}
+      </div>
+    </motion.div>
   );
 }
 
@@ -273,7 +401,7 @@ function ChatPanel({ step }: { step: number }) {
 // Empty state
 // ============================================================================
 
-function EmptyState({ onPickPrompt }: { onPickPrompt: () => void }) {
+function EmptyState({ onPickPrompt }: { onPickPrompt: (id: PromptId) => void }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -328,28 +456,23 @@ function EmptyState({ onPickPrompt }: { onPickPrompt: () => void }) {
         </p>
       </div>
 
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {[
-          { Icon: TrendingUp, label: "Como estão as vendas hoje?", tone: "brand" as const },
-          { Icon: Package, label: "Previsão de desperdício", tone: "warning" as const },
-          { Icon: Users, label: "Escala da semana", tone: "teal" as const },
-          { Icon: Sparkles, label: "Aplicar plano IA", tone: "ai" as const },
-        ].map((p) => (
+      <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+        {PROMPTS.map((p) => (
           <motion.button
-            key={p.label}
+            key={p.id}
             type="button"
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
-            onClick={onPickPrompt}
-            className="flex flex-col items-start gap-2 rounded-xl bg-white p-3 text-left transition-shadow hover:shadow-elevated"
+            onClick={() => onPickPrompt(p.id)}
+            className="flex flex-col items-start gap-2 rounded-xl bg-white p-3.5 text-left transition-shadow hover:shadow-elevated"
             style={{
               border: "1px solid rgba(0,0,0,0.06)",
               boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
             }}
           >
-            <GradientIcon icon={<p.Icon />} tone={p.tone} size={28} />
+            <GradientIcon icon={<p.Icon />} tone={p.tone} size={30} />
             <p
-              className="font-ui text-[11px] font-bold leading-tight text-neutral-700"
+              className="font-ui text-[12px] font-bold leading-tight text-neutral-700"
               style={{ letterSpacing: "-0.005em" }}
             >
               {p.label}
@@ -436,6 +559,54 @@ function ISABubble({
 // ============================================================================
 // ISA responses with inline data cards
 // ============================================================================
+
+function ISAScaleResponse({ animate }: { animate?: boolean }) {
+  return (
+    <ISABubble animate={animate}>
+      <p
+        className="font-ui text-[12.5px] leading-relaxed text-neutral-800"
+        style={{ letterSpacing: "-0.005em" }}
+      >
+        A escala da semana está{" "}
+        <span className="font-bold text-success">87% completa</span>. Faltam
+        cobrir 2 turnos no sábado à noite (cozinha) e 1 turno na quarta de
+        manhã (salão). Já tem 3 funcionários elegíveis pra cada um.
+      </p>
+      <div
+        className="mt-3 grid grid-cols-3 gap-2"
+        style={{ fontVariantNumeric: "tabular-nums" }}
+      >
+        {[
+          { label: "Cobertos", value: "87%", color: "#16a34a" },
+          { label: "Pendentes", value: "3", color: "#d97706" },
+          { label: "Conflitos", value: "0", color: "#020788" },
+        ].map((k) => (
+          <div
+            key={k.label}
+            className="rounded-lg bg-neutral-50 px-3 py-2.5"
+            style={{ border: "1px solid rgba(0,0,0,0.04)" }}
+          >
+            <p
+              className="font-ui text-[9.5px] font-bold uppercase text-neutral-400"
+              style={{ letterSpacing: "0.16em" }}
+            >
+              {k.label}
+            </p>
+            <p
+              className="mt-0.5 font-display text-[22px] font-bold leading-none"
+              style={{
+                color: k.color,
+                letterSpacing: "-0.030em",
+              }}
+            >
+              {k.value}
+            </p>
+          </div>
+        ))}
+      </div>
+    </ISABubble>
+  );
+}
 
 function ISASalesResponse({
   animate,

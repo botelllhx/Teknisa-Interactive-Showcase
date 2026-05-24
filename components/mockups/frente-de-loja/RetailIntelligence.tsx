@@ -457,7 +457,7 @@ function DashboardScreen() {
 
       {/* ───────── Row 2: Main chart card (flex-1) ───────── */}
       <div
-        className="flex min-h-0 flex-1 flex-col rounded-2xl bg-white p-4"
+        className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl bg-white p-4"
         style={{
           border: "1px solid rgba(0,0,0,0.04)",
           boxShadow: "0 1px 2px rgba(0,0,0,0.04)",

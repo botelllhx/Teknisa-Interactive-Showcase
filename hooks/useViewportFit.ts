@@ -3,39 +3,25 @@
 import { useEffect, useState } from "react";
 
 /**
- * v13.15 — auto-fit-to-viewport.
+ * v13.16 — auto-fit-to-viewport, fix do bug "espaço gigantesco na direita".
  *
- * O showcase foi desenhado pra rodar em TV touch 1920×1080. Em monitores
- * menores (laptops, desktops 1366/1600), companions e elementos extras
- * ficavam off-screen porque o layout assume 1920px de largura.
+ * Antes (v13.15): scale = min(vw/1920, vh/1080). Quando o viewport é mais
+ * "baixo" que 16:9 (laptop com browser chrome comendo altura), o scale era
+ * limitado pela ALTURA, fazendo a largura visual ser MENOR que o viewport
+ * → espaço vazio na direita.
  *
- * Esse hook computa um scale factor para encolher TODO o conteúdo
- * mantendo aspect ratio, de modo que SEMPRE cabe no viewport real
- * (até em 1366×768) sem horizontal-scroll nem coisas vazando.
- *
- * Em TV 1920×1080 ou maior, retorna scale = 1 (sem redução).
- *
- * Uso:
- *   const { scale, width, height } = useViewportFit();
- *   <div style={{ width, height, transform: `scale(${scale})`,
- *                 transformOrigin: "top left" }}>
- *     ...
- *   </div>
+ * Agora: scale APENAS por largura. Se a altura do conteúdo escalado for
+ * maior que o viewport, scroll vertical. Nunca scroll horizontal.
  */
 export function useViewportFit() {
   const TARGET_W = 1920;
-  const TARGET_H = 1080;
 
   const [scale, setScale] = useState(1);
 
   useEffect(() => {
     const update = () => {
       const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const scaleX = vw / TARGET_W;
-      const scaleY = vh / TARGET_H;
-      // Use the smaller scale to ensure both axes fit. Never up-scale (max 1).
-      const s = Math.min(scaleX, scaleY, 1);
+      const s = Math.min(vw / TARGET_W, 1);
       setScale(s);
     };
     update();
@@ -43,5 +29,5 @@ export function useViewportFit() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  return { scale, width: TARGET_W, height: TARGET_H };
+  return { scale, width: TARGET_W };
 }

@@ -515,31 +515,92 @@ function DashboardScreen() {
         </div>
       </div>
 
-      {/* ───────── Row 3: AI Insights strip (3 pills horizontal) ───────── */}
-      <div className="grid grid-cols-3 gap-2.5">
-        <InsightPill
-          icon={<TrendingUp />}
-          tone="ai"
-          title="CMV Alert · Mix"
-          status="IA aplicou"
-        />
-        <InsightPill
-          icon={<Sparkles />}
-          tone="teal"
-          title="Otimização de Compras"
-          status="Em progresso"
-        />
-        <InsightPill
-          icon={<ShieldAlert />}
-          tone="warning"
-          title="Previsão de Desperdício"
-          status="Sugerido"
-        />
+      {/* ───────── Row 3: AI Insights strip + "IA aplicou hoje" banner ───────── */}
+      <div
+        data-tour="ri-analisar-oportunidade"
+        className="flex items-center gap-3"
+      >
+        <div className="grid flex-1 grid-cols-3 gap-2.5">
+          <InsightPill
+            icon={<TrendingUp />}
+            tone="ai"
+            title="CMV Alert · Mix"
+            status="IA aplicou"
+          />
+          <InsightPill
+            icon={<Sparkles />}
+            tone="teal"
+            title="Otimização de Compras"
+            status="Em progresso"
+          />
+          <InsightPill
+            icon={<ShieldAlert />}
+            tone="warning"
+            title="Previsão de Desperdício"
+            status="Sugerido"
+          />
+        </div>
+        {/* Compact "IA aplicou hoje" pill — substitui o card grande
+            que ocupava col-3 da row 4 inteira. Conteúdo essencial:
+            count + delta CMV + CTA */}
+        <div
+          className="relative flex flex-none items-center gap-3 overflow-hidden rounded-xl px-3 py-2.5"
+          style={{
+            background:
+              "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
+            boxShadow:
+              "0 4px 14px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
+          }}
+        >
+          <motion.span
+            animate={{
+              scale: [1, 1.08, 1],
+            }}
+            transition={{ duration: 2.4, repeat: Infinity }}
+            className="flex h-7 w-7 flex-none items-center justify-center rounded-md bg-white/15 text-white backdrop-blur"
+            style={{
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.20)",
+            }}
+          >
+            <BrainCircuit size={13} strokeWidth={2.25} />
+          </motion.span>
+          <div className="leading-tight">
+            <p
+              className="font-ui text-[8.5px] font-bold uppercase text-white/85"
+              style={{ letterSpacing: "0.18em" }}
+            >
+              IA aplicou hoje
+            </p>
+            <p
+              className="font-display text-[13px] font-bold tabular-nums text-white"
+              style={{ letterSpacing: "-0.018em" }}
+            >
+              12 ações · CMV{" "}
+              <span className="font-bold">−1,8pp</span>
+            </p>
+          </div>
+          <button
+            type="button"
+            className="ml-1 inline-flex items-center gap-1 rounded-md bg-white/95 px-2.5 py-1 font-ui text-[10.5px] font-bold text-brand transition-transform hover:-translate-y-[1px]"
+            style={{
+              boxShadow:
+                "0 2px 6px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.40)",
+              letterSpacing: "-0.005em",
+            }}
+          >
+            Diagnóstico
+            <ArrowRight size={10} strokeWidth={2.5} />
+          </button>
+        </div>
       </div>
 
-      {/* ───────── Row 4: Bottom panels — 3 cols fixed (NestedRisk | HBars | AI APLICOU) ───────── */}
+      {/* ───────── Row 4: Bottom panels (2 cols, mais respiração) ─────────
+          v13.16: era 3 cols [260px_1fr_320px] = bagunça. AI APLICOU
+          virou pill compacto no Row 3 (eyebrow das insights), libera
+          o bottom para NestedRisk + HorizontalBars com mais espaço.
+       */}
       <div
-        className="grid grid-cols-[260px_1fr_320px] gap-2.5"
+        className="grid grid-cols-[300px_1fr] gap-2.5"
         style={{ minHeight: 220 }}
       >
         {/* NestedRisk card */}
@@ -616,75 +677,6 @@ function DashboardScreen() {
               ]}
             />
           </div>
-        </div>
-
-        {/* AI APLICOU CTA card */}
-        <div
-          data-tour="ri-analisar-oportunidade"
-          className="relative flex flex-col overflow-hidden rounded-2xl p-4"
-          style={{
-            background:
-              "linear-gradient(135deg, #020788 0%, #1a1fa8 45%, #7c3aed 100%)",
-            boxShadow:
-              "0 12px 28px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
-          }}
-        >
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full opacity-50 blur-2xl"
-            style={{
-              background:
-                "radial-gradient(circle, rgba(255,255,255,0.42), transparent 70%)",
-            }}
-          />
-          <div className="relative flex items-center gap-1.5">
-            <motion.span
-              animate={{
-                scale: [1, 1.06, 1],
-                boxShadow: [
-                  "0 0 0 0 rgba(255,255,255,0)",
-                  "0 0 0 4px rgba(255,255,255,0.18)",
-                  "0 0 0 0 rgba(255,255,255,0)",
-                ],
-              }}
-              transition={{ duration: 2.4, repeat: Infinity }}
-              className="flex h-6 w-6 items-center justify-center rounded-md bg-white/15 text-white backdrop-blur"
-              style={{
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.20)",
-              }}
-            >
-              <BrainCircuit size={12} strokeWidth={2.25} />
-            </motion.span>
-            <p
-              className="font-ui text-[9px] font-bold uppercase text-white/85"
-              style={{ letterSpacing: "0.18em" }}
-            >
-              IA aplicou hoje
-            </p>
-          </div>
-          <p
-            className="relative mt-1.5 font-display text-[20px] font-bold leading-[1.05] text-white tabular-nums"
-            style={{ letterSpacing: "-0.028em" }}
-          >
-            12 ações automáticas
-          </p>
-          <p className="relative mt-1 flex-1 font-ui text-[10.5px] leading-snug text-white/80">
-            5 ajustes de cardápio, 3 renegociações, 4 alertas. CMV projetado
-            <span className="font-bold tabular-nums text-white"> −1,8pp</span>{" "}
-            em 7 dias.
-          </p>
-          <button
-            type="button"
-            className="relative inline-flex items-center justify-center gap-1.5 rounded-xl bg-white px-3 py-2 font-ui text-[11px] font-bold text-brand transition-all hover:-translate-y-[1px]"
-            style={{
-              boxShadow:
-                "0 4px 12px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.40)",
-              letterSpacing: "-0.005em",
-            }}
-          >
-            Abrir diagnóstico
-            <ArrowRight size={11} strokeWidth={2.5} />
-          </button>
         </div>
       </div>
     </motion.section>

@@ -172,9 +172,9 @@ export function QuickPassMockup({ step }: QuickPassProps) {
   };
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden bg-white text-neutral-800 font-ui">
+    <div className="relative flex h-full w-full flex-col overflow-hidden bg-white text-neutral-800 font-ui">
       <StatusBar />
-      <main className="flex-1 overflow-hidden">
+      <main className="min-h-0 flex-1 overflow-hidden">
         <AnimatePresence mode="wait">
           {step === 0 && (
             <CatalogView key="catalog" cart={cart} onAdd={addItem} />
@@ -334,7 +334,7 @@ function CatalogView({
       className="flex h-full flex-col"
     >
       <AppHeader />
-      <div className="flex-1 overflow-y-auto pb-2">
+      <div className="min-h-0 flex-1 overflow-y-auto pb-2">
         <VenueBanner />
 
         <div className="mx-3 mt-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">
@@ -490,7 +490,7 @@ function CartView({
     >
       <AppHeader showBack title="Meu carrinho" />
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="border-b border-neutral-100 bg-brand-ghost px-3 py-2 text-[11px] text-brand">
           <span className="font-bold">Hell&apos;s Burgers</span> · Allianz
           Parque · setor B
@@ -749,7 +749,7 @@ function PaymentView({
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-3.5">
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3.5">
         <AnimatePresence mode="wait">
           {method === "cartao" ? (
             <motion.div
@@ -889,7 +889,7 @@ function SuccessView({
       <AppHeader showBack title="Pedido pago" />
 
       <div
-        className="flex-1 overflow-y-auto px-4 py-3"
+        className="min-h-0 flex-1 overflow-y-auto px-4 py-3"
         style={{
           background:
             "radial-gradient(ellipse at top, rgba(22,163,74,0.05), transparent 50%)",

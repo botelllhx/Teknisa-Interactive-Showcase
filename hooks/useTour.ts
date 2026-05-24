@@ -72,6 +72,7 @@ export function useTour({
 
     let frameId: number;
     let intervalId: ReturnType<typeof setInterval> | null = null;
+    let scrolledForThisStep = false;
 
     const measure = () => {
       const el = document.querySelector(step.targetSelector) as HTMLElement | null;
@@ -79,13 +80,29 @@ export function useTour({
         setGeometry(null);
         return;
       }
-      const rect = el.getBoundingClientRect();
-      const computed = window.getComputedStyle(el);
-      const radius = parseFloat(computed.borderRadius) || 12;
       const frameEl = document.querySelector(
         "[data-tour-frame]",
       ) as HTMLElement | null;
+
+      // Scroll the target into view inside the nearest scrollable ancestor
+      // ONCE per step, BEFORE measuring. Without this, mockups with internal
+      // overflow-y-auto (mobile catalogs, long lists) start the tour with
+      // the spotlight anchored to an element below the fold of an internal
+      // scrollable — user sees the tooltip but no visible target.
+      //
+      // Instant (non-smooth) scroll so the rect we capture next reflects
+      // the post-scroll position. Scoped to scrollable ancestors INSIDE
+      // the frame so the page never jumps.
+      if (!scrolledForThisStep && frameEl && frameEl.contains(el)) {
+        scrollIntoScrollableAncestor(el, frameEl);
+        scrolledForThisStep = true;
+      }
+
+      const rect = el.getBoundingClientRect();
+      const computed = window.getComputedStyle(el);
+      const radius = parseFloat(computed.borderRadius) || 12;
       const frameRect = frameEl ? frameEl.getBoundingClientRect() : null;
+
       setGeometry({ rect, frameRect, borderRadius: radius });
     };
 
@@ -192,4 +209,52 @@ export function useTour({
     restart,
     finished,
   };
+}
+
+/**
+ * Walks up from `el` toward `frameEl` looking for the nearest ancestor with
+ * its own scroll axis. If `el` is not fully visible inside it, scrolls so
+ * `el` is centered (smooth). If `el` is already fully visible, no-op so we
+ * don't fight the user's scroll position. Only scrolls INSIDE the frame.
+ */
+function scrollIntoScrollableAncestor(el: HTMLElement, frameEl: HTMLElement) {
+  const SAFE_MARGIN = 12;
+  let node: HTMLElement | null = el.parentElement;
+  while (node && node !== frameEl) {
+    const cs = window.getComputedStyle(node);
+    const oy = cs.overflowY;
+    const ox = cs.overflowX;
+    const scrollableY =
+      (oy === "auto" || oy === "scroll") && node.scrollHeight > node.clientHeight;
+    const scrollableX =
+      (ox === "auto" || ox === "scroll") && node.scrollWidth > node.clientWidth;
+    if (scrollableY || scrollableX) {
+      const elRect = el.getBoundingClientRect();
+      const nodeRect = node.getBoundingClientRect();
+      if (scrollableY) {
+        const above = elRect.top < nodeRect.top + SAFE_MARGIN;
+        const below = elRect.bottom > nodeRect.bottom - SAFE_MARGIN;
+        if (above || below) {
+          const desiredCenter = nodeRect.top + nodeRect.height / 2;
+          const currentCenter = elRect.top + elRect.height / 2;
+          // Direct assignment ensures synchronous scroll so the next
+          // getBoundingClientRect reflects the new position.
+          node.scrollTop += currentCenter - desiredCenter;
+        }
+      }
+      if (scrollableX) {
+        const left = elRect.left < nodeRect.left + SAFE_MARGIN;
+        const right = elRect.right > nodeRect.right - SAFE_MARGIN;
+        if (left || right) {
+          const desiredCenterX = nodeRect.left + nodeRect.width / 2;
+          const currentCenterX = elRect.left + elRect.width / 2;
+          node.scrollLeft += currentCenterX - desiredCenterX;
+        }
+      }
+      // Only handle the nearest scrollable ancestor — anything above it is
+      // outside the user's current scroll context.
+      return;
+    }
+    node = node.parentElement;
+  }
 }

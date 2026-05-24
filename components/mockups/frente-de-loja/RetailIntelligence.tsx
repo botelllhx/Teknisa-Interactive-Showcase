@@ -41,7 +41,7 @@ import {
   Sparkline,
 } from "@/components/ui/charts";
 import { GradientIcon } from "@/components/ui/GradientIcon";
-import { cloneElement, type ReactElement } from "react";
+import { type ReactElement } from "react";
 import {
   Badge,
   Button,
@@ -391,26 +391,25 @@ function JourneyPanel({ screen }: { screen: Screen }) {
 // ============================================================================
 
 function DashboardScreen() {
-  // v13.8 — REFATOR completo da estrutura.
-  // Era 3-rows-by-2-cols com overflow descontrolado (cards do AI Insights
-  // empilhando, AI APLICOU invadindo a row dos charts de baixo).
+  // v13.9 — grid fixo de 3 linhas (kpi / chart / bottom). O canvas do
+  // SolutionDemo é renderizado a 1920×1080 lógicos (ver useFitScale), então
+  // a altura disponível aqui é determinística e não muda com o viewport.
   //
-  // Agora é vertical-flex limpo:
-  // [1] KPI strip (auto height)
-  // [2] Performance do CMV — chart full-width (flex-1, ocupa o vão)
-  // [3] Bottom panels — 3 cols com FIXED HEIGHT (NestedRisk | HorizontalBars | AI APLICOU)
+  //   [1] KPI strip                                          auto (~96px)
+  //   [2] Performance do CMV — chart fillContainer            1fr
+  //   [3] Bottom row — NestedRisk | HorizontalBars | AI       240px
   //
-  // AI Insights (que estavam empilhados na lateral) viraram um STRIP horizontal
-  // de 3 cards COMPACTOS entre o chart e o bottom row. Em vez de full cards
-  // verticais com confidence bar, agora são pills com ícone+título+status — mais
-  // legível, ocupa menos espaço, ainda comunica "a IA está pensando".
+  // A faixa antiga de InsightPills (CMV Alert / Otimização Compras /
+  // Previsão de Desperdício) foi removida: ela duplicava a narrativa do
+  // card "IA aplicou hoje" no bottom row e era a principal causa do
+  // overflow vertical em viewports menores que o design.
   return (
     <motion.section
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25 }}
-      className="flex h-full flex-col gap-3 px-5 py-4"
+      className="grid h-full min-h-0 grid-rows-[auto_1fr_240px] gap-3 overflow-hidden px-5 py-4"
       style={{
         background:
           "radial-gradient(ellipse at top, rgba(2,7,136,0.025) 0%, transparent 60%), #f6f7fb",
@@ -510,99 +509,13 @@ function DashboardScreen() {
             showYLabels
             showXLabels
             formatY={(v) => `${v.toFixed(1).replace(".", ",")}%`}
-            aspectRatio="16/5"
+            fillContainer
           />
         </div>
       </div>
 
-      {/* ───────── Row 3: AI Insights strip + "IA aplicou hoje" banner ───────── */}
-      <div
-        data-tour="ri-analisar-oportunidade"
-        className="flex items-center gap-3"
-      >
-        <div className="grid flex-1 grid-cols-3 gap-2.5">
-          <InsightPill
-            icon={<TrendingUp />}
-            tone="ai"
-            title="CMV Alert · Mix"
-            status="IA aplicou"
-          />
-          <InsightPill
-            icon={<Sparkles />}
-            tone="teal"
-            title="Otimização de Compras"
-            status="Em progresso"
-          />
-          <InsightPill
-            icon={<ShieldAlert />}
-            tone="warning"
-            title="Previsão de Desperdício"
-            status="Sugerido"
-          />
-        </div>
-        {/* Compact "IA aplicou hoje" pill — substitui o card grande
-            que ocupava col-3 da row 4 inteira. Conteúdo essencial:
-            count + delta CMV + CTA */}
-        <div
-          className="relative flex flex-none items-center gap-3 overflow-hidden rounded-xl px-3 py-2.5"
-          style={{
-            background:
-              "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
-            boxShadow:
-              "0 4px 14px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
-          }}
-        >
-          <motion.span
-            animate={{
-              scale: [1, 1.08, 1],
-            }}
-            transition={{ duration: 2.4, repeat: Infinity }}
-            className="flex h-7 w-7 flex-none items-center justify-center rounded-md bg-white/15 text-white backdrop-blur"
-            style={{
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.20)",
-            }}
-          >
-            <BrainCircuit size={13} strokeWidth={2.25} />
-          </motion.span>
-          <div className="leading-tight">
-            <p
-              className="font-ui text-[8.5px] font-bold uppercase text-white/85"
-              style={{ letterSpacing: "0.18em" }}
-            >
-              IA aplicou hoje
-            </p>
-            <p
-              className="font-display text-[13px] font-bold tabular-nums text-white"
-              style={{ letterSpacing: "-0.018em" }}
-            >
-              12 ações · CMV{" "}
-              <span className="font-bold">−1,8pp</span>
-            </p>
-          </div>
-          <button
-            type="button"
-            className="ml-1 inline-flex items-center gap-1 rounded-md bg-white/95 px-2.5 py-1 font-ui text-[10.5px] font-bold text-brand transition-transform hover:-translate-y-[1px]"
-            style={{
-              boxShadow:
-                "0 2px 6px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.40)",
-              letterSpacing: "-0.005em",
-            }}
-          >
-            Diagnóstico
-            <ArrowRight size={10} strokeWidth={2.5} />
-          </button>
-        </div>
-      </div>
-
-      {/* ───────── Row 4: Bottom panels (2 cols, mais respiração) ─────────
-          v13.16: era 3 cols [260px_1fr_320px] = bagunça. AI APLICOU
-          virou pill compacto no Row 3 (eyebrow das insights), libera
-          o bottom para NestedRisk + HorizontalBars com mais espaço.
-       */}
-      <div
-        className="grid grid-cols-[300px_1fr] gap-2.5"
-        style={{ minHeight: 220 }}
-      >
+      {/* ───────── Row 3: Bottom panels — NestedRisk | HorizontalBars | AI APLICOU ───────── */}
+      <div className="grid min-h-0 grid-cols-[260px_1fr_320px] gap-2.5 overflow-hidden">
         {/* NestedRisk card */}
         <div
           className="flex flex-col overflow-hidden rounded-2xl bg-white p-4"
@@ -680,88 +593,6 @@ function DashboardScreen() {
         </div>
       </div>
     </motion.section>
-  );
-}
-
-/**
- * v13.8 — InsightPill: replaces the full InsightCard stack in the
- * dashboard. Compact horizontal pill com ícone gradient + título +
- * status. Ainda comunica AI activity, mas em 1/3 do espaço vertical.
- */
-function InsightPill({
-  icon,
-  tone,
-  title,
-  status,
-}: {
-  icon: ReactElement;
-  tone: "ai" | "teal" | "warning";
-  title: string;
-  status: string;
-}) {
-  const toneStyle =
-    tone === "ai"
-      ? {
-          iconBg:
-            "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
-          iconShadow: "0 2px 6px rgba(124,58,237,0.30)",
-          statusBg: "rgba(124,58,237,0.10)",
-          statusColor: "#5b21b6",
-        }
-      : tone === "teal"
-        ? {
-            iconBg:
-              "linear-gradient(135deg, #0d9488 0%, #0f766e 60%, #115e59 100%)",
-            iconShadow: "0 2px 6px rgba(13,148,136,0.30)",
-            statusBg: "rgba(13,148,136,0.10)",
-            statusColor: "#0f766e",
-          }
-        : {
-            iconBg:
-              "linear-gradient(135deg, #f59e0b 0%, #d97706 60%, #b45309 100%)",
-            iconShadow: "0 2px 6px rgba(217,119,6,0.30)",
-            statusBg: "rgba(217,119,6,0.10)",
-            statusColor: "#b45309",
-          };
-  return (
-    <div
-      className="flex items-center gap-2.5 overflow-hidden rounded-xl bg-white px-3 py-2.5"
-      style={{
-        border: "1px solid rgba(0,0,0,0.04)",
-        boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
-      }}
-    >
-      <span
-        className="flex h-7 w-7 flex-none items-center justify-center rounded-lg text-white"
-        style={{
-          background: toneStyle.iconBg,
-          boxShadow: `${toneStyle.iconShadow}, inset 0 1px 0 rgba(255,255,255,0.18)`,
-        }}
-      >
-        {cloneElement(
-          icon as ReactElement<{ size?: number; strokeWidth?: number }>,
-          { size: 13, strokeWidth: 2.25 },
-        )}
-      </span>
-      <div className="min-w-0 flex-1">
-        <p
-          className="font-display text-[12.5px] font-bold leading-tight text-neutral-900"
-          style={{ letterSpacing: "-0.018em" }}
-        >
-          {title}
-        </p>
-        <span
-          className="mt-0.5 inline-flex items-center rounded-full px-1.5 py-0.5 font-ui text-[9px] font-bold uppercase"
-          style={{
-            background: toneStyle.statusBg,
-            color: toneStyle.statusColor,
-            letterSpacing: "0.14em",
-          }}
-        >
-          {status}
-        </span>
-      </div>
-    </div>
   );
 }
 

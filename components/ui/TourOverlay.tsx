@@ -135,9 +135,14 @@ function SpotlightRing({ geometry }: { geometry: TargetGeometry }) {
 }
 
 /**
- * Draws a straight line from the tooltip edge toward the spotlight ring on
- * the target, with a small dot at the target end. Stays outside the ring so
- * it never covers the highlighted element.
+ * Draws a straight line from the tooltip edge toward the target, but
+ * terminates at the FRAME EDGE (not inside the frame). The spotlight ring
+ * is what signals "look here" once the eye reaches the frame — the line
+ * only needs to bridge tooltip ↔ frame, not travel through the mockup's
+ * internal UI.
+ *
+ * Falls back to stopping just outside the spotlight ring when the target
+ * is outside the frame or no frame info is available.
  */
 function Connector({ geometry }: { geometry: TargetGeometry }) {
   if (typeof window === "undefined") return null;
@@ -155,14 +160,67 @@ function Connector({ geometry }: { geometry: TargetGeometry }) {
   const distance = Math.hypot(dx, dy);
   if (distance < 24) return null;
 
-  // Stop just outside the spotlight ring so the line doesn't enter the target
+  // Default endpoint = just outside the spotlight ring (used when there's
+  // no frame, or when the target sits outside the frame for some reason).
   const ringRadius =
     Math.max(geometry.rect.width, geometry.rect.height) / 2 +
     SPOTLIGHT_PADDING +
     6;
-  const t = Math.max(0, 1 - ringRadius / distance);
-  const endX = start.x + dx * t;
-  const endY = start.y + dy * t;
+  const tRing = Math.max(0, 1 - ringRadius / distance);
+  let endX = start.x + dx * tRing;
+  let endY = start.y + dy * tRing;
+
+  // If we have a frame and the tooltip is positioned OUTSIDE it, terminate
+  // the line at the frame edge facing the tooltip. The line should never
+  // cross into the mockup's interior — that's what made it visually noisy
+  // (passing through journey panels, neighbouring cards, etc.).
+  const frame = geometry.frameRect;
+  if (frame) {
+    const eps = 0.5;
+    const SIDE_INSET = 14; // keep endpoint a bit inside the frame edge length
+    let tFrame: number | null = null;
+    let edgeEndX = endX;
+    let edgeEndY = endY;
+
+    if (pos.anchor === "right" && start.x >= frame.right && dx < -eps) {
+      tFrame = (frame.right - start.x) / dx;
+      edgeEndX = frame.right;
+      edgeEndY = start.y + dy * tFrame;
+      edgeEndY = Math.max(
+        frame.top + SIDE_INSET,
+        Math.min(edgeEndY, frame.bottom - SIDE_INSET),
+      );
+    } else if (pos.anchor === "left" && start.x <= frame.left && dx > eps) {
+      tFrame = (frame.left - start.x) / dx;
+      edgeEndX = frame.left;
+      edgeEndY = start.y + dy * tFrame;
+      edgeEndY = Math.max(
+        frame.top + SIDE_INSET,
+        Math.min(edgeEndY, frame.bottom - SIDE_INSET),
+      );
+    } else if (pos.anchor === "below" && start.y >= frame.bottom && dy < -eps) {
+      tFrame = (frame.bottom - start.y) / dy;
+      edgeEndY = frame.bottom;
+      edgeEndX = start.x + dx * tFrame;
+      edgeEndX = Math.max(
+        frame.left + SIDE_INSET,
+        Math.min(edgeEndX, frame.right - SIDE_INSET),
+      );
+    } else if (pos.anchor === "above" && start.y <= frame.top && dy > eps) {
+      tFrame = (frame.top - start.y) / dy;
+      edgeEndY = frame.top;
+      edgeEndX = start.x + dx * tFrame;
+      edgeEndX = Math.max(
+        frame.left + SIDE_INSET,
+        Math.min(edgeEndX, frame.right - SIDE_INSET),
+      );
+    }
+
+    if (tFrame != null && tFrame > 0 && tFrame < tRing) {
+      endX = edgeEndX;
+      endY = edgeEndY;
+    }
+  }
 
   return (
     <svg

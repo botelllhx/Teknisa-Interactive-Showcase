@@ -220,11 +220,19 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
         </div>
       </header>
 
-      {/* Main: 3 columns when companions exist, 1 column when not */}
+      {/* Main grid.
+       *  - With companions: [340 | 1fr | 340]. Tooltip lives over the
+       *    companion columns when there is no room next to the frame.
+       *  - Without companions: [1fr | 380]. We reserve a fixed 380px column
+       *    on the right so the tour tooltip always has somewhere to live
+       *    OUTSIDE the device frame. Since the canonical-sized desktop
+       *    frame now fills the available 1fr area, without this reserve the
+       *    tooltip would clamp to the viewport edge and overlap the frame.
+       */}
       <main
         className={cn(
           "grid min-h-0 flex-1 items-stretch gap-6 p-6",
-          activeCompanions.length === 0 && "grid-cols-1",
+          activeCompanions.length === 0 && "grid-cols-[1fr_380px]",
           activeCompanions.length > 0 && "grid-cols-[340px_1fr_340px]",
         )}
       >
@@ -269,6 +277,12 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
             stepLabel={resolvedTitle}
             align="start"
           />
+        )}
+        {activeCompanions.length === 0 && (
+          // Empty reserve column — TourTooltip / Connector render here as
+          // fixed-positioned children of document.body and have room to
+          // sit outside the device frame.
+          <div aria-hidden className="pointer-events-none" />
         )}
       </main>
 

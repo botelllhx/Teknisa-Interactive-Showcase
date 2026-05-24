@@ -17,7 +17,7 @@ interface Stat {
 }
 
 const STATS: Stat[] = [
-  { value: 34, format: (n) => Math.round(n).toString(), label: "anos de mercado", suffix: "+" },
+  { value: 36, format: (n) => Math.round(n).toString(), label: "anos de mercado", suffix: "+" },
   { value: 6, format: (n) => Math.round(n).toString(), label: "países" },
   { value: 20, format: (n) => Math.round(n).toString(), label: "mil instalações", suffix: "k+" },
 ];

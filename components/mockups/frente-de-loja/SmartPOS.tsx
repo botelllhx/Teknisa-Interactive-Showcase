@@ -273,45 +273,97 @@ function CategoryGrid({
         {CATEGORIES.map((c) => {
           const active = c.id === selected;
           const isPizzaTarget = c.id === "pizzas";
+          // Gradient version of the SmartPOS POS reference colors. Same
+          // semantic palette (vermelho/verde/cinza) but elevated to look like
+          // pressed tactile keys, not flat blocks.
+          const tone =
+            c.bg === "#ef4444"
+              ? "red"
+              : c.bg === "#16a34a"
+                ? "green"
+                : c.bg === "white"
+                  ? "white"
+                  : "muted";
+          const gradient =
+            tone === "red"
+              ? "linear-gradient(180deg, #f87171 0%, #ef4444 60%, #dc2626 100%)"
+              : tone === "green"
+                ? "linear-gradient(180deg, #34d399 0%, #16a34a 60%, #15803d 100%)"
+                : tone === "white"
+                  ? "linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%)"
+                  : "linear-gradient(180deg, #94a3b8 0%, #7d8aa3 60%, #64748b 100%)";
           return (
             <motion.button
               key={c.id}
-              whileTap={{ scale: 0.97 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => onSelect(c.id)}
               data-tour={isPizzaTarget ? "smartpos-catalog-item" : undefined}
-              className="flex h-16 items-center justify-center rounded-md font-ui text-[12px] font-bold text-center px-2 transition-shadow"
+              className="relative flex h-16 items-center justify-center rounded-lg font-ui text-[12px] font-bold text-center px-2 transition-all"
               style={{
-                background:
-                  active && c.bg === "white" ? "#f0fdf4" : c.bg,
+                background: gradient,
                 color: c.text,
-                border: c.border
-                  ? `2px solid ${c.border}`
-                  : active && c.bg !== "white"
-                    ? "2px solid white"
-                    : "none",
+                border: c.border ? `2px solid ${c.border}` : "none",
                 boxShadow: active
-                  ? "0 4px 12px rgba(0,0,0,0.10), inset 0 0 0 2px rgba(255,255,255,0.2)"
-                  : "0 1px 2px rgba(0,0,0,0.04)",
+                  ? "0 6px 16px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -2px 0 rgba(0,0,0,0.12)"
+                  : "inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -2px 0 rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06)",
+                letterSpacing: "0.06em",
+                transform: active ? "translateY(-1px)" : undefined,
               }}
             >
               {c.label}
+              {active && (
+                <motion.span
+                  layoutId="smartpos-active-cat"
+                  className="absolute inset-0 rounded-lg pointer-events-none"
+                  style={{
+                    boxShadow:
+                      tone === "white"
+                        ? "inset 0 0 0 2px #16a34a"
+                        : "inset 0 0 0 2px rgba(255,255,255,0.55)",
+                  }}
+                />
+              )}
             </motion.button>
           );
         })}
       </div>
 
       <div className="mt-2 grid grid-cols-2 gap-2">
-        <button className="flex h-11 items-center justify-center gap-1.5 rounded-md bg-white text-brand shadow-card hover:bg-brand-ghost">
+        <button
+          className="flex h-11 items-center justify-center gap-1.5 rounded-lg text-brand transition-all hover:-translate-y-[1px]"
+          style={{
+            background: "linear-gradient(180deg, #ffffff 0%, #f3f4f8 100%)",
+            boxShadow:
+              "0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8), inset 0 0 0 1px rgba(2,7,136,0.10)",
+          }}
+        >
           <span className="grid h-3 w-3 grid-cols-2 gap-px">
             <span className="bg-brand" />
             <span className="bg-brand" />
             <span className="bg-brand" />
             <span className="bg-brand" />
           </span>
-          <span className="font-ui text-[13px] font-bold">TODOS</span>
+          <span
+            className="font-ui text-[13px] font-bold"
+            style={{ letterSpacing: "0.06em" }}
+          >
+            TODOS
+          </span>
         </button>
-        <button className="flex h-11 items-center justify-center gap-1.5 rounded-md bg-white text-brand shadow-card hover:bg-brand-ghost">
-          <span className="font-ui text-[13px] font-bold">PRÓXIMO</span>
+        <button
+          className="flex h-11 items-center justify-center gap-1.5 rounded-lg text-brand transition-all hover:-translate-y-[1px]"
+          style={{
+            background: "linear-gradient(180deg, #ffffff 0%, #f3f4f8 100%)",
+            boxShadow:
+              "0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8), inset 0 0 0 1px rgba(2,7,136,0.10)",
+          }}
+        >
+          <span
+            className="font-ui text-[13px] font-bold"
+            style={{ letterSpacing: "0.06em" }}
+          >
+            PRÓXIMO
+          </span>
           <ChevronRight size={14} strokeWidth={2.5} />
         </button>
       </div>
@@ -642,17 +694,39 @@ function PaymentSelectView({
       transition={{ duration: 0.2 }}
       className="flex flex-1 flex-col overflow-hidden"
     >
-      <div className="flex h-11 items-center justify-center bg-brand">
-        <p className="font-ui text-[14px] font-bold tracking-wider text-white">
-          PAGAMENTO
+      <div
+        className="flex h-11 items-center justify-center"
+        style={{
+          background:
+            "linear-gradient(180deg, #1a1fa8 0%, #020788 100%)",
+          boxShadow: "inset 0 -1px 0 rgba(0,0,0,0.18)",
+        }}
+      >
+        <p
+          className="font-ui text-[12px] font-bold uppercase text-white"
+          style={{ letterSpacing: "0.20em" }}
+        >
+          Pagamento
         </p>
       </div>
 
-      <div className="border-b border-neutral-100 bg-white px-4 py-3">
-        <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
+      <div
+        className="border-b border-neutral-100 px-4 py-4"
+        style={{
+          background:
+            "linear-gradient(180deg, #ffffff 0%, #f8f9fc 100%)",
+        }}
+      >
+        <p
+          className="font-ui text-[10px] font-bold uppercase text-neutral-400"
+          style={{ letterSpacing: "0.18em" }}
+        >
           Total a pagar
         </p>
-        <p className="font-ui text-[28px] font-bold text-brand tabular-nums leading-tight">
+        <p
+          className="mt-0.5 font-ui font-bold text-brand tabular-nums leading-[1.05]"
+          style={{ fontSize: 32, letterSpacing: "-0.035em" }}
+        >
           R$ {total.toFixed(2).replace(".", ",")}
         </p>
         {total === 0 && (
@@ -663,7 +737,10 @@ function PaymentSelectView({
       </div>
 
       <div className="flex-1 space-y-2 overflow-y-auto p-3">
-        <p className="font-ui text-[12px] font-bold uppercase tracking-wider text-neutral-700">
+        <p
+          className="font-ui text-[10px] font-bold uppercase text-neutral-500"
+          style={{ letterSpacing: "0.16em" }}
+        >
           Forma de pagamento
         </p>
         {options.map((o) => {
@@ -673,31 +750,53 @@ function PaymentSelectView({
               key={o.id}
               whileTap={{ scale: 0.98 }}
               onClick={() => onChange(o.id)}
-              className={cn(
-                "flex w-full items-center gap-3 rounded-md border-2 px-3 py-3 transition-colors",
-                active
-                  ? "border-brand bg-brand-ghost"
-                  : "border-neutral-200 bg-white hover:border-brand/30",
-              )}
+              className="relative flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-all"
+              style={{
+                border: active
+                  ? "2px solid #020788"
+                  : "1px solid rgba(0,0,0,0.06)",
+                background: active
+                  ? "linear-gradient(180deg, #f5f6fd 0%, #ebedf9 100%)"
+                  : "white",
+                boxShadow: active
+                  ? "0 4px 14px rgba(2,7,136,0.10), inset 0 1px 0 rgba(255,255,255,0.6)"
+                  : "0 1px 2px rgba(0,0,0,0.03)",
+              }}
             >
               <span
-                className={cn(
-                  "flex h-9 w-9 items-center justify-center rounded-md",
-                  active ? "bg-brand text-white" : "bg-neutral-100 text-neutral-500",
-                )}
+                className="flex h-10 w-10 items-center justify-center rounded-lg"
+                style={{
+                  background: active
+                    ? "linear-gradient(135deg, #020788 0%, #1a1fa8 60%, #3b42c4 100%)"
+                    : "#f3f4f8",
+                  color: active ? "white" : "#9ca3af",
+                  boxShadow: active
+                    ? "0 2px 8px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)"
+                    : "inset 0 1px 0 rgba(255,255,255,0.6)",
+                }}
               >
-                <o.Icon size={16} strokeWidth={2.25} />
+                <o.Icon size={18} strokeWidth={2.25} />
               </span>
               <span
                 className={cn(
-                  "flex-1 text-left font-ui text-[13px] font-bold",
+                  "flex-1 text-left font-ui text-[14px] font-bold",
                   active ? "text-brand" : "text-neutral-700",
                 )}
+                style={{ letterSpacing: "-0.01em" }}
               >
                 {o.label}
               </span>
               {active && (
-                <Check size={16} strokeWidth={2.5} className="text-brand" />
+                <motion.span
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-brand text-white"
+                  style={{
+                    boxShadow: "0 2px 6px rgba(2,7,136,0.30)",
+                  }}
+                >
+                  <Check size={13} strokeWidth={3} />
+                </motion.span>
               )}
             </motion.button>
           );

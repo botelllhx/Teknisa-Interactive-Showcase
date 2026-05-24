@@ -257,16 +257,39 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
 
 function WindowBar() {
   return (
-    <div className="flex h-7 items-center justify-between border-b border-neutral-200 bg-white px-3">
-      <div className="flex items-center gap-1.5">
-        <div className="flex h-4 w-4 items-center justify-center rounded bg-brand">
-          <span className="text-[8px] font-bold text-white">P</span>
+    <div className="flex h-7 items-center justify-between border-b border-neutral-200 bg-gradient-to-b from-[#fafbfc] to-white px-3">
+      <div className="flex items-center gap-2">
+        <div
+          className="flex h-4 w-4 items-center justify-center rounded text-white"
+          style={{
+            background:
+              "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
+            boxShadow:
+              "inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(2,7,136,0.20)",
+          }}
+        >
+          <span className="text-[8px] font-bold tabular-nums">T</span>
         </div>
-        <span className="text-[8px] font-bold tracking-wider text-neutral-500">
-          RETAIL
+        <span
+          className="text-[9px] font-bold uppercase text-neutral-500"
+          style={{ letterSpacing: "0.14em" }}
+        >
+          Retail
         </span>
-        <span className="font-display text-[11px] font-bold text-brand">
+        <span
+          className="font-display text-[11px] font-bold text-brand"
+          style={{ letterSpacing: "-0.01em" }}
+        >
           PDV
+        </span>
+        <span className="ml-1 inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5">
+          <span className="h-1 w-1 rounded-full bg-success" />
+          <span
+            className="text-[8px] font-bold uppercase text-success"
+            style={{ letterSpacing: "0.10em" }}
+          >
+            v 01.222
+          </span>
         </span>
       </div>
       <div className="flex items-center gap-2">
@@ -306,13 +329,25 @@ function Toolbar() {
         <button className="flex h-6 w-6 items-center justify-center rounded text-neutral-500 hover:bg-neutral-100">
           <RotateCw size={10} strokeWidth={2} />
         </button>
-        <span className="ml-3 font-display text-[11px] font-bold tracking-wider text-neutral-700">
-          CAIXA
+        <span
+          className="ml-3 font-display text-[10px] font-bold uppercase text-neutral-700"
+          style={{ letterSpacing: "0.14em" }}
+        >
+          Caixa
+        </span>
+        <span
+          className="ml-1.5 rounded-full bg-brand-ghost px-1.5 py-0.5 text-[9px] font-bold tabular-nums text-brand"
+          style={{ letterSpacing: "-0.005em" }}
+        >
+          #001
         </span>
       </div>
-      <div className="flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2 py-0.5">
-        <span className="text-[10px] text-neutral-400">Buscar</span>
-        <Search size={11} strokeWidth={2} className="text-neutral-400" />
+      <div
+        className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-2.5 py-1"
+        style={{ boxShadow: "inset 0 1px 1px rgba(0,0,0,0.03)" }}
+      >
+        <Search size={11} strokeWidth={2.25} className="text-neutral-400" />
+        <span className="text-[10px] text-neutral-400">Buscar produto…</span>
       </div>
     </div>
   );
@@ -486,19 +521,25 @@ function CenterColumn({
               whileTap={{ scale: 0.97 }}
               onClick={() => onCategoryChange(c.id)}
               className={cn(
-                "flex h-14 items-center justify-center gap-2 rounded-md px-3 font-display text-[13px] font-bold transition-shadow",
-                isActive && "ring-2 ring-offset-2",
+                "relative flex h-14 items-center justify-center gap-2 rounded-lg px-3 font-display text-[13px] font-bold transition-all",
               )}
               style={{
                 background: isActive
-                  ? c.bg
-                  : c.bg === "#f97316"
-                    ? "#fff1e6"
-                    : c.bg,
-                color: isActive && c.bg === "#f97316" ? "white" : c.text,
+                  ? c.bg === "#f97316"
+                    ? "linear-gradient(135deg, #fb923c 0%, #f97316 60%, #ea580c 100%)"
+                    : c.bg
+                  : "#f3f4f8",
+                color: isActive
+                  ? c.bg === "#f97316"
+                    ? "white"
+                    : c.text
+                  : "#6b7280",
                 boxShadow: isActive
-                  ? "0 0 0 2px white inset, 0 4px 12px rgba(0,0,0,0.08)"
-                  : "0 1px 2px rgba(0,0,0,0.04)",
+                  ? c.bg === "#f97316"
+                    ? "0 4px 12px rgba(249,115,22,0.30), inset 0 1px 0 rgba(255,255,255,0.18)"
+                    : "0 4px 12px rgba(2,7,136,0.08), inset 0 0 0 1px rgba(2,7,136,0.10)"
+                  : "0 1px 1px rgba(0,0,0,0.02)",
+                letterSpacing: "-0.005em",
               }}
             >
               <c.Icon size={18} strokeWidth={1.75} />
@@ -526,20 +567,43 @@ function CenterColumn({
               }}
               whileTap={{ scale: 0.94 }}
               className={cn(
-                "flex h-24 flex-col items-center justify-center gap-2 rounded-md border-2 bg-[#eef0f7] p-2 text-center transition-shadow",
-                highlight
-                  ? "border-brand shadow-[0_0_0_3px_rgba(2,7,136,0.15)]"
-                  : "border-transparent hover:border-brand/30",
+                "group relative flex h-24 flex-col items-center justify-center gap-2 rounded-lg bg-white p-2 text-center transition-all",
               )}
+              style={{
+                border: highlight
+                  ? "2px solid #020788"
+                  : "1px solid rgba(0,0,0,0.06)",
+                boxShadow: highlight
+                  ? "0 4px 16px rgba(2,7,136,0.18), 0 0 0 3px rgba(2,7,136,0.10)"
+                  : "0 1px 2px rgba(0,0,0,0.03)",
+                background: highlight
+                  ? "linear-gradient(180deg, #ffffff 0%, #f6f7fc 100%)"
+                  : "#ffffff",
+              }}
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded bg-white">
-                <Pizza size={20} strokeWidth={1.5} className="text-brand" />
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-lg"
+                style={{
+                  background: highlight
+                    ? "linear-gradient(135deg, rgba(124,58,237,0.14) 0%, rgba(2,7,136,0.10) 100%)"
+                    : "#eef0f7",
+                  boxShadow:
+                    "inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 1px rgba(2,7,136,0.04)",
+                }}
+              >
+                <Pizza size={20} strokeWidth={1.75} className="text-brand" />
               </div>
               <div>
-                <span className="block font-display text-[11px] font-bold leading-tight text-brand">
+                <span
+                  className="block font-display text-[11px] font-bold leading-tight text-brand"
+                  style={{ letterSpacing: "-0.01em" }}
+                >
                   {p.name}
                 </span>
-                <span className="font-display text-[10px] font-bold text-neutral-500 tabular-nums">
+                <span
+                  className="font-display text-[10.5px] font-bold text-neutral-500 tabular-nums"
+                  style={{ letterSpacing: "-0.01em" }}
+                >
                   R$ {p.price.toFixed(2).replace(".", ",")}
                 </span>
               </div>
@@ -556,26 +620,39 @@ function FunctionKeysColumn() {
     <aside className="grid grid-cols-2 gap-1 overflow-y-auto border-l border-neutral-200 bg-white p-1.5 content-start">
       {FUNCTION_KEYS.map((k) => {
         const style = KEY_STYLES[k.tone];
+        const isMuted = k.tone === "muted";
         return (
-          <button
+          <motion.button
             key={k.label}
             type="button"
-            className="flex flex-col items-center justify-center rounded-md px-1 py-2 text-center font-display min-h-[44px]"
-            style={{ background: style.bg }}
+            whileTap={isMuted ? undefined : { scale: 0.96 }}
+            className="flex flex-col items-center justify-center rounded-lg px-1 py-2 text-center font-display min-h-[44px] transition-all"
+            style={{
+              background: style.bg,
+              boxShadow: isMuted
+                ? "inset 0 1px 0 rgba(255,255,255,0.4)"
+                : "inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 1px rgba(0,0,0,0.03)",
+            }}
           >
             <span
               className="text-[9px] font-bold leading-tight"
-              style={{ color: style.text }}
+              style={{
+                color: style.text,
+                letterSpacing: "0.01em",
+              }}
             >
               {k.label}
             </span>
             <span
-              className="mt-0.5 text-[8px] font-medium opacity-70"
-              style={{ color: style.text }}
+              className="mt-0.5 text-[8px] font-medium tabular-nums opacity-70"
+              style={{
+                color: style.text,
+                letterSpacing: "0.06em",
+              }}
             >
               {k.shortcut}
             </span>
-          </button>
+          </motion.button>
         );
       })}
     </aside>
@@ -638,36 +715,60 @@ function FooterBar({
         {payments.map((p) => {
           const active = selectedPayment === p.id;
           return (
-            <button
+            <motion.button
               key={p.id}
               type="button"
+              whileTap={{ scale: 0.96 }}
               onClick={() => onSelectPayment(p.id)}
               className={cn(
-                "flex h-full items-center justify-center px-3 font-display text-[10px] font-bold border-r border-neutral-200 transition-colors",
-                active
-                  ? "bg-brand text-white"
-                  : "bg-white text-brand hover:bg-brand-ghost",
+                "relative flex h-full items-center justify-center px-3 font-display text-[10.5px] font-bold border-r border-neutral-200 transition-all",
+                active ? "text-white" : "text-brand hover:bg-brand-ghost",
               )}
+              style={{
+                background: active
+                  ? "linear-gradient(180deg, #1a1fa8 0%, #020788 100%)"
+                  : "white",
+                boxShadow: active
+                  ? "inset 0 1px 0 rgba(255,255,255,0.18), 0 0 0 1px rgba(2,7,136,0.10)"
+                  : undefined,
+                letterSpacing: "-0.005em",
+              }}
             >
               {p.label}
-            </button>
+              {active && (
+                <motion.span
+                  layoutId="pdv-payment-active"
+                  className="absolute inset-x-2 bottom-1 h-[2px] rounded-full bg-white/70"
+                />
+              )}
+            </motion.button>
           );
         })}
       </div>
 
       {/* Finalizar Venda CTA */}
-      <button
+      <motion.button
         type="button"
         disabled={total === 0}
+        whileTap={total > 0 ? { scale: 0.98 } : undefined}
         className={cn(
-          "flex w-48 items-center justify-center px-4 font-display text-[13px] font-bold uppercase tracking-wider text-white transition-colors",
-          total > 0
-            ? "bg-success hover:bg-success/90"
-            : "bg-neutral-300 cursor-not-allowed",
+          "flex w-48 items-center justify-center px-4 font-display text-[13px] font-bold uppercase text-white transition-all",
+          total === 0 && "cursor-not-allowed",
         )}
+        style={{
+          background:
+            total > 0
+              ? "linear-gradient(180deg, #16a34a 0%, #15803d 100%)"
+              : "#d1d5db",
+          boxShadow:
+            total > 0
+              ? "inset 0 1px 0 rgba(255,255,255,0.20), 0 -2px 0 rgba(0,0,0,0.06) inset"
+              : undefined,
+          letterSpacing: "0.06em",
+        }}
       >
         Finalizar Venda
-      </button>
+      </motion.button>
     </div>
   );
 }

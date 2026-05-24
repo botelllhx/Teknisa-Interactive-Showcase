@@ -135,7 +135,7 @@ function SegmentCard({ segment, index, onSelect }: SegmentCardProps) {
         </div>
         <div className="flex flex-col items-end gap-1.5">
           <span
-            className="font-ui text-[10px] font-bold uppercase text-neutral-400"
+            className="font-ui text-[10px] font-bold uppercase text-neutral-600"
             style={{ letterSpacing: "0.16em" }}
           >
             <span className="tabular-nums">
@@ -193,7 +193,7 @@ function SegmentCard({ segment, index, onSelect }: SegmentCardProps) {
         className="relative mt-auto flex items-center justify-between border-t border-neutral-100 pt-4"
       >
         <span
-          className="font-ui text-[10.5px] font-bold uppercase text-neutral-400 transition-colors duration-300 group-hover:text-brand"
+          className="font-ui text-[10.5px] font-bold uppercase text-neutral-600 transition-colors duration-300 group-hover:text-brand"
           style={{ letterSpacing: "0.16em" }}
         >
           Abrir painel

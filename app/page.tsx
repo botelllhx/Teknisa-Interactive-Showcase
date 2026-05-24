@@ -17,32 +17,32 @@ export default function ShowcasePage() {
   const activeSegment = useShowcase((s) => s.activeSegment);
   const activeSolution = useShowcase((s) => s.activeSolution);
 
-  // v13.20 — scale APENAS por largura. Conteúdo em tamanho TV nativo.
-  // Em monitores menores, scale-down por largura. Vertical scroll se
-  // necessário (cliente prefere conteúdo grande + scroll do que pequeno).
-  const { scale, offsetX, width } = useViewportFit();
+  // v13.21 — main absoluto com offset calculado + scale min(vw, vh).
+  // Cabe SEMPRE em 100vh×100vw, sem scroll horizontal nem vertical.
+  // Conteúdo lógico 1920×1080. Devices canonical bumpados na v13.20
+  // garantem que mesmo com scale 0.9, o mockup tem presença visual.
+  const { scale, offsetX, offsetY, width, height } = useViewportFit();
 
   return (
     <div
       className="bg-surface-raised"
       style={{
-        width: "100vw",
-        minHeight: "100vh",
-        overflowX: "hidden",
         position: "relative",
+        width: "100vw",
+        height: "100vh",
+        overflow: "hidden",
       }}
     >
       <main
         className="bg-surface-raised"
         style={{
-          position: "relative",
-          marginLeft: offsetX,
+          position: "absolute",
+          left: offsetX,
+          top: offsetY,
           width,
+          height,
           transform: `scale(${scale})`,
           transformOrigin: "top left",
-          // Reserva o espaço visual para que o documento "saiba" a altura
-          // real do conteúdo escalado e o scroll vertical funcione direito
-          marginBottom: `calc(-1080px * (1 - ${scale}))`,
         }}
       >
         <ShowcaseNav />
@@ -55,8 +55,7 @@ export default function ShowcasePage() {
               initial="initial"
               animate="animate"
               exit="exit"
-              className="flex flex-col"
-              style={{ minHeight: 1080 }}
+              className="flex h-full flex-col justify-center"
             >
               <HeroSection />
               <SegmentGrid />
@@ -70,7 +69,7 @@ export default function ShowcasePage() {
               initial="initial"
               animate="animate"
               exit="exit"
-              style={{ minHeight: 1080 }}
+              className="flex h-full flex-col justify-center"
             >
               <SolutionGrid segmentId={activeSegment} />
             </motion.div>
@@ -83,7 +82,7 @@ export default function ShowcasePage() {
               initial="initial"
               animate="animate"
               exit="exit"
-              style={{ width: 1920, height: 1080 }}
+              className="h-full"
             >
               <SolutionDemo solutionId={activeSolution} />
             </motion.div>

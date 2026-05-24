@@ -3,41 +3,43 @@
 import { useEffect, useState } from "react";
 
 /**
- * v13.20 — ULTRAREVIEW da responsividade.
+ * v13.21 — scale fit nos DOIS eixos (largura E altura), nunca scroll.
  *
- * Cliente: "antes tinhamos tudo bem grande e sendo bem exibido… algumas
- * telas menores que outras… preciso de tamanhos reais".
+ * Cliente reportou: v13.20 ficou tamanho bom MAS agora vaza vertical
+ * e precisa scrollar. Solução: usar min(vw/1920, vh/1080, 1) pra
+ * SEMPRE caber em 100vh × 100vw. Canonical sizes dos devices ficam
+ * grandes (940 mobile etc), então mesmo com scale 0.9 o mockup
+ * continua com presença visual.
  *
- * Decisão: REMOVER o auto-fit por altura (que comprimia tudo visualmente).
- * Manter scale APENAS quando a largura do monitor é menor que 1920.
+ * - Monitor 1920×1080:                scale=1, offset=(0,0)
+ * - Monitor 1920×980 (chrome):        scale=0.907, offsetX=89
+ * - Monitor 1600×900:                 scale=0.833, offsetX=0
+ * - Monitor 1366×768:                 scale=0.711, offsetX=0
  *
- * Comportamento:
- * - Monitor TV 1920×1080+:           scale = 1, render 1:1 nativo
- * - Monitor laptop 1600×900:         scale = 0.833 por largura
- * - Monitor laptop 1366×768:         scale = 0.711 por largura
- * - Monitor 1920×800 (chrome alto):  scale = 1, scroll vertical
- *
- * Em monitores menores em largura, escalamos por largura. Em monitores
- * com altura insuficiente, o page tem overflowY auto — usuário scrolla.
- * Antes (v13.18): escalava por altura também → tudo ficava menor que
- * o necessário.
+ * Resultado: NUNCA scroll horizontal nem vertical. Conteúdo sempre
+ * centralizado se ratios diferentes do 16:9.
  */
 export function useViewportFit() {
   const TARGET_W = 1920;
+  const TARGET_H = 1080;
 
   const [state, setState] = useState({
     scale: 1,
     offsetX: 0,
+    offsetY: 0,
   });
 
   useEffect(() => {
     const update = () => {
       const vw = window.innerWidth;
-      const s = Math.min(vw / TARGET_W, 1);
+      const vh = window.innerHeight;
+      const s = Math.min(vw / TARGET_W, vh / TARGET_H, 1);
       const visualW = TARGET_W * s;
+      const visualH = TARGET_H * s;
       setState({
         scale: s,
         offsetX: (vw - visualW) / 2,
+        offsetY: (vh - visualH) / 2,
       });
     };
     update();
@@ -48,6 +50,8 @@ export function useViewportFit() {
   return {
     scale: state.scale,
     offsetX: state.offsetX,
+    offsetY: state.offsetY,
     width: TARGET_W,
+    height: TARGET_H,
   };
 }

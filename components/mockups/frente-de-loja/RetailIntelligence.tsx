@@ -923,22 +923,29 @@ interface MatrixDish {
   focus?: boolean;
 }
 
+// v13.21 — coords ajustadas pra evitar overlap entre dots/labels.
+// Coordenadas mais espalhadas (mínimo 15 unidades de separação entre
+// pontos no mesmo quadrante).
 const MATRIX_DISHES: MatrixDish[] = [
-  { id: "frango", name: "Frango Grelhado", x: 72, y: 64, group: "estrela" },
-  { id: "pepperoni", name: "Pizza Pepperoni", x: 82, y: 28, group: "burro" },
-  { id: "xburguer", name: "X-Burguer", x: 88, y: 36, group: "burro" },
-  { id: "lasanha", name: "Lasanha Integral", x: 35, y: 70, group: "puzzle" },
+  // Estrela (right-top): alta popularidade × alta margem
+  { id: "frango", name: "Frango Grelhado", x: 72, y: 70, group: "estrela" },
+  // Burro de carga (right-bottom): alta popularidade × margem baixa
+  { id: "pepperoni", name: "Pizza Pepperoni", x: 78, y: 22, group: "burro" },
+  { id: "xburguer", name: "X-Burguer", x: 90, y: 36, group: "burro" },
+  // Quebra-cabeça (left-top): popularidade média × margem alta
+  { id: "lasanha", name: "Lasanha Integral", x: 36, y: 76, group: "puzzle" },
   {
     id: "parmegiana",
     name: "Filé Parmegiana 150g",
     x: 42,
-    y: 66,
+    y: 62,
     group: "puzzle",
     focus: true,
   },
-  { id: "tilapia", name: "Filé de Tilápia", x: 28, y: 58, group: "puzzle" },
-  { id: "salada", name: "Salada de Grão", x: 22, y: 30, group: "cachorro" },
-  { id: "pudim", name: "Pudim de Leite", x: 18, y: 24, group: "cachorro" },
+  { id: "tilapia", name: "Filé de Tilápia", x: 22, y: 56, group: "puzzle" },
+  // Cachorro (left-bottom): baixa popularidade × baixa margem
+  { id: "salada", name: "Salada de Grão", x: 32, y: 30, group: "cachorro" },
+  { id: "pudim", name: "Pudim de Leite", x: 14, y: 18, group: "cachorro" },
 ];
 
 const QUADRANT_META = {

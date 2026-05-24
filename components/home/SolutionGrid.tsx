@@ -12,7 +12,6 @@ import { useShowcase } from "@/lib/store";
 import { getFlow } from "@/data/flows";
 import { staggerContainer, fadeInUp } from "@/lib/animations";
 import { SegmentIcon } from "@/components/ui/SegmentIcon";
-import { cn } from "@/lib/cn";
 
 interface SolutionGridProps {
   segmentId: SolutionSegment;
@@ -66,20 +65,15 @@ export function SolutionGrid({ segmentId }: SolutionGridProps) {
         </div>
       </motion.header>
 
+      {/* v13.21 — sempre 5 cols. Cards mantêm largura uniforme. Quando há
+          menos itens, as células vazias somem mas o resto preserva o tamanho.
+          Antes: grid-cols-3 esticava cards pra ocupar 1/3 da row, ficando
+          gigantes e desproporcionais. */}
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className={cn(
-          "grid gap-5",
-          items.length <= 2
-            ? "grid-cols-2"
-            : items.length === 3
-              ? "grid-cols-3"
-              : items.length === 4
-                ? "grid-cols-4"
-                : "grid-cols-5",
-        )}
+        className="grid grid-cols-5 gap-5"
       >
         {items.map((solution) => (
           <SolutionCard
@@ -164,7 +158,7 @@ function SolutionCard({ solution, onSelect }: SolutionCardProps) {
 
       <div className="relative mt-6 flex items-center justify-between border-t border-neutral-100 pt-4">
         <span
-          className="font-ui text-[10.5px] font-bold uppercase text-neutral-400"
+          className="font-ui text-[10.5px] font-bold uppercase text-neutral-600"
           style={{ letterSpacing: "0.14em" }}
         >
           {deviceLabel(solution.device)}

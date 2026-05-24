@@ -91,7 +91,7 @@ function SegmentCard({ segment, index, onSelect }: SegmentCardProps) {
       }}
       whileTap={{ scale: 0.99 }}
       aria-label={`Abrir ${segment.label}`}
-      className="group relative overflow-hidden rounded-xl bg-white p-6 text-left"
+      className="group relative flex flex-col overflow-hidden rounded-xl bg-white p-6 text-left"
       style={{
         border: "1px solid rgba(0,0,0,0.06)",
         boxShadow:
@@ -188,9 +188,9 @@ function SegmentCard({ segment, index, onSelect }: SegmentCardProps) {
         </p>
       </div>
 
-      {/* Footer mt-5 com divider sutil */}
+      {/* Footer mt-auto pins ao bottom; cards mesma altura uniforme */}
       <div
-        className="relative mt-5 flex items-center justify-between border-t border-neutral-100 pt-4"
+        className="relative mt-auto flex items-center justify-between border-t border-neutral-100 pt-4"
       >
         <span
           className="font-ui text-[10.5px] font-bold uppercase text-neutral-400 transition-colors duration-300 group-hover:text-brand"

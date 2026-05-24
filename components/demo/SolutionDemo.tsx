@@ -233,7 +233,7 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
         className={cn(
           "grid min-h-0 flex-1 items-stretch gap-6 p-6",
           activeCompanions.length === 0 && "grid-cols-[1fr_380px]",
-          activeCompanions.length > 0 && "grid-cols-[340px_1fr_340px]",
+          activeCompanions.length > 0 && "grid-cols-[400px_1fr_400px]",
         )}
       >
         {activeCompanions.length > 0 && (

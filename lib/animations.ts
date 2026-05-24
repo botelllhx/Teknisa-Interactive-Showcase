@@ -56,10 +56,36 @@ export const staggerContainerSlow: Variants = {
   },
 };
 
+// v13.22 — pageTransition refeito com filter blur + scale + y para
+// dar SENSAÇÃO DE PROFUNDIDADE no clique dos cards. Antes era um
+// fade-scale simples (sentia parado). Agora é cinematográfico:
+// content entrante vem com slight blur + scale + slide up,
+// outgoing vai com blur + scale up + slide down (sai da câmera).
 export const pageTransition: Variants = {
-  initial: { opacity: 0, scale: 0.97 },
-  animate: { opacity: 1, scale: 1, transition: { duration: 0.4, ease } },
-  exit: { opacity: 0, scale: 1.02, transition: { duration: 0.25 } },
+  initial: {
+    opacity: 0,
+    scale: 0.94,
+    y: 24,
+    filter: "blur(8px)",
+  },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      duration: 0.55,
+      ease,
+      filter: { duration: 0.4, ease: "easeOut" },
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 1.05,
+    y: -16,
+    filter: "blur(8px)",
+    transition: { duration: 0.3, ease: "easeIn" },
+  },
 };
 
 export const pulseRing = {

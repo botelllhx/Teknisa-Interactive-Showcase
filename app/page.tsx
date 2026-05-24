@@ -10,88 +10,64 @@ import { IdleReset } from "@/components/layout/IdleReset";
 import { PresentationToggle } from "@/components/layout/PresentationToggle";
 import { SolutionDemo } from "@/components/demo/SolutionDemo";
 import { pageTransition } from "@/lib/animations";
-import { useViewportFit } from "@/hooks/useViewportFit";
 
 export default function ShowcasePage() {
   const view = useShowcase((s) => s.view);
   const activeSegment = useShowcase((s) => s.activeSegment);
   const activeSolution = useShowcase((s) => s.activeSolution);
 
-  // v13.21 — main absoluto com offset calculado + scale min(vw, vh).
-  // Cabe SEMPRE em 100vh×100vw, sem scroll horizontal nem vertical.
-  // Conteúdo lógico 1920×1080. Devices canonical bumpados na v13.20
-  // garantem que mesmo com scale 0.9, o mockup tem presença visual.
-  const { scale, offsetX, offsetY, width, height } = useViewportFit();
-
+  // v13.22 — REMOVIDO auto-fit (useViewportFit). Volta ao layout natural
+  // 100vw × 100vh. Solution view fills 100vh, device frame scales pelo
+  // SolutionFrame pra encaixar no espaço disponível. SEM crop, SEM scroll,
+  // SEM whitespace centralizado. Cada viewport renderiza naturalmente.
   return (
-    <div
-      className="bg-surface-raised"
-      style={{
-        position: "relative",
-        width: "100vw",
-        height: "100vh",
-        overflow: "hidden",
-      }}
-    >
-      <main
-        className="bg-surface-raised"
-        style={{
-          position: "absolute",
-          left: offsetX,
-          top: offsetY,
-          width,
-          height,
-          transform: `scale(${scale})`,
-          transformOrigin: "top left",
-        }}
-      >
-        <ShowcaseNav />
+    <main className="relative h-screen w-screen overflow-hidden bg-surface-raised">
+      <ShowcaseNav />
 
-        <AnimatePresence mode="wait">
-          {view === "home" && (
-            <motion.div
-              key="home"
-              variants={pageTransition}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="flex h-full flex-col justify-center"
-            >
-              <HeroSection />
-              <SegmentGrid />
-            </motion.div>
-          )}
+      <AnimatePresence mode="wait">
+        {view === "home" && (
+          <motion.div
+            key="home"
+            variants={pageTransition}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="flex h-full flex-col justify-center"
+          >
+            <HeroSection />
+            <SegmentGrid />
+          </motion.div>
+        )}
 
-          {view === "segment" && activeSegment && (
-            <motion.div
-              key={`segment-${activeSegment}`}
-              variants={pageTransition}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="flex h-full flex-col justify-center"
-            >
-              <SolutionGrid segmentId={activeSegment} />
-            </motion.div>
-          )}
+        {view === "segment" && activeSegment && (
+          <motion.div
+            key={`segment-${activeSegment}`}
+            variants={pageTransition}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="flex h-full flex-col justify-center"
+          >
+            <SolutionGrid segmentId={activeSegment} />
+          </motion.div>
+        )}
 
-          {view === "solution" && activeSolution && (
-            <motion.div
-              key={`solution-${activeSolution}`}
-              variants={pageTransition}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="h-full"
-            >
-              <SolutionDemo solutionId={activeSolution} />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {view === "solution" && activeSolution && (
+          <motion.div
+            key={`solution-${activeSolution}`}
+            variants={pageTransition}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="h-full"
+          >
+            <SolutionDemo solutionId={activeSolution} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        <IdleReset />
-        <PresentationToggle />
-      </main>
-    </div>
+      <IdleReset />
+      <PresentationToggle />
+    </main>
   );
 }

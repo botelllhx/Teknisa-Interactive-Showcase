@@ -955,6 +955,105 @@ const QUADRANT_META = {
   cachorro: { label: "Cachorro", color: "#6b7280", tag: "Reavaliar" },
 } as const;
 
+// v13.22 — Dot da matriz com hover tooltip refinado.
+// Foco: label permanente. Outros: label só no hover (sem overlap).
+function MatrixDot({
+  dish,
+  meta,
+  index,
+  focus,
+}: {
+  dish: MatrixDish;
+  meta: (typeof QUADRANT_META)[keyof typeof QUADRANT_META];
+  index: number;
+  focus: boolean;
+}) {
+  const [hover, setHover] = useState(false);
+  const showLabel = focus || hover;
+  return (
+    <motion.button
+      type="button"
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{
+        delay: 0.15 + index * 0.07,
+        type: "spring",
+        stiffness: 220,
+        damping: 18,
+      }}
+      whileHover={{ scale: 1.2 }}
+      whileTap={{ scale: 0.95 }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      data-tour={focus ? "ri-matrix-focus" : undefined}
+      className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+      style={{
+        left: `${dish.x}%`,
+        top: `${100 - dish.y}%`,
+        background: meta.color,
+        width: focus ? 22 : 14,
+        height: focus ? 22 : 14,
+        boxShadow: focus
+          ? `0 0 0 6px ${meta.color}18, 0 0 28px ${meta.color}66, 0 0 60px ${meta.color}33`
+          : `0 0 10px ${meta.color}40`,
+        zIndex: hover || focus ? 10 : 1,
+      }}
+      aria-label={dish.name}
+    >
+      {focus && (
+        <>
+          <motion.span
+            animate={{ scale: [1, 1.9, 1], opacity: [0.6, 0, 0.6] }}
+            transition={{
+              duration: 1.6,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="absolute inset-0 rounded-full"
+            style={{ background: meta.color }}
+          />
+          <motion.span
+            animate={{ scale: [1, 2.6, 1], opacity: [0.3, 0, 0.3] }}
+            transition={{
+              duration: 2.4,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.4,
+            }}
+            className="absolute inset-0 rounded-full"
+            style={{ background: meta.color }}
+          />
+        </>
+      )}
+      <AnimatePresence>
+        {showLabel && (
+          <motion.span
+            initial={{ opacity: 0, x: -4, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -4, scale: 0.9 }}
+            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            className={cn(
+              "absolute whitespace-nowrap rounded-full px-3 py-1.5 font-ui text-[12px] font-medium pointer-events-none",
+              focus ? "font-bold text-brand" : "text-neutral-700",
+            )}
+            style={{
+              left: focus ? 30 : 22,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "white",
+              boxShadow: focus
+                ? "0 4px 16px rgba(2,7,136,0.22), 0 0 0 1.5px rgba(2,7,136,0.25)"
+                : "0 2px 8px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06)",
+            }}
+          >
+            {dish.name}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.button>
+  );
+}
+
 function MatrizScreen() {
   return (
     <motion.section
@@ -1018,84 +1117,19 @@ function MatrizScreen() {
             Margem →
           </span>
 
-          {/* Dishes */}
+          {/* v13.22 — Dishes: label só no focus + hover tooltip nos outros.
+              Resolve o overlap reportado pelo cliente. */}
           {MATRIX_DISHES.map((d, i) => {
             const focus = d.focus;
             const meta = QUADRANT_META[d.group];
             return (
-              <motion.button
+              <MatrixDot
                 key={d.id}
-                type="button"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{
-                  delay: 0.15 + i * 0.07,
-                  type: "spring",
-                  stiffness: 220,
-                  damping: 18,
-                }}
-                whileHover={{ scale: 1.15 }}
-                whileTap={{ scale: 0.95 }}
-                data-tour={focus ? "ri-matrix-focus" : undefined}
-                className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
-                style={{
-                  left: `${d.x}%`,
-                  top: `${100 - d.y}%`,
-                  background: meta.color,
-                  width: focus ? 22 : 14,
-                  height: focus ? 22 : 14,
-                  boxShadow: focus
-                    ? `0 0 0 6px ${meta.color}18, 0 0 28px ${meta.color}66, 0 0 60px ${meta.color}33`
-                    : `0 0 10px ${meta.color}40`,
-                }}
-                aria-label={d.name}
-              >
-                {focus && (
-                  <>
-                    <motion.span
-                      animate={{ scale: [1, 1.9, 1], opacity: [0.6, 0, 0.6] }}
-                      transition={{
-                        duration: 1.6,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                      className="absolute inset-0 rounded-full"
-                      style={{ background: meta.color }}
-                    />
-                    <motion.span
-                      animate={{ scale: [1, 2.6, 1], opacity: [0.3, 0, 0.3] }}
-                      transition={{
-                        duration: 2.4,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: 0.4,
-                      }}
-                      className="absolute inset-0 rounded-full"
-                      style={{ background: meta.color }}
-                    />
-                  </>
-                )}
-                <span
-                  className={cn(
-                    "absolute whitespace-nowrap rounded-full px-2.5 py-1 font-ui text-[11px] font-medium",
-                    focus ? "font-bold text-brand" : "text-neutral-600",
-                  )}
-                  style={{
-                    left: focus ? 30 : 22,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    background: focus ? "white" : "rgba(255,255,255,0.85)",
-                    boxShadow: focus
-                      ? "0 4px 16px rgba(2,7,136,0.22), 0 0 0 1px rgba(2,7,136,0.18)"
-                      : undefined,
-                    border: focus
-                      ? "1.5px solid #020788"
-                      : "1px solid #e5e7eb",
-                  }}
-                >
-                  {d.name}
-                </span>
-              </motion.button>
+                dish={d}
+                meta={meta}
+                index={i}
+                focus={!!focus}
+              />
             );
           })}
         </div>

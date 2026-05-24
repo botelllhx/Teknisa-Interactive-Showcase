@@ -46,24 +46,24 @@ export function CompanionShell({
         scale: { duration: 0.5, ease: "easeOut" },
       }}
       className={cn(
-        "flex w-full max-w-[320px] flex-col gap-2 font-ui",
+        "flex w-full max-w-[380px] flex-col gap-2.5 font-ui",
         className,
       )}
     >
       {/* Context label */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-baseline gap-2 min-w-0">
-          <span className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand whitespace-nowrap">
+          <span className="font-ui text-[11.5px] font-bold uppercase tracking-[2px] text-brand whitespace-nowrap">
             {label}
           </span>
           {sublabel && (
-            <span className="truncate text-[9px] font-medium text-neutral-400">
+            <span className="truncate text-[10px] font-medium text-neutral-500">
               {sublabel}
             </span>
           )}
         </div>
         {live && (
-          <span className="flex flex-none items-center gap-1 rounded-full bg-success/10 px-1.5 py-0.5 ring-1 ring-success/15">
+          <span className="flex flex-none items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 ring-1 ring-success/15">
             <motion.span
               animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.18, 1] }}
               transition={{
@@ -73,7 +73,7 @@ export function CompanionShell({
               }}
               className="block h-1.5 w-1.5 rounded-full bg-success shadow-[0_0_4px_rgba(22,163,74,0.6)]"
             />
-            <span className="text-[8px] font-bold uppercase tracking-wider text-success">
+            <span className="text-[9px] font-bold uppercase tracking-wider text-success">
               ao vivo
             </span>
           </span>

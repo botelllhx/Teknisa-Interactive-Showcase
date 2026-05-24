@@ -131,7 +131,7 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
   const Mockup = getMockup(solutionId);
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-surface-raised">
+    <div className="flex h-full w-full flex-col overflow-hidden bg-surface-raised">
       {/* Slim header — 64px for TV touch readability */}
       <header className="z-30 flex h-16 flex-shrink-0 items-center justify-between border-b border-brand/5 bg-white/95 px-6 backdrop-blur">
         <div className="flex items-center gap-3">

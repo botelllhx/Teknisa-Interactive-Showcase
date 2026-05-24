@@ -95,19 +95,31 @@ export function PortalGestorMockup({ step }: PortalGestorProps) {
         <div className="flex items-center gap-3">
           <Image src="/logo-teknisa.svg" alt="Teknisa" width={86} height={16} />
           <span className="h-5 w-px bg-neutral-200" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <span
-              className="flex h-7 w-7 items-center justify-center rounded-md text-white"
-              style={{ background: "#020788" }}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-white"
+              style={{
+                background:
+                  "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
+                boxShadow:
+                  "0 3px 8px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.20)",
+              }}
             >
-              <UsersRound size={14} strokeWidth={2} />
+              <UsersRound size={15} strokeWidth={2.25} />
             </span>
             <div className="leading-tight">
-              <p className="font-ui text-[13px] font-bold text-neutral-900">
+              <p
+                className="font-display text-[14px] font-bold text-neutral-900"
+                style={{ letterSpacing: "-0.018em" }}
+              >
                 Portal Gestor
               </p>
-              <p className="font-ui text-[11px] text-neutral-500">
-                Filial Centro · Maio 2026
+              <p
+                className="font-ui text-[10.5px] text-neutral-500"
+                style={{ letterSpacing: "-0.005em" }}
+              >
+                Filial Centro ·{" "}
+                <span className="tabular-nums">Maio 2026</span>
               </p>
             </div>
           </div>
@@ -120,13 +132,25 @@ export function PortalGestorMockup({ step }: PortalGestorProps) {
             extraLabel="+44"
           />
           <span className="h-7 w-px bg-neutral-200" />
-          <div className="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-2 py-1 shadow-card">
+          <div
+            className="flex items-center gap-2 rounded-full bg-white px-2 py-1"
+            style={{
+              border: "1px solid rgba(0,0,0,0.05)",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+            }}
+          >
             <PersonAvatar photo={people.joao} name="João Costa" size={26} />
             <div className="leading-tight">
-              <span className="block font-ui text-[11px] font-bold text-brand">
+              <span
+                className="block font-ui text-[11.5px] font-bold text-brand"
+                style={{ letterSpacing: "-0.005em" }}
+              >
                 João Costa
               </span>
-              <span className="block text-[9px] text-neutral-500">
+              <span
+                className="block font-ui text-[9px] text-neutral-500"
+                style={{ letterSpacing: "0.005em" }}
+              >
                 Gestor · Filial Centro
               </span>
             </div>

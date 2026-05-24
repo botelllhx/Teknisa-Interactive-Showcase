@@ -21,13 +21,37 @@ interface PortalFuncionarioProps {
 export function PortalFuncionarioMockup({ step }: PortalFuncionarioProps) {
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-white font-ui text-neutral-800">
-      <header className="border-b border-brand/8 px-4 pb-2 pt-3">
-        <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
-          Portal Funcionário
-        </p>
-        <p className="font-ui text-[10px] text-neutral-500">
-          Teknisa · Mobile
-        </p>
+      <header
+        className="flex items-center justify-between border-b border-brand/8 px-4 pb-2.5 pt-3"
+        style={{
+          background: "linear-gradient(180deg, #ffffff 0%, #fafbfd 100%)",
+        }}
+      >
+        <div>
+          <p
+            className="font-ui text-[10px] font-bold uppercase text-brand"
+            style={{ letterSpacing: "0.18em" }}
+          >
+            Portal Funcionário
+          </p>
+          <p
+            className="mt-0.5 font-ui text-[10px] text-neutral-500"
+            style={{ letterSpacing: "-0.005em" }}
+          >
+            Teknisa · Mobile
+          </p>
+        </div>
+        <span
+          className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-success"
+          style={{ letterSpacing: "0.14em" }}
+        >
+          <motion.span
+            animate={{ opacity: [1, 0.4, 1] }}
+            transition={{ duration: 1.4, repeat: Infinity }}
+            className="h-1.5 w-1.5 rounded-full bg-success"
+          />
+          Sincronizado
+        </span>
       </header>
 
       <main className="flex flex-1 flex-col overflow-hidden">

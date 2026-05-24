@@ -50,27 +50,48 @@ export function AnalisePreditivaMockup({ step }: AnalisePreditivaProps) {
         <div className="flex items-center gap-3">
           <Image src="/logo-teknisa.svg" alt="Teknisa" width={86} height={16} />
           <span className="h-5 w-px bg-neutral-200" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <span
-              className="flex h-7 w-7 items-center justify-center rounded-md text-white"
-              style={{ background: "#020788" }}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-white"
+              style={{
+                background:
+                  "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
+                boxShadow:
+                  "0 3px 10px rgba(124,58,237,0.32), inset 0 1px 0 rgba(255,255,255,0.20)",
+              }}
             >
-              <TrendingUp size={14} strokeWidth={2} />
+              <TrendingUp size={15} strokeWidth={2.25} />
             </span>
             <div className="leading-tight">
-              <p className="font-ui text-[13px] font-bold text-neutral-900">
+              <p
+                className="font-display text-[14px] font-bold text-neutral-900"
+                style={{ letterSpacing: "-0.018em" }}
+              >
                 Análise Preditiva
               </p>
-              <p className="font-ui text-[11px] text-neutral-500">
-                Predição de turnover · Maio 2026
+              <p
+                className="font-ui text-[10.5px] text-neutral-500"
+                style={{ letterSpacing: "-0.005em" }}
+              >
+                Predição de turnover ·{" "}
+                <span className="tabular-nums">Maio 2026</span>
               </p>
             </div>
           </div>
         </div>
-        <Badge variant="ai">
-          <Sparkles size={10} strokeWidth={2.5} />
+        <span
+          className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-ui text-[10px] font-bold uppercase text-white"
+          style={{
+            background:
+              "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
+            boxShadow:
+              "0 2px 8px rgba(124,58,237,0.32), inset 0 1px 0 rgba(255,255,255,0.18)",
+            letterSpacing: "0.12em",
+          }}
+        >
+          <Sparkles size={11} strokeWidth={2.5} />
           IA
-        </Badge>
+        </span>
       </header>
 
       <main className="grid flex-1 grid-cols-[1fr_380px] gap-4 overflow-hidden p-4">

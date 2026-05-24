@@ -11,7 +11,7 @@ import {
   Activity,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { Badge, Button, Card } from "@/components/ui/shadcn";
+import { Button, Card } from "@/components/ui/shadcn";
 import { people } from "@/lib/photos";
 import { PersonAvatar } from "@/components/ui/PersonAvatar";
 import { StackedAvatars } from "@/components/ui/StackedAvatars";
@@ -41,27 +41,46 @@ export function MesaOperacoesMockup({ step }: MesaOperacoesProps) {
         <div className="flex items-center gap-3">
           <Image src="/logo-teknisa.svg" alt="Teknisa" width={86} height={16} />
           <span className="h-5 w-px bg-neutral-200" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <span
-              className="flex h-7 w-7 items-center justify-center rounded-md text-white"
-              style={{ background: "#020788" }}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-white"
+              style={{
+                background:
+                  "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
+                boxShadow:
+                  "0 3px 8px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.20)",
+              }}
             >
-              <LayoutDashboard size={14} strokeWidth={2} />
+              <LayoutDashboard size={15} strokeWidth={2.25} />
             </span>
             <div className="leading-tight">
-              <p className="font-ui text-[13px] font-bold text-neutral-900">
+              <p
+                className="font-display text-[14px] font-bold text-neutral-900"
+                style={{ letterSpacing: "-0.018em" }}
+              >
                 Mesa de Operações
               </p>
-              <p className="font-ui text-[11px] text-neutral-500">
-                6 unidades · tempo real
+              <p
+                className="font-ui text-[10.5px] text-neutral-500"
+                style={{ letterSpacing: "-0.005em" }}
+              >
+                <span className="tabular-nums">6 unidades</span> · tempo real
               </p>
             </div>
           </div>
         </div>
-        <Badge variant="success">
-          <Activity size={10} strokeWidth={2.5} />
+        <span
+          className="inline-flex items-center gap-1.5 rounded-full bg-success/12 px-2 py-1 font-ui text-[9.5px] font-bold uppercase text-success"
+          style={{ letterSpacing: "0.14em" }}
+        >
+          <motion.span
+            animate={{ opacity: [1, 0.4, 1] }}
+            transition={{ duration: 1.4, repeat: Infinity }}
+            className="h-1.5 w-1.5 rounded-full bg-success"
+          />
+          <Activity size={11} strokeWidth={2.5} />
           ao vivo
-        </Badge>
+        </span>
       </header>
 
       <main className="grid flex-1 grid-cols-[1fr_360px] gap-4 overflow-hidden p-4">

@@ -35,25 +35,47 @@ const PRODUCTS = [
 export function AppComercialMockup({ step }: AppComercialProps) {
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-white font-ui text-neutral-800">
-      <header className="flex items-center gap-3 border-b border-brand/8 px-4 pb-2.5 pt-3">
+      <header
+        className="flex items-center gap-3 border-b border-brand/8 px-4 pb-2.5 pt-3"
+        style={{
+          background: "linear-gradient(180deg, #ffffff 0%, #fafbfd 100%)",
+        }}
+      >
         <PersonAvatar
           photo={people.rafael}
           name="Lucas Pereira"
-          size={36}
+          size={38}
           status="online"
+          ring
         />
         <div className="min-w-0 flex-1 leading-tight">
-          <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
+          <p
+            className="font-ui text-[9.5px] font-bold uppercase text-brand"
+            style={{ letterSpacing: "0.18em" }}
+          >
             App Comercial
           </p>
-          <p className="font-ui text-[12px] font-bold text-neutral-900">
+          <p
+            className="font-display text-[13px] font-bold text-neutral-900"
+            style={{ letterSpacing: "-0.018em" }}
+          >
             Lucas Pereira
           </p>
-          <p className="font-ui text-[10px] text-neutral-500">
-            Representante Sul · Maio 2026
+          <p
+            className="font-ui text-[9.5px] text-neutral-500"
+            style={{ letterSpacing: "-0.005em" }}
+          >
+            Representante Sul ·{" "}
+            <span className="tabular-nums">Maio 2026</span>
           </p>
         </div>
-        <Badge variant="success">Meta 78%</Badge>
+        <span
+          className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-1 font-ui text-[9.5px] font-bold uppercase text-success"
+          style={{ letterSpacing: "0.10em" }}
+        >
+          <span className="tabular-nums">Meta</span>
+          <span className="tabular-nums">78%</span>
+        </span>
       </header>
 
       <main className="flex flex-1 flex-col overflow-hidden">

@@ -288,11 +288,21 @@ function ListScreen({
       className="flex flex-1 flex-col overflow-hidden"
     >
       {/* App bar */}
-      <header className="flex items-center justify-between bg-brand px-4 pb-3 text-white">
+      <header
+        className="flex items-center justify-between px-4 pb-3 text-white"
+        style={{
+          background:
+            "linear-gradient(180deg, #1a1fa8 0%, #020788 100%)",
+          boxShadow: "inset 0 -1px 0 rgba(0,0,0,0.18)",
+        }}
+      >
         <button
           type="button"
           aria-label="Menu"
           className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 backdrop-blur"
+          style={{
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.20)",
+          }}
         >
           <span className="flex flex-col gap-0.5">
             <span className="block h-0.5 w-3.5 rounded-full bg-white" />
@@ -301,34 +311,77 @@ function ListScreen({
           </span>
         </button>
         <div className="flex items-center gap-1.5">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-white/15">
+          <span
+            className="flex h-7 w-7 items-center justify-center rounded-md bg-white/15"
+            style={{
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.20)",
+            }}
+          >
             <BadgeCheck size={14} strokeWidth={2.25} className="text-white" />
           </span>
-          <p className="font-ui text-[14px] font-bold">Approve</p>
+          <p
+            className="font-display text-[14px] font-bold"
+            style={{ letterSpacing: "-0.018em" }}
+          >
+            Approve
+          </p>
         </div>
         <button
           type="button"
           aria-label="Notificações"
           className="relative flex h-9 w-9 items-center justify-center rounded-full bg-white/15 backdrop-blur"
+          style={{
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.20)",
+          }}
         >
           <Bell size={14} strokeWidth={2.25} className="text-white" />
-          <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-warning ring-2 ring-brand" />
+          <span
+            className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-warning"
+            style={{ boxShadow: "0 0 0 1.5px #020788" }}
+          />
         </button>
       </header>
 
       {/* Greeting + user */}
       <div className="border-b border-brand/8 bg-white px-4 py-3.5">
-        <p className="text-[11px] text-neutral-500">Bom dia,</p>
+        <p
+          className="font-ui text-[10px] font-bold uppercase text-brand"
+          style={{ letterSpacing: "0.18em" }}
+        >
+          Bom dia,
+        </p>
         <div className="mt-0.5 flex items-center justify-between">
-          <p className="font-ui text-[18px] font-bold text-neutral-900">
+          <p
+            className="font-display text-[20px] font-bold text-neutral-900"
+            style={{ letterSpacing: "-0.022em" }}
+          >
             Mateus Souza
           </p>
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand font-ui text-[14px] font-bold text-white">
-            MS
+          <span
+            className="flex h-10 w-10 items-center justify-center rounded-full text-white"
+            style={{
+              background:
+                "linear-gradient(135deg, #020788 0%, #1a1fa8 60%, #3b42c4 100%)",
+              boxShadow:
+                "0 3px 8px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
+            }}
+          >
+            <span
+              className="font-ui text-[13px] font-bold tabular-nums"
+              style={{ letterSpacing: "-0.005em" }}
+            >
+              MS
+            </span>
           </span>
         </div>
-        <p className="mt-1 text-[11px] text-neutral-500">
-          {counts.pendente} solicitações aguardando aprovação
+        <p
+          className="mt-1.5 font-ui text-[11px] text-neutral-500"
+          style={{ letterSpacing: "-0.005em" }}
+        >
+          <span className="font-bold tabular-nums text-warning">
+            {counts.pendente}
+          </span>{" "}
+          solicitações aguardando aprovação
         </p>
       </div>
 

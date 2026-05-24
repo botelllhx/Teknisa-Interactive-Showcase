@@ -361,14 +361,24 @@ function TopBar({ view, cotacao }: { view: View; cotacao: Cotacao }) {
           : "Fornecedor";
   return (
     <header className="flex h-14 items-center justify-between border-b border-neutral-200 bg-white px-4">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2.5">
         <div
-          className="flex h-7 w-7 items-center justify-center rounded-md text-white"
-          style={{ background: "#020788" }}
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-white"
+          style={{
+            background:
+              "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #3b42c4 100%)",
+            boxShadow:
+              "0 3px 8px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.20)",
+          }}
         >
-          <Package size={13} strokeWidth={2} />
+          <Package size={14} strokeWidth={2.25} />
         </div>
-        <p className="font-ui text-[18px] font-bold text-brand">{title}</p>
+        <p
+          className="font-display text-[18px] font-bold text-brand"
+          style={{ letterSpacing: "-0.022em" }}
+        >
+          {title}
+        </p>
       </div>
       <div className="flex items-center gap-3">
         <button
@@ -377,16 +387,33 @@ function TopBar({ view, cotacao }: { view: View; cotacao: Cotacao }) {
           className="relative flex h-9 w-9 items-center justify-center rounded-full hover:bg-neutral-50"
         >
           <Bell size={16} strokeWidth={2} className="text-brand" />
-          <span className="absolute right-1.5 top-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-danger text-[7px] font-bold text-white">
+          <span
+            className="absolute right-1 top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-danger text-[7.5px] font-bold tabular-nums text-white"
+            style={{
+              boxShadow: "0 0 0 1.5px white",
+            }}
+          >
             1
           </span>
         </button>
-        <div className="flex items-center gap-2 rounded-full bg-neutral-50 px-2.5 py-1">
+        <div
+          className="flex items-center gap-2 rounded-full bg-white px-2.5 py-1"
+          style={{
+            border: "1px solid rgba(0,0,0,0.05)",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+          }}
+        >
           <span className="text-right leading-tight">
-            <span className="block font-ui text-[12px] font-bold text-brand">
+            <span
+              className="block font-ui text-[11.5px] font-bold text-brand"
+              style={{ letterSpacing: "-0.005em" }}
+            >
               Alexa Rawles Grahamson
             </span>
-            <span className="block rounded bg-brand-ghost px-1.5 py-0 text-[9px] font-bold text-brand">
+            <span
+              className="inline-block rounded-full bg-brand-ghost px-1.5 py-0 font-ui text-[8.5px] font-bold uppercase text-brand"
+              style={{ letterSpacing: "0.12em" }}
+            >
               Master
             </span>
           </span>

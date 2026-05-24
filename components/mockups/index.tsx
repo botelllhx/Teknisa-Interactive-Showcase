@@ -112,6 +112,15 @@ const MOCKUPS: Record<string, ComponentType<MockupProps>> = {
   "crm-premium": lazy(() =>
     import("./crm/CRMPremium").then((m) => ({ default: m.CRMPremiumMockup })),
   ),
+
+  "isa-chatbot": lazy(() =>
+    import("./ia/ISA").then((m) => ({ default: m.ISAMockup })),
+  ),
+  "analise-preditiva-ia": lazy(() =>
+    import("./ia/AnalisePreditivaIA").then((m) => ({
+      default: m.AnalisePreditivaIAMockup,
+    })),
+  ),
 };
 
 export function getMockup(solutionId: string): ComponentType<MockupProps> | null {

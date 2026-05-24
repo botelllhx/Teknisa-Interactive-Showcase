@@ -33,7 +33,8 @@ export type SolutionBadge =
   | "IA"
   | "Em breve"
   | "Reforma Tributária"
-  | "Tendência 2026";
+  | "Tendência 2026"
+  | "Lançamento";
 
 export type TourPlacement =
   | "top"
@@ -180,8 +181,7 @@ export const segments: Segment[] = [
     tagline: "Capacidades transversais de IA da plataforma",
     icon: "Sparkles",
     color: "#020788",
-    solutions: [],
-    comingSoon: true,
+    solutions: ["isa-chatbot", "analise-preditiva-ia"],
   },
   {
     id: "gestao-corporativa",
@@ -495,6 +495,33 @@ export const solutions: Solution[] = [
     icon: "Heart",
     tags: ["Cashback", "Fidelidade", "Mobile"],
     companions: ["MiniDashboard"],
+    status: "ready",
+  },
+  // IA — agentes transversais
+  {
+    id: "isa-chatbot",
+    segment: "ia",
+    name: "ISA",
+    tagline: "Assistente IA conversacional da plataforma",
+    description:
+      "ISA é a copiloto que entende seu negócio. Pergunte qualquer coisa (vendas, custo, escala, estoque) em linguagem natural e ela responde com dados, gráficos inline e atalhos para ação imediata. Aprende com seus padrões e sugere o próximo passo sem você pedir.",
+    device: "desktop",
+    icon: "MessageSquare",
+    tags: ["Chat", "Copiloto", "Agente"],
+    badges: ["IA", "Lançamento"],
+    status: "ready",
+  },
+  {
+    id: "analise-preditiva-ia",
+    segment: "ia",
+    name: "Análise Preditiva",
+    tagline: "Modelo de ML que prevê demanda, custo e desperdício",
+    description:
+      "Predição de demanda por unidade, hora e prato; antecipação de pico de movimento; estimativa de desperdício antes do serviço; alerta de ruptura de estoque. O modelo aprende com 24 meses de histórico, eventos locais e clima — sem caixa-preta.",
+    device: "desktop",
+    icon: "TrendingUp",
+    tags: ["ML", "Forecast", "Restaurantes"],
+    badges: ["IA", "Tendência 2026"],
     status: "ready",
   },
 ];

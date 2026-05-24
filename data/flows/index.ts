@@ -31,6 +31,7 @@ import {
   approveFlow,
 } from "./supply-compras";
 import { crmPremiumFlow } from "./crm";
+import { isaChatbotFlow, analisePreditivaIAFlow } from "./ia";
 
 export const flows: Record<string, TourStep[]> = {
   "retail-intelligence": retailIntelligenceFlow,
@@ -60,6 +61,9 @@ export const flows: Record<string, TourStep[]> = {
   approve: approveFlow,
 
   "crm-premium": crmPremiumFlow,
+
+  "isa-chatbot": isaChatbotFlow,
+  "analise-preditiva-ia": analisePreditivaIAFlow,
 };
 
 export function getFlow(solutionId: string): TourStep[] {

@@ -3,11 +3,12 @@
 @tailwind utilities;
 
 :root {
-  /* v13.2: Google Sans real, carregada via <link> direto no <head> em
-     app/layout.tsx (Google CDN, weights 400/500/700). Fallbacks vão para
-     Plus Jakarta Sans, DM Sans e system caso o arquivo falhe. */
-  --font-display: "Google Sans", "Plus Jakarta Sans", "DM Sans", system-ui, sans-serif;
-  --font-ui: "Google Sans", "Plus Jakarta Sans", "DM Sans", system-ui, sans-serif;
+  /* v13.3: Product Sans self-hosted (próxima a Google Sans visualmente — é a
+     mesma família que o Google usa como institucional). Carregada via
+     next/font/local em app/layout.tsx, exposto como --font-product. Fallback
+     para Plus Jakarta Sans → DM Sans → system se algo falhar. */
+  --font-display: var(--font-product), "Plus Jakarta Sans", "DM Sans", system-ui, sans-serif;
+  --font-ui: var(--font-product), "Plus Jakarta Sans", "DM Sans", system-ui, sans-serif;
 
   --brand: #020788;
   --brand-light: #1a1fa8;
@@ -38,15 +39,26 @@ body {
 body {
   color: #212529;
   background: var(--surface-raised);
-  font-family: var(--font-ui), "Roboto", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01", "ss02", "cv11", "tnum" off;
+  text-rendering: optimizeLegibility;
 }
 
-/* Headings keep Sora (display) by default, but mockup labels using
-   Tailwind's `font-ui` will resolve to Roboto. */
+/* Tabular nums tightly controlled — opt in via .tabular-nums (Tailwind) ou
+   inline tabular-nums. Combinado com a hinting do Product Sans, fica perfeito
+   para KPIs e tabelas. */
+.tabular-nums,
+[class*="tabular-nums"] {
+  font-feature-settings: "tnum", "lnum";
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Product Sans em tudo. --font-display e --font-ui apontam para a mesma
+   família (Product Sans), então a unificação tipográfica acontece aqui. */
 h1,
 h2,
 h3,
@@ -54,12 +66,9 @@ h4,
 h5,
 h6 {
   font-family: var(--font-display);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.018em;
 }
 
-/* Force Roboto on every text node that doesn't explicitly opt into the
-   display font. This makes the body font of the showcase truly Roboto
-   (mockups, cards, captions, buttons), not Sora cosplaying as ui text. */
 button,
 input,
 textarea,
@@ -73,7 +82,7 @@ th,
 small,
 strong,
 em {
-  font-family: var(--font-ui), "Roboto", system-ui, sans-serif;
+  font-family: var(--font-ui);
 }
 
 /* Tailwind utility classes override these where the user explicitly asks

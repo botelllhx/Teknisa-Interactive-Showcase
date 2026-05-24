@@ -28,21 +28,38 @@ export function SolutionGrid({ segmentId }: SolutionGridProps) {
       <motion.header
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="mb-6 flex items-end justify-between"
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="mb-8 flex items-end justify-between"
       >
         <div className="flex items-center gap-6">
-          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-brand text-white shadow-brand">
-            <SegmentIcon name={segment.icon} size={36} />
+          <div
+            className="flex h-20 w-20 items-center justify-center rounded-3xl text-white"
+            style={{
+              background:
+                "linear-gradient(135deg, #020788 0%, #1a1fa8 50%, #7c3aed 100%)",
+              boxShadow:
+                "0 12px 32px -8px rgba(2,7,136,0.45), inset 0 1px 0 rgba(255,255,255,0.18)",
+            }}
+          >
+            <SegmentIcon name={segment.icon} size={34} />
           </div>
           <div>
-            <p className="text-label-sm font-medium uppercase tracking-wider text-brand">
-              {items.length} {items.length === 1 ? "solução" : "soluções"}
+            <p
+              className="font-ui text-[11px] font-bold uppercase text-brand"
+              style={{ letterSpacing: "0.18em" }}
+            >
+              {items.length} {items.length === 1 ? "solução" : "soluções"} no grupo
             </p>
-            <h1 className="font-display text-display-xl leading-tight text-neutral-900">
+            <h1
+              className="mt-1 font-display text-[44px] font-bold leading-[1.04] text-neutral-900"
+              style={{ letterSpacing: "-0.028em" }}
+            >
               {segment.label}
             </h1>
-            <p className="mt-1 max-w-[60ch] text-body-lg text-neutral-600">
+            <p
+              className="mt-2 max-w-[60ch] font-ui text-[15px] leading-relaxed text-neutral-500"
+              style={{ letterSpacing: "-0.005em" }}
+            >
               {segment.description}
             </p>
           </div>
@@ -89,15 +106,37 @@ function SolutionCard({ solution, onSelect }: SolutionCardProps) {
     <motion.button
       type="button"
       variants={fadeInUp}
-      whileHover={{ scale: 1.02, y: -4 }}
+      whileHover={{ y: -4 }}
       whileTap={{ scale: 0.97 }}
       transition={{ type: "spring", stiffness: 320, damping: 22 }}
       onClick={onSelect}
       aria-label={`Abrir demo de ${solution.name}`}
-      className="group flex h-full min-h-[260px] flex-col justify-between rounded-frame border border-brand/10 bg-white p-7 text-left shadow-card transition-shadow hover:border-brand/30 hover:shadow-card-hover"
+      className="group relative flex h-full min-h-[260px] flex-col justify-between overflow-hidden rounded-2xl bg-white p-6 text-left transition-all"
+      style={{
+        border: "1px solid rgba(0,0,0,0.05)",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+      }}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand-subtle text-brand transition-colors group-hover:bg-brand group-hover:text-white">
+      {/* Hover wash */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(ellipse at top right, rgba(124,58,237,0.07), transparent 60%)",
+        }}
+      />
+
+      <div className="relative flex items-start justify-between">
+        <div
+          className="flex h-14 w-14 items-center justify-center rounded-2xl text-brand transition-transform group-hover:scale-[1.04]"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(124,58,237,0.14) 0%, rgba(2,7,136,0.10) 100%)",
+            boxShadow:
+              "inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 2px rgba(2,7,136,0.08)",
+          }}
+        >
           <SegmentIcon name={solution.icon} size={26} />
         </div>
 
@@ -108,19 +147,37 @@ function SolutionCard({ solution, onSelect }: SolutionCardProps) {
         </div>
       </div>
 
-      <div className="mt-8">
-        <h3 className="font-display text-heading-xl leading-tight text-neutral-900">
+      <div className="relative mt-8">
+        <h3
+          className="font-display text-[22px] font-bold leading-[1.1] text-neutral-900"
+          style={{ letterSpacing: "-0.022em" }}
+        >
           {solution.name}
         </h3>
-        <p className="mt-1.5 text-body-md text-neutral-600">{solution.tagline}</p>
+        <p
+          className="mt-1.5 font-ui text-[13.5px] leading-snug text-neutral-500"
+          style={{ letterSpacing: "-0.005em" }}
+        >
+          {solution.tagline}
+        </p>
       </div>
 
-      <div className="mt-6 flex items-center justify-between border-t border-neutral-100 pt-5">
-        <span className="text-label-sm font-medium uppercase tracking-wider text-neutral-500">
+      <div className="relative mt-6 flex items-center justify-between border-t border-neutral-100 pt-4">
+        <span
+          className="font-ui text-[10.5px] font-bold uppercase text-neutral-400"
+          style={{ letterSpacing: "0.14em" }}
+        >
           {deviceLabel(solution.device)}
         </span>
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 transition-colors group-hover:bg-brand group-hover:text-white">
-          <ArrowRight size={18} strokeWidth={2} />
+        <span
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-50 text-neutral-500 transition-all group-hover:bg-brand group-hover:text-white group-hover:shadow-brand"
+          style={{ border: "1px solid rgba(0,0,0,0.05)" }}
+        >
+          <ArrowRight
+            size={18}
+            strokeWidth={2.25}
+            className="transition-transform duration-300 group-hover:translate-x-0.5"
+          />
         </span>
       </div>
     </motion.button>
@@ -130,16 +187,27 @@ function SolutionCard({ solution, onSelect }: SolutionCardProps) {
 function SolutionBadge({ label }: { label: string }) {
   if (label === "IA") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-brand px-2.5 py-1 text-caption font-semibold uppercase tracking-wider text-white">
-        <Sparkles size={12} strokeWidth={2.5} />
+      <span
+        className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase text-white"
+        style={{
+          letterSpacing: "0.10em",
+          background:
+            "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
+          boxShadow: "0 2px 8px rgba(124,58,237,0.30)",
+        }}
+      >
+        <Sparkles size={11} strokeWidth={2.5} />
         IA
       </span>
     );
   }
   if (label === "Reforma Tributária") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2.5 py-1 text-caption font-semibold uppercase tracking-wider text-warning">
-        <FileText size={12} strokeWidth={2.5} />
+      <span
+        className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2.5 py-1 text-[10px] font-bold uppercase text-warning"
+        style={{ letterSpacing: "0.10em" }}
+      >
+        <FileText size={11} strokeWidth={2.5} />
         Reforma 2026
       </span>
     );
@@ -147,19 +215,24 @@ function SolutionBadge({ label }: { label: string }) {
   if (label === "Tendência 2026") {
     return (
       <span
-        className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-caption font-semibold uppercase tracking-wider text-white"
+        className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase text-white"
         style={{
+          letterSpacing: "0.10em",
           background:
             "linear-gradient(135deg, #020788 0%, #6b21a8 60%, #d946ef 100%)",
+          boxShadow: "0 2px 8px rgba(217,70,239,0.25)",
         }}
       >
-        <Rocket size={12} strokeWidth={2.5} />
+        <Rocket size={11} strokeWidth={2.5} />
         Tendência 2026
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-full bg-neutral-200 px-2.5 py-1 text-caption font-medium uppercase tracking-wider text-neutral-700">
+    <span
+      className="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-[10px] font-semibold uppercase text-neutral-600"
+      style={{ letterSpacing: "0.10em" }}
+    >
       {label}
     </span>
   );
@@ -177,6 +250,8 @@ function deviceLabel(device: Solution["device"]): string {
       return "PDV";
     case "kiosk":
       return "Totem";
+    case "smartpos":
+      return "Smart POS";
     default:
       return device;
   }

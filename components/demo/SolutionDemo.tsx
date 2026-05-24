@@ -151,6 +151,7 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
           >
             <Home size={18} strokeWidth={2} />
           </button>
+          <span aria-hidden className="ml-1 h-8 w-px bg-neutral-200" />
           <Image
             src="/logo-teknisa.svg"
             alt="Teknisa"
@@ -160,33 +161,62 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
             priority
           />
           {segment && (
-            <div className="ml-3 flex items-center gap-2 text-[15px] font-medium text-neutral-500">
+            <div className="ml-3 flex items-center gap-2 text-[14px] font-medium text-neutral-500">
               <ChevronRight
-                size={16}
+                size={15}
                 strokeWidth={2.25}
                 className="text-neutral-300"
               />
-              <span className="flex items-center gap-1.5">
-                <SegmentIcon name={segment.icon} size={16} />
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full bg-brand/5 px-2.5 py-1 text-brand"
+                style={{
+                  letterSpacing: "-0.005em",
+                }}
+              >
+                <SegmentIcon name={segment.icon} size={14} />
                 {segment.label}
               </span>
-              <ChevronRight
-                size={16}
-                strokeWidth={2.25}
-                className="text-neutral-300"
-              />
-              <span className="font-semibold text-brand">{solution.name}</span>
             </div>
           )}
         </div>
 
-        <div className="flex flex-col items-end leading-tight">
-          <span className="font-display text-[17px] font-semibold text-neutral-900">
-            {solution.name}
-          </span>
-          <span className="font-ui text-[13px] text-neutral-500">
-            {solution.tagline}
-          </span>
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col items-end leading-tight">
+            <span
+              className="font-display text-[18px] font-bold text-neutral-900"
+              style={{ letterSpacing: "-0.022em" }}
+            >
+              {solution.name}
+            </span>
+            <span
+              className="font-ui text-[12px] text-neutral-500"
+              style={{ letterSpacing: "-0.005em" }}
+            >
+              {solution.tagline}
+            </span>
+          </div>
+          {tour.total > 0 && (
+            <div
+              className="inline-flex items-center gap-2 rounded-full border border-brand/10 bg-white px-3 py-1.5"
+              style={{
+                boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+              }}
+            >
+              <span
+                className="font-ui text-[9px] font-bold uppercase text-neutral-400"
+                style={{ letterSpacing: "0.16em" }}
+              >
+                Etapa
+              </span>
+              <span className="font-ui text-[13px] font-bold tabular-nums text-brand">
+                {String(tour.index + 1).padStart(2, "0")}
+                <span className="text-neutral-300"> / </span>
+                <span className="text-neutral-500">
+                  {String(tour.total).padStart(2, "0")}
+                </span>
+              </span>
+            </div>
+          )}
         </div>
       </header>
 

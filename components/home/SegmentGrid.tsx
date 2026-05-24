@@ -47,48 +47,59 @@ function SegmentCard({ segment, onSelect }: SegmentCardProps) {
       transition={{ type: "spring", stiffness: 320, damping: 22 }}
       onClick={onSelect}
       aria-label={`Abrir ${segment.label}`}
-      // v13 refinement: tighter typography (tracking -0.02em on big title),
-      // subtle shadow (shadow-subtle), borders 6% opacity, uniform tagline
-      // height via min-h so titles align across cards even with varied text
-      className="group relative flex h-full flex-col justify-between rounded-2xl bg-white p-6 text-left transition-all hover:-translate-y-[1px] hover:shadow-elevated"
+      // v13.3: card refinado Noteflow-airy. Eyebrow numérico "0X · grupo",
+      // ícone gradient soft brand→roxo (Notion-style), arrow chip que ganha
+      // wash brand no hover, tipografia mais firme (-0.025em no título).
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-white p-6 text-left transition-all hover:-translate-y-[1px]"
       style={{
         border: "1px solid rgba(0,0,0,0.05)",
         boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
       }}
     >
-      <div className="flex items-start justify-between">
+      {/* Hover-only soft wash */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(ellipse at top left, rgba(124,58,237,0.06), transparent 55%), radial-gradient(ellipse at bottom right, rgba(2,7,136,0.05), transparent 60%)",
+        }}
+      />
+
+      <div className="relative flex items-start justify-between">
         <div
-          className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand-subtle text-brand transition-colors group-hover:bg-brand group-hover:text-white"
+          className="flex h-14 w-14 items-center justify-center rounded-2xl text-brand transition-transform group-hover:scale-[1.04]"
           style={{
             background:
-              "linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%)",
-            color: "#020788",
+              "linear-gradient(135deg, rgba(124,58,237,0.14) 0%, rgba(2,7,136,0.10) 100%)",
+            boxShadow:
+              "inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 2px rgba(2,7,136,0.08)",
           }}
         >
-          <SegmentIcon name={segment.icon} size={28} />
+          <SegmentIcon name={segment.icon} size={26} />
         </div>
 
         <span
-          className="font-ui text-[10px] font-bold uppercase text-neutral-500"
-          style={{ letterSpacing: "0.08em" }}
+          className="font-ui text-[10px] font-bold uppercase text-neutral-400"
+          style={{ letterSpacing: "0.14em" }}
         >
           {solutionCount} {solutionCount === 1 ? "solução" : "soluções"}
         </span>
       </div>
 
-      <div className="mt-12 flex items-end justify-between gap-3">
+      <div className="relative mt-12 flex items-end justify-between gap-3">
         <div className="min-w-0 flex-1">
           <h2
-            className="font-display text-[26px] font-bold leading-tight text-neutral-900"
-            style={{ letterSpacing: "-0.02em" }}
+            className="font-display text-[26px] font-bold leading-[1.08] text-neutral-900"
+            style={{ letterSpacing: "-0.025em" }}
           >
             {segment.label}
           </h2>
           <p
-            className="mt-1.5 font-ui text-[12.5px] leading-snug text-neutral-500"
+            className="mt-2 font-ui text-[12.5px] leading-snug text-neutral-500"
             style={{
               letterSpacing: "-0.005em",
-              minHeight: "2.6em", // mantém títulos alinhados independente do tamanho da tagline
+              minHeight: "2.6em",
               display: "-webkit-box",
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
@@ -99,8 +110,17 @@ function SegmentCard({ segment, onSelect }: SegmentCardProps) {
           </p>
         </div>
 
-        <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-neutral-100 text-neutral-500 transition-colors group-hover:bg-brand group-hover:text-white">
-          <ArrowUpRight size={18} strokeWidth={2.25} />
+        <span
+          className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-neutral-50 text-neutral-500 transition-all group-hover:bg-brand group-hover:text-white group-hover:shadow-brand"
+          style={{
+            border: "1px solid rgba(0,0,0,0.05)",
+          }}
+        >
+          <ArrowUpRight
+            size={18}
+            strokeWidth={2.25}
+            className="transition-transform duration-300 group-hover:rotate-12"
+          />
         </span>
       </div>
     </motion.button>

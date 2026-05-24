@@ -224,7 +224,8 @@ export function CardapioInteligenteMockup({ step }: CardapioInteligenteProps) {
               />
             </section>
 
-            <aside className="flex flex-col gap-4 overflow-y-auto border-l border-brand/8 bg-white p-4">
+            <aside className="flex flex-col gap-3 overflow-y-auto border-l border-brand/8 bg-gradient-to-b from-white via-white to-brand-ghost/30 p-4">
+              <AILiveAssistant balanced={balanced} totals={dayTotals} approved={approved} />
               <NutritionPanel totals={dayTotals} balanced={balanced} />
               <CostPanel totals={dayTotals} />
               <WorkflowPanel approved={approved} published={published} />
@@ -1265,3 +1266,221 @@ function DishPickerModal({
   );
 }
 
+// ============================================================================
+// AILiveAssistant — feed de decisões da IA + score consolidado.
+// Comunica "a IA está agindo agora, não você gerenciando uma planilha".
+// Top da sidebar, acima dos paineis tradicionais (Nutrição / Custo / Workflow).
+// ============================================================================
+
+function AILiveAssistant({
+  balanced,
+  totals,
+  approved,
+}: {
+  balanced: boolean;
+  totals: { calories: number; protein: number; fiber: number; cost: number };
+  approved: boolean;
+}) {
+  // Score derivado: balanceamento (40%) + custo (30%) + estoque (30%)
+  const balanceScore = balanced ? 95 : 72;
+  const costScore =
+    totals.cost <= 9.5 ? 92 : totals.cost <= 10.5 ? 78 : 60;
+  const stockScore = 88; // mock — refletindo "estoque OK na maioria dos ingredientes"
+  const score = Math.round(
+    balanceScore * 0.4 + costScore * 0.3 + stockScore * 0.3,
+  );
+
+  // 3 decisões recentes da IA
+  const decisions: { t: string; msg: string; tone: "ok" | "warn" }[] = [
+    {
+      t: "agora",
+      msg: "Substituí carne de panela por filé de tilápia (estoque baixo)",
+      tone: "ok",
+    },
+    {
+      t: "2min",
+      msg: "Ajustei guarnição de quinta para baixar custo médio",
+      tone: "ok",
+    },
+    {
+      t: "5min",
+      msg: balanced
+        ? "Balanço nutricional dentro da meta"
+        : "Fibras 18% abaixo do alvo — sugerindo salada extra",
+      tone: balanced ? "ok" : "warn",
+    },
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="overflow-hidden rounded-2xl"
+      style={{
+        background:
+          "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
+      }}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between px-3.5 pb-2 pt-3">
+        <div className="flex items-center gap-2">
+          <motion.span
+            animate={{
+              boxShadow: [
+                "0 0 0 0 rgba(255,255,255,0.30)",
+                "0 0 0 6px rgba(255,255,255,0)",
+              ],
+            }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
+            className="flex h-6 w-6 items-center justify-center rounded-md bg-white/15 text-white backdrop-blur"
+          >
+            <Sparkles size={11} strokeWidth={2.5} />
+          </motion.span>
+          <p
+            className="font-ui text-[10px] font-bold uppercase text-white/85"
+            style={{ letterSpacing: "0.10em" }}
+          >
+            Assistente IA
+          </p>
+        </div>
+        <span
+          className={cn(
+            "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase",
+            approved ? "bg-white/15 text-white" : "bg-white/15 text-white",
+          )}
+          style={{ letterSpacing: "0.06em" }}
+        >
+          <motion.span
+            animate={{ opacity: [1, 0.35, 1] }}
+            transition={{ duration: 1.4, repeat: Infinity }}
+            className="h-1 w-1 rounded-full bg-success"
+          />
+          {approved ? "Monitorando" : "Otimizando agora"}
+        </span>
+      </div>
+
+      {/* Score + breakdown */}
+      <div className="flex items-center gap-3 px-3.5">
+        <div className="relative flex h-[68px] w-[68px] flex-none items-center justify-center">
+          <svg width="68" height="68" viewBox="0 0 68 68">
+            <circle
+              cx="34"
+              cy="34"
+              r="28"
+              fill="none"
+              stroke="rgba(255,255,255,0.15)"
+              strokeWidth="5"
+            />
+            <motion.circle
+              cx="34"
+              cy="34"
+              r="28"
+              fill="none"
+              stroke="url(#ci-score-grad)"
+              strokeWidth="5"
+              strokeLinecap="round"
+              transform="rotate(-90 34 34)"
+              strokeDasharray={2 * Math.PI * 28}
+              initial={{ strokeDashoffset: 2 * Math.PI * 28 }}
+              animate={{
+                strokeDashoffset: 2 * Math.PI * 28 * (1 - score / 100),
+              }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            />
+            <defs>
+              <linearGradient id="ci-score-grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#4ade80" />
+                <stop offset="100%" stopColor="#22d3ee" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <motion.span
+              key={score}
+              initial={{ scale: 0.94, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.3 }}
+              className="font-ui text-[20px] font-bold leading-none text-white tabular-nums"
+              style={{ letterSpacing: "-0.025em" }}
+            >
+              {score}
+            </motion.span>
+            <span
+              className="mt-0.5 font-ui text-[7.5px] font-bold uppercase text-white/65"
+              style={{ letterSpacing: "0.10em" }}
+            >
+              Score
+            </span>
+          </div>
+        </div>
+        <div className="flex-1 space-y-1">
+          {[
+            { l: "Balanço", v: balanceScore },
+            { l: "Custo", v: costScore },
+            { l: "Estoque", v: stockScore },
+          ].map((m) => (
+            <div key={m.l} className="flex items-center gap-2">
+              <span
+                className="w-12 font-ui text-[9px] font-medium text-white/70"
+                style={{ letterSpacing: "0.04em" }}
+              >
+                {m.l}
+              </span>
+              <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/15">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${m.v}%` }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  className="h-full rounded-full"
+                  style={{
+                    background:
+                      m.v >= 85
+                        ? "#4ade80"
+                        : m.v >= 70
+                          ? "#fbbf24"
+                          : "#f87171",
+                  }}
+                />
+              </div>
+              <span className="w-8 text-right font-ui text-[9px] font-bold tabular-nums text-white">
+                {m.v}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Decisions feed */}
+      <div className="mt-2 space-y-1 px-2 pb-3">
+        {decisions.map((d, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -3 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.08 * i + 0.2, duration: 0.25 }}
+            className="flex items-start gap-1.5 rounded-lg bg-white/8 px-2 py-1.5 backdrop-blur"
+          >
+            <span
+              className={cn(
+                "mt-1 h-1.5 w-1.5 flex-none rounded-full",
+                d.tone === "ok" ? "bg-success" : "bg-warning",
+              )}
+            />
+            <div className="min-w-0 flex-1">
+              <p
+                className="font-ui text-[10px] leading-snug text-white"
+                style={{ letterSpacing: "-0.005em" }}
+              >
+                {d.msg}
+              </p>
+              <span className="font-ui text-[8.5px] font-medium tabular-nums text-white/55">
+                Há {d.t}
+              </span>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}

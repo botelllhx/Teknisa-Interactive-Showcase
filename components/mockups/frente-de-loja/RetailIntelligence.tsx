@@ -40,9 +40,8 @@ import {
   HorizontalBars,
   Sparkline,
 } from "@/components/ui/charts";
-import { InsightCard } from "@/components/ui/InsightCard";
 import { GradientIcon } from "@/components/ui/GradientIcon";
-import type { ReactElement } from "react";
+import { cloneElement, type ReactElement } from "react";
 import {
   Badge,
   Button,
@@ -392,20 +391,33 @@ function JourneyPanel({ screen }: { screen: Screen }) {
 // ============================================================================
 
 function DashboardScreen() {
+  // v13.8 — REFATOR completo da estrutura.
+  // Era 3-rows-by-2-cols com overflow descontrolado (cards do AI Insights
+  // empilhando, AI APLICOU invadindo a row dos charts de baixo).
+  //
+  // Agora é vertical-flex limpo:
+  // [1] KPI strip (auto height)
+  // [2] Performance do CMV — chart full-width (flex-1, ocupa o vão)
+  // [3] Bottom panels — 3 cols com FIXED HEIGHT (NestedRisk | HorizontalBars | AI APLICOU)
+  //
+  // AI Insights (que estavam empilhados na lateral) viraram um STRIP horizontal
+  // de 3 cards COMPACTOS entre o chart e o bottom row. Em vez de full cards
+  // verticais com confidence bar, agora são pills com ícone+título+status — mais
+  // legível, ocupa menos espaço, ainda comunica "a IA está pensando".
   return (
     <motion.section
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25 }}
-      className="grid h-full grid-cols-[1fr_280px] grid-rows-[auto_1fr_auto] gap-3 px-5 py-4"
-      style={{ background: "radial-gradient(ellipse at top, #f5f3ff 0%, #f4f6fb 60%)" }}
+      className="flex h-full flex-col gap-3 px-5 py-4"
+      style={{
+        background:
+          "radial-gradient(ellipse at top, rgba(2,7,136,0.025) 0%, transparent 60%), #f6f7fb",
+      }}
     >
-      {/* Top KPI strip (col span main) */}
-      <div
-        className="col-start-1 col-end-2 grid grid-cols-4 gap-2"
-        data-tour="ri-insight-banner"
-      >
+      {/* ───────── Row 1: KPI strip ───────── */}
+      <div className="grid grid-cols-4 gap-2.5" data-tour="ri-insight-banner">
         <DashKPITile
           icon={<DollarSign />}
           tone="brand"
@@ -443,43 +455,9 @@ function DashboardScreen() {
         />
       </div>
 
-      {/* Side header: AI Insights column title */}
-      <div className="col-start-2 row-start-1 flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
-          <span
-            className="flex h-5 w-5 items-center justify-center rounded-md text-white"
-            style={{
-              background:
-                "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
-              boxShadow:
-                "0 2px 6px rgba(124,58,237,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
-            }}
-          >
-            <Sparkles size={11} strokeWidth={2.5} />
-          </span>
-          <p
-            className="font-ui text-[10.5px] font-bold uppercase text-brand"
-            style={{ letterSpacing: "0.16em" }}
-          >
-            AI Insights
-          </p>
-        </div>
-        <span
-          className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-success"
-          style={{ letterSpacing: "0.14em" }}
-        >
-          <motion.span
-            animate={{ opacity: [1, 0.4, 1] }}
-            transition={{ duration: 1.4, repeat: Infinity }}
-            className="h-1.5 w-1.5 rounded-full bg-success"
-          />
-          ao vivo
-        </span>
-      </div>
-
-      {/* Main chart card */}
+      {/* ───────── Row 2: Main chart card (flex-1) ───────── */}
       <div
-        className="col-start-1 row-start-2 flex min-h-0 flex-col rounded-2xl bg-white p-4"
+        className="flex min-h-0 flex-1 flex-col rounded-2xl bg-white p-4"
         style={{
           border: "1px solid rgba(0,0,0,0.04)",
           boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
@@ -488,22 +466,38 @@ function DashboardScreen() {
         <div className="mb-2 flex items-start justify-between">
           <div>
             <p
-              className="font-ui text-[13px] font-bold text-neutral-900"
-              style={{ letterSpacing: "-0.01em" }}
+              className="font-display text-[14px] font-bold text-neutral-900"
+              style={{ letterSpacing: "-0.018em" }}
             >
               Performance do CMV
             </p>
-            <p className="mt-0.5 font-ui text-[10.5px] text-neutral-500">
+            <p
+              className="mt-0.5 font-ui text-[10.5px] text-neutral-500"
+              style={{ letterSpacing: "-0.005em" }}
+            >
               Tendência mensal com modelo preditivo
             </p>
           </div>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2 py-1 font-ui text-[10px] font-medium text-neutral-600 hover:bg-neutral-50"
-          >
-            Mensal
-            <ChevronRight size={9} strokeWidth={2.5} className="rotate-90" />
-          </button>
+          <div className="flex items-center gap-2">
+            <span
+              className="inline-flex items-center gap-1 rounded-full bg-success/12 px-1.5 py-0.5 font-ui text-[8.5px] font-bold uppercase text-success"
+              style={{ letterSpacing: "0.14em" }}
+            >
+              <motion.span
+                animate={{ opacity: [1, 0.4, 1] }}
+                transition={{ duration: 1.4, repeat: Infinity }}
+                className="h-1.5 w-1.5 rounded-full bg-success"
+              />
+              ao vivo
+            </span>
+            <button
+              type="button"
+              className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2 py-1 font-ui text-[10px] font-medium text-neutral-600 hover:bg-neutral-50"
+            >
+              Mensal
+              <ChevronRight size={9} strokeWidth={2.5} className="rotate-90" />
+            </button>
+          </div>
         </div>
         <div className="min-h-0 flex-1">
           <AreaChart
@@ -513,62 +507,64 @@ function DashboardScreen() {
             referenceLabel="Meta 28%"
             yMin={26}
             yMax={34}
-            showXLabels={true}
-            formatY={(v) => `${v.toFixed(2).replace(".", ",")}%`}
-            aspectRatio="16/6"
+            showYLabels
+            showXLabels
+            formatY={(v) => `${v.toFixed(1).replace(".", ",")}%`}
+            aspectRatio="16/5"
           />
         </div>
       </div>
 
-      {/* AI Insights side column */}
-      <div className="col-start-2 row-start-2 flex min-h-0 flex-col gap-2 overflow-y-auto pr-0.5">
-        <InsightCard
+      {/* ───────── Row 3: AI Insights strip (3 pills horizontal) ───────── */}
+      <div className="grid grid-cols-3 gap-2.5">
+        <InsightPill
           icon={<TrendingUp />}
           tone="ai"
-          title="CMV Alert — Mix"
-          description="Filé Parmegiana 150g está acima do potencial. IA aplicou plano automático de mix com 5 ações no cardápio."
-          confidence={92}
+          title="CMV Alert · Mix"
           status="IA aplicou"
         />
-        <InsightCard
+        <InsightPill
           icon={<Sparkles />}
           tone="teal"
           title="Otimização de Compras"
-          description="Renegociação automática com 3 fornecedores deve baixar custo médio em 8% nas próximas 2 semanas."
-          confidence={88}
           status="Em progresso"
         />
-        <InsightCard
+        <InsightPill
           icon={<ShieldAlert />}
           tone="warning"
           title="Previsão de Desperdício"
-          description="Padrão de 7 dias prevê 14kg a mais que a meta nesta sexta. Recomendação de ajuste de produção enviada."
-          confidence={85}
           status="Sugerido"
         />
       </div>
 
-      {/* Bottom row: Nested Risk + Horizontal Performance */}
-      <div className="col-start-1 row-start-3 grid grid-cols-[260px_1fr] gap-3">
+      {/* ───────── Row 4: Bottom panels — 3 cols fixed (NestedRisk | HBars | AI APLICOU) ───────── */}
+      <div
+        className="grid grid-cols-[260px_1fr_320px] gap-2.5"
+        style={{ minHeight: 220 }}
+      >
+        {/* NestedRisk card */}
         <div
-          className="flex flex-col rounded-2xl bg-white p-4"
+          className="flex flex-col overflow-hidden rounded-2xl bg-white p-4"
           style={{
             border: "1px solid rgba(0,0,0,0.04)",
             boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
           }}
         >
           <p
-            className="font-ui text-[12px] font-bold text-neutral-900"
-            style={{ letterSpacing: "-0.005em" }}
+            className="font-display text-[12px] font-bold text-neutral-900"
+            style={{ letterSpacing: "-0.018em" }}
           >
             Análise de risco no mix
           </p>
-          <p className="mt-0.5 font-ui text-[10px] text-neutral-500">
+          <p
+            className="mt-0.5 font-ui text-[9.5px] text-neutral-500"
+            style={{ letterSpacing: "-0.005em" }}
+          >
             Score preditivo de produtos
           </p>
-          <div className="mt-2 flex items-center justify-center">
+          <div className="mt-1 flex flex-1 items-center justify-center">
             <NestedRisk
-              size={180}
+              size={140}
               rings={[
                 { pct: 100, label: "Total", color: "rgba(124,58,237,0.10)" },
                 { pct: 64, label: "Médio", color: "rgba(124,58,237,0.22)" },
@@ -576,12 +572,14 @@ function DashboardScreen() {
                 { pct: 28, label: "Crítico", color: "rgba(124,58,237,0.78)" },
               ]}
               centerLabel="100%"
-              centerSublabel="Risk Score"
+              centerSublabel="Risk"
             />
           </div>
         </div>
+
+        {/* HorizontalBars card */}
         <div
-          className="flex flex-col rounded-2xl bg-white p-4"
+          className="flex flex-col overflow-hidden rounded-2xl bg-white p-4"
           style={{
             border: "1px solid rgba(0,0,0,0.04)",
             boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
@@ -590,13 +588,16 @@ function DashboardScreen() {
           <div className="flex items-start justify-between">
             <div>
               <p
-                className="font-ui text-[12px] font-bold text-neutral-900"
-                style={{ letterSpacing: "-0.005em" }}
+                className="font-display text-[12px] font-bold text-neutral-900"
+                style={{ letterSpacing: "-0.018em" }}
               >
                 Performance por categoria
               </p>
-              <p className="mt-0.5 font-ui text-[10px] text-neutral-500">
-                Contribuição no mix (últimos 30 dias)
+              <p
+                className="mt-0.5 font-ui text-[9.5px] text-neutral-500"
+                style={{ letterSpacing: "-0.005em" }}
+              >
+                Contribuição no mix · últimos 30 dias
               </p>
             </div>
             <Badge variant="ai" className="text-[9px]">
@@ -604,7 +605,7 @@ function DashboardScreen() {
               IA ordenou
             </Badge>
           </div>
-          <div className="mt-1">
+          <div className="mt-1 flex-1 overflow-hidden">
             <HorizontalBars
               bars={[
                 { label: "Pratos principais", value: 321, color: "#7c3aed" },
@@ -616,78 +617,159 @@ function DashboardScreen() {
             />
           </div>
         </div>
-      </div>
 
-      {/* Side: bottom AI auto-action footer */}
-      <div
-        data-tour="ri-analisar-oportunidade"
-        className="relative col-start-2 row-start-3 flex flex-col gap-2 overflow-hidden rounded-2xl p-3.5"
-        style={{
-          background:
-            "linear-gradient(135deg, #020788 0%, #1a1fa8 45%, #7c3aed 100%)",
-          boxShadow:
-            "0 12px 28px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
-        }}
-      >
-        {/* Decorative orb */}
+        {/* AI APLICOU CTA card */}
         <div
-          aria-hidden
-          className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-50 blur-2xl"
+          data-tour="ri-analisar-oportunidade"
+          className="relative flex flex-col overflow-hidden rounded-2xl p-4"
           style={{
             background:
-              "radial-gradient(circle, rgba(255,255,255,0.45), transparent 70%)",
-          }}
-        />
-        <div className="relative flex items-center gap-1.5">
-          <motion.span
-            animate={{
-              scale: [1, 1.06, 1],
-              boxShadow: [
-                "0 0 0 0 rgba(255,255,255,0)",
-                "0 0 0 4px rgba(255,255,255,0.18)",
-                "0 0 0 0 rgba(255,255,255,0)",
-              ],
-            }}
-            transition={{ duration: 2.4, repeat: Infinity }}
-            className="flex h-6 w-6 items-center justify-center rounded-md bg-white/15 text-white backdrop-blur"
-            style={{
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.20)",
-            }}
-          >
-            <BrainCircuit size={12} strokeWidth={2.25} />
-          </motion.span>
-          <p
-            className="font-ui text-[9px] font-bold uppercase text-white/85"
-            style={{ letterSpacing: "0.18em" }}
-          >
-            IA aplicou hoje
-          </p>
-        </div>
-        <p
-          className="relative font-display text-[18px] font-bold leading-[1.1] text-white tabular-nums"
-          style={{ letterSpacing: "-0.025em" }}
-        >
-          12 ações automáticas
-        </p>
-        <p className="relative font-ui text-[10.5px] leading-snug text-white/80">
-          5 ajustes de cardápio, 3 renegociações e 4 alertas. CMV projetado
-          <span className="font-bold tabular-nums text-white"> −1,8pp</span> em
-          7 dias.
-        </p>
-        <button
-          type="button"
-          className="relative mt-1.5 inline-flex items-center justify-center gap-1.5 rounded-xl bg-white px-3 py-2 font-ui text-[11px] font-bold text-brand transition-all hover:-translate-y-[1px]"
-          style={{
+              "linear-gradient(135deg, #020788 0%, #1a1fa8 45%, #7c3aed 100%)",
             boxShadow:
-              "0 4px 12px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.40)",
-            letterSpacing: "-0.005em",
+              "0 12px 28px rgba(2,7,136,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
           }}
         >
-          Abrir diagnóstico
-          <ArrowRight size={11} strokeWidth={2.5} />
-        </button>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full opacity-50 blur-2xl"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(255,255,255,0.42), transparent 70%)",
+            }}
+          />
+          <div className="relative flex items-center gap-1.5">
+            <motion.span
+              animate={{
+                scale: [1, 1.06, 1],
+                boxShadow: [
+                  "0 0 0 0 rgba(255,255,255,0)",
+                  "0 0 0 4px rgba(255,255,255,0.18)",
+                  "0 0 0 0 rgba(255,255,255,0)",
+                ],
+              }}
+              transition={{ duration: 2.4, repeat: Infinity }}
+              className="flex h-6 w-6 items-center justify-center rounded-md bg-white/15 text-white backdrop-blur"
+              style={{
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.20)",
+              }}
+            >
+              <BrainCircuit size={12} strokeWidth={2.25} />
+            </motion.span>
+            <p
+              className="font-ui text-[9px] font-bold uppercase text-white/85"
+              style={{ letterSpacing: "0.18em" }}
+            >
+              IA aplicou hoje
+            </p>
+          </div>
+          <p
+            className="relative mt-1.5 font-display text-[20px] font-bold leading-[1.05] text-white tabular-nums"
+            style={{ letterSpacing: "-0.028em" }}
+          >
+            12 ações automáticas
+          </p>
+          <p className="relative mt-1 flex-1 font-ui text-[10.5px] leading-snug text-white/80">
+            5 ajustes de cardápio, 3 renegociações, 4 alertas. CMV projetado
+            <span className="font-bold tabular-nums text-white"> −1,8pp</span>{" "}
+            em 7 dias.
+          </p>
+          <button
+            type="button"
+            className="relative inline-flex items-center justify-center gap-1.5 rounded-xl bg-white px-3 py-2 font-ui text-[11px] font-bold text-brand transition-all hover:-translate-y-[1px]"
+            style={{
+              boxShadow:
+                "0 4px 12px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.40)",
+              letterSpacing: "-0.005em",
+            }}
+          >
+            Abrir diagnóstico
+            <ArrowRight size={11} strokeWidth={2.5} />
+          </button>
+        </div>
       </div>
     </motion.section>
+  );
+}
+
+/**
+ * v13.8 — InsightPill: replaces the full InsightCard stack in the
+ * dashboard. Compact horizontal pill com ícone gradient + título +
+ * status. Ainda comunica AI activity, mas em 1/3 do espaço vertical.
+ */
+function InsightPill({
+  icon,
+  tone,
+  title,
+  status,
+}: {
+  icon: ReactElement;
+  tone: "ai" | "teal" | "warning";
+  title: string;
+  status: string;
+}) {
+  const toneStyle =
+    tone === "ai"
+      ? {
+          iconBg:
+            "linear-gradient(135deg, #020788 0%, #1a1fa8 55%, #7c3aed 100%)",
+          iconShadow: "0 2px 6px rgba(124,58,237,0.30)",
+          statusBg: "rgba(124,58,237,0.10)",
+          statusColor: "#5b21b6",
+        }
+      : tone === "teal"
+        ? {
+            iconBg:
+              "linear-gradient(135deg, #0d9488 0%, #0f766e 60%, #115e59 100%)",
+            iconShadow: "0 2px 6px rgba(13,148,136,0.30)",
+            statusBg: "rgba(13,148,136,0.10)",
+            statusColor: "#0f766e",
+          }
+        : {
+            iconBg:
+              "linear-gradient(135deg, #f59e0b 0%, #d97706 60%, #b45309 100%)",
+            iconShadow: "0 2px 6px rgba(217,119,6,0.30)",
+            statusBg: "rgba(217,119,6,0.10)",
+            statusColor: "#b45309",
+          };
+  return (
+    <div
+      className="flex items-center gap-2.5 overflow-hidden rounded-xl bg-white px-3 py-2.5"
+      style={{
+        border: "1px solid rgba(0,0,0,0.04)",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+      }}
+    >
+      <span
+        className="flex h-7 w-7 flex-none items-center justify-center rounded-lg text-white"
+        style={{
+          background: toneStyle.iconBg,
+          boxShadow: `${toneStyle.iconShadow}, inset 0 1px 0 rgba(255,255,255,0.18)`,
+        }}
+      >
+        {cloneElement(
+          icon as ReactElement<{ size?: number; strokeWidth?: number }>,
+          { size: 13, strokeWidth: 2.25 },
+        )}
+      </span>
+      <div className="min-w-0 flex-1">
+        <p
+          className="font-display text-[12.5px] font-bold leading-tight text-neutral-900"
+          style={{ letterSpacing: "-0.018em" }}
+        >
+          {title}
+        </p>
+        <span
+          className="mt-0.5 inline-flex items-center rounded-full px-1.5 py-0.5 font-ui text-[9px] font-bold uppercase"
+          style={{
+            background: toneStyle.statusBg,
+            color: toneStyle.statusColor,
+            letterSpacing: "0.14em",
+          }}
+        >
+          {status}
+        </span>
+      </div>
+    </div>
   );
 }
 

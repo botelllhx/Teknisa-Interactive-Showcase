@@ -15,7 +15,7 @@ export function SegmentGrid() {
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="grid grid-cols-4 gap-4 px-12 pb-10"
+      className="grid grid-cols-4 gap-5 px-12 pb-10"
     >
       {segments.map((segment) => (
         <SegmentCard
@@ -120,14 +120,14 @@ function SegmentCard({ segment, onSelect }: SegmentCardProps) {
 
       {/* ───────── Header strip (panel anatomy) ───────── */}
       <div
-        className="flex items-center justify-between px-5 pb-3 pt-4"
+        className="flex items-center justify-between px-7 pb-4 pt-5"
         style={{
           borderBottom: "1px solid rgba(0,0,0,0.04)",
         }}
       >
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <span
-            className="font-ui text-[9.5px] font-bold tabular-nums text-neutral-400"
+            className="font-ui text-[11px] font-bold tabular-nums text-neutral-400"
             style={{ letterSpacing: "0.16em" }}
           >
             {String(segments.findIndex((s) => s.id === segment.id) + 1).padStart(
@@ -135,15 +135,15 @@ function SegmentCard({ segment, onSelect }: SegmentCardProps) {
               "0",
             )}
           </span>
-          <span className="h-3 w-px bg-neutral-200" />
+          <span className="h-4 w-px bg-neutral-200" />
           <span
-            className="font-ui text-[9.5px] font-bold uppercase text-neutral-400"
+            className="font-ui text-[11px] font-bold uppercase text-neutral-400"
             style={{ letterSpacing: "0.16em" }}
           >
             {solutionCount === 1 ? "solução" : "soluções"}
           </span>
           <span
-            className="font-ui text-[9.5px] font-bold tabular-nums text-brand"
+            className="font-ui text-[11px] font-bold tabular-nums text-brand"
             style={{ letterSpacing: "-0.005em" }}
           >
             ·{solutionCount.toString().padStart(2, "0")}
@@ -152,21 +152,21 @@ function SegmentCard({ segment, onSelect }: SegmentCardProps) {
         {/* Live dot status — indica painel ativo */}
         <span
           aria-hidden
-          className="relative flex h-1.5 w-1.5 items-center justify-center"
+          className="relative flex h-2 w-2 items-center justify-center"
         >
           <motion.span
             animate={{ scale: [1, 2, 1], opacity: [0.35, 0, 0.35] }}
             transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
             className="absolute inset-0 rounded-full bg-success"
           />
-          <span className="relative h-1.5 w-1.5 rounded-full bg-success" />
+          <span className="relative h-2 w-2 rounded-full bg-success" />
         </span>
       </div>
 
       {/* ───────── Body ───────── */}
-      <div className="flex flex-1 flex-col gap-5 px-5 pb-4 pt-5">
+      <div className="flex flex-1 flex-col gap-6 px-7 pb-5 pt-7">
         <motion.div
-          className="flex h-12 w-12 items-center justify-center rounded-xl text-brand transition-shadow duration-300"
+          className="flex h-16 w-16 items-center justify-center rounded-2xl text-brand transition-shadow duration-300"
           style={{
             background:
               "linear-gradient(135deg, rgba(2,7,136,0.10) 0%, rgba(59,66,196,0.14) 100%)",
@@ -174,18 +174,18 @@ function SegmentCard({ segment, onSelect }: SegmentCardProps) {
               "inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 2px rgba(2,7,136,0.06)",
           }}
         >
-          <SegmentIcon name={segment.icon} size={24} />
+          <SegmentIcon name={segment.icon} size={32} />
         </motion.div>
 
         <div className="min-w-0 flex-1">
           <h2
-            className="font-display text-[22px] font-bold leading-[1.08] text-neutral-900"
+            className="font-display text-[30px] font-bold leading-[1.06] text-neutral-900"
             style={{ letterSpacing: "-0.028em" }}
           >
             {segment.label}
           </h2>
           <p
-            className="mt-1.5 font-ui text-[12px] leading-[1.45] text-neutral-500"
+            className="mt-2.5 font-ui text-[14.5px] leading-[1.45] text-neutral-500"
             style={{
               letterSpacing: "-0.005em",
               minHeight: "2.6em",
@@ -202,27 +202,27 @@ function SegmentCard({ segment, onSelect }: SegmentCardProps) {
 
       {/* ───────── Footer (panel chrome) ───────── */}
       <div
-        className="flex items-center justify-between px-5 py-3"
+        className="flex items-center justify-between px-7 py-4"
         style={{
           borderTop: "1px solid rgba(0,0,0,0.04)",
           background: "linear-gradient(180deg, transparent 0%, #fafbfd 100%)",
         }}
       >
         <span
-          className="font-ui text-[10px] font-semibold uppercase text-neutral-400 transition-colors duration-300 group-hover:text-brand"
+          className="font-ui text-[12px] font-bold uppercase text-neutral-400 transition-colors duration-300 group-hover:text-brand"
           style={{ letterSpacing: "0.16em" }}
         >
           Abrir painel
         </span>
         <motion.span
-          className="flex h-7 w-7 items-center justify-center rounded-md bg-neutral-50 text-neutral-500 transition-all duration-300 group-hover:bg-brand group-hover:text-white"
+          className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-50 text-neutral-500 transition-all duration-300 group-hover:bg-brand group-hover:text-white"
           style={{
             border: "1px solid rgba(0,0,0,0.06)",
           }}
           whileHover={{ x: 2 }}
         >
           <ArrowUpRight
-            size={14}
+            size={20}
             strokeWidth={2.5}
             className="transition-transform"
           />

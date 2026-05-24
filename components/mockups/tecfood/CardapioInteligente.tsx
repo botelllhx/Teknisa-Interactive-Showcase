@@ -1080,53 +1080,79 @@ function CostPanel({ totals }: { totals: { cost: number } }) {
       className="overflow-hidden p-0 shadow-elevated"
       style={{ borderColor: "rgba(2,7,136,0.06)" }}
     >
-      <div className="flex items-start gap-2.5 px-3.5 pb-2 pt-3.5">
+      <div className="flex items-start gap-2.5 px-4 pb-2.5 pt-4">
         <GradientIcon icon={<Users />} tone="brand" size={32} />
         <div className="min-w-0 flex-1">
-          <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
+          <p
+            className="font-ui text-[10px] font-bold uppercase text-brand"
+            style={{ letterSpacing: "0.18em" }}
+          >
             Custo do dia
           </p>
-          <p className="mt-0.5 font-ui text-[11px] text-neutral-500">
-            {meals.toLocaleString("pt-BR")} refeições previstas
+          <p
+            className="mt-0.5 font-ui text-[10.5px] text-neutral-500"
+            style={{ letterSpacing: "-0.005em" }}
+          >
+            <span className="tabular-nums">
+              {meals.toLocaleString("pt-BR")}
+            </span>{" "}
+            refeições previstas
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 px-3.5 pb-2">
-        <div>
-          <p className="font-ui text-[10px] font-medium uppercase tracking-wider text-neutral-400">
+      {/* Stacked rows em vez de grid 2-col para evitar overflow no
+          "Total do dia" (5+ dígitos com decimal não cabia em 130px) */}
+      <div className="flex flex-col gap-2 px-4 pb-3">
+        <div className="flex items-baseline justify-between gap-2">
+          <span
+            className="font-ui text-[9.5px] font-bold uppercase text-neutral-400"
+            style={{ letterSpacing: "0.16em" }}
+          >
             Por refeição
-          </p>
-          <motion.p
+          </span>
+          <motion.span
             key={totals.cost}
             initial={{ scale: 0.92, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="font-ui text-[24px] font-bold leading-none text-neutral-900 tabular-nums"
-            style={{ letterSpacing: "-0.02em" }}
+            className="font-display font-bold leading-none text-neutral-900 tabular-nums"
+            style={{ fontSize: 22, letterSpacing: "-0.030em" }}
           >
             R$ {totals.cost.toFixed(2).replace(".", ",")}
-          </motion.p>
+          </motion.span>
         </div>
-        <div className="text-right">
-          <p className="font-ui text-[10px] font-medium uppercase tracking-wider text-neutral-400">
+        <div
+          className="flex items-baseline justify-between gap-2 border-t border-dashed pt-2"
+          style={{ borderColor: "rgba(0,0,0,0.06)" }}
+        >
+          <span
+            className="font-ui text-[9.5px] font-bold uppercase text-neutral-400"
+            style={{ letterSpacing: "0.16em" }}
+          >
             Total do dia
-          </p>
-          <p
-            className="font-ui text-[16px] font-bold leading-none text-neutral-700 tabular-nums"
-            style={{ letterSpacing: "-0.01em" }}
+          </span>
+          <span
+            className="font-ui font-bold leading-none text-neutral-700 tabular-nums whitespace-nowrap"
+            style={{ fontSize: 15, letterSpacing: "-0.015em" }}
           >
             R${" "}
             {totalDay.toLocaleString("pt-BR", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
-          </p>
+          </span>
         </div>
       </div>
 
       {/* 7-day trend area chart */}
-      <div className="px-1.5 pb-2 pt-1">
+      <div className="px-2 pb-3 pt-1">
+        <p
+          className="mb-1 px-1.5 font-ui text-[9.5px] font-bold uppercase text-neutral-400"
+          style={{ letterSpacing: "0.16em" }}
+        >
+          Últimos 7 dias
+        </p>
         <AreaChart
           data={costSeries}
           color="#020788"

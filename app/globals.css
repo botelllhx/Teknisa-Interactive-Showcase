@@ -44,7 +44,6 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: "ss01", "ss02", "cv11", "tnum" off;
   text-rendering: optimizeLegibility;
 }
 
@@ -151,4 +150,11 @@ body.presentation-mode * {
   transform-origin: top left;
   width: 83.3333%;
   height: 83.3333%;
+  /* Quando text é transformado por scale(), antialiased borra subpixels.
+     subpixel-antialiased + backface-visibility renderiza com hint correto. */
+  -webkit-font-smoothing: subpixel-antialiased;
+  backface-visibility: hidden;
+}
+.mockup-zoom * {
+  -webkit-font-smoothing: subpixel-antialiased;
 }

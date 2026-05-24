@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 :root {
-  /* v13: switched to Plus Jakarta Sans (closest open-source to Google Sans).
-     The actual variables are set by next/font in app/layout.tsx; these are
-     fallbacks if the font fails to load. */
-  --font-display: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
-  --font-ui: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  /* v13.2: Google Sans real, carregada via <link> direto no <head> em
+     app/layout.tsx (Google CDN, weights 400/500/700). Fallbacks vão para
+     Plus Jakarta Sans, DM Sans e system caso o arquivo falhe. */
+  --font-display: "Google Sans", "Plus Jakarta Sans", "DM Sans", system-ui, sans-serif;
+  --font-ui: "Google Sans", "Plus Jakarta Sans", "DM Sans", system-ui, sans-serif;
 
   --brand: #020788;
   --brand-light: #1a1fa8;

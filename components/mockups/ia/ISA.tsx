@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Sparkles,
@@ -214,24 +214,42 @@ function Sidebar() {
 // ============================================================================
 
 function ChatPanel({ step }: { step: number }) {
+  // Local "user-driven" step so prompts inside the chat are actually
+  // clickable. We always show at LEAST whatever the tour points to, but if
+  // the user clicks a suggestion pill we advance the conversation on top
+  // of that. Result: ISA feels interactive instead of read-only.
+  const [userStep, setUserStep] = useState(0);
+  const visible = Math.max(step, userStep);
+  const advance = () => setUserStep((s) => Math.max(s, visible) + 1);
+  // Reset local step when tour moves backwards
+  useEffect(() => {
+    if (step < userStep) setUserStep(step);
+  }, [step, userStep]);
+
   return (
     <section className="relative flex flex-col overflow-hidden">
       <div className="flex-1 overflow-y-auto px-6 py-4">
         <div className="mx-auto flex max-w-[680px] flex-col gap-4">
-          {step === 0 && <EmptyState />}
-          {step >= 1 && <UserMsg text="Como estão minhas vendas hoje em relação à meta?" />}
-          {step >= 1 && <ISASalesResponse animate={step === 1} />}
-          {step >= 2 && (
+          {visible === 0 && <EmptyState onPickPrompt={advance} />}
+          {visible >= 1 && (
+            <UserMsg text="Como estão minhas vendas hoje em relação à meta?" />
+          )}
+          {visible >= 1 && (
+            <ISASalesResponse animate={visible === 1} onNext={advance} />
+          )}
+          {visible >= 2 && (
             <UserMsg text="E o desperdício? Vamos ter pico nesta sexta?" />
           )}
-          {step >= 2 && <ISAWasteResponse animate={step === 2} />}
-          {step >= 3 && (
+          {visible >= 2 && (
+            <ISAWasteResponse animate={visible === 2} onApply={advance} />
+          )}
+          {visible >= 3 && (
             <UserMsg text="Aplica a recomendação automaticamente." />
           )}
-          {step >= 3 && <ISAActionResponse animate={step === 3} />}
+          {visible >= 3 && <ISAActionResponse animate={visible === 3} />}
         </div>
       </div>
-      <ChatInput />
+      <ChatInput onSend={advance} />
     </section>
   );
 }
@@ -240,7 +258,7 @@ function ChatPanel({ step }: { step: number }) {
 // Empty state
 // ============================================================================
 
-function EmptyState() {
+function EmptyState({ onPickPrompt }: { onPickPrompt: () => void }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -302,10 +320,13 @@ function EmptyState() {
           { Icon: Users, label: "Escala da semana", tone: "teal" as const },
           { Icon: Sparkles, label: "Aplicar plano IA", tone: "ai" as const },
         ].map((p) => (
-          <button
+          <motion.button
             key={p.label}
             type="button"
-            className="flex flex-col items-start gap-2 rounded-xl bg-white p-3 text-left transition-all hover:-translate-y-[1px] hover:shadow-elevated"
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onPickPrompt}
+            className="flex flex-col items-start gap-2 rounded-xl bg-white p-3 text-left transition-shadow hover:shadow-elevated"
             style={{
               border: "1px solid rgba(0,0,0,0.06)",
               boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
@@ -318,7 +339,7 @@ function EmptyState() {
             >
               {p.label}
             </p>
-          </button>
+          </motion.button>
         ))}
       </div>
     </motion.div>
@@ -401,7 +422,13 @@ function ISABubble({
 // ISA responses with inline data cards
 // ============================================================================
 
-function ISASalesResponse({ animate }: { animate?: boolean }) {
+function ISASalesResponse({
+  animate,
+  onNext,
+}: {
+  animate?: boolean;
+  onNext?: () => void;
+}) {
   const series = [
     { x: "Seg", y: 18.2 },
     { x: "Ter", y: 19.8 },
@@ -491,7 +518,11 @@ function ISASalesResponse({ animate }: { animate?: boolean }) {
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        <SuggestionPill label="Comparar com a semana passada" />
+        <SuggestionPill
+          label="E o desperdício? Vamos ter pico nesta sexta?"
+          emphasis
+          onClick={onNext}
+        />
         <SuggestionPill label="Quebrar por unidade" />
         <SuggestionPill label="Top 5 pratos hoje" />
       </div>
@@ -499,7 +530,13 @@ function ISASalesResponse({ animate }: { animate?: boolean }) {
   );
 }
 
-function ISAWasteResponse({ animate }: { animate?: boolean }) {
+function ISAWasteResponse({
+  animate,
+  onApply,
+}: {
+  animate?: boolean;
+  onApply?: () => void;
+}) {
   return (
     <ISABubble animate={animate} thinking={animate}>
       <p
@@ -557,7 +594,11 @@ function ISAWasteResponse({ animate }: { animate?: boolean }) {
         </div>
       </div>
       <div className="flex flex-wrap gap-1.5">
-        <SuggestionPill label="Aplica a recomendação automaticamente." emphasis />
+        <SuggestionPill
+          label="Aplica a recomendação automaticamente"
+          emphasis
+          onClick={onApply}
+        />
         <SuggestionPill label="Detalhar por unidade" />
         <SuggestionPill label="Comparar com sextas anteriores" />
       </div>
@@ -645,15 +686,18 @@ function ISAActionResponse({ animate }: { animate?: boolean }) {
 function SuggestionPill({
   label,
   emphasis,
+  onClick,
 }: {
   label: string;
   emphasis?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button
       type="button"
+      onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-ui text-[10.5px] font-medium transition-all hover:-translate-y-[1px]",
+        "inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-ui text-[10.5px] font-medium transition-all hover:-translate-y-[1px] active:scale-[0.98]",
         emphasis
           ? "bg-gradient-to-r from-brand via-brand-light to-[#7c3aed] text-white shadow-brand"
           : "bg-brand-ghost text-brand hover:bg-brand-subtle",
@@ -666,7 +710,7 @@ function SuggestionPill({
   );
 }
 
-function ChatInput() {
+function ChatInput({ onSend }: { onSend?: () => void }) {
   return (
     <div className="border-t border-brand/8 bg-white/95 px-6 py-3 backdrop-blur">
       <div className="mx-auto max-w-[680px]">
@@ -704,14 +748,16 @@ function ChatInput() {
             >
               <Mic size={14} strokeWidth={2.25} />
             </button>
-            <button
+            <motion.button
               type="button"
               data-tour="isa-send"
+              whileTap={{ scale: 0.92 }}
+              onClick={onSend}
               className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-brand to-[#7c3aed] text-white shadow-brand"
               aria-label="Enviar"
             >
               <Send size={14} strokeWidth={2.25} />
-            </button>
+            </motion.button>
           </motion.div>
         </AnimatePresence>
         <p className="mt-1.5 text-center font-ui text-[9px] text-neutral-400">

@@ -1,43 +1,41 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
-  TrendingUp,
   Brain,
   Sparkles,
-  Calendar,
-  Users,
-  Package,
-  Cloud,
-  Zap,
-  AlertTriangle,
   CheckCircle2,
-  ArrowRight,
+  ArrowUpRight,
+  Sun,
+  Moon,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
-import { Badge } from "@/components/ui/shadcn";
-import {
-  AreaChart,
-  RadialGauge,
-  HorizontalBars,
-} from "@/components/ui/charts";
-import { GradientIcon } from "@/components/ui/GradientIcon";
-import { InsightCard } from "@/components/ui/InsightCard";
+import { AreaChart } from "@/components/ui/charts";
+import { PersonAvatar } from "@/components/ui/PersonAvatar";
+import { StackedAvatars } from "@/components/ui/StackedAvatars";
+import { people } from "@/lib/photos";
 
 interface APIAProps {
   step: number;
 }
 
 /**
- * Análise Preditiva for restaurants — ML-driven demand forecast, waste
- * prediction, stock rupture risk. Distinct from the HR Análise Preditiva
- * (which predicts turnover). This one lives in the IA group.
+ * Análise Preditiva — restaurant-focused ML.
  *
- * Layout: header → 3-up KPIs → main forecast chart + ML model card +
- * side risk + horizontal feature importance.
+ * v13.2 rewrite: stripped down to 4 sections following the Noteflow
+ * reference (airy, generous spacing, very few cards per view). Previous
+ * version was cramming 7+ panels into one screen; that's gone. Order:
+ *
+ *   1. Greeting hero (similar to Noteflow "Good morning Sajibur")
+ *   2. 3-up KPI strip (only 3 cards, big numbers, room to breathe)
+ *   3. Forecast chart — one big card, dominant visually
+ *   4. AI decisions feed — single card, clean list (no agent dashboard
+ *      gradient block, no feature importance, no model gauge — the
+ *      kitchen sink is gone)
  */
 export function AnalisePreditivaIAMockup({ step }: APIAProps) {
   const patchLive = useTourLive((s) => s.patch);
@@ -46,180 +44,226 @@ export function AnalisePreditivaIAMockup({ step }: APIAProps) {
   }, [step, patchLive]);
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden bg-white font-ui text-neutral-800">
+    <div
+      className="flex h-full w-full flex-col overflow-hidden font-ui text-neutral-900"
+      style={{
+        background:
+          "radial-gradient(ellipse at top left, rgba(124,58,237,0.06), transparent 45%), radial-gradient(ellipse at top right, rgba(2,7,136,0.04), transparent 45%), #fafbfc",
+      }}
+    >
       <Header />
-      <main
-        className="grid flex-1 grid-rows-[auto_1fr_auto] gap-3 overflow-hidden px-5 py-4"
-        style={{
-          background: "radial-gradient(ellipse at top, #f5f3ff 0%, #f4f6fb 60%)",
-        }}
-      >
-        <KPIStrip />
-        <MainArea />
-        <BottomRow />
+      <main className="flex flex-1 flex-col gap-6 overflow-y-auto px-10 py-8">
+        <GreetingHero />
+        <KPIRow />
+        <ForecastCard />
+        <DecisionsCard />
       </main>
     </div>
   );
 }
 
 // ============================================================================
+// Header — slim, Noteflow-style with right-side avatar group
+// ============================================================================
 
 function Header() {
   return (
-    <header className="flex h-14 items-center justify-between border-b border-brand/8 bg-white px-5">
+    <header className="flex h-14 items-center justify-between border-b border-neutral-200/70 bg-white/80 px-10 backdrop-blur">
       <div className="flex items-center gap-3">
-        <Image src="/logo-teknisa.svg" alt="Teknisa" width={86} height={16} />
+        <Image src="/logo-teknisa.svg" alt="Teknisa" width={88} height={16} />
         <span className="h-5 w-px bg-neutral-200" />
-        <div className="flex items-center gap-2">
-          <motion.span
-            animate={{
-              boxShadow: [
-                "0 0 0 0 rgba(124,58,237,0)",
-                "0 0 0 6px rgba(124,58,237,0.10)",
-                "0 0 0 0 rgba(124,58,237,0)",
-              ],
-            }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-            className="flex h-8 w-8 items-center justify-center rounded-xl text-white"
-            style={{
-              background:
-                "linear-gradient(135deg, #020788 0%, #1a1fa8 50%, #7c3aed 100%)",
-            }}
-          >
-            <Brain size={15} strokeWidth={2.25} />
-          </motion.span>
-          <div className="leading-tight">
-            <p
-              className="font-ui text-[13px] font-bold text-neutral-900"
-              style={{ letterSpacing: "-0.005em" }}
-            >
-              Análise Preditiva
-            </p>
-            <p className="font-ui text-[10px] text-neutral-500">
-              Modelo XGBoost · 24m de histórico · 87% acurácia
-            </p>
-          </div>
-        </div>
-        <Badge variant="ai" className="gap-1">
-          <Sparkles size={10} strokeWidth={2.5} />
-          IA
-        </Badge>
-        <Badge variant="secondary">Tendência 2026</Badge>
+        <p
+          className="font-ui text-[13px] font-medium text-neutral-700"
+          style={{ letterSpacing: "-0.005em" }}
+        >
+          Análise Preditiva
+        </p>
       </div>
-      <div className="flex items-center gap-2">
-        <span className="flex items-center gap-1 font-ui text-[10px] font-medium text-neutral-500">
-          <motion.span
-            animate={{ opacity: [1, 0.4, 1] }}
-            transition={{ duration: 1.6, repeat: Infinity }}
-            className="h-1.5 w-1.5 rounded-full bg-success"
-          />
-          Modelo treinando · próx. atualização em 4h
-        </span>
+      <div className="flex items-center gap-3">
+        <StackedAvatars
+          size={28}
+          overlap={0.36}
+          people={[
+            { name: "João Costa", photo: people.joao },
+            { name: "Mariana Costa", photo: people.mariana },
+            { name: "Carlos Mello", photo: people.carlos },
+          ]}
+          extraLabel="+5"
+        />
+        <PersonAvatar
+          photo={people.joao}
+          name="João Costa"
+          size={32}
+          ring
+        />
       </div>
     </header>
   );
 }
 
 // ============================================================================
-// 3-up KPI strip
+// Greeting hero
 // ============================================================================
 
-function KPIStrip() {
+function GreetingHero() {
   return (
-    <div data-tour="apia-kpis" className="grid grid-cols-4 gap-2">
-      <KPITile
-        icon={<Users />}
-        tone="brand"
-        label="Demanda prevista hoje"
-        value="1.847"
-        delta="+8,2% vs ontem"
-        deltaUp
-      />
-      <KPITile
-        icon={<Package />}
-        tone="warning"
-        label="Risco de desperdício"
-        value="14,2kg"
-        delta="acima da meta"
-      />
-      <KPITile
-        icon={<AlertTriangle />}
-        tone="danger"
-        label="Ruptura prevista 7d"
-        value="3 itens"
-        delta="óleo, queijo, farinha"
-      />
-      <KPITile
-        icon={<TrendingUp />}
-        tone="success"
-        label="Acurácia 30d"
-        value="87,4%"
-        delta="+2,1pp"
-        deltaUp
-      />
-    </div>
-  );
-}
-
-function KPITile({
-  icon,
-  tone,
-  label,
-  value,
-  delta,
-  deltaUp,
-}: {
-  icon: React.ReactElement;
-  tone: "brand" | "danger" | "warning" | "success";
-  label: string;
-  value: string;
-  delta: string;
-  deltaUp?: boolean;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      className="rounded-2xl bg-white p-3"
-      style={{
-        border: "1px solid rgba(0,0,0,0.04)",
-        boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
-      }}
-    >
-      <div className="flex items-center justify-between">
-        <GradientIcon icon={icon} tone={tone} size={28} />
+    <section className="flex items-start justify-between gap-6">
+      <div className="flex-1">
+        <div className="flex items-center gap-2">
+          <Sun size={14} strokeWidth={2.25} className="text-amber-500" />
+          <span
+            className="font-ui text-[11px] font-medium uppercase text-neutral-500"
+            style={{ letterSpacing: "0.08em" }}
+          >
+            Bom dia, João
+          </span>
+        </div>
+        <h1
+          className="mt-2 font-display text-[34px] font-bold leading-[1.05] text-neutral-900"
+          style={{ letterSpacing: "-0.025em" }}
+        >
+          O modelo já tomou{" "}
+          <span
+            style={{
+              background:
+                "linear-gradient(135deg, #020788 0%, #7c3aed 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            7 decisões
+          </span>{" "}
+          enquanto você dormia.
+        </h1>
+        <p
+          className="mt-2 max-w-[58ch] font-ui text-[13.5px] leading-relaxed text-neutral-500"
+          style={{ letterSpacing: "-0.005em" }}
+        >
+          Modelo XGBoost cruzando 24 meses de histórico, clima e calendário —
+          atualizado há 4 horas. Sua intervenção só é necessária quando aparece
+          algo vermelho.
+        </p>
       </div>
-      <p
-        className="mt-2 font-ui text-[10px] font-bold uppercase text-neutral-500"
-        style={{ letterSpacing: "0.08em" }}
+
+      <div
+        className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-subtle"
+        style={{ border: "1px solid rgba(0,0,0,0.06)" }}
       >
-        {label}
-      </p>
-      <p
-        className="mt-0.5 font-ui text-[20px] font-bold tabular-nums leading-none text-neutral-900"
-        style={{ letterSpacing: "-0.02em" }}
-      >
-        {value}
-      </p>
-      <p
-        className={cn(
-          "mt-0.5 font-ui text-[10px] font-bold tabular-nums",
-          deltaUp ? "text-success" : "text-neutral-500",
-        )}
-      >
-        {delta}
-      </p>
-    </motion.div>
+        <motion.span
+          animate={{ opacity: [1, 0.4, 1] }}
+          transition={{ duration: 1.6, repeat: Infinity }}
+          className="h-1.5 w-1.5 rounded-full bg-success"
+        />
+        <span
+          className="font-ui text-[11px] font-medium text-neutral-700"
+          style={{ letterSpacing: "-0.005em" }}
+        >
+          Modelo ativo · 87,4%
+        </span>
+      </div>
+    </section>
   );
 }
 
 // ============================================================================
-// Main area: forecast chart + AI insights side
+// 3-up KPI row — big, breathing, Noteflow-style
 // ============================================================================
 
-function MainArea() {
-  // 14-day forecast: 7d real + 7d prediction
+function KPIRow() {
+  const kpis = [
+    {
+      label: "Demanda prevista",
+      value: "1.847",
+      sub: "refeições · hoje",
+      delta: "+8,2%",
+      deltaTone: "up" as const,
+      icon: <TrendingUp size={16} strokeWidth={2} />,
+      accent: "linear-gradient(135deg, #020788, #7c3aed)",
+    },
+    {
+      label: "Risco de desperdício",
+      value: "14,2",
+      sub: "kg · acima da meta",
+      delta: "Sexta · pico",
+      deltaTone: "warn" as const,
+      icon: <Brain size={16} strokeWidth={2} />,
+      accent: "linear-gradient(135deg, #d97706, #f59e0b)",
+    },
+    {
+      label: "Acurácia do modelo",
+      value: "87,4%",
+      sub: "MAE ±42 refeições",
+      delta: "+2,1pp",
+      deltaTone: "up" as const,
+      icon: <Sparkles size={16} strokeWidth={2} />,
+      accent: "linear-gradient(135deg, #16a34a, #0d9488)",
+    },
+  ];
+
+  return (
+    <section data-tour="apia-kpis" className="grid grid-cols-3 gap-4">
+      {kpis.map((k, i) => (
+        <motion.div
+          key={k.label}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 * i, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          className="rounded-2xl bg-white p-5"
+          style={{
+            border: "1px solid rgba(0,0,0,0.05)",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+          }}
+        >
+          <div className="flex items-start justify-between">
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-xl text-white"
+              style={{ background: k.accent, boxShadow: "0 4px 12px rgba(2,7,136,0.10)" }}
+            >
+              {k.icon}
+            </span>
+            <span
+              className={cn(
+                "font-ui text-[11px] font-medium tabular-nums",
+                k.deltaTone === "up"
+                  ? "text-success"
+                  : k.deltaTone === "warn"
+                    ? "text-warning"
+                    : "text-neutral-500",
+              )}
+              style={{ letterSpacing: "-0.005em" }}
+            >
+              {k.delta}
+            </span>
+          </div>
+          <p
+            className="mt-5 font-ui text-[12px] font-medium text-neutral-500"
+            style={{ letterSpacing: "-0.005em" }}
+          >
+            {k.label}
+          </p>
+          <p
+            className="mt-1 font-display text-[36px] font-bold leading-none tabular-nums text-neutral-900"
+            style={{ letterSpacing: "-0.03em" }}
+          >
+            {k.value}
+          </p>
+          <p
+            className="mt-1.5 font-ui text-[11.5px] text-neutral-400"
+            style={{ letterSpacing: "-0.005em" }}
+          >
+            {k.sub}
+          </p>
+        </motion.div>
+      ))}
+    </section>
+  );
+}
+
+// ============================================================================
+// Forecast card — single big card, dominant visually
+// ============================================================================
+
+function ForecastCard() {
   const forecast = [
     { x: "S-7", y: 1620 },
     { x: "S-6", y: 1710 },
@@ -238,257 +282,220 @@ function MainArea() {
   ];
 
   return (
-    <div className="grid min-h-0 grid-cols-[1fr_300px] gap-3">
-      {/* Forecast chart */}
-      <div
-        data-tour="apia-forecast"
-        className="flex min-h-0 flex-col rounded-2xl bg-white p-4"
-        style={{
-          border: "1px solid rgba(0,0,0,0.04)",
-          boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
-        }}
-      >
-        <div className="mb-2 flex items-start justify-between">
-          <div>
-            <p
-              className="font-ui text-[13px] font-bold text-neutral-900"
-              style={{ letterSpacing: "-0.01em" }}
-            >
-              Demanda prevista · 14 dias
-            </p>
-            <p className="mt-0.5 font-ui text-[10.5px] text-neutral-500">
-              Modelo XGBoost considerando clima, calendário e histórico
-            </p>
-          </div>
-          <Badge variant="ai" className="text-[9px]">
-            <Sparkles size={9} strokeWidth={2.5} />
-            ML
-          </Badge>
-        </div>
-        <div className="min-h-0 flex-1">
-          <AreaChart
-            data={forecast}
-            color="#7c3aed"
-            yMin={1500}
-            yMax={2300}
-            aspectRatio="16/5"
-            formatY={(v) => `${v.toFixed(0)} refeições`}
-          />
-        </div>
-
-        {/* Feature importance */}
-        <div className="mt-2 border-t border-neutral-100 pt-2">
-          <p
-            className="font-ui text-[9px] font-bold uppercase text-brand"
-            style={{ letterSpacing: "0.10em" }}
+    <motion.section
+      data-tour="apia-forecast"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="rounded-2xl bg-white px-6 py-5"
+      style={{
+        border: "1px solid rgba(0,0,0,0.05)",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+      }}
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <h2
+            className="font-display text-[18px] font-bold leading-tight text-neutral-900"
+            style={{ letterSpacing: "-0.02em" }}
           >
-            O que o modelo está olhando agora
+            Demanda prevista
+          </h2>
+          <p
+            className="mt-1 font-ui text-[12px] text-neutral-500"
+            style={{ letterSpacing: "-0.005em" }}
+          >
+            7 dias de histórico + 7 dias de previsão · XGBoost v4.2
           </p>
-          <div className="mt-1">
-            <HorizontalBars
-              bars={[
-                { label: "Histórico mesma semana", value: 38, color: "#7c3aed", meta: "%" },
-                { label: "Calendário (feriado próx)", value: 24, color: "#020788", meta: "%" },
-                { label: "Clima previsto", value: 18, color: "#0d9488", meta: "%" },
-                { label: "Eventos locais", value: 12, color: "#f59e0b", meta: "%" },
-                { label: "Movimento das filiais vizinhas", value: 8, color: "#ec4899", meta: "%" },
-              ]}
-              thickness={5}
-            />
-          </div>
+        </div>
+        <div className="flex items-center gap-1">
+          {[
+            { label: "7d", active: false },
+            { label: "14d", active: true },
+            { label: "30d", active: false },
+          ].map((t) => (
+            <button
+              key={t.label}
+              type="button"
+              className={cn(
+                "rounded-md px-2.5 py-1 font-ui text-[11px] font-medium transition-all",
+                t.active
+                  ? "bg-neutral-900 text-white"
+                  : "text-neutral-500 hover:bg-neutral-100",
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
       </div>
-
-      {/* Right: model card + insights */}
-      <div className="flex min-h-0 flex-col gap-2 overflow-y-auto pr-0.5">
-        <div
-          data-tour="apia-model"
-          className="overflow-hidden rounded-2xl p-3 text-white"
-          style={{
-            background:
-              "linear-gradient(135deg, #020788 0%, #1a1fa8 50%, #7c3aed 100%)",
-          }}
-        >
-          <div className="flex items-center justify-between">
-            <p
-              className="font-ui text-[9px] font-bold uppercase text-white/80"
-              style={{ letterSpacing: "0.10em" }}
-            >
-              Modelo ativo
-            </p>
-            <Cloud size={14} strokeWidth={2} className="text-white/65" />
-          </div>
-          <p
-            className="mt-1 font-ui text-[15px] font-bold leading-tight"
-            style={{ letterSpacing: "-0.01em" }}
-          >
-            XGBoost · v4.2.1
-          </p>
-          <div className="mt-2 flex items-end justify-between">
-            <RadialGauge
-              value={87.4}
-              size={108}
-              label="87,4%"
-              sublabel="Acurácia"
-              colors={{ from: "#a855f7", to: "#22c55e" }}
-            />
-            <div className="space-y-1 pb-2 text-right">
-              <p className="font-ui text-[9px] text-white/65">F1 score</p>
-              <p
-                className="font-ui text-[13px] font-bold tabular-nums leading-none"
-                style={{ letterSpacing: "-0.02em" }}
-              >
-                0,84
-              </p>
-              <p className="font-ui text-[9px] text-white/65">MAE refeições</p>
-              <p
-                className="font-ui text-[13px] font-bold tabular-nums leading-none"
-                style={{ letterSpacing: "-0.02em" }}
-              >
-                ±42
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <InsightCard
-          icon={<Calendar />}
-          tone="warning"
-          title="Pico previsto sexta"
-          description="Demanda 14% acima da média no almoço por causa de feriado prolongado. Recomendação: +1 funcionário no atendimento."
-          confidence={91}
-          status="Aguardando aprovação"
-        />
-        <InsightCard
-          icon={<Zap />}
-          tone="success"
-          title="Compra antecipada de óleo"
-          description="Tendência indica ruptura em 6 dias. Pedido automático gerado com fornecedor preferencial."
-          confidence={94}
-          status="IA aplicou"
+      <div className="mt-4 h-[180px]">
+        <AreaChart
+          data={forecast}
+          color="#7c3aed"
+          yMin={1500}
+          yMax={2300}
+          aspectRatio="16/4"
+          formatY={(v) => `${v.toFixed(0)} refeições`}
         />
       </div>
-    </div>
+    </motion.section>
   );
 }
 
 // ============================================================================
-// Bottom row: forecast applied + agent feed
+// Decisions card — Noteflow-style clean list
 // ============================================================================
 
-function BottomRow() {
+interface Decision {
+  id: string;
+  what: string;
+  detail: string;
+  when: string;
+  status: "applied" | "pending" | "alert";
+}
+
+function DecisionsCard() {
+  const [acknowledged, setAcknowledged] = useState<Set<string>>(new Set());
+
+  const decisions: Decision[] = [
+    {
+      id: "d1",
+      what: "Pedido de queijo aumentado",
+      detail: "Subiu 4kg para sexta-feira (previsão de pico).",
+      when: "Há 5 min",
+      status: "applied",
+    },
+    {
+      id: "d2",
+      what: "Cardápio quinta ajustado",
+      detail: "Removeu 2 pratos com risco alto de sobra.",
+      when: "Há 1h",
+      status: "applied",
+    },
+    {
+      id: "d3",
+      what: "Alerta de pico enviado",
+      detail: "Feriado prolongado, +14% de demanda projetada.",
+      when: "Há 3h",
+      status: "alert",
+    },
+    {
+      id: "d4",
+      what: "Aguarda sua aprovação",
+      detail: "Renegociar contrato de óleo com fornecedor preferencial.",
+      when: "Há 6h",
+      status: "pending",
+    },
+  ];
+
   return (
-    <div className="grid grid-cols-[1fr_360px] gap-3">
-      <div
-        data-tour="apia-agent"
-        className="overflow-hidden rounded-2xl p-3"
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(2,7,136,0.96) 0%, rgba(124,58,237,0.92) 100%)",
-        }}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <motion.span
-              animate={{ scale: [1, 1.08, 1] }}
-              transition={{ duration: 2.2, repeat: Infinity }}
-              className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/15 text-white backdrop-blur"
-            >
-              <Brain size={14} strokeWidth={2.25} />
-            </motion.span>
-            <div className="leading-tight">
-              <p
-                className="font-ui text-[9px] font-bold uppercase text-white/80"
-                style={{ letterSpacing: "0.10em" }}
-              >
-                Agente preditivo · agindo agora
-              </p>
-              <p
-                className="font-ui text-[15px] font-bold text-white"
-                style={{ letterSpacing: "-0.01em" }}
-              >
-                7 decisões tomadas nas últimas 24h
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1 rounded-lg bg-white px-3 py-1.5 font-ui text-[11px] font-bold text-brand"
+    <motion.section
+      data-tour="apia-agent"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="rounded-2xl bg-white px-6 py-5"
+      style={{
+        border: "1px solid rgba(0,0,0,0.05)",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+      }}
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <h2
+            className="font-display text-[18px] font-bold leading-tight text-neutral-900"
+            style={{ letterSpacing: "-0.02em" }}
           >
-            Ver log completo
-            <ArrowRight size={11} strokeWidth={2.5} />
-          </button>
+            Decisões do agente
+          </h2>
+          <p
+            className="mt-1 font-ui text-[12px] text-neutral-500"
+            style={{ letterSpacing: "-0.005em" }}
+          >
+            Últimas 24h · 7 ações tomadas, 1 aguarda você
+          </p>
         </div>
-        <div className="mt-3 grid grid-cols-3 gap-2">
-          {[
-            { l: "Pedidos automáticos", v: "3", sub: "compras antecipadas" },
-            { l: "Alertas de pico", v: "2", sub: "sexta + sábado" },
-            { l: "Ajustes de cardápio", v: "2", sub: "para reduzir desperdício" },
-          ].map((b) => (
-            <div
-              key={b.l}
-              className="rounded-xl bg-white/10 p-2.5 backdrop-blur"
-              style={{ border: "1px solid rgba(255,255,255,0.10)" }}
-            >
-              <p
-                className="font-ui text-[9px] font-bold uppercase text-white/75"
-                style={{ letterSpacing: "0.08em" }}
-              >
-                {b.l}
-              </p>
-              <p
-                className="mt-0.5 font-ui text-[18px] font-bold tabular-nums leading-none text-white"
-                style={{ letterSpacing: "-0.02em" }}
-              >
-                {b.v}
-              </p>
-              <p className="mt-0.5 font-ui text-[9.5px] text-white/65">{b.sub}</p>
-            </div>
-          ))}
-        </div>
+        <button
+          type="button"
+          className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 font-ui text-[11px] font-medium text-neutral-600 hover:bg-neutral-100"
+        >
+          Ver tudo
+          <ArrowUpRight size={11} strokeWidth={2.25} />
+        </button>
       </div>
 
-      <div
-        className="flex flex-col rounded-2xl bg-white p-3"
-        style={{
-          border: "1px solid rgba(0,0,0,0.04)",
-          boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
-        }}
-      >
-        <p
-          className="font-ui text-[9px] font-bold uppercase text-brand"
-          style={{ letterSpacing: "0.10em" }}
-        >
-          Decisões recentes
-        </p>
-        <div className="mt-1.5 space-y-1.5">
-          {[
-            { t: "5 min", what: "Pedido de queijo aumentado em 4kg para sexta", ok: true },
-            { t: "1h", what: "Cardápio quinta ajustado: -2 pratos de risco", ok: true },
-            { t: "3h", what: "Alerta enviado ao gestor — feriado pico", ok: true },
-          ].map((d, i) => (
-            <motion.div
-              key={i}
+      <ul className="mt-3 divide-y divide-neutral-100">
+        {decisions.map((d, i) => {
+          const isAck = acknowledged.has(d.id);
+          const ack = isAck || d.status !== "pending";
+          return (
+            <motion.li
+              key={d.id}
               initial={{ opacity: 0, x: -4 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.08 * i, duration: 0.25 }}
-              className="flex items-start gap-2 rounded-lg bg-success/5 px-2 py-1.5"
+              transition={{ delay: 0.04 * i, duration: 0.25 }}
+              className="flex items-start gap-3 py-3"
             >
-              <span className="flex h-4 w-4 flex-none items-center justify-center rounded-full bg-success text-white">
-                <CheckCircle2 size={9} strokeWidth={3} />
+              <span
+                className={cn(
+                  "mt-0.5 flex h-7 w-7 flex-none items-center justify-center rounded-full",
+                  d.status === "applied" && "bg-success/12 text-success",
+                  d.status === "pending" && "bg-warning/12 text-warning",
+                  d.status === "alert" && "bg-brand-ghost text-brand",
+                  isAck && d.status === "pending" && "bg-success/12 text-success",
+                )}
+              >
+                {ack ? (
+                  <CheckCircle2 size={13} strokeWidth={2.5} />
+                ) : d.status === "alert" ? (
+                  <Sparkles size={12} strokeWidth={2.5} />
+                ) : (
+                  <Moon size={12} strokeWidth={2.5} />
+                )}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="font-ui text-[10px] leading-snug text-neutral-700">
+                <p
+                  className="font-ui text-[13px] font-bold text-neutral-900"
+                  style={{ letterSpacing: "-0.005em" }}
+                >
                   {d.what}
                 </p>
-                <p className="mt-0.5 font-ui text-[9px] text-neutral-400">
-                  Há {d.t}
+                <p
+                  className="mt-0.5 font-ui text-[12px] text-neutral-500"
+                  style={{ letterSpacing: "-0.005em" }}
+                >
+                  {d.detail}
                 </p>
               </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </div>
+              <div className="flex items-center gap-2">
+                {d.status === "pending" && !isAck ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setAcknowledged((prev) => {
+                        const next = new Set(prev);
+                        next.add(d.id);
+                        return next;
+                      })
+                    }
+                    className="rounded-md bg-neutral-900 px-2.5 py-1 font-ui text-[11px] font-medium text-white transition-all hover:bg-neutral-800"
+                  >
+                    Aprovar
+                  </button>
+                ) : (
+                  <span
+                    className="font-ui text-[11px] text-neutral-400 tabular-nums"
+                    style={{ letterSpacing: "-0.005em" }}
+                  >
+                    {d.when}
+                  </span>
+                )}
+              </div>
+            </motion.li>
+          );
+        })}
+      </ul>
+    </motion.section>
   );
 }

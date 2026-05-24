@@ -1,26 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-// v13 swap: Plus Jakarta Sans is the closest open-source font to Google Sans
-// (Product Sans), the family the client referenced. We use it for BOTH display
-// and ui — it has enough weight range (400-800) to cover headings and body,
-// and gives the Linear/Notion/Noteflow-style geometric clarity the project
-// kept missing under Roboto. Variable preserves backward CSS-var compat:
-// --font-display and --font-ui both point to Plus Jakarta Sans now.
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-ui",
-  display: "swap",
-});
-
-const jakartaDisplay = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  variable: "--font-display",
-  display: "swap",
-});
+// v13.2: Google Sans real, carregada direto do Google CDN.
+// Não está no catálogo público de Google Fonts (não dá pra usar next/font/google),
+// mas o CSS está servido publicamente. O <link> no <head> baixa as 3 weights
+// (400/500/700) e o globals.css aponta --font-ui / --font-display para
+// 'Google Sans'. Fallback Plus Jakarta Sans → DM Sans → system.
 
 export const metadata: Metadata = {
   title: "Teknisa Interactive Showcase",
@@ -41,7 +26,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${jakarta.variable} ${jakartaDisplay.variable}`}>
+    <html lang="pt-BR">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
+        {/* Google Sans não está no catálogo público de Google Fonts, então
+           next/font/google não consegue carregar. O link manual no App Router
+           layout é equivalente — Next.js injeta no <head> de todas as páginas. */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap"
+        />
+      </head>
       <body className="font-ui antialiased">{children}</body>
     </html>
   );

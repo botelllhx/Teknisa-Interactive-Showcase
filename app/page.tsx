@@ -55,7 +55,7 @@ export default function ShowcasePage() {
               initial="initial"
               animate="animate"
               exit="exit"
-              className="flex h-full flex-col"
+              className="flex h-full flex-col justify-center"
             >
               <HeroSection />
               <SegmentGrid />
@@ -69,7 +69,7 @@ export default function ShowcasePage() {
               initial="initial"
               animate="animate"
               exit="exit"
-              className="h-full"
+              className="flex h-full flex-col justify-center"
             >
               <SolutionGrid segmentId={activeSegment} />
             </motion.div>

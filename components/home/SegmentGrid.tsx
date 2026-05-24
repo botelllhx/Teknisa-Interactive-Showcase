@@ -91,7 +91,7 @@ function SegmentCard({ segment, index, onSelect }: SegmentCardProps) {
       }}
       whileTap={{ scale: 0.99 }}
       aria-label={`Abrir ${segment.label}`}
-      className="group relative flex flex-col overflow-hidden rounded-xl bg-white p-6 text-left"
+      className="group relative flex flex-col overflow-hidden rounded-2xl bg-white p-7 text-left"
       style={{
         border: "1px solid rgba(0,0,0,0.06)",
         boxShadow:
@@ -100,7 +100,7 @@ function SegmentCard({ segment, index, onSelect }: SegmentCardProps) {
         rotateX: rxSpring,
         rotateY: rySpring,
         perspective: 1000,
-        minHeight: 220,
+        minHeight: 280,
       }}
     >
       {/* Cursor follow highlight */}
@@ -123,7 +123,7 @@ function SegmentCard({ segment, index, onSelect }: SegmentCardProps) {
       {/* Top row: ícone + eyebrow numérico + live dot */}
       <div className="relative flex items-start justify-between">
         <div
-          className="flex h-14 w-14 items-center justify-center rounded-xl text-brand transition-transform group-hover:scale-[1.04]"
+          className="flex h-16 w-16 items-center justify-center rounded-2xl text-brand transition-transform group-hover:scale-[1.04]"
           style={{
             background:
               "linear-gradient(135deg, rgba(2,7,136,0.10) 0%, rgba(59,66,196,0.14) 100%)",
@@ -131,7 +131,7 @@ function SegmentCard({ segment, index, onSelect }: SegmentCardProps) {
               "inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 2px rgba(2,7,136,0.06)",
           }}
         >
-          <SegmentIcon name={segment.icon} size={28} />
+          <SegmentIcon name={segment.icon} size={32} />
         </div>
         <div className="flex flex-col items-end gap-1.5">
           <span
@@ -166,22 +166,22 @@ function SegmentCard({ segment, index, onSelect }: SegmentCardProps) {
       </div>
 
       {/* Title + tagline (sem flex-1 — naturalmente denso) */}
-      <div className="relative mt-5">
+      <div className="relative mt-6">
         <h2
-          className="font-display text-[24px] font-bold leading-[1.05] text-neutral-900"
-          style={{ letterSpacing: "-0.028em" }}
+          className="font-display text-[28px] font-bold leading-[1.05] text-neutral-900"
+          style={{ letterSpacing: "-0.030em" }}
         >
           {segment.label}
         </h2>
         <p
-          className="mt-1.5 font-ui text-[13px] leading-[1.4] text-neutral-500"
+          className="mt-2 font-ui text-[14.5px] leading-[1.45] text-neutral-500"
           style={{
             letterSpacing: "-0.005em",
             display: "-webkit-box",
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
             overflow: "hidden",
-            minHeight: "2.5em",
+            minHeight: "2.7em",
           }}
         >
           {segment.tagline}

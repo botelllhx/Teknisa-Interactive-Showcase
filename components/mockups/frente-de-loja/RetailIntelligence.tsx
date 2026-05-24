@@ -34,7 +34,14 @@ import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
 import { food, people, pexels } from "@/lib/photos";
 import { StackedAvatars } from "@/components/ui/StackedAvatars";
-import { DonutChart, DonutLegend, AreaChart } from "@/components/ui/charts";
+import {
+  AreaChart,
+  NestedRisk,
+  HorizontalBars,
+} from "@/components/ui/charts";
+import { InsightCard } from "@/components/ui/InsightCard";
+import { GradientIcon } from "@/components/ui/GradientIcon";
+import type { ReactElement } from "react";
 import {
   Badge,
   Button,
@@ -390,150 +397,247 @@ function DashboardScreen() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25 }}
-      className="grid h-full grid-rows-[auto_auto_1fr] gap-4 px-6 py-5"
+      className="grid h-full grid-cols-[1fr_280px] grid-rows-[auto_1fr_auto] gap-3 px-5 py-4"
+      style={{ background: "radial-gradient(ellipse at top, #f5f3ff 0%, #f4f6fb 60%)" }}
     >
-      {/* Insight banner */}
-      <div data-tour="ri-insight-banner">
-        <motion.div
-          initial={{ opacity: 0, y: -6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <Card className="relative overflow-hidden border-brand/15 px-5 py-4">
-            <ShimmerEdge />
-            <div className="relative flex items-center gap-4">
-              <motion.span
-                animate={{ scale: [1, 1.08, 1] }}
-                transition={{
-                  duration: 2.2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-                className="flex h-12 w-12 flex-none items-center justify-center rounded-xl bg-brand text-white shadow-brand"
-              >
-                <Sparkles size={20} strokeWidth={2} />
-              </motion.span>
-              <div className="flex-1">
-                <p className="text-[10px] font-bold uppercase tracking-[3px] text-brand">
-                  Insight detectado
-                </p>
-                <p className="mt-0.5 font-ui text-[18px] font-bold text-neutral-900">
-                  Seu CMV está acima do ideal e existem oportunidades no mix
-                  para recuperar margem.
-                </p>
-              </div>
-              <Button
-                variant="ai"
-                size="lg"
-                data-tour="ri-analisar-oportunidade"
-                className="gap-1.5"
-              >
-                <BrainCircuit size={15} strokeWidth={2.25} />
-                Analisar oportunidade
-                <ArrowRight size={14} strokeWidth={2.5} />
-              </Button>
-            </div>
-          </Card>
-        </motion.div>
-      </div>
-
-      {/* KPI grid */}
-      <div className="grid grid-cols-4 gap-3">
-        <DashKPI
+      {/* Top KPI strip (col span main) */}
+      <div
+        className="col-start-1 col-end-2 grid grid-cols-4 gap-2"
+        data-tour="ri-insight-banner"
+      >
+        <DashKPITile
+          icon={<DollarSign />}
+          tone="brand"
           label="Vendas hoje"
-          value="R$ 24.580"
-          trend="+12% vs. ontem"
-          tone="ok"
-          Icon={DollarSign}
-          delay={0}
+          value="R$ 24,5k"
+          delta="+12,0%"
+          deltaUp
         />
-        <DashKPI
+        <DashKPITile
+          icon={<Activity />}
+          tone="danger"
           label="CMV real"
           value="31,74%"
-          trend="+3,74pp vs. ideal"
-          tone="danger"
-          Icon={Activity}
+          delta="+3,74pp"
           highlight
-          delay={0.06}
         />
-        <DashKPI
-          label="Margem média"
-          value="42,0%"
-          trend="−3pp vs. meta"
+        <DashKPITile
+          icon={<TrendingDown />}
           tone="warning"
-          Icon={TrendingDown}
-          delay={0.12}
+          label="Margem"
+          value="42,0%"
+          delta="−3,0pp"
         />
-        <DashKPI
+        <DashKPITile
+          icon={<Package />}
+          tone="teal"
           label="Estoque"
           value="R$ 184k"
-          trend="Sem criticidade"
-          tone="ok"
-          Icon={Package}
-          delay={0.18}
+          delta="OK"
+          deltaUp
         />
       </div>
 
-      {/* Charts + alerts */}
-      <div className="grid min-h-0 grid-cols-[1.4fr_1fr] gap-3">
-        <Card className="flex min-h-0 flex-col p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <div>
-              <p className="font-ui text-[11px] font-bold uppercase tracking-[2px] text-brand">
-                CMV últimos 14 dias
-              </p>
-              <p className="mt-0.5 font-ui text-[13px] font-bold text-neutral-700">
-                Acompanhamento contra meta de 28%
-              </p>
-            </div>
-            <Badge variant="danger" className="px-2 py-0.5 text-[10px]">
-              Desvio crescente
-            </Badge>
-          </div>
-          <div className="min-h-0 flex-1">
-            <AreaChart
-              data={CMV_SERIES}
-              color="#020788"
-              referenceY={28}
-              referenceLabel="Ideal 28%"
-              yMin={26}
-              yMax={34}
-              showXLabels={true}
-              formatY={(v) => `${v.toFixed(2).replace(".", ",")}%`}
-              aspectRatio="16/7"
-            />
-          </div>
-        </Card>
-        <div className="flex min-h-0 flex-col gap-2.5">
-          <Card className="flex items-center gap-3 p-3.5">
-            <DonutChart
-              slices={TOP_DESVIOS_DONUT}
-              size={88}
-              thickness={0.55}
-              centerLabel="3,8pp"
-              centerSublabel="Top 3"
-            />
-            <div className="min-w-0 flex-1">
-              <p className="font-ui text-[10px] font-bold uppercase tracking-[2px] text-brand">
-                Top desvios
-              </p>
-              <DonutLegend
-                slices={TOP_DESVIOS_DONUT}
-                formatValue={(v) => `+${v.toFixed(1).replace(".", ",")}pp`}
-                className="mt-1"
-              />
-            </div>
-          </Card>
-          <div className="rounded-2xl bg-gradient-to-br from-brand-ghost via-white to-brand-subtle/40 p-3.5">
-            <p className="flex items-center gap-1.5 font-ui text-[11px] font-bold uppercase tracking-wider text-brand">
-              <Sparkles size={11} strokeWidth={2.5} />
-              IA observando
+      {/* Side header: AI Insights column title */}
+      <div className="col-start-2 row-start-1 flex items-center justify-between">
+        <p
+          className="font-ui text-[11px] font-bold uppercase text-brand"
+          style={{ letterSpacing: "0.18em" }}
+        >
+          AI Insights
+        </p>
+        <span className="flex items-center gap-1 font-ui text-[9px] font-bold text-success">
+          <motion.span
+            animate={{ opacity: [1, 0.4, 1] }}
+            transition={{ duration: 1.4, repeat: Infinity }}
+            className="h-1.5 w-1.5 rounded-full bg-success"
+          />
+          ao vivo
+        </span>
+      </div>
+
+      {/* Main chart card */}
+      <div
+        className="col-start-1 row-start-2 flex min-h-0 flex-col rounded-2xl bg-white p-4"
+        style={{
+          border: "1px solid rgba(0,0,0,0.04)",
+          boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+        }}
+      >
+        <div className="mb-2 flex items-start justify-between">
+          <div>
+            <p
+              className="font-ui text-[13px] font-bold text-neutral-900"
+              style={{ letterSpacing: "-0.01em" }}
+            >
+              Performance do CMV
             </p>
-            <p className="mt-1 text-[11px] leading-snug text-neutral-600">
-              CMV, margem, mix e giro de 24 indicadores em tempo real.
+            <p className="mt-0.5 font-ui text-[10.5px] text-neutral-500">
+              Tendência mensal com modelo preditivo
             </p>
+          </div>
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2 py-1 font-ui text-[10px] font-medium text-neutral-600 hover:bg-neutral-50"
+          >
+            Mensal
+            <ChevronRight size={9} strokeWidth={2.5} className="rotate-90" />
+          </button>
+        </div>
+        <div className="min-h-0 flex-1">
+          <AreaChart
+            data={CMV_SERIES}
+            color="#7c3aed"
+            referenceY={28}
+            referenceLabel="Meta 28%"
+            yMin={26}
+            yMax={34}
+            showXLabels={true}
+            formatY={(v) => `${v.toFixed(2).replace(".", ",")}%`}
+            aspectRatio="16/6"
+          />
+        </div>
+      </div>
+
+      {/* AI Insights side column */}
+      <div className="col-start-2 row-start-2 flex min-h-0 flex-col gap-2 overflow-y-auto pr-0.5">
+        <InsightCard
+          icon={<TrendingUp />}
+          tone="ai"
+          title="CMV Alert — Mix"
+          description="Filé Parmegiana 150g está acima do potencial. IA aplicou plano automático de mix com 5 ações no cardápio."
+          confidence={92}
+          status="IA aplicou"
+        />
+        <InsightCard
+          icon={<Sparkles />}
+          tone="teal"
+          title="Otimização de Compras"
+          description="Renegociação automática com 3 fornecedores deve baixar custo médio em 8% nas próximas 2 semanas."
+          confidence={88}
+          status="Em progresso"
+        />
+        <InsightCard
+          icon={<ShieldAlert />}
+          tone="warning"
+          title="Previsão de Desperdício"
+          description="Padrão de 7 dias prevê 14kg a mais que a meta nesta sexta. Recomendação de ajuste de produção enviada."
+          confidence={85}
+          status="Sugerido"
+        />
+      </div>
+
+      {/* Bottom row: Nested Risk + Horizontal Performance */}
+      <div className="col-start-1 row-start-3 grid grid-cols-[260px_1fr] gap-3">
+        <div
+          className="flex flex-col rounded-2xl bg-white p-4"
+          style={{
+            border: "1px solid rgba(0,0,0,0.04)",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+          }}
+        >
+          <p
+            className="font-ui text-[12px] font-bold text-neutral-900"
+            style={{ letterSpacing: "-0.005em" }}
+          >
+            Análise de risco no mix
+          </p>
+          <p className="mt-0.5 font-ui text-[10px] text-neutral-500">
+            Score preditivo de produtos
+          </p>
+          <div className="mt-2 flex items-center justify-center">
+            <NestedRisk
+              size={180}
+              rings={[
+                { pct: 100, label: "Total", color: "rgba(124,58,237,0.10)" },
+                { pct: 64, label: "Médio", color: "rgba(124,58,237,0.22)" },
+                { pct: 44, label: "Alto", color: "rgba(124,58,237,0.40)" },
+                { pct: 28, label: "Crítico", color: "rgba(124,58,237,0.78)" },
+              ]}
+              centerLabel="100%"
+              centerSublabel="Risk Score"
+            />
           </div>
         </div>
+        <div
+          className="flex flex-col rounded-2xl bg-white p-4"
+          style={{
+            border: "1px solid rgba(0,0,0,0.04)",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+          }}
+        >
+          <div className="flex items-start justify-between">
+            <div>
+              <p
+                className="font-ui text-[12px] font-bold text-neutral-900"
+                style={{ letterSpacing: "-0.005em" }}
+              >
+                Performance por categoria
+              </p>
+              <p className="mt-0.5 font-ui text-[10px] text-neutral-500">
+                Contribuição no mix (últimos 30 dias)
+              </p>
+            </div>
+            <Badge variant="ai" className="text-[9px]">
+              <Sparkles size={9} strokeWidth={2.5} />
+              IA ordenou
+            </Badge>
+          </div>
+          <div className="mt-1">
+            <HorizontalBars
+              bars={[
+                { label: "Pratos principais", value: 321, color: "#7c3aed" },
+                { label: "Lanches & Combos", value: 251, color: "#3b42c4" },
+                { label: "Sobremesas", value: 187, color: "#0d9488" },
+                { label: "Bebidas", value: 142, color: "#f59e0b" },
+                { label: "Saladas & Light", value: 94, color: "#ec4899" },
+              ]}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Side: bottom AI auto-action footer */}
+      <div
+        data-tour="ri-analisar-oportunidade"
+        className="col-start-2 row-start-3 flex flex-col gap-2 rounded-2xl p-3"
+        style={{
+          background:
+            "linear-gradient(135deg, rgba(2,7,136,0.95) 0%, rgba(26,31,168,0.92) 50%, rgba(124,58,237,0.88) 100%)",
+        }}
+      >
+        <div className="flex items-center gap-1.5">
+          <motion.span
+            animate={{ scale: [1, 1.08, 1] }}
+            transition={{ duration: 2.2, repeat: Infinity }}
+            className="flex h-6 w-6 items-center justify-center rounded-md bg-white/15 text-white backdrop-blur"
+          >
+            <BrainCircuit size={12} strokeWidth={2.25} />
+          </motion.span>
+          <p
+            className="font-ui text-[9px] font-bold uppercase text-white/85"
+            style={{ letterSpacing: "0.18em" }}
+          >
+            IA aplicou hoje
+          </p>
+        </div>
+        <p
+          className="font-ui text-[17px] font-bold leading-tight text-white"
+          style={{ letterSpacing: "-0.02em" }}
+        >
+          12 ações automáticas
+        </p>
+        <p className="font-ui text-[10px] leading-snug text-white/75">
+          5 ajustes de cardápio, 3 renegociações e 4 alertas. CMV projetado
+          <span className="font-bold text-white"> −1,8pp</span> em 7 dias.
+        </p>
+        <button
+          type="button"
+          className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-1.5 font-ui text-[11px] font-bold text-brand transition-transform hover:-translate-y-[1px]"
+        >
+          Abrir diagnóstico
+          <ArrowRight size={11} strokeWidth={2.5} />
+        </button>
       </div>
     </motion.section>
   );
@@ -553,101 +657,92 @@ const CMV_SERIES = (() => {
   });
 })();
 
-const TOP_DESVIOS_DONUT = [
-  { label: "X-Burguer", value: 1.4, color: "#dc2626" },
-  { label: "Coca-Cola 2L", value: 0.8, color: "#020788" },
-  { label: "Combo Madero", value: 0.6, color: "#3b42c4" },
-  { label: "Outros", value: 1.0, color: "#cbd5e1" },
-];
 
-function DashKPI({
+function DashKPITile({
+  icon,
+  tone,
   label,
   value,
-  trend,
-  tone,
-  Icon,
+  delta,
+  deltaUp,
   highlight,
-  delay,
 }: {
+  icon: ReactElement;
+  tone: "brand" | "danger" | "warning" | "teal";
   label: string;
   value: string;
-  trend: string;
-  tone: "ok" | "warning" | "danger";
-  Icon: typeof Activity;
+  delta: string;
+  deltaUp?: boolean;
   highlight?: boolean;
-  delay: number;
 }) {
-  const c =
-    tone === "danger"
+  const deltaColor = deltaUp
+    ? "#16a34a"
+    : delta.startsWith("−") || delta.startsWith("-")
       ? "#dc2626"
-      : tone === "warning"
-        ? "#d97706"
-        : "#16a34a";
+      : "#9ca3af";
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      className={cn(
+        "relative overflow-hidden rounded-2xl bg-white p-3",
+        highlight && "ring-1 ring-danger/30",
+      )}
+      style={{
+        border: "1px solid rgba(0,0,0,0.04)",
+        boxShadow: highlight
+          ? "0 2px 12px rgba(220,38,38,0.10), 0 0 0 1px rgba(220,38,38,0.10)"
+          : "0 1px 2px rgba(0,0,0,0.04)",
+        background:
+          tone === "danger" && highlight
+            ? "linear-gradient(135deg, #1a1a2e 0%, #11132d 100%)"
+            : tone === "danger"
+              ? "linear-gradient(135deg, #15172b 0%, #0e1023 100%)"
+              : "#ffffff",
+      }}
     >
-      <Card
-        className={cn(
-          "relative overflow-hidden p-4",
-          highlight ? "border-danger/30" : "",
-        )}
-        style={{
-          boxShadow: highlight
-            ? "0 0 0 4px rgba(220,38,38,0.08), 0 2px 12px rgba(0,0,0,0.06)"
-            : undefined,
-        }}
-      >
+      <div className="flex items-center justify-between">
+        <GradientIcon icon={icon} tone={tone} size={28} variant="soft" />
         {highlight && (
           <motion.span
-            aria-hidden
-            animate={{ opacity: [0.35, 0.7, 0.35] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute right-3 top-3 rounded-full bg-danger px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.6, repeat: Infinity }}
+            className="inline-flex items-center gap-1 rounded-full bg-danger/20 px-1.5 py-0.5 font-ui text-[8px] font-bold uppercase text-danger"
+            style={{ letterSpacing: "0.10em" }}
           >
-            Foco da IA
+            <span className="h-1 w-1 rounded-full bg-danger" />
+            Foco IA
           </motion.span>
         )}
-        <div className="flex items-center gap-2">
-          <span
-            className="flex h-9 w-9 items-center justify-center rounded-md text-white"
-            style={{ background: c }}
-          >
-            <Icon size={15} strokeWidth={2} />
-          </span>
-          <p className="text-[10px] font-bold uppercase tracking-[1.5px] text-neutral-500">
-            {label}
-          </p>
-        </div>
-        <p className="mt-3 font-ui text-[36px] font-bold leading-none tabular-nums text-neutral-900">
-          {value}
-        </p>
-        <p
-          className="mt-1 font-ui text-[12px] font-medium tabular-nums"
-          style={{ color: c }}
+      </div>
+      <p
+        className={cn(
+          "mt-2 font-ui text-[10px] font-bold uppercase",
+          tone === "danger" ? "text-white/65" : "text-neutral-500",
+        )}
+        style={{ letterSpacing: "0.14em" }}
+      >
+        {label}
+      </p>
+      <div className="mt-0.5 flex items-baseline gap-1.5">
+        <span
+          className={cn(
+            "font-ui font-bold tabular-nums leading-none",
+            tone === "danger" ? "text-white text-[22px]" : "text-neutral-900 text-[22px]",
+          )}
+          style={{ letterSpacing: "-0.02em" }}
         >
-          {trend}
-        </p>
-      </Card>
+          {value}
+        </span>
+        <span
+          className="font-ui text-[10px] font-bold tabular-nums"
+          style={{ color: tone === "danger" ? "#4ade80" : deltaColor }}
+        >
+          {delta}
+        </span>
+      </div>
     </motion.div>
-  );
-}
-
-function ShimmerEdge() {
-  return (
-    <motion.span
-      aria-hidden
-      initial={{ x: "-120%" }}
-      animate={{ x: "120%" }}
-      transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
-      className="absolute inset-y-0 w-1/3"
-      style={{
-        background:
-          "linear-gradient(90deg, transparent, rgba(2,7,136,0.06), transparent)",
-      }}
-    />
   );
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   Home,
   ShoppingBasket,
@@ -19,6 +19,8 @@ import {
 import Image from "next/image";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
+import { brl } from "@/lib/format";
+import { PAYMENT_LABELS, type PaymentMethod } from "@/lib/payment";
 import { food, pexels } from "@/lib/photos";
 
 // Only categories with verified photos. Sucos, refrigerantes, KG e G9
@@ -93,15 +95,6 @@ interface CartItem {
   obs: string;
 }
 
-type PaymentMethod = "credito" | "debito" | "pix" | "dinheiro";
-
-const PAYMENT_LABELS: Record<PaymentMethod, string> = {
-  credito: "Crédito",
-  debito: "Débito",
-  pix: "Pix",
-  dinheiro: "Dinheiro",
-};
-
 export function SmartPOSMockup({ step }: SmartPOSProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("pizzas");
   const [obs, setObs] = useState<string>(OBS_OPTIONS[0]);
@@ -109,6 +102,7 @@ export function SmartPOSMockup({ step }: SmartPOSProps) {
   const [detailQty, setDetailQty] = useState(1);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [payment, setPayment] = useState<PaymentMethod>("credito");
+  const userTouchedCartRef = useRef(false);
 
   const product = PRODUCT_FOR_CATEGORY[selectedCategory] ?? PRODUCT_FOR_CATEGORY.pizzas;
   const addonsTotal = ADDONS.filter((a) => addons.has(a.id)).reduce(
@@ -161,6 +155,7 @@ export function SmartPOSMockup({ step }: SmartPOSProps) {
   };
 
   const addToCart = () => {
+    userTouchedCartRef.current = true;
     const id = `${product.id}-${Date.now()}`;
     setCart((prev) => [
       ...prev,
@@ -176,29 +171,33 @@ export function SmartPOSMockup({ step }: SmartPOSProps) {
     setDetailQty(1);
   };
 
-  // Auto-seed cart when the tour advances past product detail without user
-  // having added anything — keeps Cart/Payment/Success screens meaningful in
-  // the demo (instead of R$ 0,00). User can still remove items if they want.
+  // Auto-seed cart when the tour advances past product detail. Only seeds
+  // if the user hasn't touched the cart yet (we never overwrite their
+  // choices) and falls back to `prev` inside setCart so a re-render
+  // between step bumps doesn't double-seed.
   useEffect(() => {
-    if (step >= 2 && cart.length === 0) {
-      const seeded = PRODUCT_FOR_CATEGORY[selectedCategory] ?? PRODUCT_FOR_CATEGORY.pizzas;
-      setCart([
-        {
-          id: `${seeded.id}-seed`,
-          name: seeded.name,
-          unit: seeded.price + 4, // + queijo adicional padrão
-          qty: 1,
-          addons: ["queijo"],
-          obs: OBS_OPTIONS[0],
-        },
-      ]);
+    if (step >= 2 && !userTouchedCartRef.current) {
+      setCart((prev) => {
+        if (prev.length > 0) return prev;
+        const seeded =
+          PRODUCT_FOR_CATEGORY[selectedCategory] ??
+          PRODUCT_FOR_CATEGORY.pizzas;
+        return [
+          {
+            id: `${seeded.id}-seed`,
+            name: seeded.name,
+            unit: seeded.price + 4, // + queijo adicional padrão
+            qty: 1,
+            addons: ["queijo"],
+            obs: OBS_OPTIONS[0],
+          },
+        ];
+      });
     }
-    // We deliberately don't depend on `cart.length` to avoid re-seeding once
-    // the user has interacted with the cart. Only triggers on step changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step]);
+  }, [step, selectedCategory]);
 
   const updateCartQty = (id: string, delta: number) => {
+    userTouchedCartRef.current = true;
     setCart((prev) =>
       prev
         .map((i) =>
@@ -208,6 +207,7 @@ export function SmartPOSMockup({ step }: SmartPOSProps) {
     );
   };
   const removeCartItem = (id: string) => {
+    userTouchedCartRef.current = true;
     setCart((prev) => prev.filter((i) => i.id !== id));
   };
 
@@ -473,7 +473,7 @@ function ProductDetailView({
               >
                 {a.name}
                 <span className="text-[10.5px] opacity-80">
-                  +R${a.price.toFixed(2).replace(".", ",")}
+                  +{brl(a.price)}
                 </span>
               </motion.button>
             );
@@ -516,7 +516,7 @@ function ProductDetailView({
             Adicionar ao carrinho
           </span>
           <span className="font-ui text-[14px] font-bold tabular-nums">
-            R$ {total.toFixed(2).replace(".", ",")}
+            {brl(total)}
           </span>
         </motion.button>
       </div>
@@ -580,11 +580,11 @@ function CartView({
                 </button>
               </div>
               <p className="text-[11px] text-neutral-500">
-                Unidade: R$ {item.unit.toFixed(2).replace(".", ",")}
+                Unidade: {brl(item.unit)}
               </p>
               <div className="mt-2 flex items-center justify-between">
                 <p className="font-ui text-[16px] font-bold text-neutral-900 tabular-nums">
-                  R$ {(item.qty * item.unit).toFixed(2).replace(".", ",")}
+                  {brl(item.qty * item.unit)}
                 </p>
                 <div className="flex items-center gap-1">
                   <button
@@ -649,7 +649,7 @@ function CartView({
           <div className="flex-1">
             <p className="text-[11px] font-medium text-brand">Total da compra</p>
             <p className="font-ui text-[18px] font-bold text-brand tabular-nums">
-              R$ {total.toFixed(2).replace(".", ",")}
+              {brl(total)}
             </p>
           </div>
           <button
@@ -727,7 +727,7 @@ function PaymentSelectView({
           className="mt-0.5 font-ui font-bold text-brand tabular-nums leading-[1.05]"
           style={{ fontSize: 32, letterSpacing: "-0.035em" }}
         >
-          R$ {total.toFixed(2).replace(".", ",")}
+          {brl(total)}
         </p>
         {total === 0 && (
           <p className="mt-1 text-[10.5px] font-medium text-warning">
@@ -857,7 +857,7 @@ function SuccessScreen({
           className="mt-3 font-display text-[32px] font-bold tabular-nums leading-none"
           style={{ letterSpacing: "-0.030em" }}
         >
-          R$ {total.toFixed(2).replace(".", ",")}
+          {brl(total)}
         </p>
       </div>
     </motion.div>

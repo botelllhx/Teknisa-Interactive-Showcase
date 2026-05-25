@@ -21,6 +21,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { useTourLive } from "@/lib/tourState";
+import { brl, brlAmount } from "@/lib/format";
 import { food, venues, pexels } from "@/lib/photos";
 
 interface CRMPremiumProps {
@@ -540,7 +541,7 @@ function HomeScreen({
                     className="font-ui text-[10.5px] font-bold tabular-nums"
                     style={{ color: COLORS.amber }}
                   >
-                    R$ {p.price.toFixed(2).replace(".", ",")}
+                    {brl(p.price)}
                   </span>
                 </div>
               </div>
@@ -912,14 +913,14 @@ function StoreScreen({
                       className="font-ui text-[14px] font-bold tabular-nums"
                       style={{ color: COLORS.amber }}
                     >
-                      R$ {p.price.toFixed(2).replace(".", ",")}
+                      {brl(p.price)}
                     </span>
                     {p.oldPrice && (
                       <span
                         className="font-ui text-[10.5px] tabular-nums line-through"
                         style={{ color: COLORS.textMuted }}
                       >
-                        R$ {p.oldPrice.toFixed(2).replace(".", ",")}
+                        {brl(p.oldPrice)}
                       </span>
                     )}
                   </div>
@@ -935,7 +936,7 @@ function StoreScreen({
                     className="font-ui text-[13px] font-bold tabular-nums"
                     style={{ color: "#22c55e" }}
                   >
-                    +R$ {cashback.toFixed(2).replace(".", ",")}
+                    +{brl(cashback)}
                   </p>
                 </div>
               </motion.button>
@@ -955,7 +956,7 @@ function StoreScreen({
             Total selecionado
           </p>
           <p className="font-ui text-[17px] font-bold tabular-nums text-white">
-            R$ {selectedPromo.price.toFixed(2).replace(".", ",")}
+            {brl(selectedPromo.price)}
           </p>
         </div>
         <motion.button
@@ -1037,15 +1038,15 @@ function CheckoutSheet({
         </div>
 
         <div className="mt-3 space-y-2 text-[12px]">
-          <Row label="Valor da compra" value={`R$ ${promo.price.toFixed(2).replace(".", ",")}`} />
-          <Row label={`Cashback ${store.cashbackPct}%`} value={`+ R$ ${cashback.toFixed(2).replace(".", ",")}`} tint="#22c55e" />
+          <Row label="Valor da compra" value={brl(promo.price)} />
+          <Row label={`Cashback ${store.cashbackPct}%`} value={`+ ${brl(cashback)}`} tint="#22c55e" />
           <div className="my-2 h-px bg-white/10" />
           <div className="flex items-center justify-between">
             <span className="font-ui text-[13px] font-bold text-white">
               Total
             </span>
             <span className="font-ui text-[18px] font-bold tabular-nums text-white">
-              R$ {promo.price.toFixed(2).replace(".", ",")}
+              {brl(promo.price)}
             </span>
           </div>
         </div>
@@ -1055,7 +1056,7 @@ function CheckoutSheet({
           style={{ background: COLORS.amberSoft, color: COLORS.amber }}
         >
           <Sparkles size={12} strokeWidth={2.25} className="mt-0.5" />
-          Você vai receber {`R$ ${cashback.toFixed(2).replace(".", ",")}`} de cashback ao confirmar.
+          Você vai receber {brl(cashback)} de cashback ao confirmar.
         </div>
 
         <motion.button
@@ -1214,7 +1215,7 @@ function SuccessOverlay({
         className="font-ui text-[28px] font-bold tabular-nums"
         style={{ color: COLORS.amber }}
       >
-        +R$ {cashback.toFixed(2).replace(".", ",")}
+        +{brl(cashback)}
       </motion.p>
       <p className="text-[12px]" style={{ color: COLORS.textMuted }}>
         creditados no seu Premium Club
@@ -1339,7 +1340,7 @@ function PushNotification({
           <span className="text-white/50">agora</span>
         </p>
         <p className="mt-0.5 font-ui text-[12px] font-bold text-white">
-          Você ganhou R$ {cashback.toFixed(2).replace(".", ",")} em cashback!
+          Você ganhou {brl(cashback)} em cashback!
         </p>
         <p className="text-[10.5px]" style={{ color: COLORS.textMuted }}>
           {store} · vence em 180 dias
@@ -1508,7 +1509,7 @@ function SaldoScreen({
                 >
                   {h.date}
                   {h.purchase
-                    ? ` · compra R$ ${h.purchase.toFixed(2).replace(".", ",")}`
+                    ? ` · compra ${brl(h.purchase)}`
                     : ""}
                 </p>
               </div>
@@ -1517,7 +1518,7 @@ function SaldoScreen({
                 style={{ color: positive ? "#22c55e" : "#ef4444" }}
               >
                 {positive ? "+" : "−"} R${" "}
-                {Math.abs(h.amount).toFixed(2).replace(".", ",")}
+                {brlAmount(Math.abs(h.amount))}
               </p>
             </motion.div>
           );
@@ -1578,7 +1579,7 @@ function PerfilScreen({
             className="mt-1 font-ui text-[16px] font-bold tabular-nums"
             style={{ color: COLORS.amber }}
           >
-            R$ {total.toFixed(2).replace(".", ",")}
+            {brl(total)}
           </p>
         </div>
         <div className="rounded-xl p-3" style={{ background: COLORS.bgLayer }}>

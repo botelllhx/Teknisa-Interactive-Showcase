@@ -54,7 +54,7 @@ export function ConfirmationFeedback({
             transition={{
               type: "spring",
               stiffness: 240,
-              damping: 14,
+              damping: 20,
               delay: 0.1,
             }}
             className="relative flex h-28 w-28 items-center justify-center rounded-full text-white shadow-[0_16px_40px_rgba(2,7,136,0.30),inset_0_1px_0_rgba(255,255,255,0.18)]"

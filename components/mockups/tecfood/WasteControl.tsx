@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import {
   Scale,
@@ -140,6 +140,15 @@ export function WasteControlMockup({ step }: WasteControlProps) {
   const [unidade, setUnidade] = useState<string>(UNIDADES[0]);
   const [historico, setHistorico] = useState<Registro[]>(HISTORICO_INICIAL);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Always clear any pending feedback timer on unmount so we never setState
+  // after the component is gone (would log a React warning).
+  useEffect(() => {
+    return () => {
+      if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
+    };
+  }, []);
 
   const meta = KIND_META[kind];
   const aboveGoal = meta.goal > 0 && quantidade > meta.goal;
@@ -196,7 +205,8 @@ export function WasteControlMockup({ step }: WasteControlProps) {
     setFeedback(`${meta.label} registrada (${quantidade} ${unidade.split(" ")[0]})`);
     setPrato("");
     setQuantidade(0);
-    setTimeout(() => setFeedback(null), 2400);
+    if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
+    feedbackTimerRef.current = setTimeout(() => setFeedback(null), 2400);
   };
 
   return (

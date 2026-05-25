@@ -1,7 +1,8 @@
 "use client";
 
 import type { CompanionType } from "@/data/solutions";
-import { POSCardReader, type PaymentMethodKind } from "./POSCardReader";
+import { POSCardReader } from "./POSCardReader";
+import type { PaymentMethod } from "@/lib/payment";
 import { OrderTicket, type OrderItem } from "./OrderTicket";
 import { KitchenDisplay } from "./KitchenDisplay";
 import { MiniDashboard } from "./MiniDashboard";
@@ -62,7 +63,7 @@ const CD_ORDER_ITEMS: OrderItem[] = [
 
 export function Companion({ type, solutionId, step, stepLabel }: CompanionProps) {
   const live = useTourLive((s) => s.live);
-  const livePaymentMethod = (live.paymentMethod as PaymentMethodKind | undefined) ?? undefined;
+  const livePaymentMethod = (live.paymentMethod as PaymentMethod | undefined) ?? undefined;
   const liveCartTotal =
     typeof live.cartTotal === "number" && (live.cartTotal as number) > 0
       ? (live.cartTotal as number)

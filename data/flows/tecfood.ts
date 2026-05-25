@@ -1,8 +1,5 @@
 import type { TourStep } from "../solutions";
-import { brl } from "../../lib/tourState";
-
-const fmtMoney = (v?: number) =>
-  typeof v === "number" ? brl(v) : "R$ 0,00";
+import { fmtMoney } from "../../lib/format";
 
 // ===== Cardápio Inteligente ==============================================
 // Tour focado na experiência IA: planner → trigger → full-screen brain

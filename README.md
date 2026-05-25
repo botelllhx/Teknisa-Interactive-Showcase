@@ -232,7 +232,7 @@ O painel cobre **8 grupos** (6 ativos + 2 placeholders v2) e **21 soluções** c
 | **Frente de Loja** | TAA, PDV Novo, SmartPOS, Cardápio Digital, QuickPass | v1 |
 | **TecFood** | Cardápio Inteligente, MyQuest, MyMenu, Approve, WasteControl | v1 |
 | **ERP Backoffice** | Rotina Fiscal, Rotina Rastreabilidade, App Rotinas de Estoque | v1 |
-| **Pessoas e RH** | Portal Gestor, Portal Funcionário, Mesa de Operações, Análise Preditiva (IA), Assistente de Criação de Regras (IA) | v1 |
+| **Pessoas e RH** | Portal Gestor, Portal Funcionário, Mesa de Operações, Análise Preditiva (IA) | v1 |
 | **Supply e Compras** | Mercadum, App Comercial | v1 |
 | **CRM** | CRM Premium | v1 |
 | **IA** | — | v2 (placeholder "Em breve" na grade) |
@@ -275,7 +275,7 @@ interface FlowStep {
 ### Destaques setoriais
 
 - **Rotina Fiscal** demonstra explicitamente a preparação para a **Reforma Tributária** (IBS, CBS, IS, Split Payment) com badge dedicada e tela de comparativo regime atual × novo modelo.
-- **Análise Preditiva** e **Assistente de Criação de Regras** ficam dentro de Pessoas e RH mas trazem badge `IA` no card e na tela de demo.
+- **Análise Preditiva** fica dentro de Pessoas e RH mas traz badge `IA` no card e na tela de demo.
 - **TAA** usa moldura de totem (`KioskFrame`) e **PDV Novo** usa terminal com leitor de cartão acoplado (`POSTerminalFrame` + companion `POSCardReader`).
 
 ---

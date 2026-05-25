@@ -2,10 +2,10 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ArrowLeft, ChevronRight, Home } from "lucide-react";
 import { solutionsById, resolveText } from "@/data/solutions";
-import { useFlowController } from "@/hooks/useFlowController";
+import { getFlow } from "@/data/flows";
 import { useTour } from "@/hooks/useTour";
 import { useMeasure } from "@/hooks/useMeasure";
 import { useShowcase } from "@/lib/store";
@@ -23,6 +23,7 @@ import { getMockup } from "@/components/mockups";
 import type { CompanionType } from "@/data/solutions";
 import { useTourLive } from "@/lib/tourState";
 import { cn } from "@/lib/cn";
+import { Z_INDEX } from "@/lib/tokens";
 
 interface SolutionDemoProps {
   solutionId: string;
@@ -54,11 +55,10 @@ const COMPANION_LAYOUT: Record<
   "rotina-fiscal": { right: ["FiscalBadge"] },
   "rotina-rastreabilidade": { right: ["StockIndicator"] },
   "app-rotinas-estoque": { right: ["StockIndicator"] },
-  "portal-gestor": { left: ["EmployeeCard"], right: ["MiniDashboard"] },
+  "portal-gestor": {},
   "portal-funcionario": { right: ["EmployeeCard"] },
-  "mesa-operacoes": { right: ["MiniDashboard"] },
-  "analise-preditiva": { right: ["MiniDashboard"] },
-  "assistente-regras": {},
+  "mesa-operacoes": {},
+  "analise-preditiva": {},
   mercadum: { right: ["MiniDashboard"] },
   "app-comercial": { right: ["MiniDashboard"] },
   "crm-premium": { right: ["MiniDashboard"] },
@@ -86,9 +86,14 @@ function distributeCompanions(
 export function SolutionDemo({ solutionId }: SolutionDemoProps) {
   const solution = solutionsById[solutionId];
   const segment = solution ? segmentsById[solution.segment] : null;
-  const { steps } = useFlowController(solutionId);
+  const steps = useMemo(() => getFlow(solutionId), [solutionId]);
+  const selectSolution = useShowcase((s) => s.selectSolution);
   const goBack = useShowcase((s) => s.goBack);
   const goHome = useShowcase((s) => s.goHome);
+
+  useEffect(() => {
+    if (steps.length > 0) selectSolution(solutionId, steps.length);
+  }, [solutionId, steps.length, selectSolution]);
 
   const [completionVisible, setCompletionVisible] = useState(false);
   const [frameRef, frameSize] = useMeasure<HTMLDivElement>();
@@ -139,17 +144,17 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
             type="button"
             onClick={goBack}
             aria-label="Voltar"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-white shadow-brand transition-colors hover:bg-brand-light"
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-brand text-white shadow-brand transition-colors hover:bg-brand-light"
           >
-            <ArrowLeft size={18} strokeWidth={2.25} />
+            <ArrowLeft size={20} strokeWidth={2.25} />
           </button>
           <button
             type="button"
             onClick={goHome}
             aria-label="Voltar para início"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-brand/10 bg-white text-neutral-700 transition-colors hover:bg-brand-ghost"
+            className="flex h-14 w-14 items-center justify-center rounded-full border border-brand/10 bg-white text-neutral-700 transition-colors hover:bg-brand-ghost"
           >
-            <Home size={18} strokeWidth={2} />
+            <Home size={20} strokeWidth={2} />
           </button>
           <span aria-hidden className="ml-1 h-8 w-px bg-neutral-200" />
           <Image
@@ -232,7 +237,7 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
       <main
         className={cn(
           "grid min-h-0 flex-1 items-stretch gap-6 p-6",
-          activeCompanions.length === 0 && "grid-cols-[1fr_380px]",
+          activeCompanions.length === 0 && "grid-cols-[1fr_320px]",
           activeCompanions.length > 0 && "grid-cols-[320px_1fr_320px]",
         )}
       >
@@ -317,7 +322,8 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[9998] flex items-center justify-center bg-white/90 backdrop-blur-md"
+            style={{ zIndex: Z_INDEX.completion }}
+            className="fixed inset-0 flex items-center justify-center bg-white/90 backdrop-blur-md"
           >
             <ConfirmationFeedback
               title="Exploração concluída"

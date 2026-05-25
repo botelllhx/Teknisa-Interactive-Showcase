@@ -173,13 +173,16 @@ export function ApproveMockup({ step }: ApproveProps) {
   const [items, setItems] = useState<Request[]>(REQUESTS);
 
   // Open the detail screen automatically when the tour ENTERS the detail
-  // step (step === 2). We only react to step changes — not to openId —
-  // so the user can still close the detail manually with the back arrow
-  // without the effect immediately reopening it.
+  // step (step === 2). Close it again as soon as the tour LEAVES that step
+  // so the list view is visible for subsequent steps — without this, the
+  // detail screen lingered through steps 3+ even though the spotlight had
+  // moved on.
   useEffect(() => {
     if (step === 2) {
       const firstPending = items.find((r) => r.status === "pendente");
       if (firstPending) setOpenId(firstPending.id);
+    } else if (step > 2) {
+      setOpenId(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);

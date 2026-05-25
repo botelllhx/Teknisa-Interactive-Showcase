@@ -26,9 +26,11 @@ import {
   Trophy,
   ArrowDownToLine,
   Plus,
+  Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
+import { brlAmount } from "@/lib/format";
 import { Button } from "@/components/ui/shadcn";
 import { GradientIcon } from "@/components/ui/GradientIcon";
 import { AreaChart, Sparkline } from "@/components/ui/charts";
@@ -719,7 +721,7 @@ function CotacaoDetailView({
           <InfoCol label="Total de Lances" value="5" />
           <InfoCol
             label="Queda de Valores"
-            value={`R$ ${variacaoTotal < 0 ? "" : "-"}${Math.abs(variacaoTotal).toFixed(2).replace(".", ",")}`}
+            value={`R$ ${variacaoTotal < 0 ? "" : "-"}${brlAmount(Math.abs(variacaoTotal))}`}
             tone="#16a34a"
           />
           <InfoCol
@@ -827,11 +829,11 @@ function CotacaoDetailView({
                 {p.qntdDisponivel.toLocaleString("pt-BR")}
               </span>
               <span className="text-right tabular-nums text-neutral-700">
-                {p.valorObjetivo.toFixed(2).replace(".", ",")}
+                {brlAmount(p.valorObjetivo)}
               </span>
               <span className="text-right tabular-nums text-neutral-600">
                 {p.ultimaCotacao > 0
-                  ? p.ultimaCotacao.toFixed(2).replace(".", ",")
+                  ? brlAmount(p.ultimaCotacao)
                   : "—"}
               </span>
               <span className="text-right tabular-nums">
@@ -843,7 +845,7 @@ function CotacaoDetailView({
                       : "bg-neutral-100 text-neutral-700",
                   )}
                 >
-                  {p.valorCotacao.toFixed(2).replace(".", ",")}
+                  {brlAmount(p.valorCotacao)}
                 </span>
                 <span className="block text-[10.5px] text-neutral-500 mt-0.5">
                   {p.posicao}ª Posição
@@ -868,7 +870,7 @@ function CotacaoDetailView({
                     />
                   </span>
                   <span className="font-ui font-bold text-neutral-700 tabular-nums">
-                    {p.variacao.toFixed(2).replace(".", ",")}
+                    {brlAmount(p.variacao)}
                   </span>
                 </span>
                 <span className="block text-[10.5px] text-neutral-500 tabular-nums">
@@ -884,7 +886,7 @@ function CotacaoDetailView({
                       className="text-warning"
                     />
                   )}
-                  {p.menor.toFixed(2).replace(".", ",")}
+                  {brlAmount(p.menor)}
                 </span>
                 <span className="block text-[10.5px] text-neutral-500 tabular-nums">
                   {p.menorData}
@@ -1256,7 +1258,7 @@ function FornecedoresView() {
                   className="flex h-7 w-7 items-center justify-center rounded-md text-danger hover:bg-danger/10"
                   aria-label="Remover"
                 >
-                  <Trash2 />
+                  <Trash2 size={14} strokeWidth={2} />
                 </button>
               </span>
             </div>
@@ -1270,25 +1272,6 @@ function FornecedoresView() {
 // ============================================================================
 // Shared bits
 // ============================================================================
-
-function Trash2() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <polyline points="3 6 5 6 21 6" />
-      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-    </svg>
-  );
-}
 
 function Breadcrumb({
   path,

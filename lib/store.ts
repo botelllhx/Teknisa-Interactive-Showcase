@@ -12,10 +12,6 @@ interface ShowcaseStore {
 
   currentStep: number;
   totalSteps: number;
-  isAutoPlaying: boolean;
-
-  showTooltip: boolean;
-  idleSeconds: number;
 
   selectSegment: (id: SolutionSegment) => void;
   selectSolution: (id: string, totalSteps: number) => void;
@@ -25,8 +21,6 @@ interface ShowcaseStore {
   resetFlow: () => void;
   goHome: () => void;
   goBack: () => void;
-  setIdleSeconds: (seconds: number) => void;
-  setShowTooltip: (show: boolean) => void;
 }
 
 export const useShowcase = create<ShowcaseStore>((set, get) => ({
@@ -36,10 +30,6 @@ export const useShowcase = create<ShowcaseStore>((set, get) => ({
 
   currentStep: 0,
   totalSteps: 0,
-  isAutoPlaying: false,
-
-  showTooltip: true,
-  idleSeconds: 0,
 
   selectSegment: (id) =>
     set({
@@ -56,7 +46,6 @@ export const useShowcase = create<ShowcaseStore>((set, get) => ({
       activeSolution: id,
       currentStep: 0,
       totalSteps,
-      showTooltip: true,
     }),
 
   nextStep: () => {
@@ -73,7 +62,12 @@ export const useShowcase = create<ShowcaseStore>((set, get) => ({
     }
   },
 
-  setStep: (step) => set({ currentStep: step }),
+  setStep: (step) => {
+    const { totalSteps } = get();
+    const max = Math.max(0, totalSteps - 1);
+    const clamped = Math.max(0, Math.min(Number.isFinite(step) ? Math.trunc(step) : 0, max));
+    set({ currentStep: clamped });
+  },
 
   resetFlow: () => set({ currentStep: 0 }),
 
@@ -94,8 +88,4 @@ export const useShowcase = create<ShowcaseStore>((set, get) => ({
       set({ view: "home", activeSegment: null });
     }
   },
-
-  setIdleSeconds: (seconds) => set({ idleSeconds: seconds }),
-
-  setShowTooltip: (show) => set({ showTooltip: show }),
 }));

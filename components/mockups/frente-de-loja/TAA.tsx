@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
+import { brl } from "@/lib/format";
 import { food, pexels } from "@/lib/photos";
 import { GradientIcon } from "@/components/ui/GradientIcon";
 
@@ -650,6 +651,15 @@ export function TAAMockup({ step }: TAAProps) {
       return next;
     });
 
+  // Once the tour leaves the "pick an item" phase (steps 0..2) clear any
+  // user-selected product so it doesn't pop back into view when the tour
+  // returns to an earlier step or re-renders the catalog.
+  useEffect(() => {
+    if (step >= 3 && openProductId !== null) {
+      setOpenProductId(null);
+    }
+  }, [step, openProductId]);
+
   // Find product to show in detail modal. Step 2 opens the first product if
   // nothing was tapped, so the tour always has something to point at.
   const openProduct =
@@ -1101,11 +1111,11 @@ function HomeView({
                       </p>
                       <div className="mt-1 flex items-baseline gap-1.5">
                         <span className="font-ui text-[12px] font-bold tabular-nums text-success">
-                          R$ {p.price.toFixed(2).replace(".", ",")}
+                          {brl(p.price)}
                         </span>
                         {p.oldPrice > p.price && (
                           <span className="text-[10.5px] text-neutral-400 line-through tabular-nums">
-                            R$ {p.oldPrice.toFixed(2).replace(".", ",")}
+                            {brl(p.oldPrice)}
                           </span>
                         )}
                       </div>
@@ -1336,7 +1346,7 @@ function ItemDetailModal({
                       <div className="flex items-center gap-2">
                         {opt.price && (
                           <span className="font-ui text-[10.5px] font-bold text-neutral-700 tabular-nums">
-                            + R$ {opt.price.toFixed(2).replace(".", ",")}
+                            + {brl(opt.price)}
                           </span>
                         )}
                         <Stepper
@@ -1357,13 +1367,13 @@ function ItemDetailModal({
         <div className="mt-4 flex items-center justify-between">
           <div className="flex items-baseline gap-2">
             <span className="text-[12px] text-neutral-400 line-through tabular-nums">
-              R$ {product.oldPrice.toFixed(2).replace(".", ",")}
+              {brl(product.oldPrice)}
             </span>
             <span
               className="font-ui text-[16px] font-bold tabular-nums"
               style={{ color: "#16a34a" }}
             >
-              R$ {unitPrice.toFixed(2).replace(".", ",")}
+              {brl(unitPrice)}
             </span>
           </div>
           <Stepper
@@ -1634,7 +1644,7 @@ function PaymentModal({
         <div>
           <p className="text-[10.5px] opacity-80">Total:</p>
           <p className="font-ui text-[16px] font-bold tabular-nums">
-            R$ {(total || 0).toFixed(2).replace(".", ",")}
+            {brl(total || 0)}
           </p>
         </div>
         <div className="flex gap-1.5">
@@ -1737,7 +1747,7 @@ function ProcessingDoneOverlay({
       <p className="text-center text-[11px] text-neutral-500">
         Total pago{" "}
         <span className="font-ui font-bold text-neutral-700 tabular-nums">
-          R$ {total.toFixed(2).replace(".", ",")}
+          {brl(total)}
         </span>
       </p>
     </motion.div>
@@ -1784,7 +1794,7 @@ function BottomTotalBar({
             className="mt-0.5 font-ui text-[15px] font-bold tabular-nums leading-none"
             style={{ letterSpacing: "-0.025em" }}
           >
-            R$ {total.toFixed(2).replace(".", ",")}
+            {brl(total)}
           </p>
         </div>
         <motion.button

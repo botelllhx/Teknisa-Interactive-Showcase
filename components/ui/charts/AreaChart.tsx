@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useMemo, useState, useId } from "react";
+import { bezierPath, polylinePath } from "@/lib/svg";
 
 export interface AreaPoint {
   x: string | number;
@@ -106,19 +107,21 @@ export function AreaChart({
 
   // Smooth bezier path generation (Catmull-Rom-like) — gives the Sypher
   // line feel without going full curve insanity.
-  const linePath = smooth
-    ? bezierPath(points.map((p) => ({ x: p.x, y: p.y })))
-    : points
-        .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
-        .join(" ");
+  const xy = points.map((p) => ({ x: p.x, y: p.y }));
+  const linePath = smooth ? bezierPath(xy) : polylinePath(xy);
 
   const areaPath =
     linePath +
     ` L ${points[points.length - 1].x} ${VBH - PAD_B} L ${points[0].x} ${VBH - PAD_B} Z`;
 
-  const refY = referenceY != null
-    ? PAD_T + (VBH - PAD_T - PAD_B) - ((referenceY - yMin) / Math.max(0.001, yMax - yMin)) * (VBH - PAD_T - PAD_B)
-    : null;
+  const refY = (() => {
+    if (referenceY == null) return null;
+    const innerH = VBH - PAD_T - PAD_B;
+    const raw = PAD_T + innerH - ((referenceY - yMin) / Math.max(0.001, yMax - yMin)) * innerH;
+    // Clamp inside the drawing area so a referenceY outside the
+    // computed yMin/yMax range doesn't render off-canvas.
+    return Math.max(PAD_T, Math.min(VBH - PAD_B, raw));
+  })();
 
   const gridLines = grid ? [0, 0.25, 0.5, 0.75, 1] : [];
   const yTicks = showYLabels ? [0, 0.5, 1] : [];
@@ -437,27 +440,3 @@ export function AreaChart({
   );
 }
 
-/**
- * Catmull-Rom-style smooth path. Tension 0.5 = balanced curve.
- * Outputs an SVG d-attribute string.
- */
-function bezierPath(pts: { x: number; y: number }[]): string {
-  if (pts.length < 2) return "";
-  if (pts.length === 2)
-    return `M ${pts[0].x} ${pts[0].y} L ${pts[1].x} ${pts[1].y}`;
-
-  const tension = 0.18; // 0 = polylines, 1 = very curvy. 0.18 = Sypher feel.
-  let d = `M ${pts[0].x} ${pts[0].y}`;
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i - 1] ?? pts[i];
-    const p1 = pts[i];
-    const p2 = pts[i + 1];
-    const p3 = pts[i + 2] ?? p2;
-    const cp1x = p1.x + (p2.x - p0.x) * tension;
-    const cp1y = p1.y + (p2.y - p0.y) * tension;
-    const cp2x = p2.x - (p3.x - p1.x) * tension;
-    const cp2y = p2.y - (p3.y - p1.y) * tension;
-    d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
-  }
-  return d;
-}

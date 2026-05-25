@@ -10,18 +10,12 @@
   --font-display: var(--font-product), "Plus Jakarta Sans", "DM Sans", system-ui, sans-serif;
   --font-ui: var(--font-product), "Plus Jakarta Sans", "DM Sans", system-ui, sans-serif;
 
+  /* Cores Tailwind reproduzidas como CSS vars apenas para os pontos que
+     usam var() direto (::selection e body bg). Outras nuances de marca
+     vivem em tailwind.config.ts. */
   --brand: #020788;
-  --brand-light: #1a1fa8;
-  --brand-lighter: #3b42c4;
   --brand-subtle: #e8e9f8;
-  --brand-ghost: #f0f1fc;
-
-  --surface-base: #ffffff;
   --surface-raised: #f8f9fa;
-
-  --frame-body: #e2e5ea;
-  --frame-screen: #d0d4db;
-  --frame-bezel: #c8cdd6;
 }
 
 * {

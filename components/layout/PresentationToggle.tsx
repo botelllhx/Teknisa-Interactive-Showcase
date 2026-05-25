@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Monitor, MonitorOff } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { Z_INDEX } from "@/lib/tokens";
 
 const STORAGE_KEY = "teknisa-presentation-mode";
 
@@ -36,8 +37,9 @@ export function PresentationToggle() {
           : "Modo desenvolvimento (com cursor) — clique para ativar apresentação"
       }
       aria-label="Alternar modo apresentação"
+      style={{ zIndex: Z_INDEX.presentationToggle }}
       className={cn(
-        "fixed bottom-4 right-4 z-[10001] flex h-10 w-10 items-center justify-center rounded-full border border-brand/10 bg-white/95 shadow-card backdrop-blur transition-colors hover:bg-brand-ghost",
+        "fixed bottom-4 right-4 flex h-14 w-14 items-center justify-center rounded-full border border-brand/10 bg-white/95 shadow-card backdrop-blur transition-colors hover:bg-brand-ghost",
         enabled && "border-brand/30 bg-brand text-white hover:bg-brand-light",
       )}
     >

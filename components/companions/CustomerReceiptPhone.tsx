@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, CheckCircle2, Mail, ShieldCheck } from "lucide-react";
 import { CompanionShell } from "./CompanionShell";
+import { brl } from "@/lib/format";
 
 interface CustomerReceiptPhoneProps {
   amount?: number;
@@ -181,7 +182,7 @@ export function CustomerReceiptPhone({
                     </p>
                   </div>
                   <p className="mt-2 font-display text-[20px] font-bold leading-none text-brand tabular-nums">
-                    R$ {amount.toFixed(2).replace(".", ",")}
+                    {brl(amount)}
                   </p>
                   <p className="mt-1 text-[9px] text-neutral-500">
                     {brand} ****4128 · 1× sem juros

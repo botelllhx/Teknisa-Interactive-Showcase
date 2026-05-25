@@ -43,9 +43,6 @@ export const useTourLive = create<TourStateStore>((set) => ({
   reset: () => set({ live: {} }),
 }));
 
-/**
- * Format BRL currency without the R$ prefix variations across browsers.
- */
-export function brl(value: number): string {
-  return `R$ ${value.toFixed(2).replace(".", ",")}`;
-}
+// Re-export para compat com imports existentes (`import { brl } from "@/lib/tourState"`).
+// Novos arquivos devem importar direto de `@/lib/format`.
+export { brl } from "./format";

@@ -1,14 +1,22 @@
 import type { TourStep } from "../solutions";
-import { brl } from "../../lib/tourState";
+import { fmtMoney } from "../../lib/format";
 
 // ----- Helpers -----------------------------------------------------------
 
-const fmtMoney = (v?: number) =>
-  typeof v === "number" ? brl(v) : "R$ 0,00";
-
+// Versão narrativa específica desta área: usa "nada ainda" como vazio
+// e enxuga listas grandes. A versão genérica em `lib/format.ts`
+// (`fmtItemList`) só junta com vírgula — não serve para os tooltips
+// conversacionais daqui.
 const fmtItemList = (items?: unknown): string => {
   if (!Array.isArray(items) || items.length === 0) return "nada ainda";
-  const list = items as { qty: number; name: string }[];
+  const list = items.filter(
+    (it): it is { qty: number; name: string } =>
+      !!it &&
+      typeof it === "object" &&
+      typeof (it as { qty?: unknown }).qty === "number" &&
+      typeof (it as { name?: unknown }).name === "string",
+  );
+  if (list.length === 0) return "nada ainda";
   if (list.length === 1) return `${list[0].qty}× ${list[0].name}`;
   if (list.length === 2)
     return `${list[0].qty}× ${list[0].name} e ${list[1].qty}× ${list[1].name}`;

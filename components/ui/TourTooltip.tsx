@@ -169,10 +169,14 @@ export function TourTooltip({
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const height = el.getBoundingClientRect().height;
-    // setState with the same value is a no-op, so no infinite loop here.
+    const measured = el.getBoundingClientRect().height;
+    // If the tooltip is hidden (display:none) or hasn't laid out yet we
+    // get height 0 — falling back to the conservative estimate prevents
+    // a viewport-flushed top:0 calc that would briefly snap the tooltip
+    // to the top-left before the real measurement arrives.
+    const height = measured > 0 ? measured : TOOLTIP_HEIGHT_ESTIMATE;
     setMeasuredHeight(height);
-  }, [step.id, title, description]);
+  }, [step.id, title, description, frameRect, targetRect]);
 
   const pos = computePosition(targetRect, frameRect, measuredHeight);
 

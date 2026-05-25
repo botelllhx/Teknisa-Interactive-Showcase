@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { QrCode, Wallet, Coffee, Sun, Utensils, ShieldCheck } from "lucide-react";
 import { CompanionShell } from "./CompanionShell";
+import { brl } from "@/lib/format";
 
 interface Benefit {
   Icon: typeof Coffee;
@@ -133,7 +134,7 @@ export function EmployeeCard({
                 <span className="text-[9px] opacity-80">Recarga 15/Jun</span>
               </div>
               <p className="mt-0.5 font-display text-[22px] font-bold leading-none tabular-nums">
-                R$ {balance.toFixed(2).replace(".", ",")}
+                {brl(balance)}
               </p>
             </motion.div>
           )}

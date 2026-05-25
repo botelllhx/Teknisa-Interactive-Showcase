@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { TrendingUp, Clock, Receipt, Award } from "lucide-react";
 import { CompanionShell } from "./CompanionShell";
+import { brl } from "@/lib/format";
 
 interface OperatorDailyPanelProps {
   operatorName?: string;
@@ -124,7 +125,7 @@ export function OperatorDailyPanel({
         {/* KPI grid */}
         <div className="mt-3 grid grid-cols-3 gap-1.5">
           <KpiTile Icon={Receipt} label="Pedidos" value={String(orderCount)} />
-          <KpiTile Icon={Clock} label="Ticket" value={`R$ ${avgTicket.toFixed(2).replace(".", ",")}`} />
+          <KpiTile Icon={Clock} label="Ticket" value={brl(avgTicket)} />
           <KpiTile Icon={Award} label="Aprov." value={`${approvalRate}%`} tone="success" />
         </div>
       </motion.div>

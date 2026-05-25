@@ -21,6 +21,13 @@ export function useIdleTimer({
   const [shouldReset, setShouldReset] = useState(false);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const graceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onIdleRef = useRef(onIdle);
+  const onResetRef = useRef(onReset);
+
+  useEffect(() => {
+    onIdleRef.current = onIdle;
+    onResetRef.current = onReset;
+  }, [onIdle, onReset]);
 
   useEffect(() => {
     if (!enabled) {
@@ -38,7 +45,7 @@ export function useIdleTimer({
       clearTimers();
       idleTimer.current = setTimeout(() => {
         setIsIdle(true);
-        onIdle?.();
+        onIdleRef.current?.();
         graceTimer.current = setTimeout(() => {
           setShouldReset(true);
         }, graceTimeout);
@@ -48,7 +55,7 @@ export function useIdleTimer({
     const handleActivity = () => {
       setIsIdle((prev) => {
         if (prev) {
-          onReset?.();
+          onResetRef.current?.();
         }
         return false;
       });
@@ -76,7 +83,7 @@ export function useIdleTimer({
         window.removeEventListener(event, handleActivity);
       });
     };
-  }, [enabled, timeout, graceTimeout, onIdle, onReset]);
+  }, [enabled, timeout, graceTimeout]);
 
   return { isIdle, shouldReset };
 }

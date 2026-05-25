@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Hand } from "lucide-react";
 import { useIdleTimer } from "@/hooks/useIdleTimer";
 import { useShowcase } from "@/lib/store";
-import { timing } from "@/lib/tokens";
+import { timing, Z_INDEX } from "@/lib/tokens";
 
 export function IdleReset() {
   const view = useShowcase((s) => s.view);
@@ -33,7 +33,8 @@ export function IdleReset() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="pointer-events-none fixed inset-0 z-[10100] flex items-center justify-center bg-white/92 backdrop-blur-md"
+          style={{ zIndex: Z_INDEX.idle }}
+          className="pointer-events-none fixed inset-0 flex items-center justify-center bg-white/92 backdrop-blur-md"
         >
           <motion.div
             initial={{ scale: 0.94, opacity: 0 }}

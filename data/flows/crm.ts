@@ -1,8 +1,5 @@
 import type { TourStep } from "../solutions";
-import { brl } from "../../lib/tourState";
-
-const fmtMoney = (v?: number) =>
-  typeof v === "number" ? brl(v) : "R$ 0,00";
+import { fmtMoney } from "../../lib/format";
 
 // ===== CRM Premium ======================================================
 // Premium Club: app de fidelidade no celular do cliente. Narrativa do tour:

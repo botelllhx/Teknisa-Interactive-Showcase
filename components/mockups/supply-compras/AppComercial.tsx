@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { brl } from "@/lib/format";
 import { Badge } from "@/components/ui/shadcn";
 import { people } from "@/lib/photos";
 import { PersonAvatar } from "@/components/ui/PersonAvatar";
@@ -281,7 +282,7 @@ function ProductsView() {
                 {p.name}
               </p>
               <p className="font-ui text-[11px] font-bold tabular-nums text-brand">
-                R$ {p.price.toFixed(2).replace(".", ",")}
+                {brl(p.price)}
               </p>
             </div>
             <button
@@ -338,7 +339,7 @@ function SummaryView() {
             <div key={p.name} className="flex items-center justify-between">
               <span className="text-neutral-700">{p.name}</span>
               <span className="font-bold tabular-nums text-neutral-900">
-                R$ {p.value.toFixed(2).replace(".", ",")}
+                {brl(p.value)}
               </span>
             </div>
           ))}

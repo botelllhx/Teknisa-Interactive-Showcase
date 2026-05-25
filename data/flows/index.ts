@@ -23,7 +23,6 @@ import {
   portalFuncionarioFlow,
   mesaOperacoesFlow,
   analisePreditivaFlow,
-  assistenteRegrasFlow,
 } from "./pessoas-rh";
 import {
   mercadumFlow,
@@ -54,7 +53,6 @@ export const flows: Record<string, TourStep[]> = {
   "portal-funcionario": portalFuncionarioFlow,
   "mesa-operacoes": mesaOperacoesFlow,
   "analise-preditiva": analisePreditivaFlow,
-  "assistente-regras": assistenteRegrasFlow,
 
   mercadum: mercadumFlow,
   "app-comercial": appComercialFlow,

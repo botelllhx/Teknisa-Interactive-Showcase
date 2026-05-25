@@ -1,8 +1,10 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTourLive } from "@/lib/tourState";
+import { brl } from "@/lib/format";
+import { PAYMENT_LABELS } from "@/lib/payment";
 import { people } from "@/lib/photos";
 import { PersonAvatar } from "@/components/ui/PersonAvatar";
 import {
@@ -112,36 +114,38 @@ interface CartItem {
   code: string;
 }
 
-const PAYMENT_LABEL: Record<string, string> = {
-  credito: "Crédito",
-  debito: "Débito",
-  pix: "Pix",
-  dinheiro: "Dinheiro",
-};
-
 export function PDVNovoMockup({ step }: PDVNovoProps) {
   // Free interactivity: cart state lives here, the tour just NUDGES the user
   const [cart, setCart] = useState<CartItem[]>([]);
   const [activeCategory, setActiveCategory] = useState("pizzas");
   const [discountApplied, setDiscountApplied] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<string | null>(null);
+  const userTouchedCartRef = useRef(false);
 
-  // Tour-driven hints
+  // Tour-driven hints: seed the cart only on the FIRST advance past step 0.
+  // After that, never overwrite — if the user emptied the cart we trust
+  // them and avoid the "ghost item re-added" bug from the original
+  // `cart.length === 0` check.
   useEffect(() => {
-    // Auto-seed the cart when the tour advances past the first product
-    if (step >= 1 && cart.length === 0) {
-      addProduct(PRODUCTS[0]);
+    if (step >= 1 && !userTouchedCartRef.current) {
+      setCart((prev) => {
+        if (prev.length > 0) return prev;
+        const p = PRODUCTS[0];
+        return [
+          { id: p.id, name: p.name, qty: 1, price: p.price, code: p.code },
+        ];
+      });
     }
-    if (step >= 2 && !discountApplied) {
-      setDiscountApplied(true);
+    if (step >= 2) {
+      setDiscountApplied((prev) => prev || true);
     }
-    if (step >= 3 && !selectedPayment) {
-      setSelectedPayment("pix");
+    if (step >= 3) {
+      setSelectedPayment((prev) => prev ?? "pix");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   const addProduct = (product: (typeof PRODUCTS)[number]) => {
+    userTouchedCartRef.current = true;
     setCart((prev) => {
       const existing = prev.find((i) => i.id === product.id);
       if (existing) {
@@ -157,6 +161,7 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
   };
 
   const updateQty = (id: string, delta: number) => {
+    userTouchedCartRef.current = true;
     setCart((prev) =>
       prev
         .map((i) => (i.id === id ? { ...i, qty: Math.max(0, i.qty + delta) } : i))
@@ -165,6 +170,7 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
   };
 
   const removeItem = (id: string) => {
+    userTouchedCartRef.current = true;
     setCart((prev) => prev.filter((i) => i.id !== id));
   };
 
@@ -193,7 +199,7 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
         | "credito"
         | "debito"
         | undefined,
-      paymentLabel: selectedPayment ? PAYMENT_LABEL[selectedPayment] : undefined,
+      paymentLabel: selectedPayment ? PAYMENT_LABELS[selectedPayment as keyof typeof PAYMENT_LABELS] : undefined,
       activeCategoryLabel:
         CATEGORIES.find((c) => c.id === activeCategory)?.label ?? "Pizzas",
     });
@@ -236,6 +242,7 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
 
       <FooterBar
         total={total}
+        totalQty={totalQty}
         selectedPayment={selectedPayment}
         onSelectPayment={setSelectedPayment}
       />
@@ -246,7 +253,7 @@ export function PDVNovoMockup({ step }: PDVNovoProps) {
           <SuccessOverlay
             total={total}
             paymentLabel={
-              selectedPayment ? PAYMENT_LABEL[selectedPayment] : "PIX"
+              selectedPayment ? PAYMENT_LABELS[selectedPayment as keyof typeof PAYMENT_LABELS] : "PIX"
             }
           />
         )}
@@ -408,7 +415,7 @@ function ComandaPanel({
                       {item.name}
                     </p>
                     <p className="text-[10.5px] text-neutral-500">
-                      x0{item.qty} (R$ {item.price.toFixed(2).replace(".", ",")})
+                      x0{item.qty} ({brl(item.price)})
                     </p>
                     <p className="font-mono text-[10.5px] text-neutral-400">
                       {item.code}
@@ -424,7 +431,7 @@ function ComandaPanel({
                       <X size={11} strokeWidth={2} />
                     </button>
                     <span className="font-display text-[10.5px] font-bold text-neutral-900">
-                      R$ {(item.qty * item.price).toFixed(2).replace(".", ",")}
+                      {brl(item.qty * item.price)}
                     </span>
                     <span className="text-[10.5px] text-neutral-400">17:52</span>
                   </div>
@@ -479,12 +486,12 @@ function ComandaPanel({
             Valor
           </span>
           <span className="font-display text-[20px] font-bold text-success tabular-nums">
-            R$ {total.toFixed(2).replace(".", ",")}
+            {brl(total)}
           </span>
         </motion.div>
         {discountApplied && discount > 0 && (
           <div className="border-t border-dashed border-neutral-200 px-2.5 py-1 text-[10.5px] text-success">
-            ↓ Desconto fidelidade R$ {discount.toFixed(2).replace(".", ",")}
+            ↓ Desconto fidelidade {brl(discount)}
           </div>
         )}
         <div className="flex border-t border-neutral-200">
@@ -604,7 +611,7 @@ function CenterColumn({
                   className="font-display text-[10.5px] font-bold text-neutral-500 tabular-nums"
                   style={{ letterSpacing: "-0.01em" }}
                 >
-                  R$ {p.price.toFixed(2).replace(".", ",")}
+                  {brl(p.price)}
                 </span>
               </div>
             </motion.button>
@@ -661,10 +668,12 @@ function FunctionKeysColumn() {
 
 function FooterBar({
   total,
+  totalQty,
   selectedPayment,
   onSelectPayment,
 }: {
   total: number;
+  totalQty: number;
   selectedPayment: string | null;
   onSelectPayment: (id: string) => void;
 }) {
@@ -747,28 +756,32 @@ function FooterBar({
       </div>
 
       {/* Finalizar Venda CTA */}
-      <motion.button
-        type="button"
-        disabled={total === 0}
-        whileTap={total > 0 ? { scale: 0.98 } : undefined}
-        className={cn(
-          "flex w-48 items-center justify-center px-4 font-display text-[13px] font-bold uppercase text-white transition-all",
-          total === 0 && "cursor-not-allowed",
-        )}
-        style={{
-          background:
-            total > 0
-              ? "linear-gradient(180deg, #16a34a 0%, #15803d 100%)"
-              : "#d1d5db",
-          boxShadow:
-            total > 0
-              ? "inset 0 1px 0 rgba(255,255,255,0.20), 0 -2px 0 rgba(0,0,0,0.06) inset"
-              : undefined,
-          letterSpacing: "0.06em",
-        }}
-      >
-        Finalizar Venda
-      </motion.button>
+      {(() => {
+        const canPay =
+          totalQty > 0 && Number.isFinite(total) && total > 0;
+        return (
+          <motion.button
+            type="button"
+            disabled={!canPay}
+            whileTap={canPay ? { scale: 0.98 } : undefined}
+            className={cn(
+              "flex w-48 items-center justify-center px-4 font-display text-[13px] font-bold uppercase text-white transition-all",
+              !canPay && "cursor-not-allowed opacity-60",
+            )}
+            style={{
+              background: canPay
+                ? "linear-gradient(180deg, #16a34a 0%, #15803d 100%)"
+                : "#d1d5db",
+              boxShadow: canPay
+                ? "inset 0 1px 0 rgba(255,255,255,0.20), 0 -2px 0 rgba(0,0,0,0.06) inset"
+                : undefined,
+              letterSpacing: "0.06em",
+            }}
+          >
+            {canPay ? "Finalizar Venda" : "Carrinho vazio"}
+          </motion.button>
+        );
+      })()}
     </div>
   );
 }
@@ -851,7 +864,7 @@ function SuccessOverlay({
             className="mt-1 font-display text-[30px] font-bold text-success tabular-nums leading-none"
             style={{ letterSpacing: "-0.030em" }}
           >
-            R$ {total.toFixed(2).replace(".", ",")}
+            {brl(total)}
           </p>
           <p
             className="mt-2 font-ui text-[10.5px] text-neutral-500 tabular-nums"

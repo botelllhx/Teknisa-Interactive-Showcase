@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import {
   Sparkles,
@@ -27,6 +27,7 @@ import { cn } from "@/lib/cn";
 import { AreaChart } from "@/components/ui/charts";
 import { GradientIcon } from "@/components/ui/GradientIcon";
 import { useTourLive } from "@/lib/tourState";
+import { brl } from "@/lib/format";
 import { Badge, Button, Card } from "@/components/ui/shadcn";
 
 interface CardapioInteligenteProps {
@@ -170,12 +171,20 @@ export function CardapioInteligenteMockup({ step }: CardapioInteligenteProps) {
 
   const startAI = () => setMode("generating");
 
+  const revealTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    return () => {
+      if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
+    };
+  }, []);
+
   const onAIComplete = () => {
     // Apply AI menu (with reveal animation in planner)
     setMenu(AI_GENERATED);
     setMode("reveal");
     // After reveal animation settles, return to planner
-    setTimeout(() => setMode("planner"), 2400);
+    if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
+    revealTimerRef.current = setTimeout(() => setMode("planner"), 2400);
   };
 
   const setSlot = (day: DayKey, course: Course, dishId: string | null) => {
@@ -1103,7 +1112,7 @@ function SlotCard({
                 {dish.calories}kcal
               </span>
               <span>·</span>
-              <span>R$ {dish.cost.toFixed(2).replace(".", ",")}</span>
+              <span>{brl(dish.cost)}</span>
             </div>
             {dish.tag && (
               <span
@@ -1302,7 +1311,7 @@ function CostPanel({ totals }: { totals: { cost: number } }) {
             className="font-display font-bold leading-none text-neutral-900 tabular-nums"
             style={{ fontSize: 22, letterSpacing: "-0.030em" }}
           >
-            R$ {totals.cost.toFixed(2).replace(".", ",")}
+            {brl(totals.cost)}
           </motion.span>
         </div>
         <div
@@ -1344,7 +1353,7 @@ function CostPanel({ totals }: { totals: { cost: number } }) {
           yMin={8}
           yMax={11}
           aspectRatio="16/6"
-          formatY={(v) => `R$ ${v.toFixed(2).replace(".", ",")}`}
+          formatY={(v) => brl(v)}
         />
       </div>
     </Card>
@@ -1478,7 +1487,7 @@ function DishPickerModal({
                   {d.name}
                 </p>
                 <p className="text-[11px] text-neutral-500 tabular-nums">
-                  {d.calories}kcal · R$ {d.cost.toFixed(2).replace(".", ",")}
+                  {d.calories}kcal · {brl(d.cost)}
                 </p>
               </div>
               {d.tag === "sugerido-ia" && (

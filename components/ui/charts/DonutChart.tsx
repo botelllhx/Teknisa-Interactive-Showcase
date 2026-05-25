@@ -47,6 +47,10 @@ export function DonutChart({
   interactive = true,
   className,
 }: DonutChartProps) {
+  const uid = useId().replace(/:/g, "");
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+
+  if (slices.length === 0) return null;
   const total = slices.reduce((s, x) => s + x.value, 0) || 1;
   const radius = size / 2;
   const stroke = radius * (1 - thickness);
@@ -54,9 +58,6 @@ export function DonutChart({
   const circumference = 2 * Math.PI * ringRadius;
   const gapFraction = gapDeg / 360;
   const gap = gapFraction * circumference;
-
-  const uid = useId().replace(/:/g, "");
-  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
 
   let offsetAccum = 0;
   return (

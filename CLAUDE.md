@@ -53,20 +53,20 @@ O painel deve usar **exatamente os nomes e agrupamentos do site/produto Teknisa*
 | 1 | **Frente de Loja** | `Monitor` | TAA (Autoatendimento), PDV Novo, SmartPOS, Cardápio Digital, QuickPass (Cashless/Ficha) |
 | 2 | **TecFood** | `Utensils` | Cardápio Inteligente, MyQuest, MyMenu, Approve, WasteControl |
 | 3 | **ERP Backoffice** | `LayoutGrid` | Rotina Fiscal, Rotina Rastreabilidade, App Rotinas de Estoque, Mercadum |
-| 4 | **Pessoas e RH** | `Users` | Portal Gestor, Portal Funcionário, Mesa de Operações, Análise Preditiva, Assistente de Criação de Regras |
+| 4 | **Pessoas e RH** | `Users` | Portal Gestor, Portal Funcionário, Mesa de Operações, Análise Preditiva |
 | 5 | **Supply e Compras** | `ShoppingCart` | Mercadum (cotações/compras), App Comercial |
 | 6 | **CRM** | `Heart` | CRM Premium |
-| 7 | **IA** | `Sparkles` | Análise Preditiva, Assistente de Criação de Regras (capacidades de IA) |
+| 7 | **IA** | `Sparkles` | Análise Preditiva (capacidades de IA) |
 | 8 | **Gestão Corporativa** | `Globe` | Soluções de multiunidades/franquias (complementar) |
 
-> **Nota de mapeamento:** As soluções do briefing foram organizadas nos grupos corretos acima. Alguns produtos (ex: Análise Preditiva, Assistente de Regras) têm natureza de IA mas vivem dentro de Pessoas e RH; devem aparecer no grupo correto com badge "IA" para indicar a capacidade. O Mercadum aparece em ERP Backoffice e Supply e Compras — priorizá-lo em **Supply e Compras** como solução principal de cotação/compra.
+> **Nota de mapeamento:** As soluções do briefing foram organizadas nos grupos corretos acima. Alguns produtos (ex: Análise Preditiva) têm natureza de IA mas vivem dentro de Pessoas e RH; devem aparecer no grupo correto com badge "IA" para indicar a capacidade. O Mercadum aparece em ERP Backoffice e Supply e Compras — priorizá-lo em **Supply e Compras** como solução principal de cotação/compra.
 
 ### Soluções por grupo (mapeamento definitivo)
 
 **Frente de Loja** — TAA, PDV Novo, SmartPOS, Cardápio Digital, QuickPass
 **TecFood** — Cardápio Inteligente, MyQuest, MyMenu, Approve, WasteControl
 **ERP Backoffice** — Rotina Fiscal, Rotina Rastreabilidade, App Rotinas de Estoque
-**Pessoas e RH** — Portal Gestor, Portal Funcionário, Mesa de Operações, Análise Preditiva, Assistente de Criação de Regras
+**Pessoas e RH** — Portal Gestor, Portal Funcionário, Mesa de Operações, Análise Preditiva
 **Supply e Compras** — Mercadum, App Comercial
 **CRM** — CRM Premium
 **IA** — (badges em soluções com IA; grupo pode exibir capacidades transversais de IA da plataforma)
@@ -425,7 +425,7 @@ export const segments: Segment[] = [
     description: 'Gestão de pessoas, ponto e operações de RH',
     icon: 'Users',
     color: '#020788',
-    solutions: ['portal-gestor', 'portal-funcionario', 'mesa-operacoes', 'analise-preditiva', 'assistente-regras']
+    solutions: ['portal-gestor', 'portal-funcionario', 'mesa-operacoes', 'analise-preditiva']
   },
   {
     id: 'supply-compras',
@@ -1073,17 +1073,6 @@ Cada solução deve ter **3 a 5 etapas** bem definidas que demonstrem o valor ce
   4. Sugestão de ação (plano de retenção)
   5. Simulação de impacto da ação
 
-#### Assistente de Criação de Regras
-- **Moldura:** DesktopFrame
-- **Companion:** SimulatedNotification (regra ativada)
-- **Badge:** `IA`
-- **Fluxo:**
-  1. Tela de regras existentes
-  2. Criar nova regra (wizard com IA)
-  3. Configuração de condições
-  4. Preview da regra criada
-  5. Ativação e confirmação
-
 ---
 
 ### Supply e Compras — Fluxos
@@ -1126,7 +1115,7 @@ Cada solução deve ter **3 a 5 etapas** bem definidas que demonstrem o valor ce
 
 ### IA — Fluxos (v2)
 
-> Na v1, soluções com capacidade de IA (Análise Preditiva, Assistente de Regras) exibem badge `IA` no card mas pertencem ao grupo Pessoas e RH. O grupo IA como destino de navegação pode exibir um card especial mostrando as capacidades transversais de IA da plataforma Teknisa, com placeholder animado para a v2.
+> Na v1, soluções com capacidade de IA (Análise Preditiva) exibem badge `IA` no card mas pertencem ao grupo Pessoas e RH. O grupo IA como destino de navegação pode exibir um card especial mostrando as capacidades transversais de IA da plataforma Teknisa, com placeholder animado para a v2.
 
 ---
 
@@ -1459,7 +1448,7 @@ Implementar na ordem de prioridade comercial:
 **Prioridade 1 — Frente de Loja:** PDV Novo, TAA, SmartPOS, Cardápio Digital, QuickPass
 **Prioridade 2 — TecFood:** Cardápio Inteligente, MyMenu, WasteControl, MyQuest, Approve
 **Prioridade 3 — ERP Backoffice:** Rotina Fiscal, App Rotinas de Estoque, Rotina Rastreabilidade
-**Prioridade 4 — Pessoas e RH:** Portal Gestor, Portal Funcionário, Mesa de Operações, Análise Preditiva, Assistente de Regras
+**Prioridade 4 — Pessoas e RH:** Portal Gestor, Portal Funcionário, Mesa de Operações, Análise Preditiva
 **Prioridade 5 — Supply e Compras:** Mercadum, App Comercial
 **Prioridade 6 — CRM:** CRM Premium
 **v2 — IA e Gestão Corporativa:** placeholder animado na v1
@@ -1490,8 +1479,8 @@ O componente deve ser implementado com base em princípios de autoatendimento mo
 ### WasteControl — TecFood — Referência Existente
 Já existe uma versão prototipada. O fluxo deve manter fidelidade ao conceito de controle de desperdício com pesagem, categorização (sobra limpa/resto) e relatório.
 
-### Análise Preditiva e Assistente de Regras — Pessoas e RH — Badge IA
-Estas soluções pertencem ao grupo **Pessoas e RH**, mas possuem forte componente de IA. Devem exibir badge `IA` no card e em destaque na tela de demo, comunicando que são capacidades potencializadas por inteligência artificial dentro da plataforma Teknisa.
+### Análise Preditiva — Pessoas e RH — Badge IA
+Pertence ao grupo **Pessoas e RH**, mas possui forte componente de IA. Deve exibir badge `IA` no card e em destaque na tela de demo, comunicando que é capacidade potencializada por inteligência artificial dentro da plataforma Teknisa.
 
 ### IDs de segmento — Nomenclatura correta
 Os IDs de segmento no código devem seguir o padrão kebab-case dos nomes reais:

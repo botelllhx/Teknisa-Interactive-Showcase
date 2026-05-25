@@ -194,13 +194,16 @@ export function RotinaFiscalMockup({ step }: RotinaFiscalProps) {
               className="relative overflow-hidden rounded-2xl border border-warning/30 bg-gradient-to-br from-warning/5 via-white to-warning/10 p-4"
             >
               <motion.span
-                animate={{ scale: [1, 1.6, 1], opacity: [0.35, 0, 0.35] }}
+                // V8 §23.5 — spring scale nunca > 1.15 em TV (causa enjoo).
+                // Trocado de 1.6 → 1.35 e compensado com size maior do halo
+                // para preservar a sensação de pulsar.
+                animate={{ scale: [1, 1.35, 1], opacity: [0.4, 0, 0.4] }}
                 transition={{
                   duration: 2.4,
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-warning/15"
+                className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-warning/15"
               />
               <div className="relative flex items-start gap-3">
                 <div className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-warning/15 text-warning">

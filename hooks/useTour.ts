@@ -45,6 +45,7 @@ export function useTour({
   const [finished, setFinished] = useState(false);
   const [geometry, setGeometry] = useState<TargetGeometry | null>(null);
   const onFinishRef = useRef(onFinish);
+  const advanceRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     onFinishRef.current = onFinish;
@@ -114,10 +115,10 @@ export function useTour({
     scheduleMeasure();
 
     // Poll until the target element exists in the DOM AND its layout has
-    // settled. We poll fast for the first second (8 × 100ms) to catch
-    // mockup transition animations, then slow down to 250ms for up to
-    // 12 seconds so long-running screens (e.g. Cardápio Inteligente AI
-    // generation ~7s) can still mount their target before we give up.
+    // settled. If the target never appears within MAX_POLLS, auto-advance
+    // so the user is not stuck on an invisible step — failsafe for missing
+    // selectors and dead flows.
+    const MAX_POLLS = 60;
     let polls = 0;
     let hasFound = false;
     intervalId = setInterval(() => {
@@ -128,11 +129,18 @@ export function useTour({
       if (found && !hasFound) {
         hasFound = true;
       }
-      // If we already found it once, keep polling a few more times to
-      // settle layout, then stop. If we never found it, keep trying for
-      // up to ~12 seconds total.
-      if ((hasFound && polls > 12) || polls > 60) {
+      if (hasFound && polls > 12) {
         if (intervalId) clearInterval(intervalId);
+        return;
+      }
+      if (!hasFound && polls >= MAX_POLLS) {
+        if (intervalId) clearInterval(intervalId);
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(
+            `[useTour] target "${step.targetSelector}" never appeared after ${MAX_POLLS * 200}ms — auto-advancing`,
+          );
+        }
+        advanceRef.current();
       }
     }, 200);
 
@@ -159,6 +167,10 @@ export function useTour({
       return prev + 1;
     });
   }, [steps.length]);
+
+  useEffect(() => {
+    advanceRef.current = advance;
+  }, [advance]);
 
   const back = useCallback(() => {
     setIndex((prev) => Math.max(0, prev - 1));

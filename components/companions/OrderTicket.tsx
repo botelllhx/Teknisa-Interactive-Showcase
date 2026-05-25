@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Printer, Receipt } from "lucide-react";
 import Image from "next/image";
 import { CompanionShell } from "./CompanionShell";
+import { brl } from "@/lib/format";
 
 export interface OrderItem {
   name: string;
@@ -163,7 +164,7 @@ export function OrderTicket({
                         fontVariantNumeric: "tabular-nums",
                       }}
                     >
-                      R$ {(item.qty * item.price).toFixed(2).replace(".", ",")}
+                      {brl(item.qty * item.price)}
                     </span>
                   </motion.div>
                 ))}
@@ -204,7 +205,7 @@ export function OrderTicket({
               fontVariantNumeric: "tabular-nums",
             }}
           >
-            R$ {total.toFixed(2).replace(".", ",")}
+            {brl(total)}
           </motion.span>
         </div>
 

@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useTourLive } from "@/lib/tourState";
+import { brl } from "@/lib/format";
 import { food, pexels } from "@/lib/photos";
 
 interface QuickPassProps {
@@ -337,13 +338,15 @@ function CatalogView({
       <div className="min-h-0 flex-1 overflow-y-auto pb-2">
         <VenueBanner />
 
-        <div className="mx-3 mt-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">
+        {/* Placeholder visual (sem input real) — TV touch sem teclado §22.2 */}
+        <div
+          aria-hidden
+          className="mx-3 mt-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2"
+        >
           <Search size={14} strokeWidth={2.25} className="text-neutral-400" />
-          <input
-            disabled
-            placeholder="Buscar lanches, bebidas..."
-            className="flex-1 bg-transparent text-[12px] text-neutral-500 placeholder:text-neutral-400 focus:outline-none"
-          />
+          <span className="flex-1 text-[12px] text-neutral-400">
+            Toque em um item abaixo para adicionar
+          </span>
         </div>
 
         <div className="mx-3 mt-3 flex items-center justify-between">
@@ -413,7 +416,7 @@ function CatalogView({
                   </p>
                   <div className="mt-2 flex items-center justify-between">
                     <span className="font-ui text-[13px] font-bold text-brand tabular-nums">
-                      R$ {p.price.toFixed(2).replace(".", ",")}
+                      {brl(p.price)}
                     </span>
                     <span className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-white">
                       <Plus size={13} strokeWidth={2.5} />
@@ -540,7 +543,7 @@ function CartView({
                     {p.desc}
                   </p>
                   <p className="mt-1 font-ui text-[13px] font-bold text-brand tabular-nums">
-                    R$ {(p.price * qty).toFixed(2).replace(".", ",")}
+                    {brl(p.price * qty)}
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-1.5">
@@ -653,14 +656,14 @@ function CartView({
           <div className="flex items-center justify-between text-[11px] text-neutral-600">
             <span>Subtotal</span>
             <span className="tabular-nums">
-              R$ {subtotal.toFixed(2).replace(".", ",")}
+              {brl(subtotal)}
             </span>
           </div>
           {discount > 0 && appliedCoupon && (
             <div className="flex items-center justify-between text-[11px] text-success">
               <span>Desconto {appliedCoupon.code}</span>
               <span className="tabular-nums">
-                − R$ {discount.toFixed(2).replace(".", ",")}
+                − {brl(discount)}
               </span>
             </div>
           )}
@@ -669,7 +672,7 @@ function CartView({
               Total
             </span>
             <span className="font-ui text-[20px] font-bold text-brand tabular-nums">
-              R$ {total.toFixed(2).replace(".", ",")}
+              {brl(total)}
             </span>
           </div>
         </div>
@@ -717,7 +720,7 @@ function PaymentView({
             Total a pagar
           </span>
           <span className="font-ui text-[20px] font-bold text-brand tabular-nums">
-            R$ {total.toFixed(2).replace(".", ",")}
+            {brl(total)}
           </span>
         </div>
       </div>
@@ -791,7 +794,7 @@ function PaymentView({
                 <Field label="Parcelas" value="1x sem juros" />
                 <Field
                   label="Cobrança"
-                  value={`R$ ${total.toFixed(2).replace(".", ",")}`}
+                  value={brl(total)}
                 />
               </div>
 
@@ -807,7 +810,7 @@ function PaymentView({
                 )}
               >
                 {total > 0
-                  ? `Pagar R$ ${total.toFixed(2).replace(".", ",")}`
+                  ? `Pagar ${brl(total)}`
                   : "Sem itens para pagar"}
               </motion.button>
             </motion.div>
@@ -1003,7 +1006,7 @@ function SuccessView({
               className="font-ui font-bold text-neutral-900 tabular-nums"
               style={{ letterSpacing: "-0.015em" }}
             >
-              R$ {total.toFixed(2).replace(".", ",")}
+              {brl(total)}
             </span>
           </div>
           <div className="flex items-center justify-between">

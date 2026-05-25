@@ -1,9 +1,10 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useTourLive } from "@/lib/tourState";
+import { brl } from "@/lib/format";
 import { food, venues, pexels } from "@/lib/photos";
 
 // Only verified-match photos. Add new entries only after curl-viewing the
@@ -114,16 +115,27 @@ const ITEMS: Record<string, MenuItem> = {
 };
 
 export function CardapioDigitalMockup({ step }: CardapioDigitalProps) {
-  // Shared free interactivity across steps
-  const [cart, setCart] = useState<Record<string, number>>({
-    marguerita: 1,
-    frango: 1,
-    sobremesa: 1,
-  });
+  // Cart starts empty so the tour narrates "Adicionou X" honestly the first
+  // time the user (or the auto-seed below) puts something in.
+  const [cart, setCart] = useState<Record<string, number>>({});
   const [addonQty, setAddonQty] = useState<Record<string, number>>({
     bacon: 1,
   });
   const [dishQty, setDishQty] = useState(1);
+  const userTouchedCartRef = useRef(false);
+
+  // Auto-seed once the tour has moved past the home view, so the rest of
+  // the flow (cart, payment, success) renders against a populated state.
+  // Skip if the user has interacted — we never overwrite their choices.
+  useEffect(() => {
+    if (step >= 1 && !userTouchedCartRef.current) {
+      setCart((prev) =>
+        Object.keys(prev).length === 0
+          ? { marguerita: 1, frango: 1, sobremesa: 1 }
+          : prev,
+      );
+    }
+  }, [step]);
 
   const subtotal = useMemo(
     () =>
@@ -172,9 +184,11 @@ export function CardapioDigitalMockup({ step }: CardapioDigitalProps) {
   };
 
   const addToCart = (id: string, qty = 1) => {
+    userTouchedCartRef.current = true;
     setCart((prev) => ({ ...prev, [id]: (prev[id] ?? 0) + qty }));
   };
   const updateCartQty = (id: string, delta: number) => {
+    userTouchedCartRef.current = true;
     setCart((prev) => {
       const next = { ...prev };
       const nextQty = (next[id] ?? 0) + delta;
@@ -184,6 +198,7 @@ export function CardapioDigitalMockup({ step }: CardapioDigitalProps) {
     });
   };
   const removeFromCart = (id: string) => {
+    userTouchedCartRef.current = true;
     setCart((prev) => {
       const next = { ...prev };
       delete next[id];
@@ -346,14 +361,16 @@ function HomeView({
         </div>
       </div>
 
-      {/* Search */}
-      <div className="mx-4 mt-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-2.5 py-1.5">
+      {/* Search — placeholder estático: TV touch não tem teclado, então
+          renderizamos como pílula visual ao invés de input real (§22.2). */}
+      <div
+        aria-hidden
+        className="mx-4 mt-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-2.5 py-1.5"
+      >
         <Search size={13} strokeWidth={2.25} className="text-neutral-400" />
-        <input
-          disabled
-          placeholder="Buscar pratos, bebidas..."
-          className="flex-1 bg-transparent text-[11px] text-neutral-500 placeholder:text-neutral-400 focus:outline-none"
-        />
+        <span className="flex-1 text-[11px] text-neutral-400">
+          Use as categorias abaixo para navegar o cardápio
+        </span>
       </div>
 
       {/* Categories shortcut */}
@@ -430,11 +447,11 @@ function HomeView({
                   <p className="mt-1 text-[10.5px] text-neutral-500">
                     {p.oldPrice && (
                       <span className="line-through">
-                        R$ {p.oldPrice.toFixed(2).replace(".", ",")}
+                        {brl(p.oldPrice)}
                       </span>
                     )}{" "}
                     <span className="font-display font-bold text-success">
-                      R$ {p.price.toFixed(2).replace(".", ",")}
+                      {brl(p.price)}
                     </span>
                   </p>
                 </div>
@@ -502,7 +519,7 @@ function DetailView({
             {item.name}
           </h1>
           <p className="font-display text-[12px] font-bold text-brand">
-            R$ {item.price.toFixed(2).replace(".", ",")}
+            {brl(item.price)}
           </p>
         </div>
       </div>
@@ -562,7 +579,7 @@ function DetailView({
                     {add.label}
                   </p>
                   <p className="text-[10.5px] text-neutral-500">
-                    + R$ {add.price.toFixed(2).replace(".", ",")}
+                    + {brl(add.price)}
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -634,7 +651,7 @@ function DetailView({
             Adicionar ao pedido
           </span>
           <span className="font-display text-[12px] font-bold tabular-nums">
-            R$ {total.toFixed(2).replace(".", ",")}
+            {brl(total)}
           </span>
         </motion.button>
       </div>
@@ -715,7 +732,7 @@ function CartView({
               </div>
               <div className="flex flex-col items-end gap-1">
                 <span className="font-display text-[12px] font-bold text-brand tabular-nums">
-                  R$ {(p.price * qty).toFixed(2).replace(".", ",")}
+                  {brl(p.price * qty)}
                 </span>
                 <div className="flex items-center gap-1 rounded-md border border-neutral-200 px-1">
                   <button
@@ -760,24 +777,32 @@ function CartView({
             Total
           </span>
           <span className="font-display text-[18px] font-bold text-brand tabular-nums">
-            R$ {subtotal.toFixed(2).replace(".", ",")}
+            {brl(subtotal)}
           </span>
         </div>
-        <motion.button
-          type="button"
-          whileTap={entries.length > 0 ? { scale: 0.98 } : undefined}
-          disabled={entries.length === 0 || subtotal === 0}
-          className={cn(
-            "mt-2 w-full rounded-md py-2.5 text-center font-display text-[12px] font-bold transition-colors",
-            entries.length === 0 || subtotal === 0
-              ? "bg-neutral-200 text-neutral-400 cursor-not-allowed"
-              : "bg-brand text-white shadow-brand hover:bg-brand-light",
-          )}
-        >
-          {entries.length === 0
-            ? "Adicione itens primeiro"
-            : "Enviar para a cozinha"}
-        </motion.button>
+        {(() => {
+          const canSend =
+            entries.length > 0 &&
+            Number.isFinite(subtotal) &&
+            subtotal > 0;
+          return (
+            <motion.button
+              type="button"
+              whileTap={canSend ? { scale: 0.98 } : undefined}
+              disabled={!canSend}
+              className={cn(
+                "mt-2 w-full rounded-md py-2.5 text-center font-display text-[12px] font-bold transition-colors",
+                !canSend
+                  ? "bg-neutral-200 text-neutral-400 cursor-not-allowed opacity-70"
+                  : "bg-brand text-white shadow-brand hover:bg-brand-light",
+              )}
+            >
+              {entries.length === 0
+                ? "Adicione itens primeiro"
+                : "Enviar para a cozinha"}
+            </motion.button>
+          );
+        })()}
         <button
           type="button"
           className="mt-1.5 w-full rounded-md border border-brand bg-white py-2 text-center font-display text-[11px] font-bold text-brand"
@@ -858,7 +883,7 @@ function ConfirmView({ subtotal }: { subtotal: number }) {
           #C1247
         </p>
         <p className="mt-2 font-ui text-[10.5px] text-neutral-600 tabular-nums">
-          Mesa 10 · R$ {subtotal.toFixed(2).replace(".", ",")}
+          Mesa 10 · {brl(subtotal)}
         </p>
       </div>
     </motion.div>

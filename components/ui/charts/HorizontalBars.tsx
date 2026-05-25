@@ -2,6 +2,7 @@
 
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect } from "react";
+import { lighten } from "@/lib/colors";
 
 export interface HBar {
   label: string;
@@ -44,14 +45,16 @@ export function HorizontalBars({
   formatValue = (v) => v.toLocaleString("pt-BR"),
   className,
 }: HorizontalBarsProps) {
-  const ceiling = max ?? Math.max(...bars.map((b) => b.value), 1);
+  if (bars.length === 0) return null;
+  const rawCeiling = max ?? Math.max(...bars.map((b) => b.value), 1);
+  const ceiling = rawCeiling > 0 ? rawCeiling : 1;
   return (
     <ul
       className={className}
       style={{ listStyle: "none", padding: 0, margin: 0 }}
     >
       {bars.map((b, i) => {
-        const pct = (b.value / ceiling) * 100;
+        const pct = ceiling > 0 ? Math.min(100, (b.value / ceiling) * 100) : 0;
         return (
           <BarRow
             key={b.label}
@@ -225,30 +228,3 @@ function BarRow({
   );
 }
 
-/**
- * Lighten a hex/rgb color by a fraction. Simple approximation —
- * works for solid hex colors. For "rgba(...)" or named colors, falls
- * back to returning the original color.
- */
-function lighten(color: string, amount: number): string {
-  if (!color.startsWith("#")) return color;
-  const hex = color.replace("#", "");
-  const num = parseInt(
-    hex.length === 3
-      ? hex
-          .split("")
-          .map((c) => c + c)
-          .join("")
-      : hex,
-    16,
-  );
-  const r = (num >> 16) & 0xff;
-  const g = (num >> 8) & 0xff;
-  const b = num & 0xff;
-  const mix = (v: number) =>
-    Math.round(v + (255 - v) * Math.min(1, Math.max(0, amount)));
-  const rr = mix(r).toString(16).padStart(2, "0");
-  const gg = mix(g).toString(16).padStart(2, "0");
-  const bb = mix(b).toString(16).padStart(2, "0");
-  return `#${rr}${gg}${bb}`;
-}

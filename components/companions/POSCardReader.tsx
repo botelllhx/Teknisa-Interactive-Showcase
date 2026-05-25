@@ -3,15 +3,14 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { CreditCard, Wifi, CheckCircle2, Signal, QrCode, Smartphone, Banknote } from "lucide-react";
 import { CompanionShell } from "./CompanionShell";
-
-export type PaymentMethodKind = "cartao" | "credito" | "debito" | "pix" | "dinheiro";
+import type { PaymentMethod } from "@/lib/payment";
 
 interface POSCardReaderProps {
   amount?: number;
   status?: "idle" | "waiting" | "approved";
   brand?: string;
   installments?: string;
-  method?: PaymentMethodKind;
+  method?: PaymentMethod;
   className?: string;
 }
 

@@ -91,12 +91,6 @@ const MOCKUPS: Record<string, ComponentType<MockupProps>> = {
       default: m.AnalisePreditivaMockup,
     })),
   ),
-  "assistente-regras": lazy(() =>
-    import("./pessoas-rh/AssistenteRegras").then((m) => ({
-      default: m.AssistenteRegrasMockup,
-    })),
-  ),
-
   mercadum: lazy(() =>
     import("./supply-compras/Mercadum").then((m) => ({ default: m.MercadumMockup })),
   ),

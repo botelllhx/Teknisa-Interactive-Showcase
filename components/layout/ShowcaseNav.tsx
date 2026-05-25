@@ -26,24 +26,24 @@ export function ShowcaseNav() {
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      className="relative z-30 flex h-14 items-center justify-between border-b border-brand/5 bg-white/95 px-6 backdrop-blur"
+      className="relative z-30 flex h-20 items-center justify-between border-b border-brand/5 bg-white/95 px-6 backdrop-blur"
     >
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={goBack}
           aria-label="Voltar"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-white shadow-brand transition-colors hover:bg-brand-light"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-brand text-white shadow-brand transition-colors hover:bg-brand-light"
         >
-          <ArrowLeft size={18} strokeWidth={2.25} />
+          <ArrowLeft size={20} strokeWidth={2.25} />
         </button>
         <button
           type="button"
           onClick={goHome}
           aria-label="Voltar para início"
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-brand/10 bg-white text-neutral-700 transition-colors hover:bg-brand-ghost"
+          className="flex h-14 w-14 items-center justify-center rounded-full border border-brand/10 bg-white text-neutral-700 transition-colors hover:bg-brand-ghost"
         >
-          <Home size={18} strokeWidth={2} />
+          <Home size={20} strokeWidth={2} />
         </button>
 
         <Image

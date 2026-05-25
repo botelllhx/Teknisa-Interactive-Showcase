@@ -159,7 +159,6 @@ export const segments: Segment[] = [
       "portal-funcionario",
       "mesa-operacoes",
       "analise-preditiva",
-      "assistente-regras",
     ],
   },
   {
@@ -376,11 +375,10 @@ export const solutions: Solution[] = [
     name: "Portal Gestor",
     tagline: "Equipe sob controle do gestor",
     description:
-      "Escala, ponto, aprovação de hora extra e indicadores de presença em um único painel.",
+      "Painel do gestor com 18 indicadores em tempo real, ocorrências de ponto por hora e programação de férias da equipe em um único lugar.",
     device: "desktop",
     icon: "UsersRound",
     tags: ["RH", "Gestão", "Escala"],
-    companions: ["EmployeeCard", "MiniDashboard"],
     status: "ready",
   },
   {
@@ -400,13 +398,12 @@ export const solutions: Solution[] = [
     id: "mesa-operacoes",
     segment: "pessoas-rh",
     name: "Mesa de Operações",
-    tagline: "Centro de controle multiunidades",
+    tagline: "Cobertura de turno em tempo real",
     description:
-      "Visão consolidada de várias unidades com alertas em tempo real e ações de realocação.",
+      "Painel ao vivo do restaurante: quem está, quem faltou e quem pode cobrir. Cores por função (garçom, cozinheiro, motoboy) deixam o gestor realocar pessoas equivalentes em um toque.",
     device: "desktop",
     icon: "LayoutDashboard",
-    tags: ["Operações", "Multi-unidade", "Tempo real"],
-    companions: ["MiniDashboard"],
+    tags: ["Operações", "Cobertura", "Tempo real"],
     status: "ready",
   },
   {
@@ -415,29 +412,13 @@ export const solutions: Solution[] = [
     name: "Análise Preditiva",
     tagline: "Antecipa o turnover",
     description:
-      "IA aplicada ao RH: identifica risco de turnover e sugere planos de retenção com simulação de impacto.",
+      "IA aplicada ao RH: identifica risco de turnover e detalha os fatores positivos e negativos por colaborador em um único painel.",
     device: "desktop",
     icon: "TrendingUp",
     tags: ["IA", "Preditivo", "Turnover"],
     badges: ["IA"],
-    companions: ["MiniDashboard"],
     status: "ready",
   },
-  {
-    id: "assistente-regras",
-    segment: "pessoas-rh",
-    name: "Assistente de Criação de Regras",
-    tagline: "Crie regras conversando",
-    description:
-      "Wizard com IA para definir regras de ponto, escala e benefícios sem precisar de configuração técnica.",
-    device: "desktop",
-    icon: "Sparkles",
-    tags: ["IA", "Wizard", "Configuração"],
-    badges: ["IA"],
-    companions: ["SimulatedNotification"],
-    status: "ready",
-  },
-
   // Supply e Compras
   {
     id: "mercadum",

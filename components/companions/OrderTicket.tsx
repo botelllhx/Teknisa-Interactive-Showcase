@@ -29,7 +29,7 @@ const DEFAULT_ITEMS: OrderItem[] = [
 export function OrderTicket({
   items = DEFAULT_ITEMS,
   orderNumber = "A1247",
-  store = "Sapore — Berrini",
+  store = "Vitalle Refeições — Vila Nova",
   approved = false,
   className,
 }: OrderTicketProps) {

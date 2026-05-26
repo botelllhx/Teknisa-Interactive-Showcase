@@ -166,7 +166,7 @@ function StatusBar() {
           className="select-none opacity-90"
         />
         <span className="text-[10.5px] font-medium uppercase tracking-wider opacity-75">
-          Restaurante Berrini
+          Restaurante Vila Nova
         </span>
       </div>
       <div className="flex items-center gap-1.5">

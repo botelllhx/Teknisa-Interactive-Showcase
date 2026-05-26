@@ -422,7 +422,7 @@ const CATALOG_CENTRAL: Record<CategoryId, Product[]> = {
     },
     {
       id: "coca",
-      name: "Coca-Cola Zero 350ml",
+      name: "Refri Cola Zero 350ml",
       desc: "Lata gelada",
       oldPrice: 8.9,
       price: 6.9,
@@ -576,7 +576,7 @@ const CATALOG_ASTROBOX: Record<CategoryId, Product[]> = {
   bebidas: [
     {
       id: "coca-600",
-      name: "Coca-Cola 600ml",
+      name: "Refri Cola 600ml",
       desc: "Gelada, sem açúcar disponível",
       oldPrice: 12.9,
       price: 9.9,

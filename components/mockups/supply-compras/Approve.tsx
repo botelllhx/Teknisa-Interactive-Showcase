@@ -66,13 +66,13 @@ const REQUESTS: Request[] = [
     delta: 320.0,
     status: "pendente",
     description:
-      "Reposição do estoque mensal do CD Berrini. Fornecedor escolhido na cotação RFQ-2024-001, 13% abaixo da última compra.",
+      "Reposição do estoque mensal do CD Vila Nova. Fornecedor escolhido na cotação RFQ-2024-001, 13% abaixo da última compra.",
     attachments: 3,
     comments: 2,
   },
   {
     id: "CT-2026-0019",
-    title: "Contrato: Fornecimento mensal Camil",
+    title: "Contrato: Fornecimento mensal Solare",
     type: "contrato",
     by: "Bruno Sampaio",
     byInitials: "BS",
@@ -358,7 +358,7 @@ function ListScreen({
             className="font-display text-[20px] font-bold text-neutral-900"
             style={{ letterSpacing: "-0.022em" }}
           >
-            Mateus Souza
+            João Costa
           </p>
           <span
             className="flex h-10 w-10 items-center justify-center rounded-full text-white"

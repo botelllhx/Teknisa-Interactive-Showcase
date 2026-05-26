@@ -70,9 +70,9 @@ interface ProductOption {
 
 const PRODUCT_FOR_CATEGORY: Record<string, ProductOption> = {
   pizzas: { id: "pizza-moda", name: "Pizza A Moda P", price: 32.0 },
-  ref: { id: "coca", name: "Coca-Cola Zero LT", price: 7.0 },
+  ref: { id: "cola", name: "Refri Cola Zero LT", price: 7.0 },
   sucos: { id: "suco-laranja", name: "Suco de Laranja Jarra", price: 12.5 },
-  combos: { id: "combo-xtudo", name: "Combo X-Tudo + Coca-Zero", price: 36.5 },
+  combos: { id: "combo-xtudo", name: "Combo X-Tudo + Cola Zero", price: 36.5 },
   hamb: { id: "hamb-classic", name: "X-Burguer Classic", price: 28.0 },
   sobre: { id: "petit", name: "Petit Gateau", price: 19.0 },
   kg: { id: "buffet", name: "Self-service kg", price: 78.9 },

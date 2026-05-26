@@ -417,4 +417,4 @@ Antes de marcar uma solução como pronta:
 
 ## Sobre
 
-A Teknisa é uma empresa brasileira com mais de 34 anos de mercado, referência em software para food service, refeições coletivas, varejo alimentar, restaurantes, gestão operacional, ERP e HCM. Atende clientes como GRSA, Sapore, Sodexo, Madero e LSG SkyChefs, com presença em 6 países, 20 mil instalações e mais de 65 mil usuários ativos. Este painel é a vitrine interativa dessa plataforma.
+A Teknisa é uma empresa brasileira com mais de 34 anos de mercado, referência em software para food service, refeições coletivas, varejo alimentar, restaurantes, gestão operacional, ERP e HCM. Atua em redes nacionais de food service, refeições coletivas e varejo alimentar, com presença em 6 países, 20 mil instalações e mais de 65 mil usuários ativos. Este painel é a vitrine interativa dessa plataforma. Todos os nomes de comércios, marcas, produtos e pessoas exibidos nos mockups são fictícios.

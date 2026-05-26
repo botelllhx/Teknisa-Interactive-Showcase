@@ -220,8 +220,8 @@ export function Companion({ type, solutionId, step, stepLabel }: CompanionProps)
       // Event vendor board — what's available at the venue right now
       const eventVendors = [
         {
-          id: "hells",
-          name: "Hell's Burgers · Setor B",
+          id: "inferno",
+          name: "Inferno Burgers · Setor B",
           distance: "Aqui mesmo",
           queue: 0,
           eta: "4 min",
@@ -230,7 +230,7 @@ export function Companion({ type, solutionId, step, stepLabel }: CompanionProps)
         },
         {
           id: "pizza",
-          name: "Pizza Stop · Setor A",
+          name: "Pizza Forneria · Setor A",
           distance: "120 m",
           queue: 14,
           eta: "22 min",
@@ -239,7 +239,7 @@ export function Companion({ type, solutionId, step, stepLabel }: CompanionProps)
         },
         {
           id: "doce",
-          name: "Doce&Cia · Praça norte",
+          name: "Doce Mestre · Praça norte",
           distance: "240 m",
           queue: 5,
           eta: "9 min",
@@ -247,11 +247,11 @@ export function Companion({ type, solutionId, step, stepLabel }: CompanionProps)
           status: "moderado" as const,
         },
       ];
-      // Highlight Hell's Burgers from the start since that's the store being used
+      // Highlight Inferno Burgers from the start since that's the store being used
       return (
         <RestaurantQueueBoard
           restaurants={eventVendors}
-          selectedId="hells"
+          selectedId="inferno"
         />
       );
     }

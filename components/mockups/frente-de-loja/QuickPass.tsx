@@ -66,7 +66,7 @@ interface Product {
 const PRODUCTS: Product[] = [
   {
     id: "burger-classic",
-    name: "Hell's Classic Burger",
+    name: "Inferno Classic Burger",
     desc: "Blend 180g, cheddar, picles e molho da casa",
     price: 32.0,
     tag: "Mais vendido",
@@ -83,7 +83,7 @@ const PRODUCTS: Product[] = [
   },
   {
     id: "coca",
-    name: "Coca-Cola Zero 350ml",
+    name: "Refri Cola Zero 350ml",
     desc: "Lata gelada",
     price: 7.0,
     gradient: "linear-gradient(135deg, #ef4444 0%, #b91c1c 60%, #7f1d1d 100%)",
@@ -293,11 +293,11 @@ function VenueBanner() {
               Hoje · show ao vivo
             </p>
             <p className="mt-0.5 font-ui text-[16px] font-bold leading-tight">
-              Hell&apos;s Burgers
+              Inferno Burgers
             </p>
             <p className="mt-1 flex items-center gap-1 text-[11px] text-white/90">
               <MapPin size={11} strokeWidth={2.25} />
-              Allianz Parque · setor B · loja 12
+              Arena Central · setor B · loja 12
             </p>
           </div>
           <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-1 text-[10.5px] font-bold uppercase tracking-wider backdrop-blur">
@@ -495,8 +495,8 @@ function CartView({
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="border-b border-neutral-100 bg-brand-ghost px-3 py-2 text-[11px] text-brand">
-          <span className="font-bold">Hell&apos;s Burgers</span> · Allianz
-          Parque · setor B
+          <span className="font-bold">Inferno Burgers</span> · Arena
+          Central · setor B
         </div>
 
         <div className="space-y-2 px-3 py-2">
@@ -967,7 +967,7 @@ function SuccessView({
                 Pedido <span className="tabular-nums">#320108</span>
               </p>
               <p className="mt-1 font-ui text-[11px] leading-snug text-neutral-500">
-                Apresente este QR no balcão da Hell&apos;s Burgers · setor B.
+                Apresente este QR no balcão da Inferno Burgers · setor B.
               </p>
               <p
                 className="mt-2 inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 font-ui text-[10.5px] font-bold uppercase text-warning"

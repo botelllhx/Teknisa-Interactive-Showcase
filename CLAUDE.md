@@ -42,7 +42,9 @@ A primeira implementação validou a estrutura geral, navegação e identidade v
 
 ## 2. Contexto da Empresa
 
-**Teknisa** é uma empresa brasileira com mais de 34 anos de mercado, referência em software para **food service, refeições coletivas, varejo alimentar, restaurantes, gestão operacional, ERP e HCM**. Atende clientes como GRSA, Sapore, Sodexo, Madero e LSG SkyChefs, com presença em 6 países, 20 mil instalações e mais de 65 mil usuários ativos.
+**Teknisa** é uma empresa brasileira com mais de 34 anos de mercado, referência em software para **food service, refeições coletivas, varejo alimentar, restaurantes, gestão operacional, ERP e HCM**. Atua em redes nacionais de food service, refeições coletivas e varejo alimentar, com presença em 6 países, 20 mil instalações e mais de 65 mil usuários ativos.
+
+> **Nota de compliance (v13.27):** os mockups deste painel NÃO devem mencionar nomes específicos de clientes reais da Teknisa. Todo nome de comércio, marca, produto, pessoa ou local nos mockups deve ser fictício. Ver §21.10 para a lista canônica de nomes fictícios.
 
 ### Segmentos e agrupamentos para o painel
 
@@ -1656,23 +1658,43 @@ Crie novos componentes quando o contexto pedir. Sempre dentro de CompanionShell.
 - Contador "1 / 5" em caps brand.
 - "Próximo" SOMENTE em passos passivos.
 
-### 21.10 Dados reais sempre
+### 21.10 Dados de referência (sempre fictícios)
 
-Lista de nomes/lugares/valores que devem ser usados como referência (não placeholder):
+**REGRA CRÍTICA DE COPYRIGHT (v13.27):** todo nome de comércio, marca,
+produto, pessoa ou local nos mockups deve ser FICTÍCIO. Nada de clientes
+reais da Teknisa (Sapore, Madero, GRSA, Sodexo, LSG, etc.), nada de
+produtos com marca registrada (Coca-Cola, Camil, Brasfoods, etc.), nada
+de venues reais (Allianz Parque, etc.), nada de nomes de pessoas reais
+(funcionários Teknisa, clientes Teknisa). Use a lista abaixo como
+referência canônica de nomes fictícios.
 
-**Lojas e unidades:**
-- Sapore — Berrini
-- Restaurante Central
+**Lojas e unidades (fictícios):**
+- Vitalle Refeições — Vila Nova (refeições coletivas)
+- Restaurante Vila Nova / Restaurante Central
+- Sabor da Casa (restaurante)
+- Brasa Real (steakhouse fictícia)
+- Tropical Roots (restaurante)
+- Praça Bar
+- Inferno Burgers / Pizza Forneria / Doce Mestre (food court / eventos)
+- Padaria Manhã / Padaria Centro
 - Café da Praça
-- Padaria Centro
 
-**Operadores e funcionários:**
-- Maria Santos, Carlos Eduardo Silva, Mariana Costa, Ana Costa, João Pedro
+**Operadores e funcionários (fictícios — nomes brasileiros genéricos):**
+- João Costa, Mariana Costa, Carlos Mello, Diogo Castro, Bruno Sampaio,
+  Carla Teixeira, Ricardo Nobre, Sofia Mendonça, Ricardo Almeida,
+  Juliana Mendes, Pedro Souza, Camila Lopes, Ana Costa, João Pedro
+
+**Marcas de fornecedores (fictícias):**
+- Solare (cereais / arroz / feijão)
+- VitaFoods (distribuidora)
+- Pão Mestre / Tropical Cereais / Grão Bom
 
 **Combos e pratos (TAA / fast food):**
 - X-Burguer Artesanal Combo — R$ 61,70 (lanche + batata + suco)
 - Chicken Crispy Combo — R$ 54,90
 - Veggie Bowl Combo — R$ 48,50
+- Refri Cola Zero 350ml (nunca "Coca-Cola")
+- Refri Cola 600ml
 
 **Pratos executivos (Cardápio Digital / TecFood):**
 - Penne ao molho funghi — R$ 42,00
@@ -1684,8 +1706,12 @@ Lista de nomes/lugares/valores que devem ser usados como referência (não place
 - Pedido #C1247 (cardápio digital)
 - Pedido #PED-2026-08471 (commercial)
 - NSU 871402 (transação cartão)
-- Cartão ****4128 · VISA
+- Cartão ****4128 (sem mencionar bandeira real)
 - Matrícula 28471
+
+**Venues / eventos:**
+- Arena Central · setor B (estádio fictício)
+- NUNCA usar: Allianz Parque, Maracanã, Morumbi ou venues reais
 
 ### 21.11 Replicação para novas soluções
 
@@ -1815,7 +1841,7 @@ Na referência do produto real, a coluna direita do PDV é uma **grade 2 colunas
 | PDV Novo | Coluna direita = 2 colunas de atalhos. Texto do tooltip "Marguerita" (era "Costela"). |
 | SmartPOS | State lifted, 5 views (catalog, detail, cart, payment-select, success). PaymentSelectView com 4 formas (Crédito, Débito, Pix, Dinheiro). Sem processing screen separado. |
 | Cardápio Digital | Gradientes refinados (radial soft + brand). Tooltip da confirmação fala "lá na cozinha o pedido cai no KDS". |
-| QuickPass | **Repensado para eventos** (estádio/show). 4 views: catalog, cart, payment, success. Sem QR scanner (confundia). Companion = `RestaurantQueueBoard` com vendors do evento (Hell's Burgers, Pizza Stop, Doce&Cia). Cupom via chips. |
+| QuickPass | **Repensado para eventos** (estádio/show). 4 views: catalog, cart, payment, success. Sem QR scanner (confundia). Companion = `RestaurantQueueBoard` com vendors fictícios do evento (Inferno Burgers, Pizza Forneria, Doce Mestre). Cupom via chips. |
 
 ### 22.9 KitchenDisplay: tema light obrigatório
 

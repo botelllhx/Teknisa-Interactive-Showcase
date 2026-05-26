@@ -74,30 +74,30 @@ const STORES: Establishment[] = [
     photoId: food.beefSteak.id, // restaurante de carnes
   },
   {
-    id: "madero",
-    name: "Madero",
+    id: "brasa-real",
+    name: "Brasa Real",
     category: "Restaurante",
     rating: 4.4,
     distance: "650 m",
     bg: "linear-gradient(135deg, #c2410c 0%, #7c2d12 60%, #431407 100%)",
-    initial: "M",
+    initial: "B",
     cashbackPct: 8,
-    photoId: food.burgerCheese.id, // Madero é hamburgueria
+    photoId: food.burgerCheese.id, // hamburgueria
   },
   {
-    id: "baked",
-    name: "Baked Potato",
+    id: "tropical-roots",
+    name: "Tropical Roots",
     category: "Restaurante",
     rating: 4.7,
     distance: "1,2 km",
     bg: "linear-gradient(135deg, #020788 0%, #1a1fa8 60%, #3b42c4 100%)",
-    initial: "B",
+    initial: "T",
     cashbackPct: 12,
     photoId: venues.restaurantModern.id, // interior moderno (verified)
   },
   {
-    id: "publico",
-    name: "Público Bar",
+    id: "praca-bar",
+    name: "Praça Bar",
     category: "Bar",
     rating: 4.3,
     distance: "800 m",
@@ -162,11 +162,11 @@ interface CashbackEntry {
 
 const HISTORY_INITIAL: CashbackEntry[] = [
   { id: "h1", store: "Kharina", date: "10/05/2026", amount: 12.0, purchase: 120.0 },
-  { id: "h2", store: "Madero", date: "08/05/2026", amount: 6.5, purchase: 65.0 },
-  { id: "h3", store: "Baked Potato", date: "04/05/2026", amount: -10.0 },
+  { id: "h2", store: "Brasa Real", date: "08/05/2026", amount: 6.5, purchase: 65.0 },
+  { id: "h3", store: "Tropical Roots", date: "04/05/2026", amount: -10.0 },
   {
     id: "h4",
-    store: "Baked Potato",
+    store: "Tropical Roots",
     date: "29/04/2026",
     amount: 18.0,
     purchase: 180.0,

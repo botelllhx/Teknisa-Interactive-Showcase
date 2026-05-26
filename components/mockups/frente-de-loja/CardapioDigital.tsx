@@ -299,7 +299,7 @@ function HomeView({
       <div className="relative h-32 w-full overflow-hidden">
         <Image
           src={pexels(venues.restaurantInterior.id, { w: 600, h: 320, fit: "crop" })}
-          alt="Restaurante Mundo Animal"
+          alt="Restaurante Sabor da Casa"
           fill
           unoptimized
           sizes="320px"
@@ -318,10 +318,10 @@ function HomeView({
         <div className="absolute inset-x-3 bottom-2.5 flex items-end justify-between">
           <div>
             <p className="font-display text-[20px] font-bold uppercase tracking-[5px] text-white drop-shadow">
-              Mundo
+              Sabor
             </p>
             <p className="font-display text-[10.5px] font-bold tracking-[7px] text-white/85">
-              ANIMAL
+              DA CASA
             </p>
           </div>
           <span className="rounded-full bg-white/95 px-2 py-1 font-ui text-[10.5px] font-bold uppercase tracking-wider text-brand shadow-card backdrop-blur">
@@ -335,7 +335,7 @@ function HomeView({
         <div className="flex items-start justify-between">
           <div>
             <h1 className="font-display text-[16px] font-bold text-brand">
-              Mundo Animal
+              Sabor da Casa
             </h1>
             <p className="mt-0.5 flex items-center gap-1 text-[10.5px] text-neutral-500">
               <Star
@@ -690,7 +690,7 @@ function CartView({
       </div>
 
       <p className="px-4 text-[10.5px] text-neutral-500">
-        Mundo Animal · {entries.length} item(s)
+        Sabor da Casa · {entries.length} item(s)
       </p>
 
       <div className="mt-2 flex-1 space-y-1.5 px-4 py-1">

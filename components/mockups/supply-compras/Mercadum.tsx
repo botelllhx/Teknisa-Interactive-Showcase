@@ -60,7 +60,7 @@ const COTACOES: Cotacao[] = [
   { id: "RFQ-2024-002", cliente: "Indústria São Paulo", status: "proposta-aceita", validade: "01/08/2025 - 31/08/2025", prazo: "01/08/2025 23:59:00", responsavel: "Carla Teixeira", produtos: "2/10" },
   { id: "RFQ-2024-003", cliente: "Grupo Alimentos Brasil", status: "negociando", validade: "01/08/2025 - 31/08/2025", prazo: "01/08/2025 23:59:00", responsavel: "Ricardo Nobre", produtos: "4/10" },
   { id: "RFQ-2024-004", cliente: "Indústria São Paulo", status: "pendente", validade: "01/08/2025 - 31/08/2025", prazo: "01/08/2025 23:59:00", responsavel: "Sofia Mendonça", produtos: "0/10" },
-  { id: "RFQ-2024-005", cliente: "Grupo Alimentos Brasil", status: "finalizada", validade: "01/08/2025 - 31/08/2025", prazo: "01/08/2025 23:59:00", responsavel: "Philippos Propodis", produtos: "10/10" },
+  { id: "RFQ-2024-005", cliente: "Grupo Alimentos Brasil", status: "finalizada", validade: "01/08/2025 - 31/08/2025", prazo: "01/08/2025 23:59:00", responsavel: "Diogo Castro", produtos: "10/10" },
 ];
 
 const STATUS_TONE: Record<
@@ -96,7 +96,7 @@ const PRODUTOS: Produto[] = [
     id: "arroz",
     nome: "Arroz Branco Polido Tipo 1- 5kg",
     unidade: "UN",
-    marca: "Camil",
+    marca: "Solare",
     qntdComprar: 10_000_000,
     qntdDisponivel: 1000,
     valorObjetivo: 20,
@@ -112,7 +112,7 @@ const PRODUTOS: Produto[] = [
     id: "feijao",
     nome: "Feijão Preto - 5kg",
     unidade: "KG",
-    marca: "Camil",
+    marca: "Solare",
     qntdComprar: 10_000_000,
     qntdDisponivel: 1000,
     valorObjetivo: 20,
@@ -128,7 +128,7 @@ const PRODUTOS: Produto[] = [
     id: "soja",
     nome: "Proteína Texturizada de Soja Escura - 5kg",
     unidade: "UN",
-    marca: "Camil",
+    marca: "Solare",
     qntdComprar: 1000,
     qntdDisponivel: 1000,
     valorObjetivo: 20,
@@ -145,7 +145,7 @@ const PRODUTOS: Produto[] = [
     id: "grao",
     nome: "Grão de Bico - 5kg",
     unidade: "UN",
-    marca: "Camil",
+    marca: "Solare",
     qntdComprar: 1000,
     qntdDisponivel: 1000,
     valorObjetivo: 20,
@@ -207,8 +207,8 @@ interface Fornecedor {
 const FORNECEDORES: Fornecedor[] = Array.from({ length: 5 }).map((_, i) => ({
   id: `f${i}`,
   cnpj: "55.555.555/5555-55",
-  razao: ["Camil Alimentos S.A.", "Brasfoods Distribuidora", "Pão & Cia", "Fortaleza Cereais", "Grão Real"][i],
-  fantasia: ["Camil Alimentos", "Brasfoods", "Pão & Cia", "Fortaleza", "Grão Real"][i],
+  razao: ["Solare Alimentos S.A.", "VitaFoods Distribuidora", "Pão Mestre", "Tropical Cereais", "Grão Bom"][i],
+  fantasia: ["Solare Alimentos", "VitaFoods", "Pão Mestre", "Tropical", "Grão Bom"][i],
   cadastro: "25/03/2025",
 }));
 
@@ -736,7 +736,7 @@ function CotacaoDetailView({
         Detalhes da Cotação
       </p>
       <p className="text-[11px] text-neutral-500">
-        Camil S.A. - Unidade São Paulo
+        Solare S.A. - Unidade Vila Nova
       </p>
 
       <div className="mt-2 flex items-center justify-between gap-2">

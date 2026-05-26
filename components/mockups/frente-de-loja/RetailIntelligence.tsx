@@ -192,7 +192,7 @@ function Header() {
               Retail Intelligence
             </p>
             <p className="font-ui text-[11px] text-neutral-500">
-              Loja Berrini, análise inteligente em tempo real
+              Loja Vila Nova, análise inteligente em tempo real
             </p>
           </div>
         </div>
@@ -222,14 +222,14 @@ function Header() {
         </button>
         <div className="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-2.5 py-1 shadow-card">
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand font-ui text-[10.5px] font-bold text-white">
-            MS
+            JC
           </span>
           <span className="leading-tight">
             <span className="block font-ui text-[12px] font-bold text-brand">
-              Mateus Souza
+              João Costa
             </span>
             <span className="block text-[10.5px] text-neutral-500">
-              Gestor, Berrini
+              Gestor, Vila Nova
             </span>
           </span>
         </div>

@@ -244,7 +244,7 @@ function Header() {
           className="font-ui text-[10.5px] text-neutral-500"
           style={{ letterSpacing: "-0.005em" }}
         >
-          Restaurante Berrini
+          Restaurante Vila Nova
         </p>
       </div>
       <span

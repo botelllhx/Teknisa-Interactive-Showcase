@@ -24,7 +24,7 @@ interface AppComercialProps {
 
 const CLIENTS = [
   { name: "Restaurante Bella Mesa", cnpj: "12.847.302/0001-44", active: true },
-  { name: "Padaria Aurora", cnpj: "23.918.475/0001-12" },
+  { name: "Padaria Manhã", cnpj: "23.918.475/0001-12" },
   { name: "Buffet Estrela", cnpj: "34.029.586/0001-89" },
 ];
 

@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import { type ReactNode } from "react";
 
 /**
- * SmartPOS device frame — represents a handheld POS terminal (think
- * Stone/Cielo/PagBank Maquininha), NOT a phone. Anatomy:
+ * SmartPOS device frame — represents a handheld POS terminal (genérico
+ * tipo "maquininha"), NOT a phone. Anatomy:
  *
  *   ┌───────────────────────┐  ← contactless NFC reader pad
  *   │   ●  contactless      │     (top arc with antenna icon)

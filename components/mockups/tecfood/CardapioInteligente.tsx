@@ -469,46 +469,52 @@ function GeneratingScreen({ onComplete }: { onComplete: () => void }) {
 
       <PhaseStepper phaseIdx={phaseIdx} progress={progress} />
 
+      {/* v13.31: spotlight target ci-ai-brain agora envolve o brain
+          + o status "IA processando" + insight text. Antes o spotlight
+          cobria apenas a animacao do brain e cortava as informacoes
+          contextuais embaixo. */}
       <div
         data-tour="ci-ai-brain"
-        className="relative flex flex-1 items-center justify-center"
+        className="relative z-10 flex flex-1 flex-col items-center justify-center"
       >
-        <AnimatedAIBrain phaseIdx={phaseIdx} />
-      </div>
+        <div className="flex flex-1 items-center justify-center self-stretch">
+          <AnimatedAIBrain phaseIdx={phaseIdx} />
+        </div>
 
-      <div className="z-10 mb-10 px-10 text-center">
-        <span
-          className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5"
-          style={{
-            border: "1px solid rgba(2,7,136,0.10)",
-            boxShadow: "0 2px 6px rgba(2,7,136,0.06)",
-          }}
-        >
-          <motion.span
-            animate={{ opacity: [1, 0.35, 1] }}
-            transition={{ duration: 1.4, repeat: Infinity }}
-            className="h-1.5 w-1.5 rounded-full bg-brand"
-          />
+        <div className="mb-8 px-10 text-center">
           <span
-            className="font-ui text-[10.5px] font-bold uppercase text-brand"
-            style={{ letterSpacing: "0.18em" }}
+            className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5"
+            style={{
+              border: "1px solid rgba(2,7,136,0.10)",
+              boxShadow: "0 2px 6px rgba(2,7,136,0.06)",
+            }}
           >
-            IA processando
+            <motion.span
+              animate={{ opacity: [1, 0.35, 1] }}
+              transition={{ duration: 1.4, repeat: Infinity }}
+              className="h-1.5 w-1.5 rounded-full bg-brand"
+            />
+            <span
+              className="font-ui text-[10.5px] font-bold uppercase text-brand"
+              style={{ letterSpacing: "0.18em" }}
+            >
+              IA processando
+            </span>
           </span>
-        </span>
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={insightIdx}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.3 }}
-            className="mt-3 font-display text-[17px] font-bold text-neutral-900"
-            style={{ letterSpacing: "-0.020em" }}
-          >
-            {INSIGHTS[insightIdx]}
-          </motion.p>
-        </AnimatePresence>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={insightIdx}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.3 }}
+              className="mt-3 font-display text-[17px] font-bold text-neutral-900"
+              style={{ letterSpacing: "-0.020em" }}
+            >
+              {INSIGHTS[insightIdx]}
+            </motion.p>
+          </AnimatePresence>
+        </div>
       </div>
     </motion.section>
   );

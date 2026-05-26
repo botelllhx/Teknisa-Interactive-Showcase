@@ -267,10 +267,10 @@ function TopBar() {
       />
       <div className="flex items-center gap-1.5">
         <span className="font-display text-[11px] font-bold italic text-neutral-800">
-          MUNDO
+          SABOR
         </span>
         <span className="font-display text-[11px] font-bold tracking-wider text-neutral-900">
-          ANIMAL
+          DA CASA
         </span>
       </div>
       <button className="text-neutral-400 hover:text-brand">

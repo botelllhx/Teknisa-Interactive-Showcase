@@ -2,7 +2,7 @@ import type { TourStep } from "../solutions";
 import { fmtMoney } from "../../lib/format";
 
 // ===== CRM Premium ======================================================
-// Premium Club: app de fidelidade no celular do cliente. Narrativa do tour:
+// Clube Sabor: app de fidelidade no celular do cliente. Narrativa do tour:
 // cliente abre o app → escolhe parceiro próximo → simula compra → cashback
 // é creditado em tempo real com animação → push notification → histórico
 // atualizado com a nova entrada destacada.
@@ -13,8 +13,8 @@ export const crmPremiumFlow: TourStep[] = [
     placement: "right",
     title: (live) =>
       typeof live.crmCashbackTotal === "number"
-        ? `${fmtMoney(live.crmCashbackTotal as number)} no Premium Club`
-        : "Saldo Premium Club",
+        ? `${fmtMoney(live.crmCashbackTotal as number)} no Clube Sabor`
+        : "Saldo Clube Sabor",
     description:
       "O cartão principal do app. Mostra o saldo de cashback acumulado e a oferta destacada do dia. Usável em qualquer parceiro do programa.",
     actionLabel: "Continuar",

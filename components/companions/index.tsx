@@ -103,9 +103,9 @@ export function Companion({ type, solutionId, step, stepLabel }: CompanionProps)
       const method = livePaymentMethod ?? "pix";
       const brandByMethod =
         method === "credito"
-          ? "Crédito Visa"
+          ? "Crédito"
           : method === "debito"
-            ? "Débito Visa"
+            ? "Débito"
             : method === "dinheiro"
               ? "Dinheiro"
               : "Pix";
@@ -436,7 +436,7 @@ export function Companion({ type, solutionId, step, stepLabel }: CompanionProps)
         ],
       },
       "crm-premium": {
-        title: "Premium Club, em tempo real",
+        title: "Clube Sabor, em tempo real",
         metrics: [
           {
             label: "Cashback creditado",

@@ -29,7 +29,7 @@ interface CRMPremiumProps {
 }
 
 // ============================================================================
-// Premium Club mobile app. Dark theme + amber accent (própria identidade
+// Clube Sabor mobile app. Dark theme + amber accent (própria identidade
 // do programa de fidelidade). Narrativa: cliente abre o app, vê o saldo,
 // escolhe um parceiro próximo, simula uma compra e o cashback é creditado
 // em tempo real com animação e push notification. Não é "chat com IA",
@@ -409,7 +409,7 @@ function HomeScreen({
         className="mt-4 px-5 font-display text-[20px] font-bold text-white"
         style={{ letterSpacing: "-0.022em" }}
       >
-        Olá, <span style={{ color: COLORS.amber }}>Thomas</span>
+        Olá, <span style={{ color: COLORS.amber }}>João</span>
       </p>
 
       <div className="mx-5 mt-3">
@@ -566,7 +566,7 @@ function CashbackCard({ balance }: { balance: number }) {
       <div className="relative flex items-start justify-between">
         <div>
           <p className="text-[10.5px] font-bold uppercase tracking-[1.5px] text-white/75">
-            Saldo Premium Club
+            Saldo Clube Sabor
           </p>
           <p className="mt-3 text-[12px] text-white/70">
             Disponível agora
@@ -597,7 +597,7 @@ function CashbackCard({ balance }: { balance: number }) {
 
       <div className="relative mt-3 flex items-center justify-between">
         <p className="text-[10.5px]" style={{ color: "rgba(255,255,255,0.7)" }}>
-          Use em qualquer parceiro do Premium Club
+          Use em qualquer parceiro do Clube Sabor
         </p>
         <p
           className="rounded-full px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wider"
@@ -853,7 +853,7 @@ function StoreScreen({
 
         {/* Promotions */}
         <p className="mt-4 font-ui text-[12px] font-bold uppercase tracking-wider text-white/65">
-          Promoções com Premium Club
+          Promoções com Clube Sabor
         </p>
         <div data-tour="crm-promo-pick" className="mt-2 space-y-2">
           {promos.map((p) => {
@@ -1218,7 +1218,7 @@ function SuccessOverlay({
         +{brl(cashback)}
       </motion.p>
       <p className="text-[12px]" style={{ color: COLORS.textMuted }}>
-        creditados no seu Premium Club
+        creditados no seu Clube Sabor
       </p>
 
       <motion.div
@@ -1335,7 +1335,7 @@ function PushNotification({
       </span>
       <div className="flex-1 min-w-0">
         <p className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider" style={{ color: COLORS.amber }}>
-          Premium Club
+          Clube Sabor
           <span className="text-white/40">·</span>
           <span className="text-white/50">agora</span>
         </p>
@@ -1437,7 +1437,7 @@ function SaldoScreen({
           className="mt-1 font-ui text-[10.5px]"
           style={{ color: COLORS.textMuted }}
         >
-          Use em qualquer parceiro do Premium Club.
+          Use em qualquer parceiro do Clube Sabor.
         </p>
       </div>
 
@@ -1555,11 +1555,11 @@ function PerfilScreen({
           className="flex h-16 w-16 items-center justify-center rounded-full"
           style={{ background: COLORS.amberSoft, color: COLORS.amber }}
         >
-          <span className="font-ui text-[22px] font-bold">T</span>
+          <span className="font-ui text-[22px] font-bold">J</span>
         </span>
         <div>
           <p className="font-ui text-[16px] font-bold text-white">
-            Thomas Rocha
+            João Costa
           </p>
           <p
             className="text-[11px]"

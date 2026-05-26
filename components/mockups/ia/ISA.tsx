@@ -103,7 +103,7 @@ function Header() {
               style={{ letterSpacing: "-0.005em" }}
             >
               Copiloto Teknisa ·{" "}
-              <span className="tabular-nums">GPT-T 4o</span>
+              <span className="tabular-nums">Modelo IA v4</span>
             </p>
           </div>
         </div>

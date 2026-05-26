@@ -465,7 +465,7 @@ export const solutions: Solution[] = [
     id: "crm-premium",
     segment: "crm",
     name: "CRM Premium",
-    tagline: "Premium Club no bolso do cliente",
+    tagline: "Clube Sabor no bolso do cliente",
     description:
       "App de fidelidade com cashback acumulável entre parceiros, promoções exclusivas e cardápio integrado. O cliente vê saldo, histórico e ofertas em tempo real.",
     device: "mobile",

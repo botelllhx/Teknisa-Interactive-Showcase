@@ -220,8 +220,8 @@ export function Companion({ type, solutionId, step, stepLabel }: CompanionProps)
       // Event vendor board — what's available at the venue right now
       const eventVendors = [
         {
-          id: "inferno",
-          name: "Inferno Burgers · Setor B",
+          id: "simons",
+          name: "Simons Burgers · Setor B",
           distance: "Aqui mesmo",
           queue: 0,
           eta: "4 min",
@@ -247,11 +247,11 @@ export function Companion({ type, solutionId, step, stepLabel }: CompanionProps)
           status: "moderado" as const,
         },
       ];
-      // Highlight Inferno Burgers from the start since that's the store being used
+      // Highlight Simons Burgers from the start since that's the store being used
       return (
         <RestaurantQueueBoard
           restaurants={eventVendors}
-          selectedId="inferno"
+          selectedId="simons"
         />
       );
     }

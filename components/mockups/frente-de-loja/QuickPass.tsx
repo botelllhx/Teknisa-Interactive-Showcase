@@ -66,7 +66,7 @@ interface Product {
 const PRODUCTS: Product[] = [
   {
     id: "burger-classic",
-    name: "Inferno Classic Burger",
+    name: "Simons Classic Burger",
     desc: "Blend 180g, cheddar, picles e molho da casa",
     price: 32.0,
     tag: "Mais vendido",
@@ -293,7 +293,7 @@ function VenueBanner() {
               Hoje · show ao vivo
             </p>
             <p className="mt-0.5 font-ui text-[16px] font-bold leading-tight">
-              Inferno Burgers
+              Simons Burgers
             </p>
             <p className="mt-1 flex items-center gap-1 text-[11px] text-white/90">
               <MapPin size={11} strokeWidth={2.25} />
@@ -495,7 +495,7 @@ function CartView({
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="border-b border-neutral-100 bg-brand-ghost px-3 py-2 text-[11px] text-brand">
-          <span className="font-bold">Inferno Burgers</span> · Arena
+          <span className="font-bold">Simons Burgers</span> · Arena
           Central · setor B
         </div>
 
@@ -967,7 +967,7 @@ function SuccessView({
                 Pedido <span className="tabular-nums">#320108</span>
               </p>
               <p className="mt-1 font-ui text-[11px] leading-snug text-neutral-500">
-                Apresente este QR no balcão da Inferno Burgers · setor B.
+                Apresente este QR no balcão da Simons Burgers · setor B.
               </p>
               <p
                 className="mt-2 inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 font-ui text-[10.5px] font-bold uppercase text-warning"

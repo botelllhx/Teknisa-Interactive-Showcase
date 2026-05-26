@@ -17,11 +17,10 @@ export function SegmentGrid() {
       animate="visible"
       className="grid grid-cols-4 gap-5 px-12 pb-10"
     >
-      {segments.map((segment, idx) => (
+      {segments.map((segment) => (
         <SegmentCard
           key={segment.id}
           segment={segment}
-          index={idx}
           onSelect={() => selectSegment(segment.id)}
         />
       ))}
@@ -31,7 +30,6 @@ export function SegmentGrid() {
 
 interface SegmentCardProps {
   segment: Segment;
-  index: number;
   onSelect: () => void;
 }
 
@@ -40,8 +38,11 @@ interface SegmentCardProps {
  * Antes: body flex-1 com gap-6 deixava muito whitespace vertical
  * Agora: estrutura compacta sem flex-1 internamente; o conteúdo
  * preenche naturalmente. Cards uniformes via min-h.
+ *
+ * v13.28 — limpou top-right: removido pulsing green dot + numeração
+ * "01 · 06" confusa. Counter virou pill brand-ghost simples.
  */
-function SegmentCard({ segment, index, onSelect }: SegmentCardProps) {
+function SegmentCard({ segment, onSelect }: SegmentCardProps) {
   const solutionCount = segment.solutions.length;
 
   // Parallax 3D motion values (suaves)
@@ -120,7 +121,10 @@ function SegmentCard({ segment, index, onSelect }: SegmentCardProps) {
         }}
       />
 
-      {/* Top row: ícone + eyebrow numérico + live dot */}
+      {/* Top row: ícone + counter pill discreto.
+          v13.28: removido pulsing green dot (poluía visualmente); contagem
+          virou pill brand-ghost limpa, sem padding "01" / "06" que parecia
+          numeração de slide. Apenas "6 SOLUÇÕES" tipográfico. */}
       <div className="relative flex items-start justify-between">
         <div
           className="flex h-16 w-16 items-center justify-center rounded-2xl text-brand transition-transform group-hover:scale-[1.04]"
@@ -133,36 +137,13 @@ function SegmentCard({ segment, index, onSelect }: SegmentCardProps) {
         >
           <SegmentIcon name={segment.icon} size={32} />
         </div>
-        <div className="flex flex-col items-end gap-1.5">
-          <span
-            className="font-ui text-[10px] font-bold uppercase text-neutral-600"
-            style={{ letterSpacing: "0.16em" }}
-          >
-            <span className="tabular-nums">
-              {String(index + 1).padStart(2, "0")}
-            </span>{" "}
-            ·{" "}
-            <span className="tabular-nums">
-              {String(solutionCount).padStart(2, "0")} {" "}
-            </span>
-            {solutionCount === 1 ? "solução" : "soluções"}
-          </span>
-          <span
-            aria-hidden
-            className="relative flex h-2 w-2 items-center justify-center"
-          >
-            <motion.span
-              animate={{ scale: [1, 2, 1], opacity: [0.35, 0, 0.35] }}
-              transition={{
-                duration: 2.2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute inset-0 rounded-full bg-success"
-            />
-            <span className="relative h-2 w-2 rounded-full bg-success" />
-          </span>
-        </div>
+        <span
+          className="inline-flex items-center gap-1.5 rounded-full bg-brand-ghost px-2.5 py-1 font-ui text-[10.5px] font-bold uppercase text-brand"
+          style={{ letterSpacing: "0.16em" }}
+        >
+          <span className="tabular-nums">{solutionCount}</span>
+          {solutionCount === 1 ? "solução" : "soluções"}
+        </span>
       </div>
 
       {/* Title + tagline (sem flex-1 — naturalmente denso) */}
@@ -174,14 +155,14 @@ function SegmentCard({ segment, index, onSelect }: SegmentCardProps) {
           {segment.label}
         </h2>
         <p
-          className="mt-2 font-ui text-[14.5px] leading-[1.45] text-neutral-500"
+          className="mt-2.5 font-ui text-[15.5px] leading-[1.45] text-neutral-500"
           style={{
             letterSpacing: "-0.005em",
             display: "-webkit-box",
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
             overflow: "hidden",
-            minHeight: "2.7em",
+            minHeight: "2.9em",
           }}
         >
           {segment.tagline}

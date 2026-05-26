@@ -1675,7 +1675,7 @@ referência canônica de nomes fictícios.
 - Brasa Real (steakhouse fictícia)
 - Tropical Roots (restaurante)
 - Praça Bar
-- Inferno Burgers / Pizza Forneria / Doce Mestre (food court / eventos)
+- Simons Burgers / Pizza Forneria / Doce Mestre (food court / eventos)
 - Padaria Manhã / Padaria Centro
 - Café da Praça
 
@@ -1841,7 +1841,7 @@ Na referência do produto real, a coluna direita do PDV é uma **grade 2 colunas
 | PDV Novo | Coluna direita = 2 colunas de atalhos. Texto do tooltip "Marguerita" (era "Costela"). |
 | SmartPOS | State lifted, 5 views (catalog, detail, cart, payment-select, success). PaymentSelectView com 4 formas (Crédito, Débito, Pix, Dinheiro). Sem processing screen separado. |
 | Cardápio Digital | Gradientes refinados (radial soft + brand). Tooltip da confirmação fala "lá na cozinha o pedido cai no KDS". |
-| QuickPass | **Repensado para eventos** (estádio/show). 4 views: catalog, cart, payment, success. Sem QR scanner (confundia). Companion = `RestaurantQueueBoard` com vendors fictícios do evento (Inferno Burgers, Pizza Forneria, Doce Mestre). Cupom via chips. |
+| QuickPass | **Repensado para eventos** (estádio/show). 4 views: catalog, cart, payment, success. Sem QR scanner (confundia). Companion = `RestaurantQueueBoard` com vendors fictícios do evento (Simons Burgers, Pizza Forneria, Doce Mestre). Cupom via chips. |
 
 ### 22.9 KitchenDisplay: tema light obrigatório
 

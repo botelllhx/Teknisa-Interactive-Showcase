@@ -262,7 +262,7 @@ function AppHeader({
       ) : (
         <div className="flex items-center gap-1">
           <span className="font-ui text-[12px] font-bold italic text-red-700">
-            HELL&apos;S
+            SIMONS
           </span>
           <span className="font-ui text-[12px] font-bold tracking-wider text-neutral-900">
             BURGERS
@@ -781,11 +781,11 @@ function PaymentView({
                       Titular
                     </p>
                     <p className="font-ui text-[11px] font-bold">
-                      MATEUS SOUZA
+                      JOÃO COSTA
                     </p>
                   </div>
                   <span className="rounded bg-white/15 px-2 py-0.5 text-[10.5px] font-bold tracking-wider backdrop-blur">
-                    VISA
+                    CRÉDITO
                   </span>
                 </div>
               </div>

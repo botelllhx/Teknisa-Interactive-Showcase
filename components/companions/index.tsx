@@ -151,7 +151,7 @@ export function Companion({ type, solutionId, step, stepLabel }: CompanionProps)
         <POSCardReader
           status={step >= 4 ? "approved" : "waiting"}
           amount={PDV_TOTAL}
-          brand="VISA"
+          brand="CRÉDITO"
           installments="2× sem juros"
         />
       );
@@ -179,7 +179,7 @@ export function Companion({ type, solutionId, step, stepLabel }: CompanionProps)
       return (
         <CustomerReceiptPhone
           amount={24.0}
-          brand="VISA"
+          brand="CRÉDITO"
           delivered={step >= 4}
         />
       );

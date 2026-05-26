@@ -17,7 +17,7 @@ interface POSCardReaderProps {
 export function POSCardReader({
   amount = 61.7,
   status = "waiting",
-  brand = "VISA",
+  brand = "CRÉDITO",
   installments = "1× sem juros",
   method = "cartao",
   className,

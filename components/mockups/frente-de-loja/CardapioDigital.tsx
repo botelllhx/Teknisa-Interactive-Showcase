@@ -1042,7 +1042,7 @@ function SafariBottomBar() {
           <Lock size={10} strokeWidth={2.25} />
         </span>
         <span className="flex-1 text-center text-[11px] text-neutral-700">
-          mundoanimal.cardapio.teknisa.com
+          sabordacasa.cardapio.teknisa.com
         </span>
         <span className="text-neutral-400">
           <Copy size={11} strokeWidth={2.25} />

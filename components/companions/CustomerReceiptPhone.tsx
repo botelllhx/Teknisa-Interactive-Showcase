@@ -13,7 +13,7 @@ interface CustomerReceiptPhoneProps {
 
 export function CustomerReceiptPhone({
   amount = 24.0,
-  brand = "VISA",
+  brand = "CRÉDITO",
   delivered = false,
 }: CustomerReceiptPhoneProps) {
   const time = new Date().toLocaleTimeString("pt-BR", {

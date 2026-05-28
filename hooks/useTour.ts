@@ -33,8 +33,13 @@ export interface UseTourResult {
  * after this many ms so the showcase keeps moving while someone narrates it
  * to a crowd. Manual interaction (target click, Next button) still works and
  * resets the timer for the next step.
+ *
+ * Pause-on-touch: any user interaction (pointerdown/keydown anywhere on
+ * the page) resets the timer back to full duration. So if the presenter
+ * is gesturing on screen or wants to dwell on a step, touching the panel
+ * keeps the current step alive.
  */
-export const DEFAULT_AUTO_ADVANCE_MS = 5000;
+export const DEFAULT_AUTO_ADVANCE_MS = 10000;
 
 interface UseTourOptions {
   steps: TourStep[];
@@ -231,16 +236,19 @@ export function useTour({
   //     the mockup's own onClick (carrinho, escala, etc.) fires AND the
   //     click listener above auto-advances the tour
   //   - missing target → fall back to advance() so the user is never stuck
-  // The timer keys off step.id, so any manual interaction (target click,
-  // Next button, skip) that mutates the step naturally clears it via the
-  // effect's cleanup.
+  //
+  // Pause-on-touch: any user interaction (pointerdown/keydown anywhere on
+  // the document) resets the timer back to full duration. The progress bar
+  // is keyed to autoAdvanceKey so it restarts the fill animation visually
+  // each time. This lets a presenter touch the panel to "hold" the current
+  // step while explaining without having to skip.
   useEffect(() => {
     if (!active || !step) return;
     if (autoAdvanceMs <= 0) return;
 
-    setAutoAdvanceKey((k) => k + 1);
+    let timer: ReturnType<typeof setTimeout> | null = null;
 
-    const timer = setTimeout(() => {
+    const fire = () => {
       if (step.requiresInteraction) {
         const el = document.querySelector(
           step.targetSelector,
@@ -253,9 +261,28 @@ export function useTour({
       } else {
         advance();
       }
-    }, autoAdvanceMs);
+    };
 
-    return () => clearTimeout(timer);
+    const startTimer = () => {
+      setAutoAdvanceKey((k) => k + 1);
+      timer = setTimeout(fire, autoAdvanceMs);
+    };
+
+    const resetTimer = () => {
+      if (timer) clearTimeout(timer);
+      startTimer();
+    };
+
+    startTimer();
+
+    window.addEventListener("pointerdown", resetTimer);
+    window.addEventListener("keydown", resetTimer);
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      window.removeEventListener("pointerdown", resetTimer);
+      window.removeEventListener("keydown", resetTimer);
+    };
     // Keying off step?.id (not the whole object) prevents the timer from
     // restarting when the parent re-renders with a new reference of the
     // same step (which would otherwise reset the timer mid-step and never

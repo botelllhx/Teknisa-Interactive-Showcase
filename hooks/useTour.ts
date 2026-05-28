@@ -22,7 +22,19 @@ export interface UseTourResult {
   skip: () => void;
   restart: () => void;
   finished: boolean;
+  /** ms remaining until auto-advance fires (also exposed for UI progress bars) */
+  autoAdvanceMs: number;
+  /** key that changes every time a new step's auto-advance timer (re)starts */
+  autoAdvanceKey: number;
 }
+
+/**
+ * Default auto-advance duration. The tour ticks through steps automatically
+ * after this many ms so the showcase keeps moving while someone narrates it
+ * to a crowd. Manual interaction (target click, Next button) still works and
+ * resets the timer for the next step.
+ */
+export const DEFAULT_AUTO_ADVANCE_MS = 5000;
 
 interface UseTourOptions {
   steps: TourStep[];
@@ -32,6 +44,8 @@ interface UseTourOptions {
   resetKey?: string | number;
   // Called when the tour completes (after last step's Next / after last interaction)
   onFinish?: () => void;
+  // Auto-advance interval (set <=0 to disable)
+  autoAdvanceMs?: number;
 }
 
 export function useTour({
@@ -39,11 +53,13 @@ export function useTour({
   autoStartDelay = 400,
   resetKey,
   onFinish,
+  autoAdvanceMs = DEFAULT_AUTO_ADVANCE_MS,
 }: UseTourOptions): UseTourResult {
   const [active, setActive] = useState(false);
   const [index, setIndex] = useState(0);
   const [finished, setFinished] = useState(false);
   const [geometry, setGeometry] = useState<TargetGeometry | null>(null);
+  const [autoAdvanceKey, setAutoAdvanceKey] = useState(0);
   const onFinishRef = useRef(onFinish);
   const advanceRef = useRef<() => void>(() => {});
 
@@ -207,6 +223,46 @@ export function useTour({
     };
   }, [step, advance, geometry]);
 
+  // Auto-advance: after `autoAdvanceMs` of inactivity on a step, the tour
+  // moves forward on its own so a presenter can keep talking without having
+  // to tap the screen between steps.
+  //   - passive steps  → call advance() directly
+  //   - action steps   → synthesize a real click on the target element so
+  //     the mockup's own onClick (carrinho, escala, etc.) fires AND the
+  //     click listener above auto-advances the tour
+  //   - missing target → fall back to advance() so the user is never stuck
+  // The timer keys off step.id, so any manual interaction (target click,
+  // Next button, skip) that mutates the step naturally clears it via the
+  // effect's cleanup.
+  useEffect(() => {
+    if (!active || !step) return;
+    if (autoAdvanceMs <= 0) return;
+
+    setAutoAdvanceKey((k) => k + 1);
+
+    const timer = setTimeout(() => {
+      if (step.requiresInteraction) {
+        const el = document.querySelector(
+          step.targetSelector,
+        ) as HTMLElement | null;
+        if (el) {
+          el.click();
+        } else {
+          advance();
+        }
+      } else {
+        advance();
+      }
+    }, autoAdvanceMs);
+
+    return () => clearTimeout(timer);
+    // Keying off step?.id (not the whole object) prevents the timer from
+    // restarting when the parent re-renders with a new reference of the
+    // same step (which would otherwise reset the timer mid-step and never
+    // let it fire).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, step?.id, autoAdvanceMs, advance]);
+
   return {
     active,
     index,
@@ -220,6 +276,8 @@ export function useTour({
     skip,
     restart,
     finished,
+    autoAdvanceMs,
+    autoAdvanceKey,
   };
 }
 

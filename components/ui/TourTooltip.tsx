@@ -17,9 +17,16 @@ export interface TourTooltipProps {
   onSkip: () => void;
   isFirst: boolean;
   isLast: boolean;
+  /** ms until auto-advance fires; <=0 disables the progress bar */
+  autoAdvanceMs?: number;
+  /** Changes each time the timer (re)starts so the progress bar resets cleanly */
+  autoAdvanceKey?: number;
 }
 
-const TOOLTIP_WIDTH = 380;
+// v13.32 — was 380. Reduced to 300 so the tooltip fits inside the 320px
+// reserved column without overflowing into the device frame on solutions
+// without companions (PortalGestor, MesaOperações, RotinaFiscal, etc).
+const TOOLTIP_WIDTH = 300;
 // Conservative default before we measure the actual tooltip; we always
 // re-clamp after layout to fit the real height. Bigger estimate keeps the
 // first paint from spilling past the viewport on tall tooltips.
@@ -144,6 +151,8 @@ export function TourTooltip({
   onNext,
   onSkip,
   isLast,
+  autoAdvanceMs = 0,
+  autoAdvanceKey = 0,
 }: TourTooltipProps) {
   const live = useTourLive((s) => s.live);
   const requiresInteraction = step.requiresInteraction === true;
@@ -203,6 +212,20 @@ export function TourTooltip({
         aria-hidden
         className="h-[3px] w-full bg-gradient-to-r from-brand via-brand-light to-brand-lighter"
       />
+
+      {/* Auto-advance progress bar — fills from 0% to 100% over autoAdvanceMs.
+          Keyed on autoAdvanceKey so it resets cleanly when the timer restarts. */}
+      {autoAdvanceMs > 0 && (
+        <motion.div
+          key={`autoadv-${autoAdvanceKey}`}
+          aria-hidden
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: autoAdvanceMs / 1000, ease: "linear" }}
+          style={{ transformOrigin: "left" }}
+          className="h-[2px] w-full bg-brand/60"
+        />
+      )}
 
       <div className="p-6">
         <div className="flex items-start justify-between gap-2">

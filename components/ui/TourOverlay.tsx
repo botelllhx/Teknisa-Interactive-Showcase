@@ -22,6 +22,8 @@ interface TourOverlayProps {
   onNext: () => void;
   onPrev: () => void;
   onSkip: () => void;
+  autoAdvanceMs?: number;
+  autoAdvanceKey?: number;
 }
 
 const SPOTLIGHT_PADDING = 8;
@@ -37,6 +39,8 @@ export function TourOverlay({
   onNext,
   onPrev,
   onSkip,
+  autoAdvanceMs = 0,
+  autoAdvanceKey = 0,
 }: TourOverlayProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -72,6 +76,8 @@ export function TourOverlay({
             onSkip={onSkip}
             isFirst={isFirst}
             isLast={isLast}
+            autoAdvanceMs={autoAdvanceMs}
+            autoAdvanceKey={autoAdvanceKey}
           />
         </motion.div>
       )}

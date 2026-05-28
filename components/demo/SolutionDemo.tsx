@@ -313,6 +313,8 @@ export function SolutionDemo({ solutionId }: SolutionDemoProps) {
         onNext={tour.next}
         onPrev={tour.prev}
         onSkip={tour.skip}
+        autoAdvanceMs={tour.autoAdvanceMs}
+        autoAdvanceKey={tour.autoAdvanceKey}
       />
 
       <AnimatePresence>

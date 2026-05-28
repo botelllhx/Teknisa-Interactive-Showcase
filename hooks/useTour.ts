@@ -39,7 +39,7 @@ export interface UseTourResult {
  * is gesturing on screen or wants to dwell on a step, touching the panel
  * keeps the current step alive.
  */
-export const DEFAULT_AUTO_ADVANCE_MS = 10000;
+export const DEFAULT_AUTO_ADVANCE_MS = 8000;
 
 interface UseTourOptions {
   steps: TourStep[];
@@ -98,13 +98,31 @@ export function useTour({
 
     const measure = () => {
       const el = document.querySelector(step.targetSelector) as HTMLElement | null;
-      if (!el) {
-        setGeometry(null);
-        return;
-      }
       const frameEl = document.querySelector(
         "[data-tour-frame]",
       ) as HTMLElement | null;
+
+      // Fallback: target missing but frame exists.
+      // Some flows reference stale/wrong data-tour selectors. Without this
+      // fallback, geometry would be null and the tooltip would center itself
+      // OVER the device frame. Instead, keep the frame in geometry so
+      // computePosition can still anchor the tooltip OUTSIDE the frame
+      // (right/left of it). Target rect is set to the frame itself so the
+      // spotlight ring just outlines the whole device — visible but not
+      // misleading, since we have nothing better to point at.
+      if (!el) {
+        if (frameEl) {
+          const frameRect = frameEl.getBoundingClientRect();
+          setGeometry({
+            rect: frameRect,
+            frameRect,
+            borderRadius: 12,
+          });
+        } else {
+          setGeometry(null);
+        }
+        return;
+      }
 
       // Scroll the target into view inside the nearest scrollable ancestor
       // ONCE per step, BEFORE measuring. Without this, mockups with internal

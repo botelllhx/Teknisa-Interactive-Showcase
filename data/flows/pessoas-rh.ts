@@ -1,43 +1,52 @@
 import type { TourStep } from "../solutions";
 
+// v13.34 — flows alinhados com os data-tour reais dos mockups.
+// Anteriormente os selectors aqui referenciavam tags que nunca existiram
+// no DOM (pg-pendentes-tile, mo-dashboard, ap-table etc) e o tooltip caía
+// no fallback de centro, sobrepondo o mockup.
+
 export const portalGestorFlow: TourStep[] = [
   {
-    id: "home",
-    targetSelector: '[data-tour="pg-pendentes-tile"]',
-    placement: "left",
-    title: "Tela inicial · Solicitações Pendentes",
-    description:
-      "Portal abre na grade de 18 indicadores do gestor: banco de horas, atrasos, atestados, férias a vencer, ausências de registro. O tile Solicitações Pendentes destaca o número aguardando aprovação. Toque nele para entrar na bandeja.",
-    requiresInteraction: true,
-    actionLabel: "Toque no tile",
-  },
-  {
-    id: "primeira",
-    targetSelector: '[data-tour="pg-first-card"]',
+    id: "dashboard",
+    targetSelector: '[data-tour="pg-dashboard"]',
     placement: "right",
-    title: "Beatriz Santos quer férias",
+    title: "Painel do gestor",
     description:
-      "Gerente de Vendas, 30 dias de saldo, viagem já programada. Toque em Revisar para ver os detalhes.",
-    requiresInteraction: true,
-    actionLabel: "Toque em Revisar",
+      "Indicadores em tempo real da equipe: presença do dia, banco de horas, atestados e ocorrências. Tudo concentrado pro gestor decidir sem trocar de tela.",
   },
   {
-    id: "ia",
-    targetSelector: '[data-tour="pg-ai-suggestion"]',
-    placement: "left",
-    title: "IA sugere quem cobre",
+    id: "schedule",
+    targetSelector: '[data-tour="pg-schedule"]',
+    placement: "right",
+    title: "Escala da semana",
     description:
-      "Modal abre com perfil, justificativa, histórico — e a IA cruza skill, agenda e SLA da equipe para indicar que Patrícia Oliveira pode assumir sem conflito. Impacto baixo, SLA mantido.",
+      "Grade completa por função e turno, com sinalização visual de cobertura insuficiente. O gestor reorganiza arrastando ou aprovando trocas sugeridas.",
   },
   {
-    id: "aprovar",
-    targetSelector: '[data-tour="pg-aprovar"]',
-    placement: "left",
-    title: "Aprova e tudo se ajusta",
+    id: "punch",
+    targetSelector: '[data-tour="pg-punch"]',
+    placement: "right",
+    title: "Espelho de ponto · hoje",
     description:
-      "Um toque dispara três coisas em paralelo: notificação no app da Beatriz, escala atualizada, folha de pagamento sincronizada. Auditoria registrada.",
+      "Marcações do turno atual com filtros por unidade e cargo. Inconsistências (ausência sem aviso, hora extra fora da meta) ficam destacadas.",
+  },
+  {
+    id: "requests",
+    targetSelector: '[data-tour="pg-requests"]',
+    placement: "right",
+    title: "Solicitações pendentes",
+    description:
+      "Férias, hora extra, ajuste de ponto. Cada card mostra solicitante, motivo e impacto na escala. Aprovação dispara notificação e folha em paralelo.",
+  },
+  {
+    id: "export",
+    targetSelector: '[data-tour="pg-export"]',
+    placement: "left",
+    title: "Relatório exportado",
+    description:
+      "Um clique compila o panorama da equipe em PDF assinado para RH corporativo. Sem montagem manual a cada mês.",
     requiresInteraction: true,
-    actionLabel: "Toque em Aprovar",
+    actionLabel: "Exportar",
   },
 ];
 
@@ -48,142 +57,124 @@ export const portalFuncionarioFlow: TourStep[] = [
     placement: "right",
     title: "Acesso do funcionário",
     description:
-      "Maria Silva abre o app e entra com seu usuário corporativo. O Portal do Funcionário roda no celular dela, sem precisar passar pelo RH para resetar senha ou pegar acesso.",
+      "Login direto no celular do colaborador, sem precisar passar pelo RH. Biometria opcional pra acelerar.",
     requiresInteraction: true,
     actionLabel: "Entrar",
   },
   {
-    id: "registrar",
-    targetSelector: '[data-tour="pf-registrar"]',
+    id: "punch-sheet",
+    targetSelector: '[data-tour="pf-punch-sheet"]',
     placement: "right",
-    title: "Tela inicial: registrar ponto",
+    title: "Espelho de ponto do mês",
     description:
-      "Logo após o login, a ação mais frequente está bem no topo: botão verde grande de Registrar Ponto, com saldos de banco de horas, ocorrências e última apuração visíveis sem rolar. Toque no botão para começar.",
-    requiresInteraction: true,
-    actionLabel: "Registrar Ponto",
+      "Todas as marcações em uma tela: entrada, intervalo, saída. Saldo de banco de horas atualizado em tempo real.",
   },
   {
-    id: "camera",
-    targetSelector: '[data-tour="pf-camera"]',
+    id: "vacation",
+    targetSelector: '[data-tour="pf-vacation-button"]',
     placement: "right",
-    title: "Selfie com verificação facial",
+    title: "Solicitar férias",
     description:
-      "A câmera abre em modo frontal para conferir quem está batendo o ponto. Sem fraude, sem ponto de favor, sem necessidade de relógio físico na unidade.",
+      "Solicitação aberta direto pelo app: período, motivo, anexos. Toque para começar a solicitação.",
     requiresInteraction: true,
-    actionLabel: "Capturar foto",
+    actionLabel: "Solicitar férias",
   },
   {
-    id: "confirmar",
-    targetSelector: '[data-tour="pf-ok"]',
+    id: "status",
+    targetSelector: '[data-tour="pf-status"]',
     placement: "right",
-    title: "Confirmação de entrada",
+    title: "Status da solicitação",
     description:
-      "O app sugere o tipo de marcação a partir do espelho do dia e da hora atual. Maria confirma a entrada das 09:00 com um toque.",
-    requiresInteraction: true,
-    actionLabel: "OK",
+      "A solicitação aparece em tempo real com o nome do gestor que vai aprovar. Sem ligar pro RH para saber.",
   },
   {
-    id: "registrado",
-    targetSelector: '[data-tour="pf-apuracao"]',
-    placement: "right",
-    title: "Ponto sincronizado em segundos",
+    id: "payslip",
+    targetSelector: '[data-tour="pf-payslip"]',
+    placement: "left",
+    title: "Holerite no app",
     description:
-      "A entrada das 09:00 já aparece na Última Apuração e o período em curso é atualizado. O gestor recebe o sinal de presença em tempo real, sem planilha intermediária.",
-    companions: ["SimulatedNotification"],
+      "Demonstrativo de pagamento disponível em PDF, sem precisar pedir pra RH ou acessar portal web. Histórico de meses anteriores também.",
   },
 ];
 
 export const mesaOperacoesFlow: TourStep[] = [
   {
-    id: "dashboard",
-    targetSelector: '[data-tour="mo-dashboard"]',
+    id: "grid",
+    targetSelector: '[data-tour="mo-grid"]',
     placement: "right",
     title: "Painel operacional do turno",
     description:
-      "18 indicadores em tempo real do restaurante: presença, ausências, horas extras, contratos a vencer, ocorrências do dia. O gestor olha e sabe o que precisa de ação.",
+      "Mapa das unidades em tempo real: presença, cobertos, ocorrências. O gestor olha e sabe onde precisa agir.",
   },
   {
-    id: "ausencias",
-    targetSelector: '[data-tour="mo-ausencias"]',
+    id: "alert",
+    targetSelector: '[data-tour="mo-alert"]',
     placement: "right",
-    title: "3 ausências de registro hoje",
+    title: "Alerta de cobertura",
     description:
-      "Pessoas que estavam escaladas e não bateram ponto. Toque para abrir a grade e ver quem sumiu.",
-    requiresInteraction: true,
-    actionLabel: "Toque no tile",
+      "Unidade Norte com 62% de presença, 22pp abaixo da meta. 8 ausentes hoje. A IA já sugere quem pode cobrir.",
   },
   {
-    id: "ocorrencias",
-    targetSelector: '[data-tour="mo-ocorrencias"]',
-    placement: "right",
-    title: "Quem está e quem falta, hora a hora",
-    description:
-      "Cada função tem uma cor: Garçom azul, Cozinheiro laranja, Motoboy verde, Caixa roxo. Bate o olho e sabe imediatamente quem é equivalente a quem. Verde foi, vermelho faltou, laranja o dia inteiro.",
-  },
-  {
-    id: "absent",
-    targetSelector: '[data-tour="mo-absent-row"]',
-    placement: "right",
-    title: "Eloá não bateu ponto",
-    description:
-      "Cozinheira do turno 16h–23h. Sem ela, a cozinha fica descoberta no jantar. Toque na linha para a Mesa sugerir quem cobre.",
-    requiresInteraction: true,
-    actionLabel: "Toque na linha",
-  },
-  {
-    id: "cobertura",
-    targetSelector: '[data-tour="mo-realocar"]',
+    id: "realocar",
+    targetSelector: '[data-tour="mo-realloc"]',
     placement: "left",
     title: "Mesma cor cobre mesma cor",
     description:
-      "A IA filtrou só os Cozinheiros disponíveis, com horas extras dentro da meta. Kelvin (cozinheiro · 6 anos) está de folga, cobre o turno todo. Toque em Realocar e tudo se ajusta.",
+      "A IA filtra cozinheiros disponíveis com horas extras dentro da meta. Toque em Realocar e a escala se ajusta automaticamente.",
     requiresInteraction: true,
     actionLabel: "Toque em Realocar",
+  },
+  {
+    id: "confirmed",
+    targetSelector: '[data-tour="mo-confirmed"]',
+    placement: "right",
+    title: "Realocação confirmada",
+    description:
+      "Unidade Norte agora projeta 82% de presença. Notificação saiu pro colaborador realocado e pra escala do turno.",
+  },
+  {
+    id: "log",
+    targetSelector: '[data-tour="mo-log"]',
+    placement: "right",
+    title: "Log de operação",
+    description:
+      "Cada ação fica registrada com horário, responsável e impacto. Auditoria pronta sem montagem manual.",
   },
 ];
 
 export const analisePreditivaFlow: TourStep[] = [
   {
     id: "kpis",
-    targetSelector: '[data-tour="ap-kpis"]',
-    placement: "bottom",
-    title: "Distribuição de risco da equipe",
+    targetSelector: '[data-tour="ip-kpis"]',
+    placement: "right",
+    title: "Indicadores preditivos de RH",
     description:
-      "4 vínculos analisados: 1 em risco baixo, 2 médio, 1 alto. A IA cruza atestados, advertências, horas extras e movimentações para chegar nesse score.",
+      "Turnover atual, predição para 90 dias e número de funcionários em risco crítico. A IA cruza atestados, advertências, horas extras e movimentações pra calcular o score.",
   },
   {
-    id: "tabela",
-    targetSelector: '[data-tour="ap-table"]',
-    placement: "top",
-    title: "Lista completa por pessoa",
+    id: "risk-map",
+    targetSelector: '[data-tour="ip-risk-map"]',
+    placement: "right",
+    title: "Mapa de risco · pessoas",
     description:
-      "Cada vínculo com risco de turnover e probabilidade de processo trabalhista. A coluna Risco está ordenada do mais baixo para o mais alto.",
-  },
-  {
-    id: "selecionar",
-    targetSelector: '[data-tour="ap-row-alto"]',
-    placement: "left",
-    title: "Quem está em risco alto?",
-    description:
-      "Beatriz Santos, Gerente de Vendas com 5 anos de casa. Toque em VER DETALHES para entender o porquê.",
+      "Cada vínculo aparece com o nível de risco e os fatores que mais pesam. Toque em um colaborador para abrir os detalhes.",
     requiresInteraction: true,
-    actionLabel: "Toque em VER DETALHES",
+    actionLabel: "Toque em uma pessoa",
   },
   {
-    id: "detalhe",
-    targetSelector: '[data-tour="ap-fatores"]',
-    placement: "right",
-    title: "Risco alto, 75% de probabilidade",
+    id: "suggestion",
+    targetSelector: '[data-tour="ip-suggestion"]',
+    placement: "left",
+    title: "Plano sugerido pela IA",
     description:
-      "Modal abre com o nível de risco, probabilidade de processo e a quebra entre fatores negativos e positivos. Tudo numa só tela.",
+      "Ações recomendadas pra mitigar o risco daquela pessoa: ajuste salarial, programa de mentoria, conversa de carreira. Cada ação tem impacto estimado.",
   },
   {
-    id: "fatores",
-    targetSelector: '[data-tour="ap-fatores"]',
-    placement: "right",
-    title: "Os fatores que explicam o score",
+    id: "impact",
+    targetSelector: '[data-tour="ip-impact"]',
+    placement: "left",
+    title: "Simulação de impacto",
     description:
-      "15 faltas, 2 advertências, 4 afastamentos, 4 movimentações gerenciais, 20h extras por mês. O RH age com dado, não com achismo.",
+      "Antes/depois do plano: risco cai de Alto pra Baixo, probabilidade de turnover reduzida. Decisão com dado, não com achismo.",
   },
 ];
-

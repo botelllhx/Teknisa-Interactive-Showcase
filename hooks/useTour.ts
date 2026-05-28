@@ -39,7 +39,7 @@ export interface UseTourResult {
  * is gesturing on screen or wants to dwell on a step, touching the panel
  * keeps the current step alive.
  */
-export const DEFAULT_AUTO_ADVANCE_MS = 8000;
+export const DEFAULT_AUTO_ADVANCE_MS = 7000;
 
 interface UseTourOptions {
   steps: TourStep[];
